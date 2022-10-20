@@ -2,6 +2,8 @@ plugins {
 	java
 	`maven-publish`
 	id("com.github.johnrengelman.shadow") version "7.1.2" apply false
+	//id("com.android.tools.build") version "7.3.0" apply false
+	//id("com.guardsquare.proguard") version "7.3.0-beta2" apply false
 	id("io.papermc.paperweight.patcher") version "1.3.8"
 }
 
@@ -24,6 +26,8 @@ dependencies {
 allprojects {
 	apply(plugin = "java")
 	apply(plugin = "maven-publish")
+	//apply(plugin = "com.android.application")
+	//apply(plugin = "com.guardsquare.proguard")
 
 	java {
 		toolchain {

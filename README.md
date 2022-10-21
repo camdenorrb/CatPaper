@@ -4,7 +4,7 @@ Goals:
 
 - [x] Update dependencies to latest
 - [x] Add memory command
-- [ ] Update to Java 19
+- [x] Update to Java 19
 - [ ] Add linters
 - [ ] Compiling plugins into jar on boot
 - [ ] Proguard optimizations

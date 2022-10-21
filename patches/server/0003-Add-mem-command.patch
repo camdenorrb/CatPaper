@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Thu, 20 Oct 2022 19:21:54 -0500
+Subject: [PATCH] Add mem command
+
+
+diff --git a/src/main/java/io/papermc/paper/command/MemCommand.java b/src/main/java/io/papermc/paper/command/MemCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5297fab02989ef1f79ad23b758f21a3b2c2971b4
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/command/MemCommand.java
+@@ -0,0 +1,51 @@
++package io.papermc.paper.command;
++
++import org.bukkit.Location;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.checkerframework.checker.nullness.qual.NonNull;
++import org.checkerframework.framework.qual.DefaultQualifier;
++
++import java.util.Collections;
++import java.util.List;
++
++import static net.kyori.adventure.text.Component.text;
++import static net.kyori.adventure.text.format.NamedTextColor.*;
++
++@DefaultQualifier(NonNull.class)
++public final class MemCommand extends Command {
++
++    public MemCommand(final String name) {
++        super(name);
++        this.description = "View memory usage";
++        this.usageMessage = "/mem";
++        this.setPermission("bukkit.command.mem");
++    }
++
++    @Override
++    public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
++        return Collections.emptyList();
++    }
++
++    @Override
++    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
++
++        if (!testPermission(sender)) {
++            return true;
++        }
++
++        final Runtime runtime = Runtime.getRuntime();
++
++        final long totalMemory = runtime.totalMemory();
++        final long freeMemory = runtime.freeMemory();
++        final long usedMemory = totalMemory - freeMemory;
++
++        sender.sendMessage(text().content("Server memory usage ").color(GOLD).append(
++            text("free: ", GRAY).append(text(freeMemory / 1024 / 1024 + " ", YELLOW)),
++            text("used: ", GRAY).append(text(usedMemory / 1024 / 1024, YELLOW)),
++            text("/", YELLOW).append(text(totalMemory / 1024 / 1024, YELLOW))
++        ));
++
++        return true;
++    }
++}
+diff --git a/src/main/java/io/papermc/paper/command/PaperCommands.java b/src/main/java/io/papermc/paper/command/PaperCommands.java
+index d31b5ed47cffc61c90c926a0cd2005b72ebddfc5..6512480e790593671b152251d5a124e3c94a1580 100644
+--- a/src/main/java/io/papermc/paper/command/PaperCommands.java
++++ b/src/main/java/io/papermc/paper/command/PaperCommands.java
+@@ -18,6 +18,7 @@ public final class PaperCommands {
+     static {
+         COMMANDS.put("paper", new PaperCommand("paper"));
+         COMMANDS.put("mspt", new MSPTCommand("mspt"));
++        COMMANDS.put("mem", new MemCommand("mem"));
+     }
+ 
+     public static void registerCommands(final MinecraftServer server) {

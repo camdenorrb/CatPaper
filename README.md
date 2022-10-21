@@ -3,7 +3,7 @@
 Goals:
 
 - [x] Update dependencies to latest
-- [ ] Add memory command
+- [x] Add memory command
 - [ ] Update to Java 19
 - [ ] Add linters
 - [ ] Compiling plugins into jar on boot

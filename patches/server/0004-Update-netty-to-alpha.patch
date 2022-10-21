@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 21 Oct 2022 03:22:23 -0500
+Subject: [PATCH] Update netty to alpha
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index cfe371c3b06e5058d8667252776acd731283c995..57255bb00e584c3c3ab4dc04ab8de2c3d280952d 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -32,7 +32,7 @@ dependencies {
+      */
+     implementation("org.apache.logging.log4j:log4j-core:2.19.0") // Paper - implementation
+     annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0") // Paper - Needed to generate meta for our Log4j plugins
+-    implementation("io.netty:netty-codec-haproxy:4.1.84.Final")
++    implementation("io.netty:netty-codec-haproxy:5.0.0.Alpha2")
+     // Paper end
+     implementation("org.apache.logging.log4j:log4j-iostreams:2.19.0") // Paper
+     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0") // Paper
+@@ -58,7 +58,7 @@ dependencies {
+     testImplementation("junit:junit:4.13.2")
+     testImplementation("org.hamcrest:hamcrest-library:2.2")
+ 
+-    implementation("io.netty:netty-all:4.1.84.Final"); // Paper - Bump netty
++    implementation("io.netty:netty-all:5.0.0.Alpha2"); // Paper - Bump netty
+ }
+ 
+ val craftbukkitPackageVersion = "1_19_R1" // Paper

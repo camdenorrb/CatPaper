@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:06:00 -0500
+Subject: [PATCH] Use Math.max
+
+
+diff --git a/src/main/java/alternate/current/wire/WireHandler.java b/src/main/java/alternate/current/wire/WireHandler.java
+index 837c51be8b60f27252e341919eb6039ca645c7c1..42d199b94fa4fbf4fc41a81b365dc0f751504bcf 100644
+--- a/src/main/java/alternate/current/wire/WireHandler.java
++++ b/src/main/java/alternate/current/wire/WireHandler.java
+@@ -822,15 +822,9 @@ public class WireHandler {
+      * Queue the given wire for the breadth-first search as a root.
+      */
+     private void searchRoot(@NotNull WireNode wire) {
+-        int iBackupFlowDir;
++        int iBackupFlowDir = Math.max(wire.connections.iFlowDir, 0);
+ 
+-        if (wire.connections.iFlowDir < 0) {
+-            iBackupFlowDir = 0;
+-        } else {
+-            iBackupFlowDir = wire.connections.iFlowDir;
+-        }
+-
+-        search(wire, true, iBackupFlowDir);
++	    search(wire, true, iBackupFlowDir);
+     }
+ 
+     /**
+diff --git a/src/main/java/ca/spottedleaf/dataconverter/minecraft/MCDataConverter.java b/src/main/java/ca/spottedleaf/dataconverter/minecraft/MCDataConverter.java
+index 5a8ebb403e65afd3c7eafd5ce9944978a60231d0..8bf3948b3871c8dd0c69d607c4f858feeb819f08 100644
+--- a/src/main/java/ca/spottedleaf/dataconverter/minecraft/MCDataConverter.java
++++ b/src/main/java/ca/spottedleaf/dataconverter/minecraft/MCDataConverter.java
+@@ -44,7 +44,7 @@ public final class MCDataConverter {
+     public static <T, R> R convert(final @NotNull DataType<T, R> type, final T data, int fromVersion, final int toVersion) {
+         Object ret = data;
+ 
+-        long currentVersion = DataConverter.encodeVersions(fromVersion < 99 ? 99 : fromVersion, Integer.MAX_VALUE);
++        long currentVersion = DataConverter.encodeVersions(Math.max(fromVersion, 99), Integer.MAX_VALUE);
+         final long nextVersion = DataConverter.encodeVersions(toVersion, Integer.MAX_VALUE);
+ 
+         for (int i = 0, len = BREAKPOINTS.size(); i < len; ++i) {
+diff --git a/src/main/java/com/destroystokyo/paper/util/RedstoneWireTurbo.java b/src/main/java/com/destroystokyo/paper/util/RedstoneWireTurbo.java
+index ddc53b2ec1bf4a5c1545d25679dfd1f7a79961ef..f5c051f9e0e4503a04826303ff6611e88548f81f 100644
+--- a/src/main/java/com/destroystokyo/paper/util/RedstoneWireTurbo.java
++++ b/src/main/java/com/destroystokyo/paper/util/RedstoneWireTurbo.java
+@@ -955,6 +955,6 @@ public class RedstoneWireTurbo {
+     private static int getMaxCurrentStrength(final @NotNull UpdateNode upd, final int strength) {
+         if (upd.type != UpdateNode.Type.REDSTONE) return strength;
+         final int i = upd.currentState.getValue(RedStoneWireBlock.POWER).intValue();
+-        return i > strength ? i : strength;
++        return Math.max(i, strength);
+     }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
+index 84e1ff89d18096426487fa6a9ba8131043493904..0a85d8b601fa5420584fe8caae92113a19b83492 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
+@@ -455,7 +455,7 @@ public class CraftBlock implements Block {
+         } else {
+             int j = iblockdata.<Integer>getValue(RedStoneWireBlock.POWER).intValue();
+ 
+-            return j > i ? j : i;
++            return Math.max(j, i);
+         }
+     }
+ 

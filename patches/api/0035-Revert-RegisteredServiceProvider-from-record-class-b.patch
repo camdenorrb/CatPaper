@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:40:08 -0500
+Subject: [PATCH] Revert RegisteredServiceProvider from record class back to
+ normal
+
+
+diff --git a/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java b/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
+index 5ec066cdfd00f35ef765f2e1e9d4613cd43a742f..cc05ce8878b73b69d4235f735e6e6ab1c2b397ab 100644
+--- a/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
++++ b/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
+@@ -2,14 +2,18 @@ package org.bukkit.plugin;
+ 
+ import org.jetbrains.annotations.NotNull;
+ 
+-
+ /**
+  * A registered service provider.
+  *
+  * @param <T> Service
+  */
+-public record RegisteredServiceProvider<T>(Class<T> service, T provider, ServicePriority priority,
+-                                           Plugin plugin) implements Comparable<RegisteredServiceProvider<?>> {
++@SuppressWarnings("ClassCanBeRecord") // getService is used by plugins
++public class RegisteredServiceProvider<T> implements Comparable<RegisteredServiceProvider<?>> {
++
++    private final Class<T> service;
++    private final Plugin plugin;
++    private final T provider;
++    private final ServicePriority priority;
+ 
+     public RegisteredServiceProvider(@NotNull Class<T> service, @NotNull T provider, @NotNull ServicePriority priority, @NotNull Plugin plugin) {
+         this.service = service;
+@@ -18,36 +22,32 @@ public record RegisteredServiceProvider<T>(Class<T> service, T provider, Service
+         this.priority = priority;
+     }
+ 
+-    @Override
+     @NotNull
+-    public Class<T> service() {
++    public Class<T> getService() {
+         return service;
+     }
+ 
+-    @Override
+     @NotNull
+-    public Plugin plugin() {
++    public Plugin getPlugin() {
+         return plugin;
+     }
+ 
+-    @Override
+     @NotNull
+-    public T provider() {
++    public T getProvider() {
+         return provider;
+     }
+ 
+-    @Override
+     @NotNull
+-    public ServicePriority priority() {
++    public ServicePriority getPriority() {
+         return priority;
+     }
+ 
+     @Override
+     public int compareTo(@NotNull RegisteredServiceProvider<?> other) {
+-        if (priority.ordinal() == other.priority().ordinal()) {
++        if (priority.ordinal() == other.getPriority().ordinal()) {
+             return 0;
+         } else {
+-            return priority.ordinal() < other.priority().ordinal() ? 1 : -1;
++            return priority.ordinal() < other.getPriority().ordinal() ? 1 : -1;
+         }
+     }
+-}
++}
+\ No newline at end of file

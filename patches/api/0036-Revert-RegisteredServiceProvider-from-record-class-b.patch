@@ -1,78 +1,56 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: camdenorrb <me@12oclock.dev>
-Date: Sat, 22 Oct 2022 04:40:08 -0500
+Date: Sat, 22 Oct 2022 04:41:47 -0500
 Subject: [PATCH] Revert RegisteredServiceProvider from record class back to
  normal
 
 
-diff --git a/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java b/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
-index 5ec066cdfd00f35ef765f2e1e9d4613cd43a742f..cc05ce8878b73b69d4235f735e6e6ab1c2b397ab 100644
---- a/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
-+++ b/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
-@@ -2,14 +2,18 @@ package org.bukkit.plugin;
+diff --git a/src/main/java/org/bukkit/plugin/SimpleServicesManager.java b/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
+index 9a7117bc38b383103314a34b38741e00d6b532ab..2cc7ea23460575d573cba412c049e510338b5fed 100644
+--- a/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
++++ b/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
+@@ -81,7 +81,7 @@ public class SimpleServicesManager implements ServicesManager {
+                         while (it2.hasNext()) {
+                             RegisteredServiceProvider<?> registered = it2.next();
  
- import org.jetbrains.annotations.NotNull;
+-                            if (registered.plugin().equals(plugin)) {
++                            if (registered.getPlugin().equals(plugin)) {
+                                 it2.remove();
+                                 unregisteredEvents.add(new ServiceUnregisterEvent(registered));
+                             }
+@@ -130,7 +130,7 @@ public class SimpleServicesManager implements ServicesManager {
+                         while (it2.hasNext()) {
+                             RegisteredServiceProvider<?> registered = it2.next();
  
--
- /**
-  * A registered service provider.
-  *
-  * @param <T> Service
-  */
--public record RegisteredServiceProvider<T>(Class<T> service, T provider, ServicePriority priority,
--                                           Plugin plugin) implements Comparable<RegisteredServiceProvider<?>> {
-+@SuppressWarnings("ClassCanBeRecord") // getService is used by plugins
-+public class RegisteredServiceProvider<T> implements Comparable<RegisteredServiceProvider<?>> {
-+
-+    private final Class<T> service;
-+    private final Plugin plugin;
-+    private final T provider;
-+    private final ServicePriority priority;
+-                            if (registered.provider() == provider) {
++                            if (registered.getProvider() == provider) {
+                                 it2.remove();
+                                 unregisteredEvents.add(new ServiceUnregisterEvent(registered));
+                             }
+@@ -172,7 +172,7 @@ public class SimpleServicesManager implements ServicesManager {
+                         while (it2.hasNext()) {
+                             RegisteredServiceProvider<?> registered = it2.next();
  
-     public RegisteredServiceProvider(@NotNull Class<T> service, @NotNull T provider, @NotNull ServicePriority priority, @NotNull Plugin plugin) {
-         this.service = service;
-@@ -18,36 +22,32 @@ public record RegisteredServiceProvider<T>(Class<T> service, T provider, Service
-         this.priority = priority;
-     }
+-                            if (registered.provider().equals(provider)) {
++                            if (registered.getProvider().equals(provider)) {
+                                 it2.remove();
+                                 unregisteredEvents.add(new ServiceUnregisterEvent(registered));
+                             }
+@@ -211,7 +211,7 @@ public class SimpleServicesManager implements ServicesManager {
+             }
  
--    @Override
-     @NotNull
--    public Class<T> service() {
-+    public Class<T> getService() {
-         return service;
-     }
- 
--    @Override
-     @NotNull
--    public Plugin plugin() {
-+    public Plugin getPlugin() {
-         return plugin;
-     }
- 
--    @Override
-     @NotNull
--    public T provider() {
-+    public T getProvider() {
-         return provider;
-     }
- 
--    @Override
-     @NotNull
--    public ServicePriority priority() {
-+    public ServicePriority getPriority() {
-         return priority;
-     }
- 
-     @Override
-     public int compareTo(@NotNull RegisteredServiceProvider<?> other) {
--        if (priority.ordinal() == other.priority().ordinal()) {
-+        if (priority.ordinal() == other.getPriority().ordinal()) {
-             return 0;
-         } else {
--            return priority.ordinal() < other.priority().ordinal() ? 1 : -1;
-+            return priority.ordinal() < other.getPriority().ordinal() ? 1 : -1;
+             // This should not be null!
+-            return service.cast(registered.get(0).provider());
++            return service.cast(registered.get(0).getProvider());
          }
      }
--}
-+}
-\ No newline at end of file
+ 
+@@ -252,7 +252,7 @@ public class SimpleServicesManager implements ServicesManager {
+         synchronized (providers) {
+             for (List<RegisteredServiceProvider<?>> registered : providers.values()) {
+                 for (RegisteredServiceProvider<?> provider : registered) {
+-                    if (provider.plugin().equals(plugin)) {
++                    if (provider.getPlugin().equals(plugin)) {
+                         ret.add(provider);
+                     }
+                 }

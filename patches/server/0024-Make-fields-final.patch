@@ -1,0 +1,604 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:48:29 -0500
+Subject: [PATCH] Make fields final
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/gui/GraphData.java b/src/main/java/com/destroystokyo/paper/gui/GraphData.java
+index 186fc722965e403f76b1480e1c2381fc34e29049..b52280d7718139ebe17f5b581a870e0dde819200 100644
+--- a/src/main/java/com/destroystokyo/paper/gui/GraphData.java
++++ b/src/main/java/com/destroystokyo/paper/gui/GraphData.java
+@@ -3,11 +3,11 @@ package com.destroystokyo.paper.gui;
+ import java.awt.Color;
+ 
+ public class GraphData {
+-    private long total;
+-    private long free;
+-    private long max;
+-    private long usedMem;
+-    private int usedPercent;
++    private final long total;
++    private final long free;
++    private final long max;
++    private final long usedMem;
++    private final int usedPercent;
+ 
+     public GraphData(long total, long free, long max) {
+         this.total = total;
+diff --git a/src/main/java/com/destroystokyo/paper/loottable/PaperTileEntityLootableInventory.java b/src/main/java/com/destroystokyo/paper/loottable/PaperTileEntityLootableInventory.java
+index 1304afb2a431b45d7ac302c87e5de6e55148dc49..cb7cecc84d3675b586001037288cf6305292c61f 100644
+--- a/src/main/java/com/destroystokyo/paper/loottable/PaperTileEntityLootableInventory.java
++++ b/src/main/java/com/destroystokyo/paper/loottable/PaperTileEntityLootableInventory.java
+@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
+ 
+ 
+ public class PaperTileEntityLootableInventory implements PaperLootableBlockInventory {
+-    private RandomizableContainerBlockEntity tileEntityLootable;
++    private final RandomizableContainerBlockEntity tileEntityLootable;
+ 
+     public PaperTileEntityLootableInventory(RandomizableContainerBlockEntity tileEntityLootable) {
+         this.tileEntityLootable = tileEntityLootable;
+diff --git a/src/main/java/com/mojang/brigadier/tree/CommandNode.java b/src/main/java/com/mojang/brigadier/tree/CommandNode.java
+index ce45c49e6da2aedf89d6faaecd8e73a3af3b378c..604df9e10388ce97f3afa57cb399e3183b20c64f 100644
+--- a/src/main/java/com/mojang/brigadier/tree/CommandNode.java
++++ b/src/main/java/com/mojang/brigadier/tree/CommandNode.java
+@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
+ 
+ 
+ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
+-    private @NotNull Map<String, CommandNode<S>> children = com.google.common.collect.Maps.newTreeMap(); // Paper - Switch to tree map for automatic sorting
++    private final @NotNull Map<String, CommandNode<S>> children = com.google.common.collect.Maps.newTreeMap(); // Paper - Switch to tree map for automatic sorting
+     private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
+     private final Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
+     public Predicate<S> requirement;
+diff --git a/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java b/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
+index 9b28c8e9e5bc2dfa300f5f7a3a41cc6d6136aeb1..aa88200b88462706baad682892fdc99a1e33d102 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
++++ b/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
+@@ -993,7 +993,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+ 
+     static final class CancellableReads implements Cancellable {
+ 
+-        private Cancellable[] reads;
++        private final Cancellable[] reads;
+ 
+         protected static final VarHandle READS_HANDLE = ConcurrentUtil.getVarHandle(CancellableReads.class, "reads", Cancellable[].class);
+ 
+diff --git a/src/main/java/net/minecraft/commands/arguments/selector/EntitySelector.java b/src/main/java/net/minecraft/commands/arguments/selector/EntitySelector.java
+index 35cc3bba20afd4a47160cc674415ba6a3a0ec0ec..aa6dbe801e0859541a325550717037ca8bf889e9 100644
+--- a/src/main/java/net/minecraft/commands/arguments/selector/EntitySelector.java
++++ b/src/main/java/net/minecraft/commands/arguments/selector/EntitySelector.java
+@@ -50,7 +50,7 @@ public class EntitySelector {
+     private final String playerName;
+     @Nullable
+     private final UUID entityUUID;
+-    private EntityTypeTest<Entity, ?> type;
++    private final EntityTypeTest<Entity, ?> type;
+     private final boolean usesSelector;
+ 
+     public EntitySelector(int count, boolean includesNonPlayers, boolean localWorldOnly, Predicate<Entity> basePredicate, MinMaxBounds.Doubles distance, Function<Vec3, Vec3> positionOffset, @Nullable AABB box, BiConsumer<Vec3, List<? extends Entity>> sorter, boolean senderOnly, @Nullable String playerName, @Nullable UUID uuid, @Nullable EntityType<?> type, boolean usesAt) {
+diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
+index 6e4f40b6822d7131bdca672aaea92dd21d12a4b6..1466222406fa67f88389b7a04ad9e6d2b4765ac3 100644
+--- a/src/main/java/net/minecraft/network/Connection.java
++++ b/src/main/java/net/minecraft/network/Connection.java
+@@ -116,7 +116,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     // Paper start - NetworkClient implementation
+     public int protocolVersion;
+     public java.net.InetSocketAddress virtualHost;
+-    private static boolean enableExplicitFlush = Boolean.getBoolean("paper.explicit-flush");
++    private static final boolean enableExplicitFlush = Boolean.getBoolean("paper.explicit-flush");
+     // Optimize network
+     public boolean isPending = true;
+     public boolean queueImmunity = false;
+diff --git a/src/main/java/net/minecraft/network/PacketEncoder.java b/src/main/java/net/minecraft/network/PacketEncoder.java
+index 866eb9f36d639efa181e17330d73cf9fd5829328..b2559da1137a12cd4a6ee00aa1a5b2feb28f19f2 100644
+--- a/src/main/java/net/minecraft/network/PacketEncoder.java
++++ b/src/main/java/net/minecraft/network/PacketEncoder.java
+@@ -66,7 +66,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
+     }
+ 
+     // Paper start
+-    private static int MAX_PACKET_SIZE = 2097152;
++    private static final int MAX_PACKET_SIZE = 2097152;
+ 
+     public static class PacketTooLargeException extends RuntimeException {
+         private final Packet<?> packet;
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index d5729df2fb1d00c035bbcbf980ba6edca5df2d6e..b85527f821bebaeb8aef36c47c13329df757eecb 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1044,7 +1044,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     private static final long SEC_IN_NANO = 1000000000;
+     private static final long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * 60L;
+     private long lastTick = 0;
+-    private long catchupTime = 0;
++    private final long catchupTime = 0;
+     public final RollingAverage tps1 = new RollingAverage(60);
+     public final RollingAverage tps5 = new RollingAverage(60 * 5);
+     public final RollingAverage tps15 = new RollingAverage(60 * 15);
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 6cb6d8c7b6d421bddc5eaa15d5fa56f34e10213c..f16a61dfad10a1ec97c0ba1ad265ac332e6d39f9 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -131,7 +131,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     private final ThreadedLevelLightEngine lightEngine;
+     public final BlockableEventLoop<Runnable> mainThreadExecutor; // Paper - public
+     public ChunkGenerator generator;
+-    private RandomState randomState;
++    private final RandomState randomState;
+     public final Supplier<DimensionDataStorage> overworldDataStorage;
+     private final PoiManager poiManager;
+     // Paper - rewrite chunk system
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index a0c3814f44c9af57e3b2842c89eb18bf0ae3bfee..f28a74883bc7062de9b8f0e2c50b565a1694d3ec 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -155,7 +155,7 @@ public abstract class PlayerList {
+     private int sendAllPlayerInfoIn;
+ 
+     // CraftBukkit start
+-    private CraftServer cserver;
++    private final CraftServer cserver;
+     private final Map<String,ServerPlayer> playersByName = new java.util.HashMap<>();
+     public @Nullable String collideRuleTeamName; // Paper - Team name used for collideRule
+ 
+diff --git a/src/main/java/net/minecraft/server/players/StoredUserList.java b/src/main/java/net/minecraft/server/players/StoredUserList.java
+index 4fd709a550bf8da1e996894a1ca6b91206c31e9e..10300c9166111130fefa8b103a9e8f2c9fd503f5 100644
+--- a/src/main/java/net/minecraft/server/players/StoredUserList.java
++++ b/src/main/java/net/minecraft/server/players/StoredUserList.java
+@@ -34,7 +34,7 @@ public abstract class StoredUserList<K, V extends StoredUserEntry<K>> {
+     private final File file;
+     // Paper - replace HashMap is ConcurrentHashMap
+     private final Map<String, V> map = Maps.newConcurrentMap();
+-    private boolean e = true;
++    private final boolean e = true;
+     private static final ParameterizedType f = new ParameterizedType() {
+         public Type[] getActualTypeArguments() {
+             return new Type[]{StoredUserEntry.class};
+diff --git a/src/main/java/net/minecraft/world/effect/MobEffectInstance.java b/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
+index d8d970a056fd7e0f62f7589086ccf6ac508b1692..94b04e2b50bd28c30396d2a50c19fe48e7464e5f 100644
+--- a/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
++++ b/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
+@@ -25,7 +25,7 @@ public class MobEffectInstance implements Comparable<MobEffectInstance> {
+     private boolean showIcon;
+     @Nullable
+     private MobEffectInstance hiddenEffect;
+-    private Optional<MobEffectInstance.FactorData> factorData;
++    private final Optional<MobEffectInstance.FactorData> factorData;
+ 
+     public MobEffectInstance(MobEffect type) {
+         this(type, 0, 0);
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 23a3075678d53fe6a08ec1756a80bfb1966981ac..59ca8c9f61a61b4614ea73926aa3fa36c65cbedd 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -855,7 +855,7 @@ public abstract class LivingEntity extends Entity {
+ 
+     // CraftBukkit start
+     private boolean isTickingEffects = false;
+-    private List<ProcessableEffect> effectsToProcess = Lists.newArrayList();
++    private final List<ProcessableEffect> effectsToProcess = Lists.newArrayList();
+ 
+     private static class ProcessableEffect {
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+index 85329b6cb81e7a0f5678d5bd50c48dc2029a7184..611f5116caf7e4dd465e02b0364faacd008b16be 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
++++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+@@ -98,7 +98,7 @@ public class EnderDragon extends Mob implements Enemy {
+     private final Node[] nodes = new Node[24];
+     private final int[] nodeAdjacency = new int[24];
+     private final BinaryHeap openSet = new BinaryHeap();
+-    private Explosion explosionSource = new Explosion(null, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // CraftBukkit - reusable source for CraftTNTPrimed.getSource()
++    private final Explosion explosionSource = new Explosion(null, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // CraftBukkit - reusable source for CraftTNTPrimed.getSource()
+     // Paper start - add var for save custom podium
+     @Nullable
+     private BlockPos podium;
+diff --git a/src/main/java/net/minecraft/world/food/FoodData.java b/src/main/java/net/minecraft/world/food/FoodData.java
+index 2934b6de1f1fb914a532ee20184df99d1acd8e65..347621de1b7ab881ea392c3d6f0354e8d86be793 100644
+--- a/src/main/java/net/minecraft/world/food/FoodData.java
++++ b/src/main/java/net/minecraft/world/food/FoodData.java
+@@ -17,7 +17,7 @@ public class FoodData {
+     public float exhaustionLevel;
+     private int tickTimer;
+     // CraftBukkit start
+-    private Player entityhuman;
++    private final Player entityhuman;
+     public int saturatedRegenRate = 10;
+     public int unsaturatedRegenRate = 80;
+     public int starvationRate = 80;
+diff --git a/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java b/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java
+index 4adfc26062b322443828e94e6b0943884a18846b..c1a829c6d3159ff583ba1af08c8a88be350b255b 100644
+--- a/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java
+@@ -35,7 +35,7 @@ public abstract class AbstractFurnaceMenu extends RecipeBookMenu<Container> {
+ 
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Inventory player;
++    private final Inventory player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/BeaconMenu.java b/src/main/java/net/minecraft/world/inventory/BeaconMenu.java
+index 64e1571fab5f07cfe1b5203b36754f536b303f27..bc0e5ab88fd6277e8266af9532bd7894585e45f9 100644
+--- a/src/main/java/net/minecraft/world/inventory/BeaconMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/BeaconMenu.java
+@@ -29,7 +29,7 @@ public class BeaconMenu extends AbstractContainerMenu {
+     private final ContainerData beaconData;
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Inventory player;
++    private final Inventory player;
+     // CraftBukkit end
+ 
+     public BeaconMenu(int syncId, Container inventory) {
+diff --git a/src/main/java/net/minecraft/world/inventory/BrewingStandMenu.java b/src/main/java/net/minecraft/world/inventory/BrewingStandMenu.java
+index 13720c2df8ac37d020d4a785e48c45877edf74b9..3d3789ceb3651e8c4a766a947eb619425785f623 100644
+--- a/src/main/java/net/minecraft/world/inventory/BrewingStandMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/BrewingStandMenu.java
+@@ -34,7 +34,7 @@ public class BrewingStandMenu extends AbstractContainerMenu {
+ 
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Inventory player;
++    private final Inventory player;
+     // CraftBukkit end
+ 
+     public BrewingStandMenu(int syncId, Inventory playerInventory) {
+diff --git a/src/main/java/net/minecraft/world/inventory/CartographyTableMenu.java b/src/main/java/net/minecraft/world/inventory/CartographyTableMenu.java
+index 4f5593d387545545e30475d3edaa92a4306ba96b..cf8cb7d58afe833b841b769dd5f6adc08269b517 100644
+--- a/src/main/java/net/minecraft/world/inventory/CartographyTableMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/CartographyTableMenu.java
+@@ -21,7 +21,7 @@ public class CartographyTableMenu extends AbstractContainerMenu {
+ 
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Player player;
++    private final Player player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/ChestMenu.java b/src/main/java/net/minecraft/world/inventory/ChestMenu.java
+index e9d9245f7efaaeefc8f107b8016a462ce173816a..6391af704daba0666141d63c751cd132c4458802 100644
+--- a/src/main/java/net/minecraft/world/inventory/ChestMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/ChestMenu.java
+@@ -17,7 +17,7 @@ public class ChestMenu extends AbstractContainerMenu {
+     private final int containerRows;
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Inventory player;
++    private final Inventory player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/DispenserMenu.java b/src/main/java/net/minecraft/world/inventory/DispenserMenu.java
+index 74a7ebb6eb9e288fcf6af8db5d0629835e2c8989..bb4cd8b58a86a819b8c9ffb7af3d37508a28b489 100644
+--- a/src/main/java/net/minecraft/world/inventory/DispenserMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/DispenserMenu.java
+@@ -21,7 +21,7 @@ public class DispenserMenu extends AbstractContainerMenu {
+     public final Container dispenser;
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Inventory player;
++    private final Inventory player;
+     // CraftBukkit end
+ 
+     public DispenserMenu(int syncId, Inventory playerInventory) {
+diff --git a/src/main/java/net/minecraft/world/inventory/EnchantmentMenu.java b/src/main/java/net/minecraft/world/inventory/EnchantmentMenu.java
+index 727031d49946df536a6ee3094929294d077139fe..845f6e0c3e6ad6c0faed218ce6128b8df7cd69cb 100644
+--- a/src/main/java/net/minecraft/world/inventory/EnchantmentMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/EnchantmentMenu.java
+@@ -49,7 +49,7 @@ public class EnchantmentMenu extends AbstractContainerMenu {
+     public final int[] levelClue;
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Player player;
++    private final Player player;
+     // CraftBukkit end
+ 
+     public EnchantmentMenu(int syncId, Inventory playerInventory) {
+diff --git a/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java b/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
+index 122d5f92b6bd37e96d88ddd8c41de557ae460cd9..b25bf2034dd78518a2875851be4fcf4a65bd9f11 100644
+--- a/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
+@@ -28,7 +28,7 @@ public class GrindstoneMenu extends AbstractContainerMenu {
+ 
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Player player;
++    private final Player player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/HopperMenu.java b/src/main/java/net/minecraft/world/inventory/HopperMenu.java
+index 847ccf3042da93fef0ea50609fa77f355cbebd41..0f8d605faab5c1f824b2c2c7db895da309581089 100644
+--- a/src/main/java/net/minecraft/world/inventory/HopperMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/HopperMenu.java
+@@ -18,7 +18,7 @@ public class HopperMenu extends AbstractContainerMenu {
+ 
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Inventory player;
++    private final Inventory player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/InventoryMenu.java b/src/main/java/net/minecraft/world/inventory/InventoryMenu.java
+index 12643d60f4bfa8e07901aa0a556a1a245b0a7fb4..2c567d5cde19e1272121dd4c7ceaf315164eb2d0 100644
+--- a/src/main/java/net/minecraft/world/inventory/InventoryMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/InventoryMenu.java
+@@ -45,7 +45,7 @@ public class InventoryMenu extends RecipeBookMenu<CraftingContainer> {
+     private final Player owner;
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Inventory player;
++    private final Inventory player;
+     // CraftBukkit end
+ 
+     public InventoryMenu(Inventory inventory, boolean onServer, final Player owner) {
+diff --git a/src/main/java/net/minecraft/world/inventory/LecternMenu.java b/src/main/java/net/minecraft/world/inventory/LecternMenu.java
+index 52471ef87994ac91b4b0017159b61ff50774848a..84142446a5fa00ff183e5a785b5c9bcf78733977 100644
+--- a/src/main/java/net/minecraft/world/inventory/LecternMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/LecternMenu.java
+@@ -16,7 +16,7 @@ public class LecternMenu extends AbstractContainerMenu {
+ 
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Player player;
++    private final Player player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/LoomMenu.java b/src/main/java/net/minecraft/world/inventory/LoomMenu.java
+index 178de5f2a11b4fe0b4f37f4fec26282cb17b4db5..a6e9dde2993490b6d5be214dc784efba2fbec19a 100644
+--- a/src/main/java/net/minecraft/world/inventory/LoomMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/LoomMenu.java
+@@ -33,7 +33,7 @@ public class LoomMenu extends AbstractContainerMenu {
+ 
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Player player;
++    private final Player player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/MerchantMenu.java b/src/main/java/net/minecraft/world/inventory/MerchantMenu.java
+index 3e3dfbe30fc5357e144aa176bc5df1b8a7ae6d64..7030a5e2e9558cb3e3ac767cfd45f6bb5ccb4f6f 100644
+--- a/src/main/java/net/minecraft/world/inventory/MerchantMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/MerchantMenu.java
+@@ -34,7 +34,7 @@ public class MerchantMenu extends AbstractContainerMenu {
+ 
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Inventory player;
++    private final Inventory player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/ShulkerBoxMenu.java b/src/main/java/net/minecraft/world/inventory/ShulkerBoxMenu.java
+index 3991ef6319030e155cb3363f73e67a2bb6ab384f..823c5d10bd0bfb809536bbbbc5053a93b6a68d61 100644
+--- a/src/main/java/net/minecraft/world/inventory/ShulkerBoxMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/ShulkerBoxMenu.java
+@@ -17,7 +17,7 @@ public class ShulkerBoxMenu extends AbstractContainerMenu {
+     private final Container container;
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity;
+-    private Inventory player;
++    private final Inventory player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/inventory/StonecutterMenu.java b/src/main/java/net/minecraft/world/inventory/StonecutterMenu.java
+index d4f71422b25f70abfe50481d6071abea6ad147c0..3c21bb3d9a0bee0c51088b9e2ac14c1c61569275 100644
+--- a/src/main/java/net/minecraft/world/inventory/StonecutterMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/StonecutterMenu.java
+@@ -42,7 +42,7 @@ public class StonecutterMenu extends AbstractContainerMenu {
+     final ResultContainer resultContainer;
+     // CraftBukkit start
+     private CraftInventoryView bukkitEntity = null;
+-    private Player player;
++    private final Player player;
+ 
+     @Override
+     public CraftInventoryView getBukkitView() {
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index 5073d6ef5aae095fd85307bbe8ae5941abcabec0..adba7cd6f031098045bdc1dfcbc874dcdd8881ba 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -176,8 +176,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
+     public final co.aikar.timings.WorldTimingsHandler timings; // Paper
+     public static BlockPos lastPhysicsProblem; // Spigot
+-    private org.spigotmc.TickLimiter entityLimiter;
+-    private org.spigotmc.TickLimiter tileLimiter;
++    private final org.spigotmc.TickLimiter entityLimiter;
++    private final org.spigotmc.TickLimiter tileLimiter;
+     private int tileTickPosition;
+     public final Map<Explosion.CacheKey, Float> explosionDensityCache = new HashMap<>(); // Paper - Optimize explosions
+     public java.util.ArrayDeque<net.minecraft.world.level.block.RedstoneTorchBlock.Toggle> redstoneUpdateInfos; // Paper - Move from Map in BlockRedstoneTorch to here
+diff --git a/src/main/java/net/minecraft/world/level/block/state/properties/EnumProperty.java b/src/main/java/net/minecraft/world/level/block/state/properties/EnumProperty.java
+index edd3c745efb40ee79a1393199c7a27ddaa2f8026..087f2d32b680992ff2ea7901e34bc7cc416d08e8 100644
+--- a/src/main/java/net/minecraft/world/level/block/state/properties/EnumProperty.java
++++ b/src/main/java/net/minecraft/world/level/block/state/properties/EnumProperty.java
+@@ -16,7 +16,7 @@ public class EnumProperty<T extends Enum<T> & StringRepresentable> extends Prope
+     private final Map<String, T> names = Maps.newHashMap();
+ 
+     // Paper start - optimise iblockdata state lookup
+-    private int[] idLookupTable;
++    private final int[] idLookupTable;
+ 
+     @Override
+     public final int getIdFor(final T value) {
+diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+index 67b88da702b780f79c0496cb17f1e6f1f8dd6c2b..13fdfb152a5d49e70b38983a135e062d436babaf 100644
+--- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
++++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+@@ -65,11 +65,11 @@ public class MapItemSavedData extends SavedData {
+     public final Map<String, MapDecoration> decorations = Maps.newLinkedHashMap();
+     private final Map<String, MapFrame> frameMarkers = Maps.newHashMap();
+     private int trackedDecorationCount;
+-    private org.bukkit.craftbukkit.map.RenderData vanillaRender = new org.bukkit.craftbukkit.map.RenderData(); // Paper
++    private final org.bukkit.craftbukkit.map.RenderData vanillaRender = new org.bukkit.craftbukkit.map.RenderData(); // Paper
+ 
+     // CraftBukkit start
+     public final CraftMapView mapView;
+-    private CraftServer server;
++    private final CraftServer server;
+     private UUID uniqueId = null;
+     public String id;
+     // CraftBukkit end
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 09d0c69101234e381af5382561e4d668dd5002a9..6bcf8a731ce752d038710f9f87c99e6379788c0b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -2363,6 +2363,7 @@ public final class CraftServer implements Server {
+         net.minecraft.world.level.chunk.ChunkStatus.LIGHT
+     );
+ 
++    @SuppressWarnings("removal")
+     @Override
+     @Deprecated(forRemoval = true)
+     public ChunkGenerator.@NotNull ChunkData createVanillaChunkData(@NotNull World world, int x, int z) {
+@@ -2895,7 +2896,7 @@ public final class CraftServer implements Server {
+         return net.minecraft.server.MinecraftServer.getServer().hasStopped();
+     }
+ 
+-    private com.destroystokyo.paper.entity.ai.@NotNull MobGoals mobGoals = new com.destroystokyo.paper.entity.ai.PaperMobGoals();
++    private final com.destroystokyo.paper.entity.ai.@NotNull MobGoals mobGoals = new com.destroystokyo.paper.entity.ai.PaperMobGoals();
+     @Override
+     public com.destroystokyo.paper.entity.ai.@NotNull MobGoals getMobGoals() {
+         return mobGoals;
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 7fe2dd117145340d0e6f11a6374d80500747822b..c8b33606a5e94a1df984e81e47fd43b40b438022 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -146,7 +146,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+ 
+     private final ServerLevel world;
+     private WorldBorder worldBorder;
+-    private Environment environment;
++    private final Environment environment;
+     private final CraftServer server = (CraftServer) Bukkit.getServer();
+     private final ChunkGenerator generator;
+     private final BiomeProvider biomeProvider;
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/data/CraftBlockData.java b/src/main/java/org/bukkit/craftbukkit/block/data/CraftBlockData.java
+index e695a9990a6504cc82408de6238409ad0e4b4b4e..6d7f2a8d72484dc830d178cd2a330b86f402cf19 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/data/CraftBlockData.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/data/CraftBlockData.java
+@@ -510,7 +510,7 @@ public class CraftBlockData implements BlockData {
+     }
+ 
+     // Paper start - cache block data strings
+-    private static @NotNull Map<String, CraftBlockData> stringDataCache = new java.util.concurrent.ConcurrentHashMap<>();
++    private static final @NotNull Map<String, CraftBlockData> stringDataCache = new java.util.concurrent.ConcurrentHashMap<>();
+ 
+     static {
+         // cache all of the default states at startup, will not cache ones with the custom states inside of the
+diff --git a/src/main/java/org/bukkit/craftbukkit/boss/CraftBossBar.java b/src/main/java/org/bukkit/craftbukkit/boss/CraftBossBar.java
+index 28704c9615732c24f30119a02391fe43254ae96d..ab4fc0faca6c93d85b9676768cce91beb08a520a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/boss/CraftBossBar.java
++++ b/src/main/java/org/bukkit/craftbukkit/boss/CraftBossBar.java
+@@ -222,8 +222,8 @@ public class CraftBossBar implements BossBar {
+ 
+     private final class FlagContainer {
+ 
+-        private Supplier<Boolean> get;
+-        private Consumer<Boolean> set;
++        private final Supplier<Boolean> get;
++        private final Consumer<Boolean> set;
+ 
+         private FlagContainer(Supplier<Boolean> get, Consumer<Boolean> set) {
+             this.get = get;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 9a4f7db8723d8920eb09d3351bc11c5a1020ed99..5fe2c212bdccd01d6559d66016c10ec258e66d69 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -169,7 +169,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     private boolean scaledHealth = false;
+     private double healthScale = 20;
+     private @org.jetbrains.annotations.Nullable CraftWorldBorder clientWorldBorder = null;
+-    private @NotNull BorderChangeListener clientWorldBorderListener = this.createWorldBorderListener();
++    private final @NotNull BorderChangeListener clientWorldBorderListener = this.createWorldBorderListener();
+     // Paper start
+     private org.bukkit.event.player.PlayerResourcePackStatusEvent.Status resourcePackStatus;
+     private String resourcePackHash;
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
+index 5df093b45ed67d4b0706fb810742db1e95680004..620b6acfe645af3d6835feb649c5dc5a685d44f7 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
+@@ -36,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
+ public class CraftContainer extends AbstractContainerMenu {
+ 
+     private final @NotNull InventoryView view;
+-    private InventoryType cachedType;
++    private final InventoryType cachedType;
+     private AbstractContainerMenu delegate;
+ 
+     public CraftContainer(@NotNull InventoryView view, Player player, int id) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/MinecraftInternalPlugin.java b/src/main/java/org/bukkit/craftbukkit/scheduler/MinecraftInternalPlugin.java
+index 101fd263c1de05382da4ecbfe4989f36859643ef..0019cddcc6179419c37f602ede162e8072135042 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scheduler/MinecraftInternalPlugin.java
++++ b/src/main/java/org/bukkit/craftbukkit/scheduler/MinecraftInternalPlugin.java
+@@ -22,7 +22,7 @@ public class MinecraftInternalPlugin extends PluginBase {
+     private boolean enabled = true;
+ 
+     private final @NotNull String pluginName;
+-    private PluginDescriptionFile pdf;
++    private final PluginDescriptionFile pdf;
+ 
+     public MinecraftInternalPlugin() {
+         this.pluginName = "Minecraft";
+diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardComponent.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardComponent.java
+index ad8f7a3244ec184b728855342c1d862d34161909..ee2b626bc01cb25bc7eaeb821c336becd6f870cb 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardComponent.java
++++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardComponent.java
+@@ -1,7 +1,7 @@
+ package org.bukkit.craftbukkit.scoreboard;
+ 
+ abstract class CraftScoreboardComponent {
+-    private CraftScoreboard scoreboard;
++    private final CraftScoreboard scoreboard;
+ 
+     CraftScoreboardComponent(CraftScoreboard scoreboard) {
+         this.scoreboard = scoreboard;
+diff --git a/src/main/java/org/bukkit/craftbukkit/tag/CraftTag.java b/src/main/java/org/bukkit/craftbukkit/tag/CraftTag.java
+index b47b724990ebdda7ec3cfdd3d75ae22ed5735361..5dc71af261e97d3edb22cb4728092f9549de1c21 100644
+--- a/src/main/java/org/bukkit/craftbukkit/tag/CraftTag.java
++++ b/src/main/java/org/bukkit/craftbukkit/tag/CraftTag.java
+@@ -15,7 +15,7 @@ public abstract class CraftTag<N, B extends Keyed> implements Tag<B> {
+     protected final Registry<N> registry;
+     protected final TagKey<N> tag;
+     //
+-    private HolderSet.Named<N> handle;
++    private final HolderSet.Named<N> handle;
+ 
+     public CraftTag(@NotNull Registry<N> registry, TagKey<N> tag) {
+         this.registry = registry;
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/ForwardLogHandler.java b/src/main/java/org/bukkit/craftbukkit/util/ForwardLogHandler.java
+index dfeee08e3a4ffbe648df2de9b092f22d871d7800..9420a10b07c408d25bfc73873dd059f87dab796c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/ForwardLogHandler.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/ForwardLogHandler.java
+@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
+ 
+ 
+ public class ForwardLogHandler extends ConsoleHandler {
+-    private @NotNull Map<String, Logger> cachedLoggers = new ConcurrentHashMap<String, Logger>();
++    private final @NotNull Map<String, Logger> cachedLoggers = new ConcurrentHashMap<String, Logger>();
+ 
+     private Logger getLogger(String name) {
+         Logger logger = this.cachedLoggers.get(name);
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java b/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
+index a6584763372cce4926d2d2bce2e59e5c52d290c4..8060d82f3a2824b95d249764f3dadb8f22f7a2e1 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
+@@ -66,7 +66,8 @@ public final class WeakCollection<T> implements Collection<T> {
+     @Override
+     public @NotNull Iterator<T> iterator() {
+         return new Iterator<T>() {
+-            @NotNull Iterator<WeakReference<T>> it = WeakCollection.this.collection.iterator();
++            @NotNull
++            final Iterator<WeakReference<T>> it = WeakCollection.this.collection.iterator();
+             @Nullable Object value = WeakCollection.NO_VALUE;
+ 
+             @Override

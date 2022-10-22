@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:39:55 -0500
+Subject: [PATCH] Remove redundant toString in concat
+
+
+diff --git a/src/main/java/org/bukkit/command/FormattedCommandAlias.java b/src/main/java/org/bukkit/command/FormattedCommandAlias.java
+index aeac65d883a7f650ad145871e88f114edbf0f7c6..9aa1ce63c4c07c26bff9e51cdd43d956ccd45932 100644
+--- a/src/main/java/org/bukkit/command/FormattedCommandAlias.java
++++ b/src/main/java/org/bukkit/command/FormattedCommandAlias.java
+@@ -109,7 +109,7 @@ public class FormattedCommandAlias extends Command {
+                 replacement.append(args[position]);
+             }
+ 
+-            formatString = formatString.substring(0, start) + replacement.toString() + formatString.substring(end);
++            formatString = formatString.substring(0, start) + replacement + formatString.substring(end);
+             // Move index past the replaced data so we don't process it again
+             index = start + replacement.length();
+ 
+diff --git a/src/main/java/org/bukkit/command/defaults/PluginsCommand.java b/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
+index c479dc290c7c0028ff7be617a428f81982d69535..1473b4c0c883edeac0d85ee0acf8a28f7e6d208a 100644
+--- a/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
+@@ -67,7 +67,7 @@ public class PluginsCommand extends BukkitCommand {
+             }
+         }
+ 
+-        return "(" + plugins.size() + "): " + pluginList.toString();
++        return "(" + plugins.size() + "): " + pluginList;
+         // Paper end
+     }
+ 

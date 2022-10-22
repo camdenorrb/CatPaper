@@ -1,0 +1,703 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:48:29 -0500
+Subject: [PATCH] Make fields final
+
+
+diff --git a/src/main/java/co/aikar/timings/TimingHandler.java b/src/main/java/co/aikar/timings/TimingHandler.java
+index ba5a33b7b4a51a63c468dbe7574ce2ea66aa2242..c2bcf325dc6c2073f325d0eff9be3d046ad90288 100644
+--- a/src/main/java/co/aikar/timings/TimingHandler.java
++++ b/src/main/java/co/aikar/timings/TimingHandler.java
+@@ -38,8 +38,8 @@ import org.jetbrains.annotations.Nullable;
+ 
+ class TimingHandler implements Timing {
+ 
+-    private static @NotNull AtomicInteger idPool = new AtomicInteger(1);
+-    private static @NotNull Deque<TimingHandler> TIMING_STACK = new ArrayDeque<>();
++    private static final @NotNull AtomicInteger idPool = new AtomicInteger(1);
++    private static final @NotNull Deque<TimingHandler> TIMING_STACK = new ArrayDeque<>();
+     final int id = idPool.getAndIncrement();
+ 
+     final @NotNull TimingIdentifier identifier;
+diff --git a/src/main/java/co/aikar/timings/TimingIdentifier.java b/src/main/java/co/aikar/timings/TimingIdentifier.java
+index 53a9dbef57f37b225caa6e7b296f5ffd8ba0e06c..ffadb5b4acb1da6524a7a5589ff93988410e15ad 100644
+--- a/src/main/java/co/aikar/timings/TimingIdentifier.java
++++ b/src/main/java/co/aikar/timings/TimingIdentifier.java
+@@ -90,7 +90,7 @@ final class TimingIdentifier {
+ 
+     static class TimingGroup {
+ 
+-        private static @NotNull AtomicInteger idPool = new AtomicInteger(1);
++        private static final @NotNull AtomicInteger idPool = new AtomicInteger(1);
+         final int id = idPool.getAndIncrement();
+ 
+         final String name;
+diff --git a/src/main/java/com/destroystokyo/paper/event/block/AnvilDamagedEvent.java b/src/main/java/com/destroystokyo/paper/event/block/AnvilDamagedEvent.java
+index a83c286c1c11af25fc4d16af7a42b95ce90b9dee..9f8041e76d03572fcfe0099f23f1615157856bc3 100644
+--- a/src/main/java/com/destroystokyo/paper/event/block/AnvilDamagedEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/block/AnvilDamagedEvent.java
+@@ -97,7 +97,7 @@ public class AnvilDamagedEvent extends InventoryEvent implements Cancellable {
+         DAMAGED(Material.DAMAGED_ANVIL),
+         BROKEN(Material.AIR);
+ 
+-        private Material material;
++        private final Material material;
+ 
+         DamageState(@NotNull Material material) {
+             this.material = material;
+diff --git a/src/main/java/com/destroystokyo/paper/event/block/BeaconEffectEvent.java b/src/main/java/com/destroystokyo/paper/event/block/BeaconEffectEvent.java
+index 978813b94a5eae0afccbd3b38b463091a46b56ac..ea929a3e4c2c28452cfcf54ee4a44a64d13c8ab8 100644
+--- a/src/main/java/com/destroystokyo/paper/event/block/BeaconEffectEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/block/BeaconEffectEvent.java
+@@ -15,8 +15,8 @@ public class BeaconEffectEvent extends BlockEvent implements Cancellable {
+     private static final HandlerList handlers = new HandlerList();
+     private boolean cancelled;
+     private PotionEffect effect;
+-    private Player player;
+-    private boolean primary;
++    private final Player player;
++    private final boolean primary;
+ 
+     public BeaconEffectEvent(@NotNull Block block, @NotNull PotionEffect effect, @NotNull Player player, boolean primary) {
+         super(block);
+diff --git a/src/main/java/com/destroystokyo/paper/event/block/TNTPrimeEvent.java b/src/main/java/com/destroystokyo/paper/event/block/TNTPrimeEvent.java
+index 73dabb82c7fbea3f0cccade0a2944b11a80ede06..563ffad23b6577b579d51a3bb7947b20ebaaa2ed 100644
+--- a/src/main/java/com/destroystokyo/paper/event/block/TNTPrimeEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/block/TNTPrimeEvent.java
+@@ -19,8 +19,8 @@ import org.jetbrains.annotations.Nullable;
+ public class TNTPrimeEvent extends BlockEvent implements Cancellable {
+     private static final HandlerList handlers = new HandlerList();
+     private boolean cancelled;
+-    @NotNull private PrimeReason reason;
+-    @Nullable private Entity primerEntity;
++    @NotNull private final PrimeReason reason;
++    @Nullable private final Entity primerEntity;
+ 
+     public TNTPrimeEvent(@NotNull Block theBlock, @NotNull PrimeReason reason, @Nullable Entity primerEntity) {
+         super(theBlock);
+diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerElytraBoostEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerElytraBoostEvent.java
+index e9a76a25fa5445905a09dbc2fd5b35bff56d80b3..18ea8ee77d5cf370b1a3e7cd5dcc57a4c14cb9cf 100644
+--- a/src/main/java/com/destroystokyo/paper/event/player/PlayerElytraBoostEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerElytraBoostEvent.java
+@@ -15,7 +15,7 @@ public class PlayerElytraBoostEvent extends PlayerEvent implements Cancellable {
+     private static final HandlerList handlers = new HandlerList();
+     private boolean cancelled = false;
+     @NotNull private final ItemStack itemStack;
+-    @NotNull private Firework firework;
++    @NotNull private final Firework firework;
+     private boolean consume = true;
+ 
+     public PlayerElytraBoostEvent(@NotNull Player player, @NotNull ItemStack itemStack, @NotNull Firework firework) {
+diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerJumpEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerJumpEvent.java
+index 9fa3734cd8a8b89d99ba028d2bcfb2ed30440d4d..8131bb20166a3b5967c88825f254423769ee41e7 100644
+--- a/src/main/java/com/destroystokyo/paper/event/player/PlayerJumpEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerJumpEvent.java
+@@ -19,7 +19,7 @@ public class PlayerJumpEvent extends PlayerEvent implements Cancellable {
+     private static final HandlerList handlers = new HandlerList();
+     private boolean cancel = false;
+     @NotNull private Location from;
+-    @NotNull private Location to;
++    @NotNull private final Location to;
+ 
+     public PlayerJumpEvent(@NotNull final Player player, @NotNull final Location from, @NotNull final Location to) {
+         super(player);
+diff --git a/src/main/java/com/destroystokyo/paper/event/server/AsyncTabCompleteEvent.java b/src/main/java/com/destroystokyo/paper/event/server/AsyncTabCompleteEvent.java
+index 4e9417be93e05522889b59ee7a731a336513ea3d..77e84b28ebb0a1b44cafdfcbe5a63d7c9365f49a 100644
+--- a/src/main/java/com/destroystokyo/paper/event/server/AsyncTabCompleteEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/server/AsyncTabCompleteEvent.java
+@@ -61,7 +61,7 @@ public class AsyncTabCompleteEvent extends Event implements Cancellable {
+     );
+     private boolean cancelled;
+     private boolean handled = false;
+-    private boolean fireSyncHandler = true;
++    private final boolean fireSyncHandler = true;
+ 
+     public AsyncTabCompleteEvent(@NotNull CommandSender sender, @NotNull String buffer, boolean isCommand, @Nullable Location loc) {
+         super(true);
+diff --git a/src/main/java/com/destroystokyo/paper/event/server/GS4QueryEvent.java b/src/main/java/com/destroystokyo/paper/event/server/GS4QueryEvent.java
+index 025c193ebe895ea119a367807d9337114107a32c..99abacc44ed55e35f0619fda0a617da41e85616b 100644
+--- a/src/main/java/com/destroystokyo/paper/event/server/GS4QueryEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/server/GS4QueryEvent.java
+@@ -260,8 +260,8 @@ public final class GS4QueryEvent extends Event {
+             private int maxPlayers;
+             private int port;
+ 
+-            private @NotNull List<String> players = new ArrayList<>();
+-            private @NotNull List<PluginInformation> plugins = new ArrayList<>();
++            private final @NotNull List<String> players = new ArrayList<>();
++            private final @NotNull List<PluginInformation> plugins = new ArrayList<>();
+ 
+             private Builder() {}
+ 
+diff --git a/src/main/java/com/destroystokyo/paper/event/server/ServerExceptionEvent.java b/src/main/java/com/destroystokyo/paper/event/server/ServerExceptionEvent.java
+index 306dbd975e9380c22dae0dad526725cc47a36f16..8406c852c4fd806145ec8d89f176af464e0e922b 100644
+--- a/src/main/java/com/destroystokyo/paper/event/server/ServerExceptionEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/server/ServerExceptionEvent.java
+@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public class ServerExceptionEvent extends Event {
+     private static final HandlerList handlers = new HandlerList();
+-    @NotNull private ServerException exception;
++    @NotNull private final ServerException exception;
+ 
+     public ServerExceptionEvent(@NotNull ServerException exception) {
+         super(!Bukkit.isPrimaryThread());
+diff --git a/src/main/java/com/destroystokyo/paper/event/server/WhitelistToggleEvent.java b/src/main/java/com/destroystokyo/paper/event/server/WhitelistToggleEvent.java
+index fdd5eedb2b7401439912a3a4343a920f32edc860..6ecb63067d73c8677d0c6c544ff5fc9b6f6ca9c0 100644
+--- a/src/main/java/com/destroystokyo/paper/event/server/WhitelistToggleEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/server/WhitelistToggleEvent.java
+@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
+ public class WhitelistToggleEvent extends Event {
+     private static final HandlerList handlers = new HandlerList();
+ 
+-    private boolean enabled;
++    private final boolean enabled;
+ 
+     public WhitelistToggleEvent(boolean enabled) {
+         this.enabled = enabled;
+diff --git a/src/main/java/io/papermc/paper/event/entity/PufferFishStateChangeEvent.java b/src/main/java/io/papermc/paper/event/entity/PufferFishStateChangeEvent.java
+index 3585457b21aca2a2f1779868a0fa91f8011ad3c9..9585be7d2009904e3633604e45ae0ebc5f6190d3 100644
+--- a/src/main/java/io/papermc/paper/event/entity/PufferFishStateChangeEvent.java
++++ b/src/main/java/io/papermc/paper/event/entity/PufferFishStateChangeEvent.java
+@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
+ public class PufferFishStateChangeEvent extends EntityEvent implements Cancellable {
+     private static final HandlerList handlers = new HandlerList();
+     private boolean cancelled;
+-    private int newPuffState;
++    private final int newPuffState;
+ 
+     public PufferFishStateChangeEvent(@NotNull PufferFish entity, int newPuffState) {
+         super(entity);
+diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
+index e6e2e680ab68f281a7cac3ad62e5e95f4b23d0e0..ded6aa4dfe8457c4f5b26e07134d6905bf1119b2 100644
+--- a/src/main/java/org/bukkit/GameRule.java
++++ b/src/main/java/org/bukkit/GameRule.java
+@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
+  */
+ public final class GameRule<T> implements net.kyori.adventure.translation.Translatable { // Paper - Adventure translations
+ 
+-    private static @NotNull Map<String, GameRule<?>> gameRules = new HashMap<>();
++    private static final @NotNull Map<String, GameRule<?>> gameRules = new HashMap<>();
+     // Boolean rules
+     /**
+      * Toggles the announcing of advancements.
+diff --git a/src/main/java/org/bukkit/block/DoubleChest.java b/src/main/java/org/bukkit/block/DoubleChest.java
+index a39d2f1acbbd84ae0e2cf29f85594e09e55e9355..78f6969e50db87cae7b54ee3631122330206251f 100644
+--- a/src/main/java/org/bukkit/block/DoubleChest.java
++++ b/src/main/java/org/bukkit/block/DoubleChest.java
+@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
+  * Represents a double chest.
+  */
+ public class DoubleChest implements InventoryHolder {
+-    private DoubleChestInventory inventory;
++    private final DoubleChestInventory inventory;
+ 
+     public DoubleChest(@NotNull DoubleChestInventory chest) {
+         inventory = chest;
+diff --git a/src/main/java/org/bukkit/block/PistonMoveReaction.java b/src/main/java/org/bukkit/block/PistonMoveReaction.java
+index 5d49af5d8560fb90936ad79e467fdc82d7b0c762..ed86ed085e5a3d98582bc214485f6621f3a24697 100644
+--- a/src/main/java/org/bukkit/block/PistonMoveReaction.java
++++ b/src/main/java/org/bukkit/block/PistonMoveReaction.java
+@@ -36,8 +36,8 @@ public enum PistonMoveReaction {
+      */
+     PUSH_ONLY(4);
+ 
+-    private int id;
+-    private static @NotNull Map<Integer, PistonMoveReaction> byId = new HashMap<Integer, PistonMoveReaction>();
++    private final int id;
++    private static final @NotNull Map<Integer, PistonMoveReaction> byId = new HashMap<Integer, PistonMoveReaction>();
+     static {
+         for (PistonMoveReaction reaction : PistonMoveReaction.values()) {
+             byId.put(Integer.valueOf(reaction.id), reaction);
+diff --git a/src/main/java/org/bukkit/command/MultipleCommandAlias.java b/src/main/java/org/bukkit/command/MultipleCommandAlias.java
+index 8487bfe3327616fd8eb871c52b35ce3af033934c..d07f28ac39426456dfa743832eebee42dcca883d 100644
+--- a/src/main/java/org/bukkit/command/MultipleCommandAlias.java
++++ b/src/main/java/org/bukkit/command/MultipleCommandAlias.java
+@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
+  * Represents a command that delegates to one or more other commands
+  */
+ public class MultipleCommandAlias extends Command {
+-    private Command[] commands;
++    private final Command[] commands;
+ 
+     public MultipleCommandAlias(@NotNull String name, @NotNull Command[] commands) {
+         super(name);
+diff --git a/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java b/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
+index 9922eb98e3a223984534baa798181b11d04834ef..9f20e08f02e6ab63b8064eed41f6f72793694810 100644
+--- a/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
++++ b/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
+@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
+ public class ConfigurationSerialization {
+     public static final String SERIALIZED_TYPE_KEY = "==";
+     private final @NotNull Class<? extends ConfigurationSerializable> clazz;
+-    private static @NotNull Map<String, Class<? extends ConfigurationSerializable>> aliases = new HashMap<String, Class<? extends ConfigurationSerializable>>();
++    private static final @NotNull Map<String, Class<? extends ConfigurationSerializable>> aliases = new HashMap<String, Class<? extends ConfigurationSerializable>>();
+ 
+     static {
+         registerClass(Vector.class);
+diff --git a/src/main/java/org/bukkit/conversations/Conversation.java b/src/main/java/org/bukkit/conversations/Conversation.java
+index 8e5bd0330ee5f2f5447cb06bd9479f236acc4fda..bcffe5fd6bc759061507287aa856bcef685d5a08 100644
+--- a/src/main/java/org/bukkit/conversations/Conversation.java
++++ b/src/main/java/org/bukkit/conversations/Conversation.java
+@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
+  */
+ public class Conversation {
+ 
+-    private @Nullable Prompt firstPrompt;
++    private final @Nullable Prompt firstPrompt;
+     private boolean abandoned;
+     protected @Nullable Prompt currentPrompt;
+     protected ConversationContext context;
+diff --git a/src/main/java/org/bukkit/conversations/ConversationAbandonedEvent.java b/src/main/java/org/bukkit/conversations/ConversationAbandonedEvent.java
+index 6b4c4cf27c93a18b97058ebbfdba681a90de94e1..20afc034c4f3af5c0c6f4af63a1161000e5cb4b4 100644
+--- a/src/main/java/org/bukkit/conversations/ConversationAbandonedEvent.java
++++ b/src/main/java/org/bukkit/conversations/ConversationAbandonedEvent.java
+@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
+  */
+ public class ConversationAbandonedEvent extends EventObject {
+ 
+-    private ConversationContext context;
+-    private @Nullable ConversationCanceller canceller;
++    private final ConversationContext context;
++    private final @Nullable ConversationCanceller canceller;
+ 
+     public ConversationAbandonedEvent(@NotNull Conversation conversation) {
+         this(conversation, null);
+diff --git a/src/main/java/org/bukkit/conversations/ExactMatchConversationCanceller.java b/src/main/java/org/bukkit/conversations/ExactMatchConversationCanceller.java
+index 6b54ee877aa1fc4121bfe52b9965ab4a13497850..384dad0b65f9ee744613c853498f4fe099d9e72e 100644
+--- a/src/main/java/org/bukkit/conversations/ExactMatchConversationCanceller.java
++++ b/src/main/java/org/bukkit/conversations/ExactMatchConversationCanceller.java
+@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
+  * enters an exact input string
+  */
+ public class ExactMatchConversationCanceller implements ConversationCanceller {
+-    private String escapeSequence;
++    private final String escapeSequence;
+ 
+     /**
+      * Builds an ExactMatchConversationCanceller.
+diff --git a/src/main/java/org/bukkit/conversations/PlayerNamePrompt.java b/src/main/java/org/bukkit/conversations/PlayerNamePrompt.java
+index 86d51c488e449a529535c394522b021cbdb674fa..4078c49d2d6288fd29f6d35efadbb0cae7f801d5 100644
+--- a/src/main/java/org/bukkit/conversations/PlayerNamePrompt.java
++++ b/src/main/java/org/bukkit/conversations/PlayerNamePrompt.java
+@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
+  * to enter another player's name.
+  */
+ public abstract class PlayerNamePrompt extends ValidatingPrompt {
+-    private Plugin plugin;
++    private final Plugin plugin;
+ 
+     public PlayerNamePrompt(@NotNull Plugin plugin) {
+         super();
+diff --git a/src/main/java/org/bukkit/conversations/PluginNameConversationPrefix.java b/src/main/java/org/bukkit/conversations/PluginNameConversationPrefix.java
+index 5911944fe22d0f040a2b022e7aeb1acd4336763f..2af7e7b9718be2ffad10104fec0604f69c195308 100644
+--- a/src/main/java/org/bukkit/conversations/PluginNameConversationPrefix.java
++++ b/src/main/java/org/bukkit/conversations/PluginNameConversationPrefix.java
+@@ -14,7 +14,7 @@ public class PluginNameConversationPrefix implements ConversationPrefix {
+     protected ChatColor prefixColor;
+     protected Plugin plugin;
+ 
+-    private String cachedPrefix;
++    private final String cachedPrefix;
+ 
+     public PluginNameConversationPrefix(@NotNull Plugin plugin) {
+         this(plugin, " > ", ChatColor.LIGHT_PURPLE);
+diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
+index fe60c6e7c474bf21c98e331f13e214e10e9e3107..55695dbcb1923dcac7352ae08f17c783b36369cc 100644
+--- a/src/main/java/org/bukkit/event/HandlerList.java
++++ b/src/main/java/org/bukkit/event/HandlerList.java
+@@ -33,7 +33,7 @@ public class HandlerList {
+     /**
+      * List of all HandlerLists which have been created, for use in bakeAll()
+      */
+-    private static @NotNull ArrayList<HandlerList> allLists = new ArrayList<HandlerList>();
++    private static final @NotNull ArrayList<HandlerList> allLists = new ArrayList<HandlerList>();
+ 
+     /**
+      * Bake all handler lists. Best used just after all normal event
+diff --git a/src/main/java/org/bukkit/event/block/BlockPistonRetractEvent.java b/src/main/java/org/bukkit/event/block/BlockPistonRetractEvent.java
+index 340fa397e68c024df380a28db21545a0c83d9fa6..4832d1f003a94d35b54e52bce9cde21bedc5c4b5 100644
+--- a/src/main/java/org/bukkit/event/block/BlockPistonRetractEvent.java
++++ b/src/main/java/org/bukkit/event/block/BlockPistonRetractEvent.java
+@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public class BlockPistonRetractEvent extends BlockPistonEvent {
+     private static final HandlerList handlers = new HandlerList();
+-    private List<Block> blocks;
++    private final List<Block> blocks;
+ 
+     public BlockPistonRetractEvent(@NotNull final Block block, @NotNull final List<Block> blocks, @NotNull final BlockFace direction) {
+         super(block, direction);
+diff --git a/src/main/java/org/bukkit/event/block/NotePlayEvent.java b/src/main/java/org/bukkit/event/block/NotePlayEvent.java
+index 8bb5238dc6a7bc69b88054f66b6336c8cc3139df..49811e0316e5dda587cc8f6036255d6124f0d6d4 100644
+--- a/src/main/java/org/bukkit/event/block/NotePlayEvent.java
++++ b/src/main/java/org/bukkit/event/block/NotePlayEvent.java
+@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public class NotePlayEvent extends BlockEvent implements Cancellable {
+ 
+-    private static @NotNull HandlerList handlers = new HandlerList();
++    private static final @NotNull HandlerList handlers = new HandlerList();
+     private Instrument instrument;
+     private Note note;
+     private boolean cancelled = false;
+diff --git a/src/main/java/org/bukkit/event/command/UnknownCommandEvent.java b/src/main/java/org/bukkit/event/command/UnknownCommandEvent.java
+index 57128c780bc73e39d2733cceeb21dc06c2422c3c..4d0a8738bbb358bc3a8bfba59fc2def38d31662a 100644
+--- a/src/main/java/org/bukkit/event/command/UnknownCommandEvent.java
++++ b/src/main/java/org/bukkit/event/command/UnknownCommandEvent.java
+@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
+  */
+ public class UnknownCommandEvent extends Event {
+     private static final HandlerList handlers = new HandlerList();
+-    @NotNull private CommandSender sender;
+-    @NotNull private String commandLine;
++    @NotNull private final CommandSender sender;
++    @NotNull private final String commandLine;
+     @Nullable private Component message;
+ 
+     @Deprecated
+diff --git a/src/main/java/org/bukkit/event/entity/EntityPortalExitEvent.java b/src/main/java/org/bukkit/event/entity/EntityPortalExitEvent.java
+index 0a87e2934901eb1bcaec72ed8141cd4828a4efce..ae6ff96f9edf65d590b6fc012b0e83c239cefc09 100644
+--- a/src/main/java/org/bukkit/event/entity/EntityPortalExitEvent.java
++++ b/src/main/java/org/bukkit/event/entity/EntityPortalExitEvent.java
+@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public class EntityPortalExitEvent extends EntityTeleportEvent {
+     private static final HandlerList handlers = new HandlerList();
+-    private Vector before;
++    private final Vector before;
+     private Vector after;
+ 
+     public EntityPortalExitEvent(@NotNull final Entity entity, @NotNull final Location from, @NotNull final Location to, @NotNull final Vector before, @NotNull final Vector after) {
+diff --git a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
+index 0bd157bd2aeca1d760285c6293c39fb385cd53f1..84d5f2253921a6206af78e8a0336b2be9b17e975 100644
+--- a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
++++ b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
+@@ -71,7 +71,7 @@ public class PlayerDeathEvent extends EntityDeathEvent {
+ 
+     @Deprecated // Paper
+     // Paper start
+-    private @NotNull List<ItemStack> itemsToKeep = new java.util.ArrayList<>();
++    private final @NotNull List<ItemStack> itemsToKeep = new java.util.ArrayList<>();
+ 
+     /**
+      * A mutable collection to add items that the player should retain in their inventory on death (Similar to KeepInventory game rule)
+diff --git a/src/main/java/org/bukkit/event/inventory/BrewEvent.java b/src/main/java/org/bukkit/event/inventory/BrewEvent.java
+index d59aa9c8c97d0c2b17d784e29935f875699584cf..6b290bd5f33e7b096a9dbca37bdf33a1f5457eb4 100644
+--- a/src/main/java/org/bukkit/event/inventory/BrewEvent.java
++++ b/src/main/java/org/bukkit/event/inventory/BrewEvent.java
+@@ -15,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public class BrewEvent extends BlockEvent implements Cancellable {
+     private static final HandlerList handlers = new HandlerList();
+-    private BrewerInventory contents;
++    private final BrewerInventory contents;
+     private final @NotNull List<ItemStack> results;
+-    private int fuelLevel;
++    private final int fuelLevel;
+     private boolean cancelled;
+ 
+     public BrewEvent(@NotNull Block brewer, @NotNull BrewerInventory contents, @NotNull List<ItemStack> results, int fuelLevel) {
+diff --git a/src/main/java/org/bukkit/event/inventory/CraftItemEvent.java b/src/main/java/org/bukkit/event/inventory/CraftItemEvent.java
+index cab13877fb38c361f18ce9a433e98fea689c9722..395f8a6eb09c3904659c0eb366e817ae7028b49e 100644
+--- a/src/main/java/org/bukkit/event/inventory/CraftItemEvent.java
++++ b/src/main/java/org/bukkit/event/inventory/CraftItemEvent.java
+@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
+  * Called when the recipe of an Item is completed inside a crafting matrix.
+  */
+ public class CraftItemEvent extends InventoryClickEvent {
+-    private Recipe recipe;
++    private final Recipe recipe;
+ 
+     public CraftItemEvent(@NotNull Recipe recipe, @NotNull InventoryView what, @NotNull SlotType type, int slot, @NotNull ClickType click, @NotNull InventoryAction action) {
+         super(what, type, slot, click, action);
+diff --git a/src/main/java/org/bukkit/event/inventory/InventoryClickEvent.java b/src/main/java/org/bukkit/event/inventory/InventoryClickEvent.java
+index d612f38442fac649c4fa63ea879e3cbc70878a7e..d9313b6bc0b9e2d998400d44f5cebff78382c616 100644
+--- a/src/main/java/org/bukkit/event/inventory/InventoryClickEvent.java
++++ b/src/main/java/org/bukkit/event/inventory/InventoryClickEvent.java
+@@ -49,9 +49,9 @@ public class InventoryClickEvent extends InventoryInteractEvent {
+     private static final HandlerList handlers = new HandlerList();
+     private final @NotNull ClickType click;
+     private final @NotNull InventoryAction action;
+-    private SlotType slot_type;
+-    private int whichSlot;
+-    private int rawSlot;
++    private final SlotType slot_type;
++    private final int whichSlot;
++    private final int rawSlot;
+     private @Nullable ItemStack current = null;
+     private int hotbarKey = -1;
+ 
+diff --git a/src/main/java/org/bukkit/event/inventory/PrepareItemCraftEvent.java b/src/main/java/org/bukkit/event/inventory/PrepareItemCraftEvent.java
+index efd29d198dd847e22988963f70ad57e1b810aeb7..82a8dda53ff613b1fd171d91d693749bb88c8d09 100644
+--- a/src/main/java/org/bukkit/event/inventory/PrepareItemCraftEvent.java
++++ b/src/main/java/org/bukkit/event/inventory/PrepareItemCraftEvent.java
+@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
+ 
+ public class PrepareItemCraftEvent extends InventoryEvent {
+     private static final HandlerList handlers = new HandlerList();
+-    private boolean repair;
+-    private CraftingInventory matrix;
++    private final boolean repair;
++    private final CraftingInventory matrix;
+ 
+     public PrepareItemCraftEvent(@NotNull CraftingInventory what, @NotNull InventoryView view, boolean isRepair) {
+         super(view);
+diff --git a/src/main/java/org/bukkit/event/player/PlayerInteractEntityEvent.java b/src/main/java/org/bukkit/event/player/PlayerInteractEntityEvent.java
+index 1d3d62969c3b1a833b156c972586ac412589b4d4..b3809f051ae86816440fec353b54b72c78b09ab8 100644
+--- a/src/main/java/org/bukkit/event/player/PlayerInteractEntityEvent.java
++++ b/src/main/java/org/bukkit/event/player/PlayerInteractEntityEvent.java
+@@ -14,7 +14,7 @@ public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellabl
+     private static final HandlerList handlers = new HandlerList();
+     protected Entity clickedEntity;
+     boolean cancelled = false;
+-    private EquipmentSlot hand;
++    private final EquipmentSlot hand;
+ 
+     public PlayerInteractEntityEvent(@NotNull final Player who, @NotNull final Entity clickedEntity) {
+         this(who, clickedEntity, EquipmentSlot.HAND);
+diff --git a/src/main/java/org/bukkit/event/player/PlayerInteractEvent.java b/src/main/java/org/bukkit/event/player/PlayerInteractEvent.java
+index 731b6cb15500e92ac1bda9d83e305e24c2d2da2e..ffcd0a013b0c9fe129b7064c5869f017ae0e7c1b 100644
+--- a/src/main/java/org/bukkit/event/player/PlayerInteractEvent.java
++++ b/src/main/java/org/bukkit/event/player/PlayerInteractEvent.java
+@@ -34,8 +34,8 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
+     protected BlockFace blockFace;
+     private Result useClickedBlock;
+     private Result useItemInHand;
+-    private @Nullable EquipmentSlot hand;
+-    private @Nullable Location interactionPoint; // Paper
++    private final @Nullable EquipmentSlot hand;
++    private final @Nullable Location interactionPoint; // Paper
+ 
+     public PlayerInteractEvent(@NotNull final Player who, @NotNull final Action action, @Nullable final ItemStack item, @Nullable final Block clickedBlock, @NotNull final BlockFace clickedFace) {
+         this(who, action, item, clickedBlock, clickedFace, EquipmentSlot.HAND);
+diff --git a/src/main/java/org/bukkit/event/player/PlayerItemDamageEvent.java b/src/main/java/org/bukkit/event/player/PlayerItemDamageEvent.java
+index 768b5fddf684afe57c253abbc04cf96dc222b286..ee3cbe6e0aed67958c77a418c5157f268acdd64b 100644
+--- a/src/main/java/org/bukkit/event/player/PlayerItemDamageEvent.java
++++ b/src/main/java/org/bukkit/event/player/PlayerItemDamageEvent.java
+@@ -15,7 +15,7 @@ public class PlayerItemDamageEvent extends PlayerEvent implements Cancellable {
+     private static final HandlerList handlers = new HandlerList();
+     private final @NotNull ItemStack item;
+     private int damage;
+-    private int originalDamage; // Paper - Add pre-reduction damage
++    private final int originalDamage; // Paper - Add pre-reduction damage
+     private boolean cancelled = false;
+ 
+     @Deprecated // Paper - Add pre-reduction damage
+diff --git a/src/main/java/org/bukkit/inventory/CookingRecipe.java b/src/main/java/org/bukkit/inventory/CookingRecipe.java
+index b38b70d0abcaa4098d90fd04b2d22d347b08a3e2..993675b57b0a6acc58cd5f2176f8227b84f80b7c 100644
+--- a/src/main/java/org/bukkit/inventory/CookingRecipe.java
++++ b/src/main/java/org/bukkit/inventory/CookingRecipe.java
+@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe, Keyed {
+     private final @NotNull NamespacedKey key;
+-    private ItemStack output;
++    private final ItemStack output;
+     private RecipeChoice ingredient;
+     private float experience;
+     private int cookingTime;
+diff --git a/src/main/java/org/bukkit/inventory/MerchantRecipe.java b/src/main/java/org/bukkit/inventory/MerchantRecipe.java
+index a8895555a3a2507ccadd3545eba9d0235f9974b3..5ed1fee2590a4dd4004fb072c4e5d6e9432c82ee 100644
+--- a/src/main/java/org/bukkit/inventory/MerchantRecipe.java
++++ b/src/main/java/org/bukkit/inventory/MerchantRecipe.java
+@@ -48,7 +48,7 @@ import org.jetbrains.annotations.Nullable;
+  */
+ public class MerchantRecipe implements Recipe {
+ 
+-    private ItemStack result;
++    private final ItemStack result;
+     private @NotNull List<ItemStack> ingredients = new ArrayList<ItemStack>();
+     private int uses;
+     private int maxUses;
+diff --git a/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java b/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
+index 1b3b6fd742f4a2df6f40dba9be02d3a0fe26a17d..2a69c1a997a498973c8d71978c7d910bc9faabae 100644
+--- a/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
++++ b/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
+@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public class StonecuttingRecipe implements Recipe, Keyed {
+     private final @NotNull NamespacedKey key;
+-    private ItemStack output;
++    private final ItemStack output;
+     private RecipeChoice ingredient;
+     private @NotNull String group = "";
+ 
+diff --git a/src/main/java/org/bukkit/map/MapCursor.java b/src/main/java/org/bukkit/map/MapCursor.java
+index 1441013a9bdb32d50fd3e0bf172af423d65b801a..a465dd40a695261ec954a8e2cdf8ca2af7c7f1dc 100644
+--- a/src/main/java/org/bukkit/map/MapCursor.java
++++ b/src/main/java/org/bukkit/map/MapCursor.java
+@@ -310,7 +310,7 @@ public final class MapCursor {
+         BANNER_BLACK(25),
+         RED_X(26);
+ 
+-        private byte value;
++        private final byte value;
+ 
+         private Type(int value) {
+             this.value = (byte) value;
+diff --git a/src/main/java/org/bukkit/map/MapCursorCollection.java b/src/main/java/org/bukkit/map/MapCursorCollection.java
+index b8ca2f7edf38adf541253a5137de76f792fa6e10..2a7b83af02e735bd110115a38ea4ab79b8c19d4b 100644
+--- a/src/main/java/org/bukkit/map/MapCursorCollection.java
++++ b/src/main/java/org/bukkit/map/MapCursorCollection.java
+@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
+  * MapCursorCollection is linked to a specific {@link MapRenderer}.
+  */
+ public final class MapCursorCollection {
+-    private @NotNull List<MapCursor> cursors = new ArrayList<MapCursor>();
++    private final @NotNull List<MapCursor> cursors = new ArrayList<MapCursor>();
+ 
+     /**
+      * Get the amount of cursors in this collection.
+diff --git a/src/main/java/org/bukkit/map/MapRenderer.java b/src/main/java/org/bukkit/map/MapRenderer.java
+index cb7040876a99a5a7e49b81684ef0f3b79584c376..9273d5766281e411098db84cc05676054fadd0a4 100644
+--- a/src/main/java/org/bukkit/map/MapRenderer.java
++++ b/src/main/java/org/bukkit/map/MapRenderer.java
+@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public abstract class MapRenderer {
+ 
+-    private boolean contextual;
++    private final boolean contextual;
+ 
+     /**
+      * Initialize the map renderer base to be non-contextual. See {@link
+diff --git a/src/main/java/org/bukkit/map/MapView.java b/src/main/java/org/bukkit/map/MapView.java
+index 9b8b68b66dc15b06800251702c2722623c8462a0..ff7c20575fcf47eb59da6424f81f035622d48c8a 100644
+--- a/src/main/java/org/bukkit/map/MapView.java
++++ b/src/main/java/org/bukkit/map/MapView.java
+@@ -21,7 +21,7 @@ public interface MapView {
+         FAR(3),
+         FARTHEST(4);
+ 
+-        private byte value;
++        private final byte value;
+ 
+         private Scale(int value) {
+             this.value = (byte) value;
+diff --git a/src/main/java/org/bukkit/metadata/MetadataStoreBase.java b/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
+index f6ffbaab9089a21e5f7d597d2a22fd0265818e6c..1a7f3fbf5ca43501a2d982d23569a957322a804f 100644
+--- a/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
++++ b/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
+@@ -13,7 +13,7 @@ import org.bukkit.plugin.Plugin;
+ import org.jetbrains.annotations.NotNull;
+ 
+ public abstract class MetadataStoreBase<T> {
+-    private @NotNull Map<String, Map<Plugin, MetadataValue>> metadataMap = new java.util.concurrent.ConcurrentHashMap<String, Map<Plugin, MetadataValue>>(); // Paper
++    private final @NotNull Map<String, Map<Plugin, MetadataValue>> metadataMap = new java.util.concurrent.ConcurrentHashMap<String, Map<Plugin, MetadataValue>>(); // Paper
+ 
+     /**
+      * Adds a metadata value to an object. Each metadata value is owned by a
+diff --git a/src/main/java/org/bukkit/plugin/PluginLogger.java b/src/main/java/org/bukkit/plugin/PluginLogger.java
+index 0182370014e0dc8b74759933ab984d16678f6ec3..e501c368ba0d3b17668acba01eec8656a3dd9196 100644
+--- a/src/main/java/org/bukkit/plugin/PluginLogger.java
++++ b/src/main/java/org/bukkit/plugin/PluginLogger.java
+@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
+  * @see Logger
+  */
+ public class PluginLogger extends Logger {
+-    private String pluginName;
++    private final String pluginName;
+ 
+     /**
+      * Creates a new PluginLogger that extracts the name from a plugin.
+diff --git a/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java b/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
+index f451719370ad49cc50f2860e25023f7096fd210b..e92458d4f3c9abe9dc55c693f03216f880284db1 100644
+--- a/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
++++ b/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
+@@ -9,10 +9,10 @@ import org.jetbrains.annotations.NotNull;
+  */
+ public class RegisteredServiceProvider<T> implements Comparable<RegisteredServiceProvider<?>> {
+ 
+-    private Class<T> service;
+-    private Plugin plugin;
+-    private T provider;
+-    private ServicePriority priority;
++    private final Class<T> service;
++    private final Plugin plugin;
++    private final T provider;
++    private final ServicePriority priority;
+ 
+     public RegisteredServiceProvider(@NotNull Class<T> service, @NotNull T provider, @NotNull ServicePriority priority, @NotNull Plugin plugin) {
+         this.service = service;
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index d6b45f96841ce956fb8092228ddc14147c88fc17..2e5649a7f6f0aa893edb5b422682f3ec02f31e87 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -55,7 +55,7 @@ public final class SimplePluginManager implements PluginManager {
+     private final Map<Boolean, Set<Permission>> defaultPerms = new LinkedHashMap<Boolean, Set<Permission>>();
+     private final Map<String, Map<Permissible, Boolean>> permSubs = new HashMap<String, Map<Permissible, Boolean>>();
+     private final Map<Boolean, Map<Permissible, Boolean>> defSubs = new HashMap<Boolean, Map<Permissible, Boolean>>();
+-    private boolean useTimings = false;
++    private final boolean useTimings = false;
+ 
+     public SimplePluginManager(@NotNull Server instance, @NotNull SimpleCommandMap commandMap) {
+         server = instance;
+diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+index 57017530704f3a3e9c46b6d354e7c1887288651a..1d5a19af3191aaa774c94f52ba945954d3c18fbd 100644
+--- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+@@ -44,7 +44,7 @@ public final class PluginClassLoader extends URLClassLoader { // Spigot
+     private JavaPlugin pluginInit;
+     private IllegalStateException pluginState;
+     private final Set<String> seenIllegalAccess = Collections.newSetFromMap(new ConcurrentHashMap<>());
+-    private java.util.logging.Logger logger; // Paper - add field
++    private final java.util.logging.Logger logger; // Paper - add field
+ 
+     static {
+         ClassLoader.registerAsParallelCapable();
+diff --git a/src/main/java/org/bukkit/util/BlockIterator.java b/src/main/java/org/bukkit/util/BlockIterator.java
+index 22d8555b72d2fb8d629f50eddb17b301d1aaae3a..47c801f214f8255c98d8ff97d25e3cd031649669 100644
+--- a/src/main/java/org/bukkit/util/BlockIterator.java
++++ b/src/main/java/org/bukkit/util/BlockIterator.java
+@@ -22,16 +22,16 @@ public class BlockIterator implements Iterator<Block> {
+ 
+     private boolean end = false;
+ 
+-    private Block @NotNull [] blockQueue = new Block[3];
++    private final Block @NotNull [] blockQueue = new Block[3];
+     private int currentBlock = 0;
+     private int currentDistance = 0;
+-    private int maxDistanceInt;
++    private final int maxDistanceInt;
+ 
+     private int secondError;
+     private int thirdError;
+ 
+-    private int secondStep;
+-    private int thirdStep;
++    private final int secondStep;
++    private final int thirdStep;
+ 
+     private BlockFace mainFace;
+     private BlockFace secondFace;
+diff --git a/src/main/java/org/bukkit/util/ChatPaginator.java b/src/main/java/org/bukkit/util/ChatPaginator.java
+index e4bc5e065ce2187cf2e09a8afb125fba490a6c41..293f9c35a0f05f6fc145cbc750704dc481ebaee8 100644
+--- a/src/main/java/org/bukkit/util/ChatPaginator.java
++++ b/src/main/java/org/bukkit/util/ChatPaginator.java
+@@ -144,9 +144,9 @@ public class ChatPaginator {
+ 
+     public static class ChatPage {
+ 
+-        private String[] lines;
+-        private int pageNumber;
+-        private int totalPages;
++        private final String[] lines;
++        private final int pageNumber;
++        private final int totalPages;
+ 
+         public ChatPage(@NotNull String[] lines, int pageNumber, int totalPages) {
+             this.lines = lines;
+diff --git a/src/main/java/org/bukkit/util/Vector.java b/src/main/java/org/bukkit/util/Vector.java
+index 8b16caa17a51d90aaeff55ca1186528b1214f01a..c8a68a5db6958e4eb601421d1492c21426d3e4dc 100644
+--- a/src/main/java/org/bukkit/util/Vector.java
++++ b/src/main/java/org/bukkit/util/Vector.java
+@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
+ public class Vector implements Cloneable, ConfigurationSerializable {
+     private static final long serialVersionUID = -2657651106777219169L;
+ 
+-    private static @NotNull Random random = new Random();
++    private static final @NotNull Random random = new Random();
+ 
+     /**
+      * Threshold for fuzzy equals().

@@ -1,0 +1,219 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:10:55 -0500
+Subject: [PATCH] Remove redundant type arguments
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/util/SneakyThrow.java b/src/main/java/com/destroystokyo/paper/util/SneakyThrow.java
+index 9db0056ab94145819628b3ad8d8d26130d117fcf..b27281a6538cb223f6dffbf3859366dedbbf75f1 100644
+--- a/src/main/java/com/destroystokyo/paper/util/SneakyThrow.java
++++ b/src/main/java/com/destroystokyo/paper/util/SneakyThrow.java
+@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
+ public class SneakyThrow {
+ 
+     public static void sneaky(@NotNull Throwable exception) {
+-        SneakyThrow.<RuntimeException>throwSneaky(exception);
++        SneakyThrow.throwSneaky(exception);
+     }
+ 
+     @SuppressWarnings("unchecked")
+diff --git a/src/main/java/org/bukkit/Color.java b/src/main/java/org/bukkit/Color.java
+index cd9c992f9331291c8752e19bc438f8111e9b0115..25c657412fa936ebf54bd5063455f255fa142abf 100644
+--- a/src/main/java/org/bukkit/Color.java
++++ b/src/main/java/org/bukkit/Color.java
+@@ -324,7 +324,7 @@ public final class Color implements ConfigurationSerializable {
+     @Override
+     @NotNull
+     public Map<String, Object> serialize() {
+-        return ImmutableMap.<String, Object>of(
++        return ImmutableMap.of(
+             "RED", Integer.valueOf(getRed()),
+             "BLUE", Integer.valueOf(getBlue()),
+             "GREEN", Integer.valueOf(getGreen())
+diff --git a/src/main/java/org/bukkit/FireworkEffect.java b/src/main/java/org/bukkit/FireworkEffect.java
+index ae5117ee3628b81729e06f6520ae7c0cda45045e..c9db9c2bddf68f3cabca5bc7e215bc0d1063919e 100644
+--- a/src/main/java/org/bukkit/FireworkEffect.java
++++ b/src/main/java/org/bukkit/FireworkEffect.java
+@@ -304,7 +304,7 @@ public final class FireworkEffect implements ConfigurationSerializable {
+                 flicker,
+                 trail,
+                 colors.build(),
+-                fadeColors == null ? ImmutableList.<Color>of() : fadeColors.build(),
++                fadeColors == null ? ImmutableList.of() : fadeColors.build(),
+                 type
+             );
+         }
+@@ -403,7 +403,7 @@ public final class FireworkEffect implements ConfigurationSerializable {
+     @NotNull
+     @Override
+     public Map<String, Object> serialize() {
+-        return ImmutableMap.<String, Object>of(
++        return ImmutableMap.of(
+             FLICKER, Boolean.valueOf(flicker),
+             TRAIL, Boolean.valueOf(trail),
+             COLORS, colors,
+diff --git a/src/main/java/org/bukkit/Registry.java b/src/main/java/org/bukkit/Registry.java
+index 8dab6678f041cd61047976bcc4de8e4659ecdfc8..752c132fb69d2e4c4ced2739600cc994e06fdd57 100644
+--- a/src/main/java/org/bukkit/Registry.java
++++ b/src/main/java/org/bukkit/Registry.java
+@@ -251,7 +251,7 @@ public interface Registry<T extends Keyed> extends Iterable<T> {
+         private final @NotNull Map<NamespacedKey, T> map;
+ 
+         protected SimpleRegistry(@NotNull Class<T> type) {
+-            this(type, Predicates.<T>alwaysTrue());
++            this(type, Predicates.alwaysTrue());
+         }
+ 
+         protected SimpleRegistry(@NotNull Class<T> type, @NotNull Predicate<T> predicate) {
+diff --git a/src/main/java/org/bukkit/block/banner/Pattern.java b/src/main/java/org/bukkit/block/banner/Pattern.java
+index 539028be80b7dde1dabd1af0e99a4e8c1ff096ca..14a41a82df77d08e64980bc0088402dc005f6fa2 100644
+--- a/src/main/java/org/bukkit/block/banner/Pattern.java
++++ b/src/main/java/org/bukkit/block/banner/Pattern.java
+@@ -52,7 +52,7 @@ public class Pattern implements ConfigurationSerializable {
+     @NotNull
+     @Override
+     public Map<String, Object> serialize() {
+-        return ImmutableMap.<String, Object>of(
++        return ImmutableMap.of(
+             COLOR, color.toString(),
+             PATTERN, pattern.getIdentifier()
+         );
+diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
+index 6709fb1561cf9fa7e30c3698d97d6e6cf8aa213b..0eeddae98e101bf046eee07777469e0a993dd24c 100644
+--- a/src/main/java/org/bukkit/inventory/ItemStack.java
++++ b/src/main/java/org/bukkit/inventory/ItemStack.java
+@@ -357,7 +357,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
+      */
+     @NotNull
+     public Map<Enchantment, Integer> getEnchantments() {
+-        return meta == null ? ImmutableMap.<Enchantment, Integer>of() : meta.getEnchants();
++        return meta == null ? ImmutableMap.of() : meta.getEnchants();
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
+index cf3428c2f0c3ef033ade9e07e240b094b39b5d26..53fcd44b978aaac1ecc78552c101b42eeca7330a 100644
+--- a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
++++ b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
+@@ -863,7 +863,7 @@ public final class PluginDescriptionFile {
+     public List<Permission> getPermissions() {
+         if (permissions == null) {
+             if (lazyPermissions == null) {
+-                permissions = ImmutableList.<Permission>of();
++                permissions = ImmutableList.of();
+             } else {
+                 permissions = ImmutableList.copyOf(Permission.loadPermissions(lazyPermissions, "Permission node '%s' in plugin description file for " + getFullName() + " is invalid", defaultPerm));
+                 lazyPermissions = null;
+@@ -1035,15 +1035,15 @@ public final class PluginDescriptionFile {
+         }
+ 
+         if (map.get("commands") != null) {
+-            ImmutableMap.Builder<String, Map<String, Object>> commandsBuilder = ImmutableMap.<String, Map<String, Object>>builder();
++            ImmutableMap.Builder<String, Map<String, Object>> commandsBuilder = ImmutableMap.builder();
+             try {
+                 for (Map.Entry<?, ?> command : ((Map<?, ?>) map.get("commands")).entrySet()) {
+-                    ImmutableMap.Builder<String, Object> commandBuilder = ImmutableMap.<String, Object>builder();
++                    ImmutableMap.Builder<String, Object> commandBuilder = ImmutableMap.builder();
+                     if (command.getValue() != null) {
+                         for (Map.Entry<?, ?> commandEntry : ((Map<?, ?>) command.getValue()).entrySet()) {
+                             if (commandEntry.getValue() instanceof Iterable) {
+                                 // This prevents internal alias list changes
+-                                ImmutableList.Builder<Object> commandSubList = ImmutableList.<Object>builder();
++                                ImmutableList.Builder<Object> commandSubList = ImmutableList.builder();
+                                 for (Object commandSubListItem : (Iterable<?>) commandEntry.getValue()) {
+                                     if (commandSubListItem != null) {
+                                         commandSubList.add(commandSubListItem);
+@@ -1090,7 +1090,7 @@ public final class PluginDescriptionFile {
+         }
+ 
+         if (map.get("authors") != null) {
+-            ImmutableList.Builder<String> authorsBuilder = ImmutableList.<String>builder();
++            ImmutableList.Builder<String> authorsBuilder = ImmutableList.builder();
+             if (map.get("author") != null) {
+                 authorsBuilder.add(map.get("author").toString());
+             }
+@@ -1107,11 +1107,11 @@ public final class PluginDescriptionFile {
+         } else if (map.get("author") != null) {
+             authors = ImmutableList.of(map.get("author").toString());
+         } else {
+-            authors = ImmutableList.<String>of();
++            authors = ImmutableList.of();
+         }
+ 
+         if (map.get("contributors") != null) {
+-            ImmutableList.Builder<String> contributorsBuilder = ImmutableList.<String>builder();
++            ImmutableList.Builder<String> contributorsBuilder = ImmutableList.builder();
+             try {
+                 for (Object o : (Iterable<?>) map.get("contributors")) {
+                     contributorsBuilder.add(o.toString());
+@@ -1121,7 +1121,7 @@ public final class PluginDescriptionFile {
+             }
+             contributors = contributorsBuilder.build();
+         } else {
+-            contributors = ImmutableList.<String>of();
++            contributors = ImmutableList.of();
+         }
+ 
+         if (map.get("default-permission") != null) {
+@@ -1151,7 +1151,7 @@ public final class PluginDescriptionFile {
+         }
+ 
+         if (map.get("libraries") != null) {
+-            ImmutableList.Builder<String> contributorsBuilder = ImmutableList.<String>builder();
++            ImmutableList.Builder<String> contributorsBuilder = ImmutableList.builder();
+             try {
+                 for (Object o : (Iterable<?>) map.get("libraries")) {
+                     contributorsBuilder.add(o.toString());
+@@ -1161,7 +1161,7 @@ public final class PluginDescriptionFile {
+             }
+             libraries = contributorsBuilder.build();
+         } else {
+-            libraries = ImmutableList.<String>of();
++            libraries = ImmutableList.of();
+         }
+ 
+         try {
+@@ -1182,7 +1182,7 @@ public final class PluginDescriptionFile {
+             return ImmutableList.of();
+         }
+ 
+-        final ImmutableList.Builder<String> builder = ImmutableList.<String>builder();
++        final ImmutableList.Builder<String> builder = ImmutableList.builder();
+         try {
+             for (final Object entry : (Iterable<?>) value) {
+                 builder.add(entry.toString().replace(' ', '_'));
+diff --git a/src/main/java/org/bukkit/plugin/SimpleServicesManager.java b/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
+index c96d881b024591fce465cfa6723aeea233b8c2b6..9a7117bc38b383103314a34b38741e00d6b532ab 100644
+--- a/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
++++ b/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
+@@ -248,7 +248,7 @@ public class SimpleServicesManager implements ServicesManager {
+     @Override
+     @NotNull
+     public List<RegisteredServiceProvider<?>> getRegistrations(@NotNull Plugin plugin) {
+-        ImmutableList.Builder<RegisteredServiceProvider<?>> ret = ImmutableList.<RegisteredServiceProvider<?>>builder();
++        ImmutableList.Builder<RegisteredServiceProvider<?>> ret = ImmutableList.builder();
+         synchronized (providers) {
+             for (List<RegisteredServiceProvider<?>> registered : providers.values()) {
+                 for (RegisteredServiceProvider<?> provider : registered) {
+@@ -278,10 +278,10 @@ public class SimpleServicesManager implements ServicesManager {
+             List<RegisteredServiceProvider<?>> registered = providers.get(service);
+ 
+             if (registered == null) {
+-                return ImmutableList.<RegisteredServiceProvider<T>>of();
++                return ImmutableList.of();
+             }
+ 
+-            ret = ImmutableList.<RegisteredServiceProvider<T>>builder();
++            ret = ImmutableList.builder();
+ 
+             for (RegisteredServiceProvider<?> provider : registered) {
+                 ret.add((RegisteredServiceProvider<T>) provider);
+@@ -301,7 +301,7 @@ public class SimpleServicesManager implements ServicesManager {
+     @NotNull
+     public Set<Class<?>> getKnownServices() {
+         synchronized (providers) {
+-            return ImmutableSet.<Class<?>>copyOf(providers.keySet());
++            return ImmutableSet.copyOf(providers.keySet());
+         }
+     }
+ 

@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:03:12 -0500
+Subject: [PATCH] Use is empty
+
+
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index bb06e9676f881e4a61f29d8eac7ee3db830bcf49..ef14de5e40290e5a8cef7d31f0c852949ff37624 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -122,7 +122,7 @@ public final class SimplePluginManager implements PluginManager {
+ 
+         List<Plugin> result = new ArrayList<Plugin>();
+ 
+-        if (!(server.getUpdateFolder().equals(""))) {
++        if (!(server.getUpdateFolder().isEmpty())) {
+             updateDirectory = new File(directory, server.getUpdateFolder());
+         }
+ 

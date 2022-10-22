@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:33:51 -0500
+Subject: [PATCH] Remove redundant addAll
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/antixray/ChunkPacketBlockControllerAntiXray.java b/src/main/java/com/destroystokyo/paper/antixray/ChunkPacketBlockControllerAntiXray.java
+index 594c467682ca749440d42c3683300ecce122eb68..a00adba50580ca24a575e4648d0ae1f8201346f5 100644
+--- a/src/main/java/com/destroystokyo/paper/antixray/ChunkPacketBlockControllerAntiXray.java
++++ b/src/main/java/com/destroystokyo/paper/antixray/ChunkPacketBlockControllerAntiXray.java
+@@ -90,9 +90,8 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
+             }
+ 
+             // The doc of the LinkedHashSet(Collection<? extends E>) constructor doesn't specify that the insertion order is the predictable iteration order of the specified Collection, although it is in the implementation
+-            Set<BlockState> presetBlockStateSet = new LinkedHashSet<>();
+             // Therefore addAll(Collection<? extends E>) is used, which guarantees this order in the doc
+-            presetBlockStateSet.addAll(presetBlockStateList);
++            Set<BlockState> presetBlockStateSet = new LinkedHashSet<>(presetBlockStateList);
+             presetBlockStates = presetBlockStateSet.isEmpty() ? new BlockState[]{Blocks.DIAMOND_ORE.defaultBlockState()} : presetBlockStateSet.toArray(new BlockState[0]);
+             presetBlockStatesFull = presetBlockStateSet.isEmpty() ? new BlockState[]{Blocks.DIAMOND_ORE.defaultBlockState()} : presetBlockStateList.toArray(new BlockState[0]);
+             presetBlockStatesStone = null;

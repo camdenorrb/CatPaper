@@ -1,0 +1,324 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:07:05 -0500
+Subject: [PATCH] Use optional.isEmpty
+
+
+diff --git a/src/main/java/io/papermc/paper/util/PoiAccess.java b/src/main/java/io/papermc/paper/util/PoiAccess.java
+index a125fa5feda6ac46f0a658bac9fd6d1b9b6a4cb1..27749a3fe554952c119eee2ebd825ff1a2511015 100644
+--- a/src/main/java/io/papermc/paper/util/PoiAccess.java
++++ b/src/main/java/io/papermc/paper/util/PoiAccess.java
+@@ -276,7 +276,7 @@ public final class PoiAccess {
+ 
+             final Optional<PoiSection> poiSectionOptional = load ? poiStorage.getOrLoad(key) : poiStorage.get(key);
+ 
+-            if (poiSectionOptional == null || !poiSectionOptional.isPresent()) {
++            if (poiSectionOptional == null || poiSectionOptional.isEmpty()) {
+                 continue;
+             }
+ 
+@@ -519,7 +519,7 @@ public final class PoiAccess {
+ 
+             final Optional<PoiSection> poiSectionOptional = load ? poiStorage.getOrLoad(key) : poiStorage.get(key);
+ 
+-            if (poiSectionOptional == null || !poiSectionOptional.isPresent()) {
++            if (poiSectionOptional == null || poiSectionOptional.isEmpty()) {
+                 continue;
+             }
+ 
+diff --git a/src/main/java/net/minecraft/network/chat/Component.java b/src/main/java/net/minecraft/network/chat/Component.java
+index e16c8642203f55255dc54ab01569f091af530728..ef9c254f798deb2c05878387d34c50910c7918c9 100644
+--- a/src/main/java/net/minecraft/network/chat/Component.java
++++ b/src/main/java/net/minecraft/network/chat/Component.java
+@@ -118,7 +118,7 @@ public interface Component extends Message, FormattedText, Iterable<Component> {
+                 Component ichatbasecomponent = (Component) iterator.next();
+ 
+                 optional1 = ichatbasecomponent.visit(styledVisitor, chatmodifier1);
+-            } while (!optional1.isPresent());
++            } while (optional1.isEmpty());
+ 
+             return optional1;
+         }
+@@ -143,7 +143,7 @@ public interface Component extends Message, FormattedText, Iterable<Component> {
+                 Component ichatbasecomponent = (Component) iterator.next();
+ 
+                 optional1 = ichatbasecomponent.visit(visitor);
+-            } while (!optional1.isPresent());
++            } while (optional1.isEmpty());
+ 
+             return optional1;
+         }
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index b85527f821bebaeb8aef36c47c13329df757eecb..14b67d781078b086efe6f8fc5326a2f7e536a2f0 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1344,7 +1344,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     private void updateStatusIcon(ServerStatus metadata) {
+         Optional<File> optional = Optional.of(this.getFile("server-icon.png")).filter(File::isFile);
+ 
+-        if (!optional.isPresent()) {
++        if (optional.isEmpty()) {
+             optional = this.storageSource.getIconFile().map(Path::toFile).filter(File::isFile);
+         }
+ 
+diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
+index 46fff641abef20753c4f72a3d5fb71769eeb964a..9df486c17d44db247216cf9e20830a59cbd58b18 100644
+--- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
++++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
+@@ -161,7 +161,7 @@ public class PlayerAdvancements {
+                     jsonreader.setLenient(false);
+                     Dynamic<JsonElement> dynamic = new Dynamic(JsonOps.INSTANCE, Streams.parse(jsonreader));
+ 
+-                    if (!dynamic.get("DataVersion").asNumber().result().isPresent()) {
++                    if (dynamic.get("DataVersion").asNumber().result().isEmpty()) {
+                         dynamic = dynamic.set("DataVersion", dynamic.createInt(1343));
+                     }
+ 
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index fbd0457e83d12334e48b8dd363aaca5173431e80..097d9f890c274535195383d23bde8935adc23736 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -1240,7 +1240,7 @@ public class ServerPlayer extends Player {
+             Direction.Axis enumdirection_enumaxis = (Direction.Axis) this.level.getBlockState(this.portalEntrancePos).getOptionalValue(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
+             Optional<BlockUtil.FoundRectangle> optional1 = worldserver.getPortalForcer().createPortal(blockposition, enumdirection_enumaxis, this, createRadius); // CraftBukkit
+ 
+-            if (!optional1.isPresent()) {
++            if (optional1.isEmpty()) {
+                 // EntityPlayer.LOGGER.error("Unable to create a portal, likely target out of worldborder"); // CraftBukkit
+             }
+ 
+diff --git a/src/main/java/net/minecraft/stats/ServerRecipeBook.java b/src/main/java/net/minecraft/stats/ServerRecipeBook.java
+index d13ed3069e944d138442ea440ac3eaf8d44c18d3..d64b495b941ccc34941d193389c3797463c82e85 100644
+--- a/src/main/java/net/minecraft/stats/ServerRecipeBook.java
++++ b/src/main/java/net/minecraft/stats/ServerRecipeBook.java
+@@ -121,7 +121,7 @@ public class ServerRecipeBook extends RecipeBook {
+                 ResourceLocation minecraftkey = new ResourceLocation(s);
+                 Optional<? extends Recipe<?>> optional = recipeManager.byKey(minecraftkey);
+ 
+-                if (!optional.isPresent()) {
++                if (optional.isEmpty()) {
+                     ServerRecipeBook.LOGGER.error("Tried to load unrecognized recipe: {} removed now.", minecraftkey);
+                 } else {
+                     handler.accept((Recipe) optional.get());
+diff --git a/src/main/java/net/minecraft/util/datafix/fixes/ItemStackMapIdFix.java b/src/main/java/net/minecraft/util/datafix/fixes/ItemStackMapIdFix.java
+index 8210386e445c8f8e10a5785f1d78d36868f3372f..5a7a25984ddc618d509501ae3f5a36a8b2c4cf92 100644
+--- a/src/main/java/net/minecraft/util/datafix/fixes/ItemStackMapIdFix.java
++++ b/src/main/java/net/minecraft/util/datafix/fixes/ItemStackMapIdFix.java
+@@ -32,7 +32,7 @@ public class ItemStackMapIdFix extends DataFix {
+                 Typed<?> typed1 = typed.getOrCreateTyped(opticfinder1);
+                 Dynamic<?> dynamic1 = (Dynamic) typed1.get(DSL.remainderFinder());
+ 
+-                if (!dynamic1.getElement("map").result().isPresent()) dynamic1 = dynamic1.set("map", dynamic1.createInt(dynamic.get("Damage").asInt(0))); // CraftBukkit
++                if (dynamic1.getElement("map").result().isEmpty()) dynamic1 = dynamic1.set("map", dynamic1.createInt(dynamic.get("Damage").asInt(0))); // CraftBukkit
+                 return typed.set(opticfinder1, typed1.set(DSL.remainderFinder(), dynamic1));
+             } else {
+                 return typed;
+diff --git a/src/main/java/net/minecraft/util/datafix/fixes/ItemStackTheFlatteningFix.java b/src/main/java/net/minecraft/util/datafix/fixes/ItemStackTheFlatteningFix.java
+index 0dd66aae6f05dde95e79dda2dfbdb2310ab44b65..f7da1948992698f14cd14880517a6e8f6ad07cd6 100644
+--- a/src/main/java/net/minecraft/util/datafix/fixes/ItemStackTheFlatteningFix.java
++++ b/src/main/java/net/minecraft/util/datafix/fixes/ItemStackTheFlatteningFix.java
+@@ -360,7 +360,7 @@ public class ItemStackTheFlatteningFix extends DataFix {
+         return this.fixTypeEverywhereTyped("ItemInstanceTheFlatteningFix", type, (typed) -> {
+             Optional<Pair<String, String>> optional = typed.getOptional(opticfinder);
+ 
+-            if (!optional.isPresent()) {
++            if (optional.isEmpty()) {
+                 return typed;
+             } else {
+                 Typed<?> typed1 = typed;
+diff --git a/src/main/java/net/minecraft/world/entity/LightningBolt.java b/src/main/java/net/minecraft/world/entity/LightningBolt.java
+index 50612c00f53821ccafce94835caf1ba442be299a..ca51b0608cad70b556766f246e1f5e4628644228 100644
+--- a/src/main/java/net/minecraft/world/entity/LightningBolt.java
++++ b/src/main/java/net/minecraft/world/entity/LightningBolt.java
+@@ -232,7 +232,7 @@ public class LightningBolt extends Entity {
+         for (int j = 0; j < count; ++j) {
+             Optional<BlockPos> optional = LightningBolt.randomStepCleaningCopper(world, mutablePos, lightning); // Paper - transmit LightningBolt instance to call EntityChangeBlockEvent
+ 
+-            if (!optional.isPresent()) {
++            if (optional.isEmpty()) {
+                 break;
+             }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java b/src/main/java/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java
+index 46e33f1c6d2397af02bb6bbf035c1c92512a6cbc..15676c0ffc46c267984cfef2444b0d83ea9262f7 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java
+@@ -107,7 +107,7 @@ public class PrepareRamNearestTarget<E extends PathfinderMob> extends Behavior<E
+ 
+                 if (blockposition.equals(((PrepareRamNearestTarget.RamCandidate) this.ramCandidate.get()).getStartPosition())) {
+                     world.broadcastEntityEvent(entity, (byte) 58);
+-                    if (!this.reachedRamPositionTimestamp.isPresent()) {
++                    if (this.reachedRamPositionTimestamp.isEmpty()) {
+                         this.reachedRamPositionTimestamp = Optional.of(Long.valueOf(time));
+                     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java b/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
+index 9367ef8d70c9517be6bfbf41378286957d0baf62..769df43f4e6c299bc961a13df9801591b777dbfd 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
+@@ -92,7 +92,7 @@ public class RamTarget extends Behavior<Goat> {
+         } else {
+             Optional<WalkTarget> optional = brain.getMemory(MemoryModuleType.WALK_TARGET);
+             Optional<Vec3> optional2 = brain.getMemory(MemoryModuleType.RAM_TARGET);
+-            boolean bl2 = !optional.isPresent() || !optional2.isPresent() || optional.get().getTarget().currentPosition().closerThan(optional2.get(), 0.25D);
++            boolean bl2 = optional.isEmpty() || optional2.isEmpty() || optional.get().getTarget().currentPosition().closerThan(optional2.get(), 0.25D);
+             if (bl2) {
+                 this.finishRam(serverLevel, goat);
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/SleepInBed.java b/src/main/java/net/minecraft/world/entity/ai/behavior/SleepInBed.java
+index ec43c73dc47b30b870a1d39a710cd4f34f8c94b2..68944824eb86e24678678bee654520c6a3f65643 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/SleepInBed.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/SleepInBed.java
+@@ -51,7 +51,7 @@ public class SleepInBed extends Behavior<LivingEntity> {
+     @Override
+     protected boolean canStillUse(ServerLevel world, LivingEntity entity, long time) {
+         Optional<GlobalPos> optional = entity.getBrain().getMemory(MemoryModuleType.HOME);
+-        if (!optional.isPresent()) {
++        if (optional.isEmpty()) {
+             return false;
+         } else {
+             BlockPos blockPos = optional.get().pos();
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java b/src/main/java/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
+index b3adff55870c673d753f05dee4540bef0d142c7b..ce4e0342fe4941f31e947f5061fde33b3ffec9eb 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
+@@ -67,7 +67,7 @@ public class VillagerMakeLove extends Behavior<Villager> {
+     private void tryToGiveBirth(ServerLevel world, Villager first, Villager second) {
+         Optional<BlockPos> optional = this.takeVacantBed(world, first);
+ 
+-        if (!optional.isPresent()) {
++        if (optional.isEmpty()) {
+             world.broadcastEntityEvent(second, (byte) 13);
+             world.broadcastEntityEvent(first, (byte) 13);
+         } else {
+@@ -93,7 +93,7 @@ public class VillagerMakeLove extends Behavior<Villager> {
+             return entityageable.getType() == EntityType.VILLAGER;
+         });
+ 
+-        return !optional.isPresent() ? false : BehaviorUtils.targetIsValid(behaviorcontroller, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER) && villager.canBreed() && ((AgeableMob) optional.get()).canBreed();
++        return optional.isEmpty() ? false : BehaviorUtils.targetIsValid(behaviorcontroller, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER) && villager.canBreed() && ((AgeableMob) optional.get()).canBreed();
+     }
+ 
+     private Optional<BlockPos> takeVacantBed(ServerLevel world, Villager villager) {
+diff --git a/src/main/java/net/minecraft/world/entity/animal/MushroomCow.java b/src/main/java/net/minecraft/world/entity/animal/MushroomCow.java
+index fa345c090b517c2a2571149de01b13ef2eb399b9..b4eb410403c1277f1a93fe7951f6f2dfd1191a85 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/MushroomCow.java
++++ b/src/main/java/net/minecraft/world/entity/animal/MushroomCow.java
+@@ -145,7 +145,7 @@ public class MushroomCow extends Cow implements Shearable {
+             } else {
+                 Optional<Pair<MobEffect, Integer>> optional = this.getEffectFromItemStack(itemstack);
+ 
+-                if (!optional.isPresent()) {
++                if (optional.isEmpty()) {
+                     return InteractionResult.PASS;
+                 }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
+index 926254253c1d6163cada17d45b4730b9d58528e6..a4157da6c04d5c7dd8984099116f1c7e965dbf8d 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
++++ b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
+@@ -662,7 +662,7 @@ public class PiglinAi {
+         Optional<LivingEntity> optional = PiglinAi.getAngerTarget(piglin);
+         LivingEntity entityliving1 = BehaviorUtils.getNearestTarget(piglin, optional, target);
+ 
+-        if (!optional.isPresent() || optional.get() != entityliving1) {
++        if (optional.isEmpty() || optional.get() != entityliving1) {
+             PiglinAi.setAngerTarget(piglin, entityliving1);
+         }
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/raid/Raider.java b/src/main/java/net/minecraft/world/entity/raid/Raider.java
+index 3b6350000a7d86efa2bd315aad2accf72ac52ca5..1d9df9a50e6d70120f3f075aa4727fb231d14091 100644
+--- a/src/main/java/net/minecraft/world/entity/raid/Raider.java
++++ b/src/main/java/net/minecraft/world/entity/raid/Raider.java
+@@ -383,7 +383,7 @@ public abstract class Raider extends PatrollingMonster {
+                 return holder.is(PoiTypes.HOME);
+             }, this::hasNotVisited, PoiManager.Occupancy.ANY, blockposition, 48, this.raider.random);
+ 
+-            if (!optional.isPresent()) {
++            if (optional.isEmpty()) {
+                 return false;
+             } else {
+                 this.poiPos = ((BlockPos) optional.get()).immutable();
+diff --git a/src/main/java/net/minecraft/world/item/ChorusFruitItem.java b/src/main/java/net/minecraft/world/item/ChorusFruitItem.java
+index 490d116e58c19cc0b3701cffd0179f9e9fc7fe6b..ccbca0c50c6b8bd92e04a3a8ab9327b5df0a1e03 100644
+--- a/src/main/java/net/minecraft/world/item/ChorusFruitItem.java
++++ b/src/main/java/net/minecraft/world/item/ChorusFruitItem.java
+@@ -42,7 +42,7 @@ public class ChorusFruitItem extends Item {
+                 // CraftBukkit start - handle canceled status of teleport event
+                 java.util.Optional<Boolean> status = user.randomTeleport(d3, d4, d5, true, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT);
+ 
+-                if (!status.isPresent()) {
++                if (status.isEmpty()) {
+                     // teleport event was canceled, no more tries
+                     break;
+                 }
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java b/src/main/java/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
+index 935025a2fe5eeb83500fe0f26204e2c91fcc0ba6..64b859c5a09fa130c32f9bc344df75f0222878ba 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
+@@ -77,7 +77,7 @@ public abstract class StructurePlacement {
+         } else if (this.frequency < 1.0F && !this.frequencyReductionMethod.shouldGenerate(seed, this.salt, chunkX, chunkZ, this.frequency, saltOverride)) { // Paper
+             return false;
+         } else {
+-            return !this.exclusionZone.isPresent() || !this.exclusionZone.get().isPlacementForbidden(chunkGenerator, noiseConfig, seed, chunkX, chunkZ);
++            return this.exclusionZone.isEmpty() || !this.exclusionZone.get().isPlacementForbidden(chunkGenerator, noiseConfig, seed, chunkX, chunkZ);
+         }
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftFox.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftFox.java
+index 3ca434320e70929dd86b509b3bf5b80a02d2871d..58ffcc497eb00f653142b488a17923bd0b0aa30c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftFox.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftFox.java
+@@ -111,7 +111,7 @@ public class CraftFox extends CraftAnimals implements Fox {
+ 
+     @Override
+     public void setSecondTrustedPlayer(@Nullable AnimalTamer player) {
+-        if (player != null && !this.getHandle().getEntityData().get(net.minecraft.world.entity.animal.Fox.DATA_TRUSTED_ID_0).isPresent()) {
++        if (player != null && this.getHandle().getEntityData().get(net.minecraft.world.entity.animal.Fox.DATA_TRUSTED_ID_0).isEmpty()) {
+             throw new IllegalStateException("Must add first trusted player first");
+         }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index ebdff7bd0053e4b4c982256283cdfd003b38fa9d..d698c09d2146d6ecab141fde44f91659f49d60a4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -672,7 +672,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+ 
+         for (NamespacedKey recipeKey : recipeKeys) {
+             Optional<? extends Recipe<?>> recipe = manager.byKey(CraftNamespacedKey.toMinecraft(recipeKey));
+-            if (!recipe.isPresent()) {
++            if (recipe.isEmpty()) {
+                 continue;
+             }
+ 
+@@ -687,7 +687,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+         if (!this.getHandle().getShoulderEntityLeft().isEmpty()) {
+             Optional<Entity> shoulder = EntityType.create(this.getHandle().getShoulderEntityLeft(), this.getHandle().level);
+ 
+-            return (!shoulder.isPresent()) ? null : shoulder.get().getBukkitEntity();
++            return (shoulder.isEmpty()) ? null : shoulder.get().getBukkitEntity();
+         }
+ 
+         return null;
+@@ -706,7 +706,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+         if (!this.getHandle().getShoulderEntityRight().isEmpty()) {
+             Optional<Entity> shoulder = EntityType.create(this.getHandle().getShoulderEntityRight(), this.getHandle().level);
+ 
+-            return (!shoulder.isPresent()) ? null : shoulder.get().getBukkitEntity();
++            return (shoulder.isEmpty()) ? null : shoulder.get().getBukkitEntity();
+         }
+ 
+         return null;
+diff --git a/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java b/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
+index 5add16e463374a23e7ab3094758d37ae46338eaa..da96ffb83cca8f70f89cfc3fc4a8d0c2f7bf2b6d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
++++ b/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
+@@ -358,7 +358,7 @@ public final class CraftLegacy {
+ 
+                             Preconditions.checkState(!properties.getString(dataKey).isEmpty(), "Empty data string");
+                             Optional opt = state.getValue(properties.getString(dataKey));
+-                            if (!opt.isPresent()) {
++                            if (opt.isEmpty()) {
+                                 throw new IllegalStateException("No state value " + properties.getString(dataKey) + " for " + dataKey);
+                             }
+ 

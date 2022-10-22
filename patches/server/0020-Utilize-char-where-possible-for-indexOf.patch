@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:37:30 -0500
+Subject: [PATCH] Utilize char where possible for indexOf
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java b/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
+index 57318617df5c7bf0afa0f2763376f034890e93f2..a48de84674d1a5dc1b81143b510a38548ed3136d 100644
+--- a/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
++++ b/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
+@@ -247,11 +247,11 @@ public class MobGoalHelper {
+ 
+     public static String getUsableName(@NotNull Class<?> clazz) {
+         String name = ObfHelper.INSTANCE.deobfClassName(clazz.getName());
+-        name = name.substring(name.lastIndexOf(".") + 1);
++        name = name.substring(name.lastIndexOf('.') + 1);
+         boolean flag = false;
+         // inner classes
+         if (name.contains("$")) {
+-            String cut = name.substring(name.indexOf("$") + 1);
++            String cut = name.substring(name.indexOf('$') + 1);
+             if (cut.length() <= 2) {
+                 name = name.replace("Entity", "");
+                 name = name.replace("$", "_");
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 02eaa31927ab93168ffbc92954f376314f51f70a..fbd0457e83d12334e48b8dd363aaca5173431e80 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -1909,8 +1909,8 @@ public class ServerPlayer extends Player {
+     public String getIpAddress() {
+         String s = this.connection.connection.getRemoteAddress().toString();
+ 
+-        s = s.substring(s.indexOf("/") + 1);
+-        s = s.substring(0, s.indexOf(":"));
++        s = s.substring(s.indexOf('/') + 1);
++        s = s.substring(0, s.indexOf(':'));
+         return s;
+     }
+ 

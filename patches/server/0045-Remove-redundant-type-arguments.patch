@@ -1,0 +1,162 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:10:55 -0500
+Subject: [PATCH] Remove redundant type arguments
+
+
+diff --git a/src/main/java/net/minecraft/data/worldgen/SurfaceRuleData.java b/src/main/java/net/minecraft/data/worldgen/SurfaceRuleData.java
+index 1d5bc86516df3781aea894c3afd340421ba51a17..b7e67dc7c1e12eecfca00a7b17c895237099b4c2 100644
+--- a/src/main/java/net/minecraft/data/worldgen/SurfaceRuleData.java
++++ b/src/main/java/net/minecraft/data/worldgen/SurfaceRuleData.java
+@@ -58,7 +58,7 @@ public class SurfaceRuleData {
+     // isRoof = true if roof, false if floor
+     public record PaperBedrockConditionSource(net.minecraft.resources.ResourceLocation randomName, VerticalAnchor trueAtAndBelow, VerticalAnchor falseAtAndAbove, boolean isRoof) implements SurfaceRules.ConditionSource {
+ 
+-        public static final net.minecraft.util.KeyDispatchDataCodec<PaperBedrockConditionSource> CODEC = net.minecraft.util.KeyDispatchDataCodec.of(com.mojang.serialization.codecs.RecordCodecBuilder.<PaperBedrockConditionSource>mapCodec((instance) -> {
++        public static final net.minecraft.util.KeyDispatchDataCodec<PaperBedrockConditionSource> CODEC = net.minecraft.util.KeyDispatchDataCodec.of(com.mojang.serialization.codecs.RecordCodecBuilder.mapCodec((instance) -> {
+             return instance.group(
+                 net.minecraft.resources.ResourceLocation.CODEC.fieldOf("random_name").forGetter(PaperBedrockConditionSource::randomName),
+                 VerticalAnchor.CODEC.fieldOf("true_at_and_below").forGetter(PaperBedrockConditionSource::trueAtAndBelow),
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 6db985537f941f8a5999b7a67bfebff2bc28ba4f..980ccc4aa69b0f595bb085ce11c383d75a92a620 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -2028,7 +2028,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             PackRepository resourcepackrepository = this.packRepository;
+ 
+             Objects.requireNonNull(this.packRepository);
+-            return stream.<Pack>map(resourcepackrepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()); // CraftBukkit - decompile error // Paper - decompile error // todo: is this needed anymore?
++            return stream.map(resourcepackrepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()); // CraftBukkit - decompile error // Paper - decompile error // todo: is this needed anymore?
+         }, this).thenCompose((immutablelist) -> {
+             MultiPackResourceManager resourcemanager = new MultiPackResourceManager(PackType.SERVER_DATA, immutablelist);
+ 
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 1b30f1ac3a0b29359829cf8a28e22c52c1a55f1e..89de4b07c0f2bdcb99485c6688374ad8e04f0164 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -1754,7 +1754,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     }
+ 
+     public void teleport(Location dest) {
+-        this.internalTeleport(dest.getX(), dest.getY(), dest.getZ(), dest.getYaw(), dest.getPitch(), Collections.<ClientboundPlayerPositionPacket.RelativeArgument>emptySet(), true);
++        this.internalTeleport(dest.getX(), dest.getY(), dest.getZ(), dest.getYaw(), dest.getPitch(), Collections.emptySet(), true);
+     }
+ 
+     public void internalTeleport(double d0, double d1, double d2, float f, float f1, Set<ClientboundPlayerPositionPacket.RelativeArgument> set, boolean flag) {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java b/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
+index ca771d60283d94c00aa65d06ef93071e412357e8..521da0aadc8f2ea3a9cb344f6ec7bc07c7127c43 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
+@@ -37,7 +37,7 @@ public class ShufflingList<U> {
+     }
+ 
+     public static <U> Codec<ShufflingList<U>> codec(Codec<U> codec) {
+-        return ShufflingList.WeightedEntry.<U>codec(codec).listOf().xmap(ShufflingList::new, (weightedList) -> {
++        return ShufflingList.WeightedEntry.codec(codec).listOf().xmap(ShufflingList::new, (weightedList) -> {
+             return weightedList.entries;
+         });
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
+index 82f68bebc227a3dbd846fed237c77a6710aa0b63..8c8becc1cf83527962fc74d68de5520c0ce01a33 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
++++ b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
+@@ -188,7 +188,7 @@ public class PoiManager extends SectionStorage<PoiSection> {
+     public boolean release(BlockPos pos) {
+         return this.getOrLoad(SectionPos.asLong(pos)).map((poiSet) -> {
+             return Boolean.valueOf(poiSet.release(pos));
+-        }).<IllegalStateException>orElseThrow(() -> {
++        }).orElseThrow(() -> {
+             return Util.pauseInIde(new IllegalStateException("POI never registered at " + pos));
+         }).booleanValue();
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/warden/AngerManagement.java b/src/main/java/net/minecraft/world/entity/monster/warden/AngerManagement.java
+index 1b8880db4c3fb33fc7b23a08c2407de99ae7a51c..66e22fac8382774c8e25a81a7fe801264b78b5f6 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/warden/AngerManagement.java
++++ b/src/main/java/net/minecraft/world/entity/monster/warden/AngerManagement.java
+@@ -65,7 +65,7 @@ public class AngerManagement {
+     }
+ 
+     private List<Pair<UUID, Integer>> createUuidAngerPairs() {
+-        return Streams.<Pair<UUID, Integer>>concat(this.suspects.stream().map((suspect) -> {
++        return Streams.concat(this.suspects.stream().map((suspect) -> {
+             return Pair.of(suspect.getUUID(), Integer.valueOf(this.angerBySuspect.getInt(suspect)));
+         }), this.angerByUuid.object2IntEntrySet().stream().map((suspect) -> {
+             return Pair.of(suspect.getKey(), Integer.valueOf(suspect.getIntValue()));
+diff --git a/src/main/java/net/minecraft/world/level/block/state/properties/EnumProperty.java b/src/main/java/net/minecraft/world/level/block/state/properties/EnumProperty.java
+index 087f2d32b680992ff2ea7901e34bc7cc416d08e8..4910354f780be26c39feb159dbf2c0fb339d26da 100644
+--- a/src/main/java/net/minecraft/world/level/block/state/properties/EnumProperty.java
++++ b/src/main/java/net/minecraft/world/level/block/state/properties/EnumProperty.java
+@@ -87,7 +87,7 @@ public class EnumProperty<T extends Enum<T> & StringRepresentable> extends Prope
+     }
+ 
+     public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String name, Class<T> type, Predicate<T> filter) {
+-        return create(name, type, Arrays.<T>stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
++        return create(name, type, Arrays.stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
+     }
+ 
+     public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String name, Class<T> type, T... values) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index e7e8289c4ccdee4e184b6b737d69da62b22b3c9e..4130856fd37b23ea3724f19544b262ae7b7f4f8a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -2248,7 +2248,7 @@ public final class CraftServer implements Server {
+             this.getLogger().log(Level.SEVERE, "Exception when " + player.getName() + " attempted to tab complete " + message, ex);
+         }
+ 
+-        return completions == null ? ImmutableList.<String>of() : completions;
++        return completions == null ? ImmutableList.of() : completions;
+     }
+ 
+     public @NotNull List<String> tabCompleteChat(@NotNull Player player, @NotNull String message) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
+index 53e835b5fe098ff6a24388058be2f228ea28e299..9eb11b2550e7767bcbdb48986bac7c2e5da9255f 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
+@@ -238,7 +238,7 @@ public final class CraftItemStack extends ItemStack {
+ 
+     @Override
+     public @NotNull Map<Enchantment, Integer> getEnchantments() {
+-        return this.hasItemMeta() ? this.getItemMeta().getEnchants() : ImmutableMap.<Enchantment, Integer>of(); // Paper - use Item Meta
++        return this.hasItemMeta() ? this.getItemMeta().getEnchants() : ImmutableMap.of(); // Paper - use Item Meta
+     }
+ 
+     static @NotNull Map<Enchantment, Integer> getEnchantments(net.minecraft.world.item.@Nullable ItemStack item) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaEnchantedBook.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaEnchantedBook.java
+index 2a614fb24d48157fa6ec980b12eac82506b47be7..7d8f1646937d16bb3588648078dcbfd3ae9b8856 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaEnchantedBook.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaEnchantedBook.java
+@@ -137,7 +137,7 @@ class CraftMetaEnchantedBook extends CraftMetaItem implements EnchantmentStorage
+ 
+     @Override
+     public @NotNull Map<Enchantment, Integer> getStoredEnchants() {
+-        return this.hasStoredEnchants() ? ImmutableMap.copyOf(enchantments) : ImmutableMap.<Enchantment, Integer>of();
++        return this.hasStoredEnchants() ? ImmutableMap.copyOf(enchantments) : ImmutableMap.of();
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
+index a0e35ce3d4ad178d4ed50ce872a6bb16d5059760..a66acf86d1fa3738cd79525b241833e9b2c52204 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
+@@ -368,7 +368,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
+ 
+     @Override
+     public @NotNull List<FireworkEffect> getEffects() {
+-        return this.effects == null ? ImmutableList.<FireworkEffect>of() : ImmutableList.copyOf(this.effects);
++        return this.effects == null ? ImmutableList.of() : ImmutableList.copyOf(this.effects);
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index e5717c9384aa14e169b7db848af4fa876853d29b..99dfca7716cf327b4298ebde15d7b961dbe216af 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -953,7 +953,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+ 
+     @Override
+     public @NotNull Map<Enchantment, Integer> getEnchants() {
+-        return this.hasEnchants() ? ImmutableSortedMap.copyOfSorted(this.enchantments) : ImmutableMap.<Enchantment, Integer>of(); // Paper
++        return this.hasEnchants() ? ImmutableSortedMap.copyOfSorted(this.enchantments) : ImmutableMap.of(); // Paper
+     }
+ 
+     @Override

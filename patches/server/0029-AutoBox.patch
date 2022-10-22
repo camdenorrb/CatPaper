@@ -1,0 +1,67 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:01:26 -0500
+Subject: [PATCH] AutoBox
+
+
+diff --git a/src/main/java/io/papermc/paper/command/subcommands/EntityCommand.java b/src/main/java/io/papermc/paper/command/subcommands/EntityCommand.java
+index 4f9b0f8edf3d8acd35491768b6ab1eac9ff602aa..7b53747baabaf572b0e4d1c6ee2fbb4a634c6a51 100644
+--- a/src/main/java/io/papermc/paper/command/subcommands/EntityCommand.java
++++ b/src/main/java/io/papermc/paper/command/subcommands/EntityCommand.java
+@@ -101,7 +101,7 @@ public final class EntityCommand implements PaperSubcommand {
+ 
+                 MutablePair<Integer, Map<ChunkPos, Integer>> info = list.computeIfAbsent(key, k -> MutablePair.of(Integer.valueOf(0), Maps.newHashMap()));
+                 ChunkPos chunk = e.chunkPosition();
+-                info.left = info.left.intValue() + 1;
++                info.left = Integer.valueOf(info.left.intValue() + 1);
+                 info.right.put(chunk, Integer.valueOf(info.right.getOrDefault(chunk, Integer.valueOf(0)) + 1));
+                 if (!chunkProviderServer.isPositionTicking(e) || e instanceof net.minecraft.world.entity.Marker) { // Markers aren't ticked.
+                     nonEntityTicking.merge(key, Integer.valueOf(1), Integer::sum);
+diff --git a/src/main/java/net/minecraft/nbt/ByteArrayTag.java b/src/main/java/net/minecraft/nbt/ByteArrayTag.java
+index a333bb203b2b09a05668030ea1e1c23e44925765..03f0b3a81aff8855a1345c87c3a23968bb051c64 100644
+--- a/src/main/java/net/minecraft/nbt/ByteArrayTag.java
++++ b/src/main/java/net/minecraft/nbt/ByteArrayTag.java
+@@ -65,7 +65,7 @@ public class ByteArrayTag extends CollectionTag<ByteTag> {
+         byte[] abyte = new byte[list.size()];
+ 
+         for (int i = 0; i < list.size(); ++i) {
+-            Byte obyte = (Byte) list.get(i);
++            Byte obyte = list.get(i);
+ 
+             abyte[i] = obyte == null ? 0 : obyte;
+         }
+diff --git a/src/main/java/net/minecraft/world/level/block/state/properties/IntegerProperty.java b/src/main/java/net/minecraft/world/level/block/state/properties/IntegerProperty.java
+index b235dee8e8483ef6355e4b0b071b97a1fb0fcfa9..53832a5c572b4ff74dd8e78f74473258919a0f18 100644
+--- a/src/main/java/net/minecraft/world/level/block/state/properties/IntegerProperty.java
++++ b/src/main/java/net/minecraft/world/level/block/state/properties/IntegerProperty.java
+@@ -69,7 +69,7 @@ public class IntegerProperty extends Property<Integer> {
+     public Optional<Integer> getValue(String name) {
+         try {
+             int integer = Integer.parseInt(name);
+-            return integer >= this.min && integer <= this.max ? Optional.of(integer) : Optional.empty();
++            return integer >= this.min && integer <= this.max ? Optional.of(Integer.valueOf(integer)) : Optional.empty();
+         } catch (NumberFormatException var3) {
+             return Optional.empty();
+         }
+diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
+index 7466551e3e45c30fbca7549baf1cf17fa8c9d4c8..28f7919ed489de0475aa6b379d5679e5d309c938 100644
+--- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
++++ b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
+@@ -325,7 +325,7 @@ public final class Emitter implements Emitable {
+                 indent = Integer.valueOf(0);
+             }
+         } else if (!indentless) {
+-            this.indent = this.indent.intValue() + bestIndent;
++            this.indent = Integer.valueOf(this.indent.intValue() + bestIndent);
+         }
+     }
+ 
+@@ -698,7 +698,7 @@ public final class Emitter implements Emitable {
+                 }
+                 writeIndicator("-", true, false, true);
+                 if (indentWithIndicator && this.first) {
+-                    indent = indent.intValue() + indicatorIndent;
++                    indent = Integer.valueOf(indent.intValue() + indicatorIndent);
+                 }
+                 if (!blockCommentsCollector.isEmpty()) {
+                     increaseIndent(false, false);

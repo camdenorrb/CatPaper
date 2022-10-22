@@ -1714,10 +1714,10 @@ index 13082cd8de1a79a3b2fac6055bdaa163dbc7897b..6b192474627d328087025e988602af6e
                  playersData.add(playerData);
              }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 5962f7a2b185d7d54a0f9e341a4fdf6e6f1c1ec5..fba56667fc6468b7a78310a70b5abf29853dd920 100644
+index 88ef769abfa163f923258d1f83d47b28c491eaca..62c5c438c2f9a5d97dfc70b003a4c8b12be9a551 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -342,7 +342,7 @@ public class Main {
+@@ -351,7 +351,7 @@ public class Main {
              if (i > 0) {
                  int j = worldupgrader.getConverted() + worldupgrader.getSkipped();
  
@@ -4223,7 +4223,7 @@ index 45c3cec839a7c23903dedf6e3e004305da2adceb..b4578e53077152b83e20640e02c63b05
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
-index 2d87b740e84435ef9bd3eee3d3e2af9f707a0826..69696d631778819c782beccb0aea8dec8a4377db 100644
+index 1dcd0c494681b7665b6b86dbe20375afd8d2fad8..cf83ec1fa22c159999e431bdf74e50b3df30d8b9 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 @@ -87,7 +87,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
@@ -4264,15 +4264,6 @@ index 2d87b740e84435ef9bd3eee3d3e2af9f707a0826..69696d631778819c782beccb0aea8dec
          }
      }
  
-@@ -485,7 +485,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
-         }
- 
-         this.duplicationCooldown = (long) nbt.getInt("DuplicationCooldown");
--        this.entityData.set(Allay.DATA_CAN_DUPLICATE, nbt.getBoolean("CanDuplicate"));
-+        this.entityData.set(Allay.DATA_CAN_DUPLICATE, Boolean.valueOf(nbt.getBoolean("CanDuplicate")));
-     }
- 
-     @Override
 @@ -512,7 +512,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
          }
  
@@ -6080,7 +6071,7 @@ index feb89eb69994bdd1d2f95d2b9992e69251b2bee7..2b038a191e6909837bce0b6154a7c0b7
  
          return persistentraid;
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-index 3f31a3c17ecca6e93b794478129b95ecff4e1a9c..e40210a76be6b8c33d4dd00e44247c51293ce1b8 100644
+index c71120fe57a76c4638be5dcbda5a756cc2d62ffc..1203bd091670c005279323ddcda60f60c8e4fd1d 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 @@ -64,7 +64,7 @@ public abstract class AbstractMinecart extends Entity {
@@ -6111,7 +6102,7 @@ index 3f31a3c17ecca6e93b794478129b95ecff4e1a9c..e40210a76be6b8c33d4dd00e44247c51
      }
  
      @Override
-@@ -925,7 +925,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -933,7 +933,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public void setDamage(float damageWobbleStrength) {
@@ -6120,7 +6111,7 @@ index 3f31a3c17ecca6e93b794478129b95ecff4e1a9c..e40210a76be6b8c33d4dd00e44247c51
      }
  
      public float getDamage() {
-@@ -933,7 +933,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -941,7 +941,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public void setHurtTime(int wobbleTicks) {
@@ -6129,7 +6120,7 @@ index 3f31a3c17ecca6e93b794478129b95ecff4e1a9c..e40210a76be6b8c33d4dd00e44247c51
      }
  
      public int getHurtTime() {
-@@ -941,7 +941,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -949,7 +949,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public void setHurtDir(int wobbleSide) {
@@ -6138,7 +6129,7 @@ index 3f31a3c17ecca6e93b794478129b95ecff4e1a9c..e40210a76be6b8c33d4dd00e44247c51
      }
  
      public int getHurtDir() {
-@@ -967,12 +967,12 @@ public abstract class AbstractMinecart extends Entity {
+@@ -975,12 +975,12 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public void setDisplayBlockState(BlockState state) {
@@ -6153,7 +6144,7 @@ index 3f31a3c17ecca6e93b794478129b95ecff4e1a9c..e40210a76be6b8c33d4dd00e44247c51
          this.setCustomDisplay(true);
      }
  
-@@ -981,7 +981,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -989,7 +989,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public void setCustomDisplay(boolean present) {
@@ -8354,19 +8345,6 @@ index 7304b2659eb45bc4bc9fa7c43e6ca07221d0fc73..e4090503e2f3c4a00e51f97b27f05dbc
                          }
                      }
                  }
-diff --git a/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java b/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
-index 61783f17b655cbb6430d22fb3a81931ab3ea130c..40b11020c08a1fc58f00123c07b9ae4bafdafd54 100644
---- a/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
-+++ b/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
-@@ -56,7 +56,7 @@ public abstract class SpreadingSnowyDirtBlock extends SnowyDirtBlock {
-                     BlockPos blockposition1 = pos.offset(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
- 
-                     if (world.getBlockState(blockposition1).is(Blocks.DIRT) && SpreadingSnowyDirtBlock.canPropagate(iblockdata1, world, blockposition1)) {
--                        org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(world, pos, blockposition1, (BlockState) iblockdata1.setValue(SpreadingSnowyDirtBlock.SNOWY, world.getBlockState(blockposition1.above()).is(Blocks.SNOW))); // CraftBukkit
-+                        org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(world, pos, blockposition1, (BlockState) iblockdata1.setValue(SpreadingSnowyDirtBlock.SNOWY, Boolean.valueOf(world.getBlockState(blockposition1.above()).is(Blocks.SNOW)))); // CraftBukkit
-                     }
-                 }
-             }
 diff --git a/src/main/java/net/minecraft/world/level/block/StemBlock.java b/src/main/java/net/minecraft/world/level/block/StemBlock.java
 index 5b5ee1d451661357ad9348b997dbfcc19459f2c2..a885874028c91d5677c4132573e7e90d902f10e8 100644
 --- a/src/main/java/net/minecraft/world/level/block/StemBlock.java

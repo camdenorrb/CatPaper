@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:28:04 -0500
+Subject: [PATCH] fixup boxing and unboxing
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
+index 422c46c9ef64b0ee576f421345af4ae22f650410..6d3207ee00a217e9451d3c5e0604f99368e1936e 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
+@@ -1,6 +1,8 @@
+ package net.minecraft.world.entity.ai.behavior;
+ 
+ import java.util.Map;
++import java.util.Objects;
++
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
+index af351de70af84d618b1ae2a206974a40cc0a8a4c..1d38fb2a49d2364ecb2a68b3887f07088e6b564f 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.entity.ai.sensing;
+ 
++import java.util.Objects;
+ import java.util.Set;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.util.RandomSource;

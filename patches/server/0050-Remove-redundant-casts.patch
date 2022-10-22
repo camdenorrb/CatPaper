@@ -2462,10 +2462,10 @@ index 3a5934ea4afd93c4702311c0a8760709bde8bf04..5e6320ed390fc5df012bff78990b9aad
          // Paper end - duplicate uuid resolving
      }
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index dbb95de9bcf93b72a3d1857f177aadec347aba69..fdde558efa7ca2a000fb76dc6093708ae863f241 100644
+index be05d3f37374179ae09f0110f3ca7e9e55e888cd..b20badb1c55689a3963c2e24bbfafd4307b04fea 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -157,7 +157,7 @@ public class Main {
+@@ -166,7 +166,7 @@ public class Main {
              // Paper end - fix SPIGOT-5824
              Services services = Services.create(new com.destroystokyo.paper.profile.PaperAuthenticationService(Proxy.NO_PROXY), file, userCacheFile, optionset); // Paper
              // CraftBukkit start
@@ -2474,7 +2474,7 @@ index dbb95de9bcf93b72a3d1857f177aadec347aba69..fdde558efa7ca2a000fb76dc6093708a
              LevelStorageSource convertable = LevelStorageSource.createDefault(file.toPath());
              LevelStorageSource.LevelStorageAccess convertable_conversionsession = convertable.createAccess(s, LevelStem.OVERWORLD);
              LevelSummary worldinfo = convertable_conversionsession.getSummary();
-@@ -204,11 +204,11 @@ public class Main {
+@@ -213,11 +213,11 @@ public class Main {
              WorldStem worldstem;
  
              try {
@@ -2488,7 +2488,7 @@ index dbb95de9bcf93b72a3d1857f177aadec347aba69..fdde558efa7ca2a000fb76dc6093708a
                      return WorldStem.load(worldloader_a, (iresourcemanager, datapackconfiguration1) -> {
                          RegistryAccess.Writable iregistrycustom_e = RegistryAccess.builtinCopy();
                          DynamicOps<Tag> dynamicops = RegistryOps.createAndLoad(NbtOps.INSTANCE, iregistrycustom_e, iresourcemanager);
-@@ -263,7 +263,7 @@ public class Main {
+@@ -272,7 +272,7 @@ public class Main {
              convertable_conversionsession.saveDataTag(iregistrycustom_dimension, savedata);
              */
              Class.forName(net.minecraft.world.entity.npc.VillagerTrades.class.getName());// Paper - load this sync so it won't fail later async
@@ -9737,7 +9737,7 @@ index 36d3d69bd1f8cbdbee2fdcb31c3e1cee48165663..d347f8e0f5d74caae488734993fc9a98
          }
      }
 diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
-index 31a33d8729cec5d7cd0df8a266c1335d6aa183d6..f377e318654fc7c6255430ce869472581025bbde 100644
+index 1ad40d466e2958210a051e8cbc25309e1bdcd497..cb9b1cd0222ae6e44a6575ef44cf13870bfb5dca 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 @@ -102,7 +102,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
@@ -9809,15 +9809,6 @@ index 31a33d8729cec5d7cd0df8a266c1335d6aa183d6..f377e318654fc7c6255430ce86947258
          Logger logger = Allay.LOGGER;
  
          Objects.requireNonNull(logger);
-@@ -477,7 +477,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
-             });
-         }
- 
--        this.duplicationCooldown = (long) nbt.getInt("DuplicationCooldown");
-+        this.duplicationCooldown = nbt.getInt("DuplicationCooldown");
-         this.entityData.set(Allay.DATA_CAN_DUPLICATE, Boolean.valueOf(nbt.getBoolean("CanDuplicate")));
-     }
- 
 @@ -515,7 +515,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
      }
  
@@ -14265,7 +14256,7 @@ index e38e03c2c3e235ba8f06731eca7bf6560cb884d5..cecf8c818df8372e99f8ea079bd3f260
  
          while (iterator.hasNext()) {
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0c5fd588d 100644
+index 7256ba77d033e259afe8187201ccc7ad67ddca9a..d5a18b64f05e35d149ea2992ec33ea8e8460d48e 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 @@ -67,7 +67,7 @@ public abstract class AbstractMinecart extends Entity {
@@ -14286,7 +14277,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
      }
  
      @Override
-@@ -194,7 +194,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -202,7 +202,7 @@ public abstract class AbstractMinecart extends Entity {
                          });
  
                          if (DismountHelper.isBlockFloorValid(d0)) {
@@ -14295,7 +14286,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
                              Vec3 vec3d = Vec3.upFromBottomCenterOf(blockposition_mutableblockposition, d0);
  
                              if (DismountHelper.canDismountTo(this.level, passenger, axisalignedbb.move(vec3d))) {
-@@ -208,12 +208,12 @@ public abstract class AbstractMinecart extends Entity {
+@@ -216,12 +216,12 @@ public abstract class AbstractMinecart extends Entity {
  
              double d1 = this.getBoundingBox().maxY;
  
@@ -14310,7 +14301,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
                  int l = Mth.ceil(d1 - (double) blockposition_mutableblockposition.getY() + d2);
                  double d3 = DismountHelper.findCeilingFrom(blockposition_mutableblockposition, l, (blockposition1) -> {
                      return this.level.getBlockState(blockposition1).getCollisionShape(this.level, blockposition1);
-@@ -316,7 +316,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -324,7 +324,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      private static Pair<Vec3i, Vec3i> exits(RailShape shape) {
@@ -14319,7 +14310,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
      }
  
      @Override
-@@ -383,7 +383,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -391,7 +391,7 @@ public abstract class AbstractMinecart extends Entity {
              if (BaseRailBlock.isRail(iblockdata)) {
                  this.moveAlongTrack(blockposition, iblockdata);
                  if (iblockdata.is(Blocks.ACTIVATOR_RAIL)) {
@@ -14328,7 +14319,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
                  }
              } else {
                  this.comeOffTrack();
-@@ -401,7 +401,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -409,7 +409,7 @@ public abstract class AbstractMinecart extends Entity {
                  }
              }
  
@@ -14337,7 +14328,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
  
              if (d6 < -170.0D || d6 >= 170.0D) {
                  this.setYRot(this.getYRot() + 180.0F);
-@@ -422,11 +422,11 @@ public abstract class AbstractMinecart extends Entity {
+@@ -430,11 +430,11 @@ public abstract class AbstractMinecart extends Entity {
              }
              // CraftBukkit end
              if (this.getMinecartType() == AbstractMinecart.Type.RIDEABLE && this.getDeltaMovement().horizontalDistanceSqr() > 0.01D) {
@@ -14351,7 +14342,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
  
                          if (!(entity instanceof Player) && !(entity instanceof IronGolem) && !(entity instanceof AbstractMinecart) && !this.isVehicle() && !entity.isPassenger()) {
                              // CraftBukkit start
-@@ -516,12 +516,12 @@ public abstract class AbstractMinecart extends Entity {
+@@ -524,12 +524,12 @@ public abstract class AbstractMinecart extends Entity {
          double d2 = this.getZ();
          Vec3 vec3d = this.getPos(d0, d1, d2);
  
@@ -14366,7 +14357,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
              flag1 = !flag;
          }
  
-@@ -532,7 +532,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -540,7 +540,7 @@ public abstract class AbstractMinecart extends Entity {
          }
  
          Vec3 vec3d1 = this.getDeltaMovement();
@@ -14375,7 +14366,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
  
          switch (blockpropertytrackposition) {
              case ASCENDING_EAST:
-@@ -554,10 +554,10 @@ public abstract class AbstractMinecart extends Entity {
+@@ -562,10 +562,10 @@ public abstract class AbstractMinecart extends Entity {
  
          vec3d1 = this.getDeltaMovement();
          Pair<Vec3i, Vec3i> pair = AbstractMinecart.exits(blockpropertytrackposition);
@@ -14390,7 +14381,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
          double d6 = Math.sqrt(d4 * d4 + d5 * d5);
          double d7 = vec3d1.x * d4 + vec3d1.z * d5;
  
-@@ -719,18 +719,18 @@ public abstract class AbstractMinecart extends Entity {
+@@ -727,18 +727,18 @@ public abstract class AbstractMinecart extends Entity {
          BlockState iblockdata = this.level.getBlockState(new BlockPos(i, j, k));
  
          if (BaseRailBlock.isRail(iblockdata)) {
@@ -14416,7 +14407,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
              double d6 = Math.sqrt(d4 * d4 + d5 * d5);
  
              d4 /= d6;
-@@ -738,9 +738,9 @@ public abstract class AbstractMinecart extends Entity {
+@@ -746,9 +746,9 @@ public abstract class AbstractMinecart extends Entity {
              x += d4 * offset;
              z += d5 * offset;
              if (baseblockposition.getY() != 0 && Mth.floor(x) - i == baseblockposition.getX() && Mth.floor(z) - k == baseblockposition.getZ()) {
@@ -14428,7 +14419,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
              }
  
              return this.getPos(x, y, z);
-@@ -762,10 +762,10 @@ public abstract class AbstractMinecart extends Entity {
+@@ -770,10 +770,10 @@ public abstract class AbstractMinecart extends Entity {
          BlockState iblockdata = this.level.getBlockState(new BlockPos(i, j, k));
  
          if (BaseRailBlock.isRail(iblockdata)) {
@@ -14442,7 +14433,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
              double d3 = (double) i + 0.5D + (double) baseblockposition.getX() * 0.5D;
              double d4 = (double) j + 0.0625D + (double) baseblockposition.getY() * 0.5D;
              double d5 = (double) k + 0.5D + (double) baseblockposition.getZ() * 0.5D;
-@@ -867,7 +867,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -875,7 +875,7 @@ public abstract class AbstractMinecart extends Entity {
                              double d4 = entity.getX() - this.getX();
                              double d5 = entity.getZ() - this.getZ();
                              Vec3 vec3d = (new Vec3(d4, 0.0D, d5)).normalize();
@@ -14451,7 +14442,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
                              double d6 = Math.abs(vec3d.dot(vec3d1));
  
                              if (d6 < 0.800000011920929D) {
-@@ -910,8 +910,8 @@ public abstract class AbstractMinecart extends Entity {
+@@ -918,8 +918,8 @@ public abstract class AbstractMinecart extends Entity {
          this.lx = x;
          this.ly = y;
          this.lz = z;
@@ -14462,7 +14453,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
          this.lSteps = interpolationSteps + 2;
          this.setDeltaMovement(this.lxd, this.lyd, this.lzd);
      }
-@@ -929,7 +929,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -937,7 +937,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public float getDamage() {
@@ -14471,7 +14462,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
      }
  
      public void setHurtTime(int wobbleTicks) {
-@@ -937,7 +937,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -945,7 +945,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public int getHurtTime() {
@@ -14480,7 +14471,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
      }
  
      public void setHurtDir(int wobbleSide) {
-@@ -945,13 +945,13 @@ public abstract class AbstractMinecart extends Entity {
+@@ -953,13 +953,13 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public int getHurtDir() {
@@ -14496,7 +14487,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
      }
  
      public BlockState getDefaultDisplayBlockState() {
-@@ -959,7 +959,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -967,7 +967,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public int getDisplayOffset() {
@@ -14505,7 +14496,7 @@ index 775cb4cf336e7700b531d288d5ebdf9a9b3c2736..9a66bb9f8bd233c152e7c6401c1963b0
      }
  
      public int getDefaultDisplayOffset() {
-@@ -977,7 +977,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -985,7 +985,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public boolean hasCustomDisplay() {
@@ -23796,27 +23787,18 @@ index cb6245e64c3cc4cc5280f342678865e6d10c61d9..664a1be1489a41f43fdaade0f0acce2c
              int k = aenumdirection.length;
  
 diff --git a/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java b/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
-index f2d22ccc9eaec52c5d661a944d23a6c48c2a4cc8..a9e970f9f147f3a3ee34a8ae2121c8ae83549d78 100644
+index c3de7825d1f61c3bc40ef326279febbc5ae601e6..d2dd441d5e4336b43b22a07639361ead32d04f16 100644
 --- a/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
-@@ -21,7 +21,7 @@ public abstract class SpreadingSnowyDirtBlock extends SnowyDirtBlock {
+@@ -26,7 +26,7 @@ public abstract class SpreadingSnowyDirtBlock extends SnowyDirtBlock {
          BlockPos blockposition1 = pos.above();
-         BlockState iblockdata1 = world.getBlockState(blockposition1);
+         BlockState iblockdata1 = chunk.getBlockState(blockposition1); // Paper
  
 -        if (iblockdata1.is(Blocks.SNOW) && ((Integer) iblockdata1.getValue(SnowLayerBlock.LAYERS)).intValue() == 1) {
 +        if (iblockdata1.is(Blocks.SNOW) && iblockdata1.getValue(SnowLayerBlock.LAYERS).intValue() == 1) {
              return true;
          } else if (iblockdata1.getFluidState().getAmount() == 8) {
              return false;
-@@ -56,7 +56,7 @@ public abstract class SpreadingSnowyDirtBlock extends SnowyDirtBlock {
-                     BlockPos blockposition1 = pos.offset(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
- 
-                     if (world.getBlockState(blockposition1).is(Blocks.DIRT) && SpreadingSnowyDirtBlock.canPropagate(iblockdata1, world, blockposition1)) {
--                        org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(world, pos, blockposition1, (BlockState) iblockdata1.setValue(SpreadingSnowyDirtBlock.SNOWY, Boolean.valueOf(world.getBlockState(blockposition1.above()).is(Blocks.SNOW)))); // CraftBukkit
-+                        org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockSpreadEvent(world, pos, blockposition1, iblockdata1.setValue(SpreadingSnowyDirtBlock.SNOWY, Boolean.valueOf(world.getBlockState(blockposition1.above()).is(Blocks.SNOW)))); // CraftBukkit
-                     }
-                 }
-             }
 diff --git a/src/main/java/net/minecraft/world/level/block/StemBlock.java b/src/main/java/net/minecraft/world/level/block/StemBlock.java
 index 49d2174d3f93b60e362b914a4d5deecb016f8fff..ea7b23aa0b3906f9ae67b8067b1fe470b8ad581e 100644
 --- a/src/main/java/net/minecraft/world/level/block/StemBlock.java

@@ -4622,7 +4622,7 @@ index 923fe785b9fcba30cc2f04025df1ca767285177b..19eb7e05b0b40032f078790dafe52a8e
  
          return flag;
 diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
-index 8a36d37790ae81b43688066d0f99fd94cbb72b43..3ff22d9e4fa3350613595ec9a396f093fc2a26fd 100644
+index 94c16e231c2fe78637fdf5b66d4f0f3ee80b0d60..61636e6784177dada86d28c097bd9149a74a77bf 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 @@ -30,14 +30,7 @@ import net.minecraft.world.InteractionHand;
@@ -5672,10 +5672,10 @@ index 2b038a191e6909837bce0b6154a7c0b7cab21710..e38e03c2c3e235ba8f06731eca7bf656
                      // CraftBukkit end
                  } else {
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-index b0cbcfa090cad71b148bd7bea1e52d1abaf78e55..775cb4cf336e7700b531d288d5ebdf9a9b3c2736 100644
+index 4a48afb5e68be61b1fc29469fa9422cd50d98f50..7256ba77d033e259afe8187201ccc7ad67ddca9a 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-@@ -240,7 +240,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -248,7 +248,7 @@ public abstract class AbstractMinecart extends Entity {
                  org.bukkit.entity.Entity passenger = (source.getEntity() == null) ? null : source.getEntity().getBukkitEntity();
  
                  VehicleDamageEvent event = new VehicleDamageEvent(vehicle, passenger, amount);
@@ -5684,7 +5684,7 @@ index b0cbcfa090cad71b148bd7bea1e52d1abaf78e55..775cb4cf336e7700b531d288d5ebdf9a
  
                  if (event.isCancelled()) {
                      return false;
-@@ -258,7 +258,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -266,7 +266,7 @@ public abstract class AbstractMinecart extends Entity {
                  if (flag || this.getDamage() > 40.0F) {
                      // CraftBukkit start
                      VehicleDestroyEvent destroyEvent = new VehicleDestroyEvent(vehicle, passenger);
@@ -5693,7 +5693,7 @@ index b0cbcfa090cad71b148bd7bea1e52d1abaf78e55..775cb4cf336e7700b531d288d5ebdf9a
  
                      if (destroyEvent.isCancelled()) {
                          this.setDamage(40); // Maximize damage so this doesn't get triggered again right away
-@@ -415,10 +415,10 @@ public abstract class AbstractMinecart extends Entity {
+@@ -423,10 +423,10 @@ public abstract class AbstractMinecart extends Entity {
              Location to = new Location(bworld, this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
              Vehicle vehicle = (Vehicle) this.getBukkitEntity();
  
@@ -5706,7 +5706,7 @@ index b0cbcfa090cad71b148bd7bea1e52d1abaf78e55..775cb4cf336e7700b531d288d5ebdf9a
              }
              // CraftBukkit end
              if (this.getMinecartType() == AbstractMinecart.Type.RIDEABLE && this.getDeltaMovement().horizontalDistanceSqr() > 0.01D) {
-@@ -431,7 +431,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -439,7 +439,7 @@ public abstract class AbstractMinecart extends Entity {
                          if (!(entity instanceof Player) && !(entity instanceof IronGolem) && !(entity instanceof AbstractMinecart) && !this.isVehicle() && !entity.isPassenger()) {
                              // CraftBukkit start
                              VehicleEntityCollisionEvent collisionEvent = new VehicleEntityCollisionEvent(vehicle, entity.getBukkitEntity());
@@ -5715,7 +5715,7 @@ index b0cbcfa090cad71b148bd7bea1e52d1abaf78e55..775cb4cf336e7700b531d288d5ebdf9a
  
                              if (collisionEvent.isCancelled()) {
                                  continue;
-@@ -442,7 +442,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -450,7 +450,7 @@ public abstract class AbstractMinecart extends Entity {
                              // CraftBukkit start
                              if (!this.isPassengerOfSameVehicle(entity)) {
                                  VehicleEntityCollisionEvent collisionEvent = new VehicleEntityCollisionEvent(vehicle, entity.getBukkitEntity());
@@ -5724,7 +5724,7 @@ index b0cbcfa090cad71b148bd7bea1e52d1abaf78e55..775cb4cf336e7700b531d288d5ebdf9a
  
                                  if (collisionEvent.isCancelled()) {
                                      continue;
-@@ -462,7 +462,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -470,7 +470,7 @@ public abstract class AbstractMinecart extends Entity {
                      if (!this.hasPassenger(entity1) && entity1.isPushable() && entity1 instanceof AbstractMinecart) {
                          // CraftBukkit start
                          VehicleEntityCollisionEvent collisionEvent = new VehicleEntityCollisionEvent(vehicle, entity1.getBukkitEntity());
@@ -5733,7 +5733,7 @@ index b0cbcfa090cad71b148bd7bea1e52d1abaf78e55..775cb4cf336e7700b531d288d5ebdf9a
  
                          if (collisionEvent.isCancelled()) {
                              continue;
-@@ -837,7 +837,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -845,7 +845,7 @@ public abstract class AbstractMinecart extends Entity {
                  if (!this.hasPassenger(entity)) {
                      // CraftBukkit start
                      VehicleEntityCollisionEvent collisionEvent = new VehicleEntityCollisionEvent((Vehicle) this.getBukkitEntity(), entity.getBukkitEntity());

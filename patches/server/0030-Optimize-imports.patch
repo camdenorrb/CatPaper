@@ -484,7 +484,7 @@ index 6b192474627d328087025e988602af6eb00f1bd3..8cf16b793451380c44870039e8c62780
  import java.util.concurrent.ExecutionException;
  import java.util.concurrent.LinkedBlockingQueue;
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 0c27b0ddd4b668835cd59c9622385ba5c2118aae..198cfc0ffb8ddbf952434d07efd313cb3f7d03f4 100644
+index 9fddb70fe57a90950799c5eb1a05d31457af03cb..01bb98746d6718ac9aff7874ae65ccbc34fed92a 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -1,12 +1,10 @@

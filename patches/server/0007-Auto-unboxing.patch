@@ -565,10 +565,10 @@ index 79593d42ef881aa96eab7ea1e50683fa48ff4896..40beb6e01fbf24799c292079bef89156
      public static final EntityDataSerializer<Integer> INT = EntityDataSerializer.simple(FriendlyByteBuf::writeVarInt, FriendlyByteBuf::readVarInt);
      public static final EntityDataSerializer<Float> FLOAT = EntityDataSerializer.simple(FriendlyByteBuf::writeFloat, FriendlyByteBuf::readFloat);
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index fba56667fc6468b7a78310a70b5abf29853dd920..0c27b0ddd4b668835cd59c9622385ba5c2118aae 100644
+index 62c5c438c2f9a5d97dfc70b003a4c8b12be9a551..9fddb70fe57a90950799c5eb1a05d31457af03cb 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -291,7 +291,7 @@ public class Main {
+@@ -300,7 +300,7 @@ public class Main {
                  }
  
                  if (optionset.has("port")) {
@@ -1781,7 +1781,7 @@ index b4578e53077152b83e20640e02c63b05b44efbf2..923fe785b9fcba30cc2f04025df1ca76
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
-index 69696d631778819c782beccb0aea8dec8a4377db..8a36d37790ae81b43688066d0f99fd94cbb72b43 100644
+index cf83ec1fa22c159999e431bdf74e50b3df30d8b9..94c16e231c2fe78637fdf5b66d4f0f3ee80b0d60 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 @@ -409,7 +409,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
@@ -2664,10 +2664,10 @@ index d10852dc074546b369429229a617e83ad91cfa10..3b6350000a7d86efa2bd315aad2accf7
  
      public void setCelebrating(boolean celebrating) {
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-index e40210a76be6b8c33d4dd00e44247c51293ce1b8..b0cbcfa090cad71b148bd7bea1e52d1abaf78e55 100644
+index 1203bd091670c005279323ddcda60f60c8e4fd1d..4a48afb5e68be61b1fc29469fa9422cd50d98f50 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-@@ -181,7 +181,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -189,7 +189,7 @@ public abstract class AbstractMinecart extends Entity {
                  UnmodifiableIterator unmodifiableiterator1 = ((ImmutableList) AbstractMinecart.POSE_DISMOUNT_HEIGHTS.get(entitypose)).iterator();
  
                  while (unmodifiableiterator1.hasNext()) {
@@ -2676,7 +2676,7 @@ index e40210a76be6b8c33d4dd00e44247c51293ce1b8..b0cbcfa090cad71b148bd7bea1e52d1a
                      int[][] aint1 = aint;
                      int j = aint.length;
  
-@@ -383,7 +383,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -391,7 +391,7 @@ public abstract class AbstractMinecart extends Entity {
              if (BaseRailBlock.isRail(iblockdata)) {
                  this.moveAlongTrack(blockposition, iblockdata);
                  if (iblockdata.is(Blocks.ACTIVATOR_RAIL)) {
@@ -2685,7 +2685,7 @@ index e40210a76be6b8c33d4dd00e44247c51293ce1b8..b0cbcfa090cad71b148bd7bea1e52d1a
                  }
              } else {
                  this.comeOffTrack();
-@@ -521,7 +521,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -529,7 +529,7 @@ public abstract class AbstractMinecart extends Entity {
          boolean flag1 = false;
  
          if (state.is(Blocks.POWERED_RAIL)) {
@@ -2694,7 +2694,7 @@ index e40210a76be6b8c33d4dd00e44247c51293ce1b8..b0cbcfa090cad71b148bd7bea1e52d1a
              flag1 = !flag;
          }
  
-@@ -929,7 +929,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -937,7 +937,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public float getDamage() {
@@ -2703,7 +2703,7 @@ index e40210a76be6b8c33d4dd00e44247c51293ce1b8..b0cbcfa090cad71b148bd7bea1e52d1a
      }
  
      public void setHurtTime(int wobbleTicks) {
-@@ -937,7 +937,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -945,7 +945,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public int getHurtTime() {
@@ -2712,7 +2712,7 @@ index e40210a76be6b8c33d4dd00e44247c51293ce1b8..b0cbcfa090cad71b148bd7bea1e52d1a
      }
  
      public void setHurtDir(int wobbleSide) {
-@@ -945,13 +945,13 @@ public abstract class AbstractMinecart extends Entity {
+@@ -953,13 +953,13 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public int getHurtDir() {
@@ -2728,7 +2728,7 @@ index e40210a76be6b8c33d4dd00e44247c51293ce1b8..b0cbcfa090cad71b148bd7bea1e52d1a
      }
  
      public BlockState getDefaultDisplayBlockState() {
-@@ -959,7 +959,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -967,7 +967,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public int getDisplayOffset() {
@@ -2737,7 +2737,7 @@ index e40210a76be6b8c33d4dd00e44247c51293ce1b8..b0cbcfa090cad71b148bd7bea1e52d1a
      }
  
      public int getDefaultDisplayOffset() {
-@@ -977,7 +977,7 @@ public abstract class AbstractMinecart extends Entity {
+@@ -985,7 +985,7 @@ public abstract class AbstractMinecart extends Entity {
      }
  
      public boolean hasCustomDisplay() {
@@ -5407,12 +5407,12 @@ index e4090503e2f3c4a00e51f97b27f05dbc9d0db45a..88ff8a835abde98b63875b1406aebfc6
              int k = aenumdirection.length;
  
 diff --git a/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java b/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
-index 40b11020c08a1fc58f00123c07b9ae4bafdafd54..f2d22ccc9eaec52c5d661a944d23a6c48c2a4cc8 100644
+index af46c05a34292d271fd4a809398e6b299e10b12b..c3de7825d1f61c3bc40ef326279febbc5ae601e6 100644
 --- a/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java
-@@ -21,7 +21,7 @@ public abstract class SpreadingSnowyDirtBlock extends SnowyDirtBlock {
+@@ -26,7 +26,7 @@ public abstract class SpreadingSnowyDirtBlock extends SnowyDirtBlock {
          BlockPos blockposition1 = pos.above();
-         BlockState iblockdata1 = world.getBlockState(blockposition1);
+         BlockState iblockdata1 = chunk.getBlockState(blockposition1); // Paper
  
 -        if (iblockdata1.is(Blocks.SNOW) && (Integer) iblockdata1.getValue(SnowLayerBlock.LAYERS) == 1) {
 +        if (iblockdata1.is(Blocks.SNOW) && ((Integer) iblockdata1.getValue(SnowLayerBlock.LAYERS)).intValue() == 1) {

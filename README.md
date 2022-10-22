@@ -13,3 +13,6 @@ Goals:
 - [ ] Proguard optimizations
 - [ ] Graal AOT
 - [ ] Entity tracking performance improvements
+
+
+To fix merge conflicts, use `git am --continue` after a 3 way merge in intellij, make sure to rebuild patches after done

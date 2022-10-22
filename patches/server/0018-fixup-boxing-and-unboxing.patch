@@ -17,30 +17,6 @@ index 5a02b5a903366c698a6493e5a31408548d73de6f..a333bb203b2b09a05668030ea1e1c23e
          }
  
          return abyte;
-diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
-index 422c46c9ef64b0ee576f421345af4ae22f650410..6d3207ee00a217e9451d3c5e0604f99368e1936e 100644
---- a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
-+++ b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
-@@ -1,6 +1,8 @@
- package net.minecraft.world.entity.ai.behavior;
- 
- import java.util.Map;
-+import java.util.Objects;
-+
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.world.entity.LivingEntity;
- import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
-index af351de70af84d618b1ae2a206974a40cc0a8a4c..1d38fb2a49d2364ecb2a68b3887f07088e6b564f 100644
---- a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
-+++ b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
-@@ -1,5 +1,6 @@
- package net.minecraft.world.entity.ai.sensing;
- 
-+import java.util.Objects;
- import java.util.Set;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.util.RandomSource;
 diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
 index 2fe0dfeea945866c14a1b6a7948f5ac039c62feb..b5c47e10a1d42dd73a4de54c39e8c3b17fa1983d 100644
 --- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java

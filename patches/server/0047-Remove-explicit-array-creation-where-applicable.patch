@@ -105,10 +105,10 @@ index 0ece775ca7e63184f79fcdd1aa7ed5c16fc9bc9e..ee9e874be379150265d744b8e805fd58
                  ItemIdFix.ITEM_NAMES.put(409, "minecraft:prismarine_shard");
                  ItemIdFix.ITEM_NAMES.put(410, "minecraft:prismarine_crystals");
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 198cfc0ffb8ddbf952434d07efd313cb3f7d03f4..dbb95de9bcf93b72a3d1857f177aadec347aba69 100644
+index 01bb98746d6718ac9aff7874ae65ccbc34fed92a..be05d3f37374179ae09f0110f3ca7e9e55e888cd 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -180,7 +180,7 @@ public class Main {
+@@ -189,7 +189,7 @@ public class Main {
                  Main.LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
              }
  
@@ -117,7 +117,7 @@ index 198cfc0ffb8ddbf952434d07efd313cb3f7d03f4..dbb95de9bcf93b72a3d1857f177aadec
              // CraftBukkit start
              File bukkitDataPackFolder = new File(convertable_conversionsession.getLevelPath(LevelResource.DATAPACK_DIR).toFile(), "bukkit");
              if (!bukkitDataPackFolder.exists()) {
-@@ -331,7 +331,7 @@ public class Main {
+@@ -340,7 +340,7 @@ public class Main {
              if (i > 0) {
                  int j = worldupgrader.getConverted() + worldupgrader.getSkipped();
  
@@ -423,7 +423,7 @@ index 19eb7e05b0b40032f078790dafe52a8ec8ab1b4d..36d3d69bd1f8cbdbee2fdcb31c3e1cee
          this.targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Animal.class, false, Wolf.PREY_SELECTOR));
          this.targetSelector.addGoal(6, new NonTameRandomTargetGoal<>(this, Turtle.class, false, Turtle.BABY_ON_LAND_SELECTOR));
 diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
-index 3ff22d9e4fa3350613595ec9a396f093fc2a26fd..31a33d8729cec5d7cd0df8a266c1335d6aa183d6 100644
+index 61636e6784177dada86d28c097bd9149a74a77bf..1ad40d466e2958210a051e8cbc25309e1bdcd497 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 @@ -79,8 +79,8 @@ public class Allay extends PathfinderMob implements InventoryCarrier {

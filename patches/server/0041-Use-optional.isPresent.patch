@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:07:25 -0500
+Subject: [PATCH] Use optional.isPresent
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+index 836dbbb0a387ff0a470a1dee2923e5fe889e4715..923f11ab7e16eaac6fc73a9b18f705dd2e641599 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+@@ -691,7 +691,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+             ServerLevel worldserver = (ServerLevel) world;
+             Optional optional = this.brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES);
+ 
+-            if (!optional.isEmpty()) {
++            if (optional.isPresent()) {
+                 NearestVisibleLivingEntities nearestvisiblelivingentities = (NearestVisibleLivingEntities) optional.get();
+ 
+                 Objects.requireNonNull(ReputationEventHandler.class);
+diff --git a/src/main/java/net/minecraft/world/level/block/PointedDripstoneBlock.java b/src/main/java/net/minecraft/world/level/block/PointedDripstoneBlock.java
+index 961341f5b950c16ca290cf2d756742dbd7049895..c5afd19d74f8615418f7315f9a9d27a17ea2e00b 100644
+--- a/src/main/java/net/minecraft/world/level/block/PointedDripstoneBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/PointedDripstoneBlock.java
+@@ -192,7 +192,7 @@ public class PointedDripstoneBlock extends Block implements Fallable, SimpleWate
+             if (PointedDripstoneBlock.isStalactiteStartPos(state, world, pos)) {
+                 Optional<PointedDripstoneBlock.FluidInfo> optional = PointedDripstoneBlock.getFluidAboveStalactite(world, pos, state);
+ 
+-                if (!optional.isEmpty()) {
++                if (optional.isPresent()) {
+                     Fluid fluidtype = ((PointedDripstoneBlock.FluidInfo) optional.get()).fluid;
+                     float f1;
+ 

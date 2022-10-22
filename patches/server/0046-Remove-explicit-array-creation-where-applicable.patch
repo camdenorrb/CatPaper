@@ -1,0 +1,1130 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:10:03 -0500
+Subject: [PATCH] Remove explicit array creation where applicable
+
+
+diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
+index 7640d991e1fb709f2ba1a56812ad394956b863e8..49fb106a66f7d85fec100064c45b4223619d8a78 100644
+--- a/src/main/java/net/minecraft/commands/Commands.java
++++ b/src/main/java/net/minecraft/commands/Commands.java
+@@ -522,7 +522,7 @@ public class Commands {
+         RootCommandNode<CommandSourceStack> rootcommandnode = com_mojang_brigadier_commanddispatcher.getRoot();
+ 
+         com_mojang_brigadier_commanddispatcher.findAmbiguities((commandnode, commandnode1, commandnode2, collection) -> {
+-            Commands.LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", new Object[]{com_mojang_brigadier_commanddispatcher.getPath(commandnode1), com_mojang_brigadier_commanddispatcher.getPath(commandnode2), collection});
++            Commands.LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", com_mojang_brigadier_commanddispatcher.getPath(commandnode1), com_mojang_brigadier_commanddispatcher.getPath(commandnode2), collection);
+         });
+         Set<ArgumentType<?>> set = ArgumentUtils.findUsedArgumentTypes(rootcommandnode);
+         Set<ArgumentType<?>> set1 = (Set) set.stream().filter((argumenttype) -> {
+diff --git a/src/main/java/net/minecraft/commands/arguments/selector/EntitySelector.java b/src/main/java/net/minecraft/commands/arguments/selector/EntitySelector.java
+index aa6dbe801e0859541a325550717037ca8bf889e9..71814a6df07d410f467a36d04059c0e8a6e95d48 100644
+--- a/src/main/java/net/minecraft/commands/arguments/selector/EntitySelector.java
++++ b/src/main/java/net/minecraft/commands/arguments/selector/EntitySelector.java
+@@ -131,7 +131,7 @@ public class EntitySelector {
+                 entity = worldserver.getEntity(this.entityUUID);
+             } while (entity == null);
+ 
+-            return Lists.newArrayList(new Entity[]{entity});
++            return Lists.newArrayList(entity);
+         } else {
+             Vec3 vec3d = (Vec3) this.position.apply(source.getPosition());
+             Predicate<Entity> predicate = this.getPredicate(vec3d);
+@@ -197,7 +197,7 @@ public class EntitySelector {
+                     ServerPlayer entityplayer1 = (ServerPlayer) source.getEntity();
+ 
+                     if (predicate.test(entityplayer1)) {
+-                        return Lists.newArrayList(new ServerPlayer[]{entityplayer1});
++                        return Lists.newArrayList(entityplayer1);
+                     }
+                 }
+ 
+diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
+index 16776646ab91cdfc863b132f6c3d3cbdc8e3ac7a..8fd70320e19ba92defe812133c00e9cfbe6618b7 100644
+--- a/src/main/java/net/minecraft/network/Connection.java
++++ b/src/main/java/net/minecraft/network/Connection.java
+@@ -310,7 +310,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     }
+ 
+     public void setListener(PacketListener listener) {
+-        Validate.notNull(listener, "packetListener", new Object[0]);
++        Validate.notNull(listener, "packetListener");
+         this.packetListener = listener;
+     }
+     // Paper start
+diff --git a/src/main/java/net/minecraft/network/chat/Component.java b/src/main/java/net/minecraft/network/chat/Component.java
+index a0e60daae233bead9606c2f2fce487184eb3111b..4a4207c93ba86730a2c5e5ed07a81f4a0989ed9a 100644
+--- a/src/main/java/net/minecraft/network/chat/Component.java
++++ b/src/main/java/net/minecraft/network/chat/Component.java
+@@ -52,7 +52,7 @@ public interface Component extends Message, FormattedText, Iterable<Component> {
+ 
+     // CraftBukkit start
+     default Stream<Component> stream() {
+-        return Streams.concat(new Stream[]{Stream.of(this), this.getSiblings().stream().flatMap(Component::stream)});
++        return Streams.concat(Stream.of(this), this.getSiblings().stream().flatMap(Component::stream));
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/network/chat/TextColor.java b/src/main/java/net/minecraft/network/chat/TextColor.java
+index 78c69e270661248ac3384f10fd2aac6777e0388d..94fc50feb168bf0af67c4c639e228cd29f8ae634 100644
+--- a/src/main/java/net/minecraft/network/chat/TextColor.java
++++ b/src/main/java/net/minecraft/network/chat/TextColor.java
+@@ -70,7 +70,7 @@ public final class TextColor {
+     }
+ 
+     public int hashCode() {
+-        return Objects.hash(new Object[]{Integer.valueOf(this.value), this.name});
++        return Objects.hash(Integer.valueOf(this.value), this.name);
+     }
+ 
+     public String toString() {
+diff --git a/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java b/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
+index beb63538b3fc19b88e03027afe03a07ce3417b21..3ae1d8f429dfa9806d9e99cbaeef3059b0267e5b 100644
+--- a/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
++++ b/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
+@@ -43,7 +43,7 @@ public class SynchedEntityData {
+                 Class<?> oclass1 = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+ 
+                 if (!oclass1.equals(entityClass)) {
+-                    SynchedEntityData.LOGGER.debug("defineId called for: {} from {}", new Object[]{entityClass, oclass1, new RuntimeException()});
++                    SynchedEntityData.LOGGER.debug("defineId called for: {} from {}", entityClass, oclass1, new RuntimeException());
+                 }
+             } catch (ClassNotFoundException classnotfoundexception) {
+                 ;
+diff --git a/src/main/java/net/minecraft/server/Bootstrap.java b/src/main/java/net/minecraft/server/Bootstrap.java
+index 0ece775ca7e63184f79fcdd1aa7ed5c16fc9bc9e..ee9e874be379150265d744b8e805fd58256c1cb7 100644
+--- a/src/main/java/net/minecraft/server/Bootstrap.java
++++ b/src/main/java/net/minecraft/server/Bootstrap.java
+@@ -98,7 +98,7 @@ public class Bootstrap {
+                 BlockStateData.register(1023, "{Name:'minecraft:oak_sign',Properties:{rotation:'15'}}", "{Name:'minecraft:standing_sign',Properties:{rotation:'15'}}");
+                 ItemIdFix.ITEM_NAMES.put(323, "minecraft:oak_sign");
+ 
+-                BlockStateData.register(1440, "{Name:\'minecraft:portal\',Properties:{axis:\'x\'}}", new String[]{"{Name:\'minecraft:portal\',Properties:{axis:\'x\'}}"});
++                BlockStateData.register(1440, "{Name:\'minecraft:portal\',Properties:{axis:\'x\'}}", "{Name:\'minecraft:portal\',Properties:{axis:\'x\'}}");
+ 
+                 ItemIdFix.ITEM_NAMES.put(409, "minecraft:prismarine_shard");
+                 ItemIdFix.ITEM_NAMES.put(410, "minecraft:prismarine_crystals");
+diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
+index 198cfc0ffb8ddbf952434d07efd313cb3f7d03f4..dbb95de9bcf93b72a3d1857f177aadec347aba69 100644
+--- a/src/main/java/net/minecraft/server/Main.java
++++ b/src/main/java/net/minecraft/server/Main.java
+@@ -180,7 +180,7 @@ public class Main {
+                 Main.LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
+             }
+ 
+-            PackRepository resourcepackrepository = new PackRepository(PackType.SERVER_DATA, new RepositorySource[]{new ServerPacksSource(), new FolderRepositorySource(convertable_conversionsession.getLevelPath(LevelResource.DATAPACK_DIR).toFile(), PackSource.WORLD)});
++            PackRepository resourcepackrepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource(), new FolderRepositorySource(convertable_conversionsession.getLevelPath(LevelResource.DATAPACK_DIR).toFile(), PackSource.WORLD));
+             // CraftBukkit start
+             File bukkitDataPackFolder = new File(convertable_conversionsession.getLevelPath(LevelResource.DATAPACK_DIR).toFile(), "bukkit");
+             if (!bukkitDataPackFolder.exists()) {
+@@ -331,7 +331,7 @@ public class Main {
+             if (i > 0) {
+                 int j = worldupgrader.getConverted() + worldupgrader.getSkipped();
+ 
+-                Main.LOGGER.info("{}% completed ({} / {} chunks)...", new Object[]{Integer.valueOf(Mth.floor((float) j / (float) i * 100.0F)), Integer.valueOf(j), Integer.valueOf(i)});
++                Main.LOGGER.info("{}% completed ({} / {} chunks)...", Integer.valueOf(Mth.floor((float) j / (float) i * 100.0F)), Integer.valueOf(j), Integer.valueOf(i));
+             }
+ 
+             if (!continueCheck.getAsBoolean()) {
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index fe64325e727f3e1c7bfb0b768147f4093a090460..dff60fa056d84bd27a21c776cfc643a0603ee82c 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1341,8 +1341,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             try {
+                 BufferedImage bufferedimage = ImageIO.read(file);
+ 
+-                Validate.validState(bufferedimage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
+-                Validate.validState(bufferedimage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
++                Validate.validState(bufferedimage.getWidth() == 64, "Must be 64 pixels wide");
++                Validate.validState(bufferedimage.getHeight() == 64, "Must be 64 pixels high");
+                 ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
+ 
+                 ImageIO.write(bufferedimage, "PNG", bytearrayoutputstream);
+diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
+index a783c7608dd6242cc1a196862a1c931c75698112..a64c70aa2fc68e498c46c3c86b41b84fd5d429a8 100644
+--- a/src/main/java/net/minecraft/server/level/ServerEntity.java
++++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
+@@ -247,7 +247,7 @@ public class ServerEntity {
+ 
+     public void removePairing(ServerPlayer player) {
+         this.entity.stopSeenByPlayer(player);
+-        player.connection.send(new ClientboundRemoveEntitiesPacket(new int[]{this.entity.getId()}));
++        player.connection.send(new ClientboundRemoveEntitiesPacket(this.entity.getId()));
+     }
+ 
+     public void addPairing(ServerPlayer player) {
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
+index 0ea6a53f862b7b598accb0ed77faa3e82b38a6c6..0db023cac14e9ced546c1aee18f21500484e1e8b 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
+@@ -101,7 +101,7 @@ public class ServerPlayerGameMode {
+         this.gameModeForPlayer = gameMode;
+         gameMode.updatePlayerAbilities(this.player.getAbilities());
+         this.player.onUpdateAbilities();
+-        this.player.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_GAME_MODE, new ServerPlayer[]{this.player}), this.player); // CraftBukkit
++        this.player.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_GAME_MODE, this.player), this.player); // CraftBukkit
+         this.level.updateSleepingPlayerList();
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/level/WorldGenRegion.java b/src/main/java/net/minecraft/server/level/WorldGenRegion.java
+index c613c3655543f03d3ebd03a77dc7c3c91fecb7e7..e2e290ccc085e4815e8517a79549491c7d6fa351 100644
+--- a/src/main/java/net/minecraft/server/level/WorldGenRegion.java
++++ b/src/main/java/net/minecraft/server/level/WorldGenRegion.java
+@@ -146,7 +146,7 @@ public class WorldGenRegion implements WorldGenLevel {
+             return null;
+         } else {
+             WorldGenRegion.LOGGER.error("Requested chunk : {} {}", Integer.valueOf(chunkX), Integer.valueOf(chunkZ));
+-            WorldGenRegion.LOGGER.error("Region bounds : {} {} | {} {}", new Object[]{Integer.valueOf(this.firstPos.x), Integer.valueOf(this.firstPos.z), Integer.valueOf(this.lastPos.x), Integer.valueOf(this.lastPos.z)});
++            WorldGenRegion.LOGGER.error("Region bounds : {} {} | {} {}", Integer.valueOf(this.firstPos.x), Integer.valueOf(this.firstPos.z), Integer.valueOf(this.lastPos.x), Integer.valueOf(this.lastPos.z));
+             if (ichunkaccess != null) {
+                 throw (RuntimeException) Util.pauseInIde(new RuntimeException(String.format(Locale.ROOT, "Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, ichunkaccess.getStatus(), Integer.valueOf(chunkX), Integer.valueOf(chunkZ))));
+             } else {
+diff --git a/src/main/java/net/minecraft/server/network/LegacyQueryHandler.java b/src/main/java/net/minecraft/server/network/LegacyQueryHandler.java
+index 01b4e063ed885b16c885d1d11c4a89927c56dd52..811814a0d2e3956e717ba145405bd96617c92d0b 100644
+--- a/src/main/java/net/minecraft/server/network/LegacyQueryHandler.java
++++ b/src/main/java/net/minecraft/server/network/LegacyQueryHandler.java
+@@ -76,7 +76,7 @@ public class LegacyQueryHandler extends ChannelInboundHandlerAdapter {
+                         channelhandlercontext.close();
+                         break;
+                     }
+-                    s = String.format(Locale.ROOT, "\u00a71\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d", new Object[] {Integer.valueOf(event.getProtocolVersion()), minecraftserver.getServerVersion(), event.getMotd(), Integer.valueOf(event.getNumPlayers()), Integer.valueOf(event.getMaxPlayers())}); // CraftBukkit
++                    s = String.format(Locale.ROOT, "\u00a71\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d", Integer.valueOf(event.getProtocolVersion()), minecraftserver.getServerVersion(), event.getMotd(), Integer.valueOf(event.getNumPlayers()), Integer.valueOf(event.getMaxPlayers())); // CraftBukkit
+                     // Paper end
+                     LegacyQueryHandler.sendFlushAndClose(channelhandlercontext, LegacyQueryHandler.createReply(s));
+                     break;
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index f543b27da238662d3a4187d29cefc3763dbfb98c..d8696c4c0b55f7630dd1f18fddfd438017ed3af4 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -653,7 +653,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+ 
+                 if (d10 - d9 > Math.max(100.0D, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && !this.isSingleplayerOwner()) {
+                 // CraftBukkit end
+-                    ServerGamePacketListenerImpl.LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", new Object[]{entity.getName().getString(), this.player.getName().getString(), Double.valueOf(d6), Double.valueOf(d7), Double.valueOf(d8)});
++                    ServerGamePacketListenerImpl.LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), Double.valueOf(d6), Double.valueOf(d7), Double.valueOf(d8));
+                     this.connection.send(new ClientboundMoveVehiclePacket(entity));
+                     return;
+                 }
+@@ -681,7 +681,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+ 
+                 if (d10 > org.spigotmc.SpigotConfig.movedWronglyThreshold) { // Spigot
+                     flag2 = true; // Paper - diff on change, this should be moved wrongly
+-                    ServerGamePacketListenerImpl.LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", new Object[]{entity.getName().getString(), this.player.getName().getString(), Double.valueOf(Math.sqrt(d10))});
++                    ServerGamePacketListenerImpl.LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", entity.getName().getString(), this.player.getName().getString(), Double.valueOf(Math.sqrt(d10)));
+                 }
+                 Location curPos = this.getCraftPlayer().getLocation(); // Spigot
+ 
+@@ -1476,7 +1476,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+ 
+                                 if (d11 - d10 > Math.max(f2, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && !this.isSingleplayerOwner()) {
+                                 // CraftBukkit end
+-                                    ServerGamePacketListenerImpl.LOGGER.warn("{} moved too quickly! {},{},{}", new Object[]{this.player.getName().getString(), Double.valueOf(d7), Double.valueOf(d8), Double.valueOf(d9)});
++                                    ServerGamePacketListenerImpl.LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), Double.valueOf(d7), Double.valueOf(d8), Double.valueOf(d9));
+                                     this.teleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYRot(), this.player.getXRot());
+                                     return;
+                                 }
+@@ -1982,7 +1982,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 this.player.connection.send(new ClientboundBlockUpdatePacket(worldserver, blockposition));
+                 this.player.connection.send(new ClientboundBlockUpdatePacket(worldserver, blockposition.relative(enumdirection)));
+             } else {
+-                ServerGamePacketListenerImpl.LOGGER.warn("Rejecting UseItemOnPacket from {}: Location {} too far away from hit block {}.", new Object[]{this.player.getGameProfile().getName(), vec3d, blockposition});
++                ServerGamePacketListenerImpl.LOGGER.warn("Rejecting UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.player.getGameProfile().getName(), vec3d, blockposition);
+             }
+         }
+     }
+@@ -3084,7 +3084,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 int i = packet.getSlotNum();
+ 
+                 if (!this.player.containerMenu.isValidSlotIndex(i)) {
+-                    ServerGamePacketListenerImpl.LOGGER.debug("Player {} clicked invalid slot index: {}, available slots: {}", new Object[]{this.player.getName(), Integer.valueOf(i), Integer.valueOf(this.player.containerMenu.slots.size())});
++                    ServerGamePacketListenerImpl.LOGGER.debug("Player {} clicked invalid slot index: {}, available slots: {}", this.player.getName(), Integer.valueOf(i), Integer.valueOf(this.player.containerMenu.slots.size()));
+                 } else {
+                     boolean flag = packet.getStateId() != this.player.containerMenu.getStateId();
+ 
+diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index 1314023a21b18ff84675711d0f974cf34c5520f6..f5de5c55cdaa8e8f330c31d4a2ea8e48005aef94 100644
+--- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -269,8 +269,8 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+ 
+     @Override
+     public void handleHello(ServerboundHelloPacket packet) {
+-        Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", new Object[0]);
+-        Validate.validState(ServerLoginPacketListenerImpl.isValidUsername(packet.name()), "Invalid characters in username", new Object[0]);
++        Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
++        Validate.validState(ServerLoginPacketListenerImpl.isValidUsername(packet.name()), "Invalid characters in username");
+         // Paper start - validate usernames
+         if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation) {
+             if (!this.iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation && !validateUsername(packet.name())) {
+@@ -330,7 +330,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+ 
+     @Override
+     public void handleKey(ServerboundKeyPacket packet) {
+-        Validate.validState(this.state == ServerLoginPacketListenerImpl.State.KEY, "Unexpected key packet", new Object[0]);
++        Validate.validState(this.state == ServerLoginPacketListenerImpl.State.KEY, "Unexpected key packet");
+ 
+         final String s;
+ 
+diff --git a/src/main/java/net/minecraft/server/players/OldUsersConverter.java b/src/main/java/net/minecraft/server/players/OldUsersConverter.java
+index 1cc4a8f90eaec869f926b364ff457a45feeaf615..8e594797aeaeac8d7161fc7e50b32614e949f84d 100644
+--- a/src/main/java/net/minecraft/server/players/OldUsersConverter.java
++++ b/src/main/java/net/minecraft/server/players/OldUsersConverter.java
+@@ -291,7 +291,7 @@ public class OldUsersConverter {
+                     }
+                 };
+ 
+-                OldUsersConverter.lookupPlayers(server, Lists.newArrayList(new String[]{name}), profilelookupcallback);
++                OldUsersConverter.lookupPlayers(server, Lists.newArrayList(name), profilelookupcallback);
+                 return !list.isEmpty() && ((GameProfile) list.get(0)).getId() != null ? ((GameProfile) list.get(0)).getId() : null;
+             } else {
+                 return UUIDUtil.getOrCreatePlayerUUID(new GameProfile((UUID) null, name));
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index a6689aef1841c66d143693340ba303b70ebfcced..9362043f3ea16d9c540c0bf17c4c6a6663689a66 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -396,7 +396,7 @@ public abstract class PlayerList {
+                 continue;
+             }
+ 
+-            player.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, new ServerPlayer[]{entityplayer1}));
++            player.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, entityplayer1));
+         }
+         player.sentListPacket = true;
+         player.supressTrackerForLogin = false; // Paper
+diff --git a/src/main/java/net/minecraft/stats/ServerStatsCounter.java b/src/main/java/net/minecraft/stats/ServerStatsCounter.java
+index 5ed25632ce80bc281fc8faee82b1f9fa1f663d4f..6172577874d4fa639574f5164babd059bd1aeeac 100644
+--- a/src/main/java/net/minecraft/stats/ServerStatsCounter.java
++++ b/src/main/java/net/minecraft/stats/ServerStatsCounter.java
+@@ -136,7 +136,7 @@ public class ServerStatsCounter extends StatsCounter {
+                                                 ServerStatsCounter.LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, s2);
+                                             });
+                                         } else {
+-                                            ServerStatsCounter.LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", new Object[]{this.file, nbttagcompound2.get(s2), s2});
++                                            ServerStatsCounter.LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, nbttagcompound2.get(s2), s2);
+                                         }
+                                     }
+ 
+diff --git a/src/main/java/net/minecraft/util/datafix/fixes/ItemStackTheFlatteningFix.java b/src/main/java/net/minecraft/util/datafix/fixes/ItemStackTheFlatteningFix.java
+index f7da1948992698f14cd14880517a6e8f6ad07cd6..0c1655f35dcf0639fa1f383fd3a9bace11617133 100644
+--- a/src/main/java/net/minecraft/util/datafix/fixes/ItemStackTheFlatteningFix.java
++++ b/src/main/java/net/minecraft/util/datafix/fixes/ItemStackTheFlatteningFix.java
+@@ -346,7 +346,7 @@ public class ItemStackTheFlatteningFix extends DataFix {
+     private static final Set<String> IDS = (Set) ItemStackTheFlatteningFix.MAP.keySet().stream().map((s) -> {
+         return s.substring(0, s.indexOf(46));
+     }).collect(Collectors.toSet());
+-    private static final Set<String> DAMAGE_IDS = Sets.newHashSet(new String[]{"minecraft:bow", "minecraft:carrot_on_a_stick", "minecraft:chainmail_boots", "minecraft:chainmail_chestplate", "minecraft:chainmail_helmet", "minecraft:chainmail_leggings", "minecraft:diamond_axe", "minecraft:diamond_boots", "minecraft:diamond_chestplate", "minecraft:diamond_helmet", "minecraft:diamond_hoe", "minecraft:diamond_leggings", "minecraft:diamond_pickaxe", "minecraft:diamond_shovel", "minecraft:diamond_sword", "minecraft:elytra", "minecraft:fishing_rod", "minecraft:flint_and_steel", "minecraft:golden_axe", "minecraft:golden_boots", "minecraft:golden_chestplate", "minecraft:golden_helmet", "minecraft:golden_hoe", "minecraft:golden_leggings", "minecraft:golden_pickaxe", "minecraft:golden_shovel", "minecraft:golden_sword", "minecraft:iron_axe", "minecraft:iron_boots", "minecraft:iron_chestplate", "minecraft:iron_helmet", "minecraft:iron_hoe", "minecraft:iron_leggings", "minecraft:iron_pickaxe", "minecraft:iron_shovel", "minecraft:iron_sword", "minecraft:leather_boots", "minecraft:leather_chestplate", "minecraft:leather_helmet", "minecraft:leather_leggings", "minecraft:shears", "minecraft:shield", "minecraft:stone_axe", "minecraft:stone_hoe", "minecraft:stone_pickaxe", "minecraft:stone_shovel", "minecraft:stone_sword", "minecraft:wooden_axe", "minecraft:wooden_hoe", "minecraft:wooden_pickaxe", "minecraft:wooden_shovel", "minecraft:wooden_sword"});
++    private static final Set<String> DAMAGE_IDS = Sets.newHashSet("minecraft:bow", "minecraft:carrot_on_a_stick", "minecraft:chainmail_boots", "minecraft:chainmail_chestplate", "minecraft:chainmail_helmet", "minecraft:chainmail_leggings", "minecraft:diamond_axe", "minecraft:diamond_boots", "minecraft:diamond_chestplate", "minecraft:diamond_helmet", "minecraft:diamond_hoe", "minecraft:diamond_leggings", "minecraft:diamond_pickaxe", "minecraft:diamond_shovel", "minecraft:diamond_sword", "minecraft:elytra", "minecraft:fishing_rod", "minecraft:flint_and_steel", "minecraft:golden_axe", "minecraft:golden_boots", "minecraft:golden_chestplate", "minecraft:golden_helmet", "minecraft:golden_hoe", "minecraft:golden_leggings", "minecraft:golden_pickaxe", "minecraft:golden_shovel", "minecraft:golden_sword", "minecraft:iron_axe", "minecraft:iron_boots", "minecraft:iron_chestplate", "minecraft:iron_helmet", "minecraft:iron_hoe", "minecraft:iron_leggings", "minecraft:iron_pickaxe", "minecraft:iron_shovel", "minecraft:iron_sword", "minecraft:leather_boots", "minecraft:leather_chestplate", "minecraft:leather_helmet", "minecraft:leather_leggings", "minecraft:shears", "minecraft:shield", "minecraft:stone_axe", "minecraft:stone_hoe", "minecraft:stone_pickaxe", "minecraft:stone_shovel", "minecraft:stone_sword", "minecraft:wooden_axe", "minecraft:wooden_hoe", "minecraft:wooden_pickaxe", "minecraft:wooden_shovel", "minecraft:wooden_sword");
+ 
+     public ItemStackTheFlatteningFix(Schema schema, boolean flag) {
+         super(schema, flag);
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java b/src/main/java/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java
+index d7c25c3f30961d792d1d9ec32306d0874c8d0d0e..6db61723761d2c1645f08c24ce95c35fcd043ad3 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/InteractWithDoor.java
+@@ -190,7 +190,7 @@ public class InteractWithDoor extends Behavior<LivingEntity> {
+         if (behaviorcontroller.getMemory(MemoryModuleType.DOORS_TO_CLOSE).isPresent()) {
+             ((Set) behaviorcontroller.getMemory(MemoryModuleType.DOORS_TO_CLOSE).get()).add(globalpos);
+         } else {
+-            behaviorcontroller.setMemory(MemoryModuleType.DOORS_TO_CLOSE, Sets.newHashSet(new GlobalPos[]{globalpos})); // CraftBukkit - decompile error
++            behaviorcontroller.setMemory(MemoryModuleType.DOORS_TO_CLOSE, Sets.newHashSet(globalpos)); // CraftBukkit - decompile error
+         }
+ 
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Bee.java b/src/main/java/net/minecraft/world/entity/animal/Bee.java
+index 300f66912fa043a9a049ced223a9d49a7f968611..3cb57ecf8416d1879358e9b6c225c5388c5d13c1 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Bee.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Bee.java
+@@ -195,7 +195,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+         this.goalSelector.addGoal(7, new Bee.BeeGrowCropGoal());
+         this.goalSelector.addGoal(8, new Bee.BeeWanderGoal());
+         this.goalSelector.addGoal(9, new FloatGoal(this));
+-        this.targetSelector.addGoal(1, (new Bee.BeeHurtByOtherGoal(this)).setAlertOthers(new Class[0]));
++        this.targetSelector.addGoal(1, (new Bee.BeeHurtByOtherGoal(this)).setAlertOthers());
+         this.targetSelector.addGoal(2, new Bee.BeeBecomeAngryTargetGoal(this));
+         this.targetSelector.addGoal(3, new ResetUniversalAngerTargetGoal<>(this, true));
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Dolphin.java b/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
+index 01e2a6d01543b3579667ff34e2c76b127e94f502..c6cb36af041d50906f40f88f41ae2f84ac710cd0 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
+@@ -170,7 +170,7 @@ public class Dolphin extends WaterAnimal {
+         this.goalSelector.addGoal(8, new Dolphin.PlayWithItemsGoal());
+         this.goalSelector.addGoal(8, new FollowBoatGoal(this));
+         this.goalSelector.addGoal(9, new AvoidEntityGoal<>(this, Guardian.class, 8.0F, 1.0D, 1.0D));
+-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[]{Guardian.class})).setAlertOthers());
++        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Guardian.class)).setAlertOthers());
+     }
+ 
+     public static AttributeSupplier.Builder createAttributes() {
+diff --git a/src/main/java/net/minecraft/world/entity/animal/IronGolem.java b/src/main/java/net/minecraft/world/entity/animal/IronGolem.java
+index 1fa0a8bf7701630bb4ffd16399369232b2da9ca2..be1ec2df77ecba5ff708b4fb3a82a095ac91c586 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/IronGolem.java
++++ b/src/main/java/net/minecraft/world/entity/animal/IronGolem.java
+@@ -79,7 +79,7 @@ public class IronGolem extends AbstractGolem implements NeutralMob {
+         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
+         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+         this.targetSelector.addGoal(1, new DefendVillageTargetGoal(this));
+-        this.targetSelector.addGoal(2, new HurtByTargetGoal(this, new Class[0]));
++        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, (entityliving) -> {
+             return entityliving instanceof Enemy && !(entityliving instanceof Creeper);
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
+index d96fcf2ca7c02d77c4c83aaa2f1de91734b8aa6a..bf59d0bd839b1ef40d1048e3a5c407dfcac385e2 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
+@@ -276,7 +276,7 @@ public class Panda extends Animal {
+         this.goalSelector.addGoal(12, new Panda.PandaRollGoal(this));
+         this.goalSelector.addGoal(13, new FollowParentGoal(this, 1.25D));
+         this.goalSelector.addGoal(14, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+-        this.targetSelector.addGoal(1, (new Panda.PandaHurtByTargetGoal(this, new Class[0])).setAlertOthers(new Class[0]));
++        this.targetSelector.addGoal(1, (new Panda.PandaHurtByTargetGoal(this)).setAlertOthers());
+     }
+ 
+     public static AttributeSupplier.Builder createAttributes() {
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Parrot.java b/src/main/java/net/minecraft/world/entity/animal/Parrot.java
+index 081d79283241923d22f66f7da42dac834883acc3..ca41cc125187da48b3c7069d808e2716ed27bc37 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Parrot.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Parrot.java
+@@ -75,7 +75,7 @@ public class Parrot extends ShoulderRidingEntity implements FlyingAnimal {
+         }
+     };
+     private static final Item POISONOUS_FOOD = Items.COOKIE;
+-    private static final Set<Item> TAME_FOOD = Sets.newHashSet(new Item[]{Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS});
++    private static final Set<Item> TAME_FOOD = Sets.newHashSet(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
+     private static final int VARIANTS = 5;
+     static final Map<EntityType<?>, SoundEvent> MOB_SOUND_MAP = (Map) Util.make(Maps.newHashMap(), (hashmap) -> {
+         hashmap.put(EntityType.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE);
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Rabbit.java b/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
+index 625a15e3a0ce25222b8d93b94540ade081faf84e..714b800eb9223cddce83b95d0fb759c9b642eea7 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
+@@ -364,7 +364,7 @@ public class Rabbit extends Animal {
+         if (rabbitType == 99) {
+             this.getAttribute(Attributes.ARMOR).setBaseValue(8.0D);
+             this.goalSelector.addGoal(4, new Rabbit.EvilRabbitAttackGoal(this));
+-            this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[0])).setAlertOthers());
++            this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers());
+             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Wolf.class, true));
+             if (!this.hasCustomName()) {
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Wolf.java b/src/main/java/net/minecraft/world/entity/animal/Wolf.java
+index 19eb7e05b0b40032f078790dafe52a8ec8ab1b4d..36d3d69bd1f8cbdbee2fdcb31c3e1cee48165663 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Wolf.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Wolf.java
+@@ -118,7 +118,7 @@ public class Wolf extends TamableAnimal implements NeutralMob {
+         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
+         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+-        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, new Class[0])).setAlertOthers());
++        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setAlertOthers());
+         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
+         this.targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Animal.class, false, Wolf.PREY_SELECTOR));
+         this.targetSelector.addGoal(6, new NonTameRandomTargetGoal<>(this, Turtle.class, false, Turtle.BABY_ON_LAND_SELECTOR));
+diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
+index 3ff22d9e4fa3350613595ec9a396f093fc2a26fd..31a33d8729cec5d7cd0df8a266c1335d6aa183d6 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
++++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
+@@ -79,8 +79,8 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
+     private static final EntityDataAccessor<Boolean> DATA_DANCING = SynchedEntityData.defineId(Allay.class, EntityDataSerializers.BOOLEAN);
+     private static final EntityDataAccessor<Boolean> DATA_CAN_DUPLICATE = SynchedEntityData.defineId(Allay.class, EntityDataSerializers.BOOLEAN);
+     protected static final ImmutableList<SensorType<? extends Sensor<? super Allay>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY, SensorType.NEAREST_ITEMS);
+-    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.PATH, MemoryModuleType.LOOK_TARGET, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.HURT_BY, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.LIKED_PLAYER, MemoryModuleType.LIKED_NOTEBLOCK_POSITION, MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS, MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS, MemoryModuleType.IS_PANICKING, new MemoryModuleType[0]);
+-    public static final ImmutableList<Float> THROW_SOUND_PITCHES = ImmutableList.of(Float.valueOf(0.5625F), Float.valueOf(0.625F), Float.valueOf(0.75F), Float.valueOf(0.9375F), Float.valueOf(1.0F), Float.valueOf(1.0F), Float.valueOf(1.125F), Float.valueOf(1.25F), Float.valueOf(1.5F), Float.valueOf(1.875F), Float.valueOf(2.0F), Float.valueOf(2.25F), new Float[]{Float.valueOf(2.5F), Float.valueOf(3.0F), Float.valueOf(3.75F), Float.valueOf(4.0F)});
++    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.PATH, MemoryModuleType.LOOK_TARGET, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.HURT_BY, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.LIKED_PLAYER, MemoryModuleType.LIKED_NOTEBLOCK_POSITION, MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS, MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS, MemoryModuleType.IS_PANICKING);
++    public static final ImmutableList<Float> THROW_SOUND_PITCHES = ImmutableList.of(Float.valueOf(0.5625F), Float.valueOf(0.625F), Float.valueOf(0.75F), Float.valueOf(0.9375F), Float.valueOf(1.0F), Float.valueOf(1.0F), Float.valueOf(1.125F), Float.valueOf(1.25F), Float.valueOf(1.5F), Float.valueOf(1.875F), Float.valueOf(2.0F), Float.valueOf(2.25F), Float.valueOf(2.5F), Float.valueOf(3.0F), Float.valueOf(3.75F), Float.valueOf(4.0F));
+     private final DynamicGameEventListener<VibrationListener> dynamicVibrationListener;
+     private final VibrationListener.VibrationListenerConfig vibrationListenerConfig;
+     private final DynamicGameEventListener<Allay.JukeboxListener> dynamicJukeboxListener;
+diff --git a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+index e6ca05792685add0a772b6cfaa47a93094a6b973..de8e03040a971dc47accc9400d2c65eba6aec571 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
++++ b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+@@ -76,7 +76,7 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+     public static final int TOTAL_PLAYDEAD_TIME = 200;
+     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super Axolotl>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS);
+     // CraftBukkit - decompile error
+-    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.<MemoryModuleType<?>>of(MemoryModuleType.BREED_TARGET, MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT, new MemoryModuleType[]{MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleType.IS_TEMPTED, MemoryModuleType.HAS_HUNTING_COOLDOWN, MemoryModuleType.IS_PANICKING});
++    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.<MemoryModuleType<?>>of(MemoryModuleType.BREED_TARGET, MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleType.IS_TEMPTED, MemoryModuleType.HAS_HUNTING_COOLDOWN, MemoryModuleType.IS_PANICKING);
+     private static final EntityDataAccessor<Integer> DATA_VARIANT = SynchedEntityData.defineId(Axolotl.class, EntityDataSerializers.INT);
+     private static final EntityDataAccessor<Boolean> DATA_PLAYING_DEAD = SynchedEntityData.defineId(Axolotl.class, EntityDataSerializers.BOOLEAN);
+     private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(Axolotl.class, EntityDataSerializers.BOOLEAN);
+@@ -150,7 +150,7 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+                     flag = true;
+                 }
+             } else {
+-                entityData = new Axolotl.AxolotlGroupData(new Axolotl.Variant[]{Axolotl.Variant.getCommonSpawnVariant(randomsource), Axolotl.Variant.getCommonSpawnVariant(randomsource)});
++                entityData = new Axolotl.AxolotlGroupData(Variant.getCommonSpawnVariant(randomsource), Variant.getCommonSpawnVariant(randomsource));
+             }
+ 
+             this.setVariant(((Axolotl.AxolotlGroupData) entityData).getVariant(randomsource));
+diff --git a/src/main/java/net/minecraft/world/entity/animal/goat/Goat.java b/src/main/java/net/minecraft/world/entity/animal/goat/Goat.java
+index 4e17f9f98fc135541c122c518c8e8628f6005d10..76b036b5c868336203a99de752b000ed9ece4288 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/goat/Goat.java
++++ b/src/main/java/net/minecraft/world/entity/animal/goat/Goat.java
+@@ -64,7 +64,7 @@ public class Goat extends Animal {
+     private static final int ADULT_ATTACK_DAMAGE = 2;
+     private static final int BABY_ATTACK_DAMAGE = 1;
+     protected static final ImmutableList<SensorType<? extends Sensor<? super Goat>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.GOAT_TEMPTATIONS);
+-    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.BREED_TARGET, MemoryModuleType.LONG_JUMP_COOLDOWN_TICKS, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, new MemoryModuleType[]{MemoryModuleType.IS_TEMPTED, MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleType.RAM_TARGET, MemoryModuleType.IS_PANICKING});
++    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.BREED_TARGET, MemoryModuleType.LONG_JUMP_COOLDOWN_TICKS, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleType.IS_TEMPTED, MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleType.RAM_TARGET, MemoryModuleType.IS_PANICKING);
+     public static final int GOAT_FALL_DAMAGE_REDUCTION = 10;
+     public static final double GOAT_SCREAMING_CHANCE = 0.02D;
+     public static final double UNIHORN_CHANCE = 0.10000000149011612D;
+diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
+index 62a3b5cab3c16eded5545fe0761a9ccb83a90a9b..3e4aa5d82514e38cf0af096ca5b2e4c20b6ffbeb 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
++++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
+@@ -113,7 +113,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
+         this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this, 1.0D));
+         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, new Class[0]));
++        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, WitherBoss.LIVING_ENTITY_SELECTOR));
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/AbstractSkeleton.java b/src/main/java/net/minecraft/world/entity/monster/AbstractSkeleton.java
+index afcf65c9004cd0fccf54264e1da897657ba21633..636d7508fdc6ceeb4fd18f4785221d4866d29617 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/AbstractSkeleton.java
++++ b/src/main/java/net/minecraft/world/entity/monster/AbstractSkeleton.java
+@@ -75,7 +75,7 @@ public abstract class AbstractSkeleton extends Monster implements RangedAttackMo
+         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, new Class[0]));
++        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Turtle.class, 10, true, false, Turtle.BABY_ON_LAND_SELECTOR));
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Creeper.java b/src/main/java/net/minecraft/world/entity/monster/Creeper.java
+index bed99619db4c70e9f6322e809a85f1e328d27c8f..843af8eacb0f8c31747f81a93557ee4febcda2ad 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Creeper.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Creeper.java
+@@ -76,7 +76,7 @@ public class Creeper extends Monster implements PowerableMob {
+         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
+-        this.targetSelector.addGoal(2, new HurtByTargetGoal(this, new Class[0]));
++        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
+     }
+ 
+     public static AttributeSupplier.Builder createAttributes() {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Drowned.java b/src/main/java/net/minecraft/world/entity/monster/Drowned.java
+index 1b1305f5eaf5710b72c57ab4c3953e703a23f1e0..8b3eaf7495a1681e38825b585dcbaab0a0b27fa0 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Drowned.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Drowned.java
+@@ -76,7 +76,7 @@ public class Drowned extends Zombie implements RangedAttackMob {
+         this.goalSelector.addGoal(5, new Drowned.DrownedGoToBeachGoal(this, 1.0D));
+         this.goalSelector.addGoal(6, new Drowned.DrownedSwimUpGoal(this, 1.0D, this.level.getSeaLevel()));
+         this.goalSelector.addGoal(7, new RandomStrollGoal(this, 1.0D));
+-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[]{Drowned.class})).setAlertOthers(ZombifiedPiglin.class));
++        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Drowned.class)).setAlertOthers(ZombifiedPiglin.class));
+         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::okTarget));
+         if (this.level.spigotConfig.zombieAggressiveTowardsVillager) this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false)); // Paper
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+diff --git a/src/main/java/net/minecraft/world/entity/monster/EnderMan.java b/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
+index 3b6ab94751adde069ef3e5c0214eda306bf45fd9..a32262d39d51f8fd86032b075fb9177f54fdd310 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
++++ b/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
+@@ -98,7 +98,7 @@ public class EnderMan extends Monster implements NeutralMob {
+         this.goalSelector.addGoal(10, new EnderMan.EndermanLeaveBlockGoal(this));
+         this.goalSelector.addGoal(11, new EnderMan.EndermanTakeBlockGoal(this));
+         this.targetSelector.addGoal(1, new EnderMan.EndermanLookForPlayerGoal(this, this::isAngryAt));
+-        this.targetSelector.addGoal(2, new HurtByTargetGoal(this, new Class[0]));
++        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Endermite.class, true, false));
+         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Evoker.java b/src/main/java/net/minecraft/world/entity/monster/Evoker.java
+index 7f695625134ba55f85c54efddd049e167e0d1d8b..c70aa4dab44fd86f3ee995a2aea46b79f8d83414 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Evoker.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Evoker.java
+@@ -60,7 +60,7 @@ public class Evoker extends SpellcasterIllager {
+         this.goalSelector.addGoal(8, new RandomStrollGoal(this, 0.6D));
+         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
+         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
+-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[]{Raider.class})).setAlertOthers());
++        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
+         this.targetSelector.addGoal(2, (new NearestAttackableTargetGoal<>(this, Player.class, true)).setUnseenMemoryTicks(300));
+         this.targetSelector.addGoal(3, (new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false)).setUnseenMemoryTicks(300));
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, false));
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Illusioner.java b/src/main/java/net/minecraft/world/entity/monster/Illusioner.java
+index 86f7fdd42461db151221d2c0d5cff6953392fa80..868deae03db6f3c204e416538d6a51ab4c8377ad 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Illusioner.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Illusioner.java
+@@ -70,7 +70,7 @@ public class Illusioner extends SpellcasterIllager implements RangedAttackMob {
+         this.goalSelector.addGoal(8, new RandomStrollGoal(this, 0.6D));
+         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
+         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
+-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[]{Raider.class})).setAlertOthers());
++        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
+         this.targetSelector.addGoal(2, (new NearestAttackableTargetGoal<>(this, Player.class, true)).setUnseenMemoryTicks(300));
+         this.targetSelector.addGoal(3, (new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false)).setUnseenMemoryTicks(300));
+         this.targetSelector.addGoal(3, (new NearestAttackableTargetGoal<>(this, IronGolem.class, false)).setUnseenMemoryTicks(300));
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Ravager.java b/src/main/java/net/minecraft/world/entity/monster/Ravager.java
+index 23cd2e1faf0d7b59885e194fc0f0adc558e4921b..7cac1f635baf73f068eb0bce6b392c998c7457fb 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Ravager.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Ravager.java
+@@ -77,7 +77,7 @@ public class Ravager extends Raider {
+         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.4D));
+         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
+         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
+-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, new Class[]{Raider.class})).setAlertOthers());
++        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true));
+         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, true, (entityliving) -> {
+             return !entityliving.isBaby();
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Shulker.java b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
+index 472d6a8e98894b807a93de5ba137ab64e222950e..c9e3a63948eca190a7c0562af2f078f3317316d6 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Shulker.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
+@@ -98,7 +98,7 @@ public class Shulker extends AbstractGolem implements Enemy {
+         this.goalSelector.addGoal(4, new Shulker.ShulkerAttackGoal());
+         this.goalSelector.addGoal(7, new Shulker.ShulkerPeekGoal());
+         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[]{this.getClass()})).setAlertOthers());
++        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, this.getClass())).setAlertOthers());
+         this.targetSelector.addGoal(2, new Shulker.ShulkerNearestAttackGoal(this));
+         this.targetSelector.addGoal(3, new Shulker.ShulkerDefenseAttackGoal(this));
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
+index f8c427b5fecda183d0772e378e4199eb5d29c4c0..26454bd79ea46a35a68556f7f493b6511225bf3d 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
+@@ -50,7 +50,7 @@ public class Silverfish extends Monster {
+         this.goalSelector.addGoal(3, this.friendsGoal);
+         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
+         this.goalSelector.addGoal(5, new Silverfish.SilverfishMergeWithStoneGoal(this));
+-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[0])).setAlertOthers());
++        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers());
+         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Spider.java b/src/main/java/net/minecraft/world/entity/monster/Spider.java
+index 7111972b57744c61b8a78ad1f1109d8bf05062dd..b85fc62c322360323165ad4aad5d23c270afca8f 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Spider.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Spider.java
+@@ -59,7 +59,7 @@ public class Spider extends Monster {
+         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8D));
+         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, new Class[0]));
++        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+         this.targetSelector.addGoal(2, new Spider.SpiderTargetGoal<>(this, Player.class));
+         this.targetSelector.addGoal(3, new Spider.SpiderTargetGoal<>(this, IronGolem.class));
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Vex.java b/src/main/java/net/minecraft/world/entity/monster/Vex.java
+index a349627e2aaa99bf7276fd530498e238cc713467..5e347c44e69ea0d188014c4ba32954aee459897d 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Vex.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Vex.java
+@@ -91,7 +91,7 @@ public class Vex extends Monster {
+         this.goalSelector.addGoal(8, new Vex.VexRandomMoveGoal());
+         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
+         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
+-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[]{Raider.class})).setAlertOthers());
++        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
+         this.targetSelector.addGoal(2, new Vex.VexCopyOwnerTargetGoal(this));
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true));
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Witch.java b/src/main/java/net/minecraft/world/entity/monster/Witch.java
+index 803a9fba8f5830c7b0d6f2c5770f32c07e2ab4ca..8552766b3e1f4efb5d3a17d1b4c47cf7934dfa43 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Witch.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Witch.java
+@@ -68,7 +68,7 @@ public class Witch extends Raider implements RangedAttackMob {
+         this.goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+         this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 8.0F));
+         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
+-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, new Class[]{Raider.class}));
++        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, Raider.class));
+         this.targetSelector.addGoal(2, this.healRaidersGoal);
+         this.targetSelector.addGoal(3, this.attackPlayersGoal);
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Zombie.java b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
+index e7f18eb11d51a5a12bf4d851f4111201f601bc5c..99c4b3cd53048d4c6f92a9ae09b7fd1266207fce 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Zombie.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
+@@ -117,7 +117,7 @@ public class Zombie extends Monster {
+         this.goalSelector.addGoal(2, new ZombieAttackGoal(this, 1.0D, false));
+         this.goalSelector.addGoal(6, new MoveThroughVillageGoal(this, 1.0D, true, 4, this::canBreakDoors));
+         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[0])).setAlertOthers(ZombifiedPiglin.class));
++        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers(ZombifiedPiglin.class));
+         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+         if ( level.spigotConfig.zombieAggressiveTowardsVillager ) this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false)); // Spigot
+         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+diff --git a/src/main/java/net/minecraft/world/entity/monster/ZombifiedPiglin.java b/src/main/java/net/minecraft/world/entity/monster/ZombifiedPiglin.java
+index 05864b28650424d28af2554141cffc836db5d913..1f7e44f348e7f4d6f8d181758343d676a0275491 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/ZombifiedPiglin.java
++++ b/src/main/java/net/minecraft/world/entity/monster/ZombifiedPiglin.java
+@@ -73,7 +73,7 @@ public class ZombifiedPiglin extends Zombie implements NeutralMob {
+     protected void addBehaviourGoals() {
+         this.goalSelector.addGoal(2, new ZombieAttackGoal(this, 1.0D, false));
+         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+-        this.targetSelector.addGoal(1, pathfinderGoalHurtByTarget = (new HurtByTargetGoal(this, new Class[0])).setAlertOthers()); // Paper - assign field
++        this.targetSelector.addGoal(1, pathfinderGoalHurtByTarget = (new HurtByTargetGoal(this)).setAlertOthers()); // Paper - assign field
+         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
+         this.targetSelector.addGoal(3, new ResetUniversalAngerTargetGoal<>(this, true));
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java b/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
+index 839a832a9173e8ed09d8297d7c9dc360a0bf3613..01cf39b122c25b16de09779123248067a828c443 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
++++ b/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
+@@ -84,7 +84,7 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
+     public final SimpleContainer inventory = new SimpleContainer(8);
+     public boolean cannotHunt;
+     protected static final ImmutableList<SensorType<? extends Sensor<? super Piglin>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_SPECIFIC_SENSOR);
+-    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.DOORS_TO_CLOSE, MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEARBY_ADULT_PIGLINS, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.WALK_TARGET, new MemoryModuleType[]{MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.PATH, MemoryModuleType.ANGRY_AT, MemoryModuleType.UNIVERSAL_ANGER, MemoryModuleType.AVOID_TARGET, MemoryModuleType.ADMIRING_ITEM, MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleType.DISABLE_WALK_TO_ADMIRE_ITEM, MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleType.DANCING, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.RIDE_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.NEAREST_REPELLENT});
++    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.DOORS_TO_CLOSE, MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEARBY_ADULT_PIGLINS, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.PATH, MemoryModuleType.ANGRY_AT, MemoryModuleType.UNIVERSAL_ANGER, MemoryModuleType.AVOID_TARGET, MemoryModuleType.ADMIRING_ITEM, MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleType.DISABLE_WALK_TO_ADMIRE_ITEM, MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleType.DANCING, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.RIDE_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.NEAREST_REPELLENT);
+     // CraftBukkit start - Custom bartering and interest list
+     public Set<Item> allowedBarterItems = new HashSet<>();
+     public Set<Item> interestItems = new HashSet<>();
+diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+index 923f11ab7e16eaac6fc73a9b18f705dd2e641599..0037fa39a1a9c2630db4be20cab3ec222d2fc605 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+@@ -104,7 +104,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+     public static final int BREEDING_FOOD_THRESHOLD = 12;
+     public static final Map<Item, Integer> FOOD_POINTS = ImmutableMap.of(Items.BREAD, Integer.valueOf(4), Items.POTATO, Integer.valueOf(1), Items.CARROT, Integer.valueOf(1), Items.BEETROOT, Integer.valueOf(1));
+     private static final int TRADES_PER_LEVEL = 2;
+-    private static final Set<Item> WANTED_ITEMS = ImmutableSet.of(Items.BREAD, Items.POTATO, Items.CARROT, Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT, new Item[]{Items.BEETROOT_SEEDS});
++    private static final Set<Item> WANTED_ITEMS = ImmutableSet.of(Items.BREAD, Items.POTATO, Items.CARROT, Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT, Items.BEETROOT_SEEDS);
+     private static final int MAX_GOSSIP_TOPICS = 10;
+     private static final int GOSSIP_COOLDOWN = 1200;
+     private static final int GOSSIP_DECAY_INTERVAL = 24000;
+@@ -128,7 +128,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+     public int numberOfRestocksToday;
+     private long lastRestockCheckDayTime;
+     private boolean assignProfessionWhenSpawned;
+-    private static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.WALK_TARGET, new MemoryModuleType[]{MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH, MemoryModuleType.DOORS_TO_CLOSE, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_DETECTED_RECENTLY});
++    private static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH, MemoryModuleType.DOORS_TO_CLOSE, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_DETECTED_RECENTLY);
+     private static final ImmutableList<SensorType<? extends Sensor<? super Villager>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_DETECTED);
+     public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<Villager, Holder<PoiType>>> POI_MEMORIES = ImmutableMap.of(MemoryModuleType.HOME, (entityvillager, holder) -> {
+         return holder.is(PoiTypes.HOME);
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index 22f6336a85cad87beaf3eabd9681907583f95a01..49af99e096293e593cda8aab6f4e81c74b0cd152 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -2037,7 +2037,7 @@ public abstract class Player extends LivingEntity {
+ 
+     @Override
+     public Iterable<ItemStack> getHandSlots() {
+-        return Lists.newArrayList(new ItemStack[]{this.getMainHandItem(), this.getOffhandItem()});
++        return Lists.newArrayList(this.getMainHandItem(), this.getOffhandItem());
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
+index bbd1d783b14a141a3d78f134e2d4054adf160864..c5156145b50ede6078a0c8ff400989405e860ac9 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
+@@ -147,7 +147,7 @@ public abstract class AbstractHurtingProjectile extends Projectile {
+     @Override
+     public void addAdditionalSaveData(CompoundTag nbt) {
+         super.addAdditionalSaveData(nbt);
+-        nbt.put("power", Entity.newDoubleList(new double[]{this.xPower, this.yPower, this.zPower}));
++        nbt.put("power", Entity.newDoubleList(this.xPower, this.yPower, this.zPower));
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java b/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java
+index 8fe1a097b5457280ee815abf958c16d1ea144eaf..fa113d0dffcaa47a507be95349e292a368ff0e95 100644
+--- a/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java
+@@ -179,7 +179,7 @@ public abstract class AbstractFurnaceMenu extends RecipeBookMenu<Container> {
+     }
+ 
+     protected boolean canSmelt(ItemStack itemStack) {
+-        return this.level.getRecipeManager().getRecipeFor((RecipeType<AbstractCookingRecipe>) this.recipeType, new SimpleContainer(new ItemStack[]{itemStack}), this.level).isPresent(); // Eclipse fail
++        return this.level.getRecipeManager().getRecipeFor((RecipeType<AbstractCookingRecipe>) this.recipeType, new SimpleContainer(itemStack), this.level).isPresent(); // Eclipse fail
+     }
+ 
+     protected static boolean isFuel(ItemStack itemStack) {
+diff --git a/src/main/java/net/minecraft/world/inventory/StonecutterMenu.java b/src/main/java/net/minecraft/world/inventory/StonecutterMenu.java
+index eb975f43d13be6fff2a0c639cd930ac482ddb143..90ad58cf2694cf434bd4a28668cd97f511ae9c34 100644
+--- a/src/main/java/net/minecraft/world/inventory/StonecutterMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/StonecutterMenu.java
+@@ -259,7 +259,7 @@ public class StonecutterMenu extends AbstractContainerMenu {
+                 if (!this.moveItemStackTo(itemstack1, 2, 38, false)) {
+                     return ItemStack.EMPTY;
+                 }
+-            } else if (this.level.getRecipeManager().getRecipeFor(RecipeType.STONECUTTING, new SimpleContainer(new ItemStack[]{itemstack1}), this.level).isPresent()) {
++            } else if (this.level.getRecipeManager().getRecipeFor(RecipeType.STONECUTTING, new SimpleContainer(itemstack1), this.level).isPresent()) {
+                 if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
+                     return ItemStack.EMPTY;
+                 }
+diff --git a/src/main/java/net/minecraft/world/item/enchantment/Enchantments.java b/src/main/java/net/minecraft/world/item/enchantment/Enchantments.java
+index 1367908a54e1c1703d14b3c25852da5ec1b02019..fd43337d2a6131830573bbf31e1e5228918e1744 100644
+--- a/src/main/java/net/minecraft/world/item/enchantment/Enchantments.java
++++ b/src/main/java/net/minecraft/world/item/enchantment/Enchantments.java
+@@ -15,34 +15,34 @@ public class Enchantments {
+     public static final Enchantment AQUA_AFFINITY = Enchantments.register("aqua_affinity", new WaterWorkerEnchantment(Enchantment.Rarity.RARE, Enchantments.ARMOR_SLOTS));
+     public static final Enchantment THORNS = Enchantments.register("thorns", new ThornsEnchantment(Enchantment.Rarity.VERY_RARE, Enchantments.ARMOR_SLOTS));
+     public static final Enchantment DEPTH_STRIDER = Enchantments.register("depth_strider", new WaterWalkerEnchantment(Enchantment.Rarity.RARE, Enchantments.ARMOR_SLOTS));
+-    public static final Enchantment FROST_WALKER = Enchantments.register("frost_walker", new FrostWalkerEnchantment(Enchantment.Rarity.RARE, new EquipmentSlot[]{EquipmentSlot.FEET}));
++    public static final Enchantment FROST_WALKER = Enchantments.register("frost_walker", new FrostWalkerEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.FEET));
+     public static final Enchantment BINDING_CURSE = Enchantments.register("binding_curse", new BindingCurseEnchantment(Enchantment.Rarity.VERY_RARE, Enchantments.ARMOR_SLOTS));
+-    public static final Enchantment SOUL_SPEED = Enchantments.register("soul_speed", new SoulSpeedEnchantment(Enchantment.Rarity.VERY_RARE, new EquipmentSlot[]{EquipmentSlot.FEET}));
+-    public static final Enchantment SWIFT_SNEAK = Enchantments.register("swift_sneak", new SwiftSneakEnchantment(Enchantment.Rarity.VERY_RARE, new EquipmentSlot[]{EquipmentSlot.LEGS}));
+-    public static final Enchantment SHARPNESS = Enchantments.register("sharpness", new DamageEnchantment(Enchantment.Rarity.COMMON, 0, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment SMITE = Enchantments.register("smite", new DamageEnchantment(Enchantment.Rarity.UNCOMMON, 1, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment BANE_OF_ARTHROPODS = Enchantments.register("bane_of_arthropods", new DamageEnchantment(Enchantment.Rarity.UNCOMMON, 2, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment KNOCKBACK = Enchantments.register("knockback", new KnockbackEnchantment(Enchantment.Rarity.UNCOMMON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment FIRE_ASPECT = Enchantments.register("fire_aspect", new FireAspectEnchantment(Enchantment.Rarity.RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment MOB_LOOTING = Enchantments.register("looting", new LootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment SWEEPING_EDGE = Enchantments.register("sweeping", new SweepingEdgeEnchantment(Enchantment.Rarity.RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment BLOCK_EFFICIENCY = Enchantments.register("efficiency", new DiggingEnchantment(Enchantment.Rarity.COMMON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment SILK_TOUCH = Enchantments.register("silk_touch", new UntouchingEnchantment(Enchantment.Rarity.VERY_RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment UNBREAKING = Enchantments.register("unbreaking", new DigDurabilityEnchantment(Enchantment.Rarity.UNCOMMON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment BLOCK_FORTUNE = Enchantments.register("fortune", new LootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.DIGGER, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment POWER_ARROWS = Enchantments.register("power", new ArrowDamageEnchantment(Enchantment.Rarity.COMMON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment PUNCH_ARROWS = Enchantments.register("punch", new ArrowKnockbackEnchantment(Enchantment.Rarity.RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment FLAMING_ARROWS = Enchantments.register("flame", new ArrowFireEnchantment(Enchantment.Rarity.RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment INFINITY_ARROWS = Enchantments.register("infinity", new ArrowInfiniteEnchantment(Enchantment.Rarity.VERY_RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment FISHING_LUCK = Enchantments.register("luck_of_the_sea", new LootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.FISHING_ROD, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment FISHING_SPEED = Enchantments.register("lure", new FishingSpeedEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.FISHING_ROD, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment LOYALTY = Enchantments.register("loyalty", new TridentLoyaltyEnchantment(Enchantment.Rarity.UNCOMMON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment IMPALING = Enchantments.register("impaling", new TridentImpalerEnchantment(Enchantment.Rarity.RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment RIPTIDE = Enchantments.register("riptide", new TridentRiptideEnchantment(Enchantment.Rarity.RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment CHANNELING = Enchantments.register("channeling", new TridentChannelingEnchantment(Enchantment.Rarity.VERY_RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment MULTISHOT = Enchantments.register("multishot", new MultiShotEnchantment(Enchantment.Rarity.RARE, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment QUICK_CHARGE = Enchantments.register("quick_charge", new QuickChargeEnchantment(Enchantment.Rarity.UNCOMMON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+-    public static final Enchantment PIERCING = Enchantments.register("piercing", new ArrowPiercingEnchantment(Enchantment.Rarity.COMMON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
++    public static final Enchantment SOUL_SPEED = Enchantments.register("soul_speed", new SoulSpeedEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.FEET));
++    public static final Enchantment SWIFT_SNEAK = Enchantments.register("swift_sneak", new SwiftSneakEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.LEGS));
++    public static final Enchantment SHARPNESS = Enchantments.register("sharpness", new DamageEnchantment(Enchantment.Rarity.COMMON, 0, EquipmentSlot.MAINHAND));
++    public static final Enchantment SMITE = Enchantments.register("smite", new DamageEnchantment(Enchantment.Rarity.UNCOMMON, 1, EquipmentSlot.MAINHAND));
++    public static final Enchantment BANE_OF_ARTHROPODS = Enchantments.register("bane_of_arthropods", new DamageEnchantment(Enchantment.Rarity.UNCOMMON, 2, EquipmentSlot.MAINHAND));
++    public static final Enchantment KNOCKBACK = Enchantments.register("knockback", new KnockbackEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
++    public static final Enchantment FIRE_ASPECT = Enchantments.register("fire_aspect", new FireAspectEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment MOB_LOOTING = Enchantments.register("looting", new LootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON, EquipmentSlot.MAINHAND));
++    public static final Enchantment SWEEPING_EDGE = Enchantments.register("sweeping", new SweepingEdgeEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment BLOCK_EFFICIENCY = Enchantments.register("efficiency", new DiggingEnchantment(Enchantment.Rarity.COMMON, EquipmentSlot.MAINHAND));
++    public static final Enchantment SILK_TOUCH = Enchantments.register("silk_touch", new UntouchingEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment UNBREAKING = Enchantments.register("unbreaking", new DigDurabilityEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
++    public static final Enchantment BLOCK_FORTUNE = Enchantments.register("fortune", new LootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.DIGGER, EquipmentSlot.MAINHAND));
++    public static final Enchantment POWER_ARROWS = Enchantments.register("power", new ArrowDamageEnchantment(Enchantment.Rarity.COMMON, EquipmentSlot.MAINHAND));
++    public static final Enchantment PUNCH_ARROWS = Enchantments.register("punch", new ArrowKnockbackEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment FLAMING_ARROWS = Enchantments.register("flame", new ArrowFireEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment INFINITY_ARROWS = Enchantments.register("infinity", new ArrowInfiniteEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment FISHING_LUCK = Enchantments.register("luck_of_the_sea", new LootBonusEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.FISHING_ROD, EquipmentSlot.MAINHAND));
++    public static final Enchantment FISHING_SPEED = Enchantments.register("lure", new FishingSpeedEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.FISHING_ROD, EquipmentSlot.MAINHAND));
++    public static final Enchantment LOYALTY = Enchantments.register("loyalty", new TridentLoyaltyEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
++    public static final Enchantment IMPALING = Enchantments.register("impaling", new TridentImpalerEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment RIPTIDE = Enchantments.register("riptide", new TridentRiptideEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment CHANNELING = Enchantments.register("channeling", new TridentChannelingEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment MULTISHOT = Enchantments.register("multishot", new MultiShotEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
++    public static final Enchantment QUICK_CHARGE = Enchantments.register("quick_charge", new QuickChargeEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
++    public static final Enchantment PIERCING = Enchantments.register("piercing", new ArrowPiercingEnchantment(Enchantment.Rarity.COMMON, EquipmentSlot.MAINHAND));
+     public static final Enchantment MENDING = Enchantments.register("mending", new MendingEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.values()));
+     public static final Enchantment VANISHING_CURSE = Enchantments.register("vanishing_curse", new VanishingCurseEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.values()));
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/SculkVeinBlock.java b/src/main/java/net/minecraft/world/level/block/SculkVeinBlock.java
+index fa361a47e2136fc4e4a7b76e27887db43628d018..0df4f6dd4f239dae8a2a66c9df3784fef98fb28a 100644
+--- a/src/main/java/net/minecraft/world/level/block/SculkVeinBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/SculkVeinBlock.java
+@@ -35,7 +35,7 @@ public class SculkVeinBlock extends MultifaceBlock implements SculkBehaviour, Si
+     public SculkVeinBlock(BlockBehaviour.Properties settings) {
+         super(settings);
+         this.veinSpreader = new MultifaceSpreader(new SculkVeinBlock.SculkVeinSpreaderConfig(MultifaceSpreader.DEFAULT_SPREAD_ORDER));
+-        this.sameSpaceSpreader = new MultifaceSpreader(new SculkVeinBlock.SculkVeinSpreaderConfig(new MultifaceSpreader.SpreadType[]{MultifaceSpreader.SpreadType.SAME_POSITION}));
++        this.sameSpaceSpreader = new MultifaceSpreader(new SculkVeinBlock.SculkVeinSpreaderConfig(MultifaceSpreader.SpreadType.SAME_POSITION));
+         this.registerDefaultState((BlockState) this.defaultBlockState().setValue(SculkVeinBlock.WATERLOGGED, Boolean.FALSE));
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
+index 8f45ec476b0a8e9a80f0fffcabe9f3d82be5e2a8..629de35a37ea54bc1f69755257bb48a620052192 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
+@@ -62,7 +62,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
+                 } // Paper
+ 
+                 if (campfire.cookingProgress[i] >= campfire.cookingTime[i]) {
+-                    SimpleContainer inventorysubcontainer = new SimpleContainer(new ItemStack[]{itemstack});
++                    SimpleContainer inventorysubcontainer = new SimpleContainer(itemstack);
+                     Optional<CampfireCookingRecipe> recipe = campfire.quickCheck.getRecipeFor( inventorysubcontainer, world);
+                     ItemStack itemstack1 = (ItemStack) recipe.map((recipecampfire) -> {
+                         // Paper end
+@@ -207,7 +207,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
+     }
+ 
+     public Optional<CampfireCookingRecipe> getCookableRecipe(ItemStack stack) {
+-        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.quickCheck.getRecipeFor(new SimpleContainer(new ItemStack[]{stack}), this.level);
++        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.quickCheck.getRecipeFor(new SimpleContainer(stack), this.level);
+     }
+ 
+     public boolean placeFood(@Nullable Entity user, ItemStack stack, int cookTime) {
+diff --git a/src/main/java/net/minecraft/world/level/chunk/ChunkStatus.java b/src/main/java/net/minecraft/world/level/chunk/ChunkStatus.java
+index 7549e0750f1d63abbb467ebf673b564a979f19ff..470ba6b2a9b9b026e0705da4d1959e6a349fc7c7 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/ChunkStatus.java
++++ b/src/main/java/net/minecraft/world/level/chunk/ChunkStatus.java
+@@ -194,7 +194,7 @@ public class ChunkStatus {
+     }, (chunkstatus, worldserver, structuretemplatemanager, lightenginethreaded, function, ichunkaccess) -> {
+         return (CompletableFuture) function.apply(ichunkaccess);
+     });
+-    private static final List<ChunkStatus> STATUS_BY_RANGE = ImmutableList.of(ChunkStatus.FULL, ChunkStatus.FEATURES, ChunkStatus.LIQUID_CARVERS, ChunkStatus.BIOMES, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, new ChunkStatus[0]);
++    private static final List<ChunkStatus> STATUS_BY_RANGE = ImmutableList.of(ChunkStatus.FULL, ChunkStatus.FEATURES, ChunkStatus.LIQUID_CARVERS, ChunkStatus.BIOMES, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS, ChunkStatus.STRUCTURE_STARTS);
+     private static final IntList RANGE_BY_STATUS = (IntList) Util.make(new IntArrayList(ChunkStatus.getStatusList().size()), (intarraylist) -> {
+         int i = 0;
+ 
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 32eb133a4e61d1aede5f7aef799c9e72ceff9eb8..4fed08b5332d7d05a34f1cf5301ae2b86d3752e7 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -1290,7 +1290,7 @@ public class LevelChunk extends ChunkAccess {
+                             this.loggedInvalidBlockState = false;
+                         } else if (!this.loggedInvalidBlockState) {
+                             this.loggedInvalidBlockState = true;
+-                            LevelChunk.LOGGER.warn("Block entity {} @ {} state {} invalid for ticking:", new Object[]{LogUtils.defer(this::getType), LogUtils.defer(this::getPos), iblockdata});
++                            LevelChunk.LOGGER.warn("Block entity {} @ {} state {} invalid for ticking:", LogUtils.defer(this::getType), LogUtils.defer(this::getPos), iblockdata);
+                         }
+ 
+                         gameprofilerfiller.pop();
+diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
+index 840940469f968849ada464b960319ce2bd40349a..5febf5fa9f8ca661d5047c8ce1b66df3e73f1fc5 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
++++ b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
+@@ -154,7 +154,7 @@ public class ChunkSerializer {
+         ChunkPos chunkcoordintpair1 = new ChunkPos(nbt.getInt("xPos"), nbt.getInt("zPos")); // Paper - diff on change, see ChunkSerializer#getChunkCoordinate
+ 
+         if (!Objects.equals(chunkPos, chunkcoordintpair1)) {
+-            ChunkSerializer.LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", new Object[]{chunkPos, chunkPos, chunkcoordintpair1});
++            ChunkSerializer.LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", chunkPos, chunkPos, chunkcoordintpair1);
+         }
+ 
+         UpgradeData chunkconverter = nbt.contains("UpgradeData", 10) ? new UpgradeData(nbt.getCompound("UpgradeData"), world) : UpgradeData.EMPTY;
+@@ -824,7 +824,7 @@ public class ChunkSerializer {
+                         ChunkPos chunkcoordintpair1 = new ChunkPos(i);
+ 
+                         if (chunkcoordintpair1.getChessboardDistance(chunkcoordintpair) > 8) {
+-                            ChunkSerializer.LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", new Object[]{minecraftkey, chunkcoordintpair1, chunkcoordintpair});
++                            ChunkSerializer.LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", minecraftkey, chunkcoordintpair1, chunkcoordintpair);
+                             return false;
+                         } else {
+                             return true;
+diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
+index 1c77f0e22831a102e9004dfbb924eab4bd8f04ca..c14c4cfdc760b4304b6457c9bf87e7f97c0d4ecc 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
++++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
+@@ -445,7 +445,7 @@ public class RegionFile implements AutoCloseable {
+         initOversizedState(); // Paper
+         this.usedSectors = new RegionBitmap();
+         this.version = outputChunkStreamVersion;
+-        if (!Files.isDirectory(directory, new LinkOption[0])) {
++        if (!Files.isDirectory(directory)) {
+             throw new IllegalArgumentException("Expected directory, got " + directory.toAbsolutePath());
+         } else {
+             this.externalFileDir = directory;
+@@ -489,13 +489,13 @@ public class RegionFile implements AutoCloseable {
+                         sectorLength = j1; // Paper - diff on change, we expect this to be sector length of region
+ 
+                         if (i1 < 2) {
+-                            RegionFile.LOGGER.warn("Region file {} has invalid sector at index: {}; sector {} overlaps with header", new Object[]{file, Integer.valueOf(k), Integer.valueOf(i1)});
++                            RegionFile.LOGGER.warn("Region file {} has invalid sector at index: {}; sector {} overlaps with header", file, Integer.valueOf(k), Integer.valueOf(i1));
+                             //this.offsets.put(k, 0); // Paper - we catch this, but need it in the header for the summary change
+                         } else if (j1 == 0) {
+                             RegionFile.LOGGER.warn("Region file {} has an invalid sector at index: {}; size has to be > 0", file, Integer.valueOf(k));
+                             //this.offsets.put(k, 0); // Paper - we catch this, but need it in the header for the summary change
+                         } else if ((long) i1 * 4096L > j) {
+-                            RegionFile.LOGGER.warn("Region file {} has an invalid sector at index: {}; sector {} is out of bounds", new Object[]{file, Integer.valueOf(k), Integer.valueOf(i1)});
++                            RegionFile.LOGGER.warn("Region file {} has an invalid sector at index: {}; sector {} is out of bounds", file, Integer.valueOf(k), Integer.valueOf(i1));
+                             //this.offsets.put(k, 0); // Paper - we catch this, but need it in the header for the summary change
+                         } else {
+                             //this.usedSectors.force(i1, j1); // Paper - move this down so we can check if it fails to allocate
+@@ -604,7 +604,7 @@ public class RegionFile implements AutoCloseable {
+             this.file.read(bytebuffer, (long) (j * 4096));
+             ((java.nio.Buffer) bytebuffer).flip(); // CraftBukkit - decompile error
+             if (bytebuffer.remaining() < 5) {
+-                RegionFile.LOGGER.error("Chunk {} header is truncated: expected {} but read {}", new Object[]{pos, Integer.valueOf(l), Integer.valueOf(bytebuffer.remaining())});
++                RegionFile.LOGGER.error("Chunk {} header is truncated: expected {} but read {}", pos, Integer.valueOf(l), Integer.valueOf(bytebuffer.remaining()));
+                 // Paper start - recalculate header on regionfile corruption
+                 if (this.canRecalcHeader && this.recalculateHeader()) {
+                     return this.getChunkDataInputStream(pos);
+@@ -644,7 +644,7 @@ public class RegionFile implements AutoCloseable {
+                         return ret;
+                         // Paper end - recalculate header on regionfile corruption
+                     } else if (j1 > bytebuffer.remaining()) {
+-                        RegionFile.LOGGER.error("Chunk {} stream is truncated: expected {} but read {}", new Object[]{pos, Integer.valueOf(j1), Integer.valueOf(bytebuffer.remaining())});
++                        RegionFile.LOGGER.error("Chunk {} stream is truncated: expected {} but read {}", pos, Integer.valueOf(j1), Integer.valueOf(bytebuffer.remaining()));
+                         // Paper start - recalculate header on regionfile corruption
+                         if (this.canRecalcHeader && this.recalculateHeader()) {
+                             return this.getChunkDataInputStream(pos);
+@@ -701,7 +701,7 @@ public class RegionFile implements AutoCloseable {
+     private DataInputStream createExternalChunkInputStream(ChunkPos chunkcoordintpair, byte b0) throws IOException {
+         Path path = this.getExternalChunkPath(chunkcoordintpair);
+ 
+-        if (!Files.isRegularFile(path, new LinkOption[0])) {
++        if (!Files.isRegularFile(path)) {
+             RegionFile.LOGGER.error("External chunk path {} is not file", path);
+             return null;
+         } else {
+@@ -753,7 +753,7 @@ public class RegionFile implements AutoCloseable {
+                             return false;
+                         }
+ 
+-                        if (!Files.isRegularFile(this.getExternalChunkPath(pos), new LinkOption[0])) {
++                        if (!Files.isRegularFile(this.getExternalChunkPath(pos))) {
+                             return false;
+                         }
+                     } else {
+@@ -815,7 +815,7 @@ public class RegionFile implements AutoCloseable {
+         if (j1 >= 256) {
+             Path path = this.getExternalChunkPath(pos);
+ 
+-            RegionFile.LOGGER.warn("Saving oversized chunk {} ({} bytes} to external file {}", new Object[]{pos, Integer.valueOf(i1), path});
++            RegionFile.LOGGER.warn("Saving oversized chunk {} ({} bytes} to external file {}", pos, Integer.valueOf(i1), path);
+             j1 = 1;
+             k1 = this.usedSectors.allocate(j1);
+             regionfile_b = this.writeToExternalFile(path, bytebuffer);
+diff --git a/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java b/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
+index a9bc7fe10322a04fff820c65dd60858cf681ce62..040bde662e0633704ede95653c413ac235dd0f4a 100644
+--- a/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
++++ b/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
+@@ -464,7 +464,7 @@ public class PersistentEntitySectionManager<T extends EntityAccess> implements A
+                 Visibility visibility = this.currentSection.getStatus();
+ 
+                 if (!this.currentSection.remove(this.entity)) {
+-                    PersistentEntitySectionManager.LOGGER.warn("Entity {} wasn't found in section {} (moving to {})", new Object[]{this.entity, SectionPos.of(this.currentSectionKey), Long.valueOf(i)});
++                    PersistentEntitySectionManager.LOGGER.warn("Entity {} wasn't found in section {} (moving to {})", this.entity, SectionPos.of(this.currentSectionKey), Long.valueOf(i));
+                 }
+ 
+                 PersistentEntitySectionManager.this.removeSectionIfEmpty(this.currentSectionKey, this.currentSection);
+@@ -517,7 +517,7 @@ public class PersistentEntitySectionManager<T extends EntityAccess> implements A
+         public void onRemove(Entity.RemovalReason reason) {
+             org.spigotmc.AsyncCatcher.catchOp("Entity remove"); // Paper
+             if (!this.currentSection.remove(this.entity)) {
+-                PersistentEntitySectionManager.LOGGER.warn("Entity {} wasn't found in section {} (destroying due to {})", new Object[]{this.entity, SectionPos.of(this.currentSectionKey), reason});
++                PersistentEntitySectionManager.LOGGER.warn("Entity {} wasn't found in section {} (destroying due to {})", this.entity, SectionPos.of(this.currentSectionKey), reason);
+             }
+ 
+             Visibility visibility = PersistentEntitySectionManager.getEffectiveStatus(this.entity, this.currentSection.getStatus());
+diff --git a/src/main/java/net/minecraft/world/level/storage/LevelStorageSource.java b/src/main/java/net/minecraft/world/level/storage/LevelStorageSource.java
+index ca31632b9f0cba1e060427d0bc2e185ddc732d45..795994af617148782dac548233fe2e2b6769fc8a 100644
+--- a/src/main/java/net/minecraft/world/level/storage/LevelStorageSource.java
++++ b/src/main/java/net/minecraft/world/level/storage/LevelStorageSource.java
+@@ -76,7 +76,7 @@ public class LevelStorageSource {
+         this.fixerUpper = dataFixer;
+ 
+         try {
+-            Files.createDirectories(Files.exists(savesDirectory, new LinkOption[0]) ? savesDirectory.toRealPath() : savesDirectory);
++            Files.createDirectories(Files.exists(savesDirectory) ? savesDirectory.toRealPath() : savesDirectory);
+         } catch (IOException ioexception) {
+             throw new RuntimeException(ioexception);
+         }
+@@ -127,14 +127,14 @@ public class LevelStorageSource {
+     }
+ 
+     public LevelStorageSource.LevelCandidates findLevelCandidates() throws LevelStorageException {
+-        if (!Files.isDirectory(this.baseDir, new LinkOption[0])) {
++        if (!Files.isDirectory(this.baseDir)) {
+             throw new LevelStorageException(Component.translatable("selectWorld.load_folder_access"));
+         } else {
+             try {
+                 List<LevelStorageSource.LevelDirectory> list = Files.list(this.baseDir).filter((path) -> {
+-                    return Files.isDirectory(path, new LinkOption[0]);
++                    return Files.isDirectory(path);
+                 }).map(LevelStorageSource.LevelDirectory::new).filter((convertable_b) -> {
+-                    return Files.isRegularFile(convertable_b.dataFile(), new LinkOption[0]) || Files.isRegularFile(convertable_b.oldDataFile(), new LinkOption[0]);
++                    return Files.isRegularFile(convertable_b.dataFile()) || Files.isRegularFile(convertable_b.oldDataFile());
+                 }).toList();
+ 
+                 return new LevelStorageSource.LevelCandidates(list);
+@@ -189,12 +189,12 @@ public class LevelStorageSource {
+ 
+     @Nullable
+     <T> T readLevelData(LevelStorageSource.LevelDirectory levelSave, BiFunction<Path, DataFixer, T> levelDataParser) {
+-        if (!Files.exists(levelSave.path(), new LinkOption[0])) {
++        if (!Files.exists(levelSave.path())) {
+             return null;
+         } else {
+             Path path = levelSave.dataFile();
+ 
+-            if (Files.exists(path, new LinkOption[0])) {
++            if (Files.exists(path)) {
+                 T t0 = levelDataParser.apply(path, this.fixerUpper);
+ 
+                 if (t0 != null) {
+@@ -203,7 +203,7 @@ public class LevelStorageSource {
+             }
+ 
+             path = levelSave.oldDataFile();
+-            return Files.exists(path, new LinkOption[0]) ? levelDataParser.apply(path, this.fixerUpper) : null;
++            return Files.exists(path) ? levelDataParser.apply(path, this.fixerUpper) : null;
+         }
+     }
+ 
+@@ -289,7 +289,7 @@ public class LevelStorageSource {
+ 
+     @Nullable
+     private static Tag readLightweightData(Path path) throws IOException {
+-        SkipFields skipfields = new SkipFields(new FieldSelector[]{new FieldSelector("Data", CompoundTag.TYPE, "Player"), new FieldSelector("Data", CompoundTag.TYPE, "WorldGenSettings")});
++        SkipFields skipfields = new SkipFields(new FieldSelector("Data", CompoundTag.TYPE, "Player"), new FieldSelector("Data", CompoundTag.TYPE, "WorldGenSettings"));
+ 
+         NbtIo.parseCompressed(path.toFile(), skipfields);
+         return skipfields.getResult();
+@@ -308,7 +308,7 @@ public class LevelStorageSource {
+     }
+ 
+     public boolean levelExists(String name) {
+-        return Files.isDirectory(this.baseDir.resolve(name), new LinkOption[0]);
++        return Files.isDirectory(this.baseDir.resolve(name));
+     }
+ 
+     public Path getBaseDir() {
+@@ -532,7 +532,7 @@ public class LevelStorageSource {
+             this.checkLock();
+             Path path = this.levelDirectory.dataFile();
+ 
+-            if (Files.exists(path, new LinkOption[0])) {
++            if (Files.exists(path)) {
+                 CompoundTag nbttagcompound = NbtIo.readCompressed(path.toFile());
+                 CompoundTag nbttagcompound1 = nbttagcompound.getCompound("Data");
+ 
+@@ -549,7 +549,7 @@ public class LevelStorageSource {
+             Path path = LevelStorageSource.this.getBackupPath();
+ 
+             try {
+-                Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
++                Files.createDirectories(Files.exists(path) ? path.toRealPath() : path);
+             } catch (IOException ioexception) {
+                 throw new RuntimeException(ioexception);
+             }
+diff --git a/src/main/java/org/bukkit/craftbukkit/bootstrap/Main.java b/src/main/java/org/bukkit/craftbukkit/bootstrap/Main.java
+index b0febcae44823c8d89e1b421df6669f3f80dddfc..c34476ad83dd89c412ea68eccb27056aad6e1464 100644
+--- a/src/main/java/org/bukkit/craftbukkit/bootstrap/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/bootstrap/Main.java
+@@ -128,7 +128,7 @@ public class Main {
+                 return true;
+             }
+ 
+-            System.out.printf("Expected file %s to have hash %s, but got %s%n", new Object[]{file, expectedHash, actualHash});
++            System.out.printf("Expected file %s to have hash %s, but got %s%n", file, expectedHash, actualHash);
+         }
+         return false;
+     }
+diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
+index 713ffaf320fda62702dd207e4d08658e1b026e81..66fb40f07dbc3bf09387a572bd63022766b8009d 100644
+--- a/src/main/java/org/spigotmc/SpigotConfig.java
++++ b/src/main/java/org/spigotmc/SpigotConfig.java
+@@ -305,10 +305,7 @@ public class SpigotConfig
+     public static @Nullable List<String> spamExclusions;
+     private static void spamExclusions()
+     {
+-        SpigotConfig.spamExclusions = SpigotConfig.getList( "commands.spam-exclusions", Arrays.asList( new String[]
+-        {
+-                "/skill"
+-        } ) );
++        SpigotConfig.spamExclusions = SpigotConfig.getList( "commands.spam-exclusions", Arrays.asList("/skill") );
+     }
+ 
+     public static boolean silentCommandBlocks;
+@@ -393,7 +390,7 @@ public class SpigotConfig
+     public static @Nullable List<String> disabledAdvancements;
+     private static void disabledAdvancements() {
+         SpigotConfig.disableAdvancementSaving = SpigotConfig.getBoolean("advancements.disable-saving", false);
+-        SpigotConfig.disabledAdvancements = SpigotConfig.getList("advancements.disabled", Arrays.asList(new String[]{"minecraft:story/disabled"}));
++        SpigotConfig.disabledAdvancements = SpigotConfig.getList("advancements.disabled", Arrays.asList("minecraft:story/disabled"));
+     }
+ 
+     public static boolean logVillagerDeaths;

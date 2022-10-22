@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:07:49 -0500
+Subject: [PATCH] Unfold ifPresent
+
+
+diff --git a/src/main/java/net/minecraft/world/effect/MobEffectInstance.java b/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
+index 94b04e2b50bd28c30396d2a50c19fe48e7464e5f..2b41ed39f53ed24aff0ebb0302364f490ae818e4 100644
+--- a/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
++++ b/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
+@@ -250,10 +250,8 @@ public class MobEffectInstance implements Comparable<MobEffectInstance> {
+             nbt.put("HiddenEffect", compoundTag);
+         }
+ 
+-        this.factorData.ifPresent((factorCalculationData) -> {
+-            MobEffectInstance.FactorData.CODEC.encodeStart(NbtOps.INSTANCE, factorCalculationData).resultOrPartial(LOGGER::error).ifPresent((factorCalculationDataNbt) -> {
+-                nbt.put("FactorCalculationData", factorCalculationDataNbt);
+-            });
++        this.factorData.flatMap(factorCalculationData -> FactorData.CODEC.encodeStart(NbtOps.INSTANCE, factorCalculationData).resultOrPartial(LOGGER::error)).ifPresent((factorCalculationDataNbt) -> {
++	        nbt.put("FactorCalculationData", factorCalculationDataNbt);
+         });
+     }
+ 

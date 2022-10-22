@@ -1,0 +1,143 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:53:33 -0500
+Subject: [PATCH] Remove redundant toStrings
+
+
+diff --git a/src/main/java/org/bukkit/ChatColor.java b/src/main/java/org/bukkit/ChatColor.java
+index 79e841b43b498367490fe9c4db90710feb088866..fcfa52055d6edd81517831301c149287e68fe68e 100644
+--- a/src/main/java/org/bukkit/ChatColor.java
++++ b/src/main/java/org/bukkit/ChatColor.java
+@@ -394,7 +394,7 @@ public enum ChatColor {
+                 ChatColor color = getByChar(c);
+ 
+                 if (color != null) {
+-                    result.insert(0, color.toString());
++                    result.insert(0, color);
+ 
+                     // Once we find a color or reset we can stop searching
+                     if (color.isColor() || color.equals(RESET)) {
+diff --git a/src/main/java/org/bukkit/Note.java b/src/main/java/org/bukkit/Note.java
+index c1f3e497ca3655c5abc58bf48062d6c92b3ab2b2..7d02ad6c002595c249fa55770d2437127c36d729 100644
+--- a/src/main/java/org/bukkit/Note.java
++++ b/src/main/java/org/bukkit/Note.java
+@@ -278,6 +278,6 @@ public class Note {
+ 
+     @Override
+     public @NotNull String toString() {
+-        return "Note{" + getTone().toString() + (isSharped() ? "#" : "") + "}";
++        return "Note{" + getTone() + (isSharped() ? "#" : "") + "}";
+     }
+ }
+diff --git a/src/main/java/org/bukkit/attribute/AttributeModifier.java b/src/main/java/org/bukkit/attribute/AttributeModifier.java
+index b77fa36209e923b493a149a4d5e60e20781b7a12..cab8b50f1dbc31511be6bdda404126ad0832d0e4 100644
+--- a/src/main/java/org/bukkit/attribute/AttributeModifier.java
++++ b/src/main/java/org/bukkit/attribute/AttributeModifier.java
+@@ -129,7 +129,7 @@ public class AttributeModifier implements ConfigurationSerializable {
+     @Override
+     public @NotNull String toString() {
+         return "AttributeModifier{"
+-                + "uuid=" + this.uuid.toString()
++                + "uuid=" + this.uuid
+                 + ", name=" + this.name
+                 + ", operation=" + this.operation.name()
+                 + ", amount=" + this.amount
+diff --git a/src/main/java/org/bukkit/command/PluginCommandYamlParser.java b/src/main/java/org/bukkit/command/PluginCommandYamlParser.java
+index ef870b864c1e36032b54b31f3f85707edc06d764..5c2eb532607f4886d9a3e121ba8b7b0696da5463 100644
+--- a/src/main/java/org/bukkit/command/PluginCommandYamlParser.java
++++ b/src/main/java/org/bukkit/command/PluginCommandYamlParser.java
+@@ -46,14 +46,14 @@ public class PluginCommandYamlParser {
+                 if (aliases instanceof List) {
+                     for (Object o : (List<?>) aliases) {
+                         if (o.toString().contains(":")) {
+-                            Bukkit.getServer().getLogger().severe("Could not load alias " + o.toString() + " for plugin " + plugin.getName() + ": Illegal Characters");
++                            Bukkit.getServer().getLogger().severe("Could not load alias " + o + " for plugin " + plugin.getName() + ": Illegal Characters");
+                             continue;
+                         }
+                         aliasList.add(o.toString());
+                     }
+                 } else {
+                     if (aliases.toString().contains(":")) {
+-                        Bukkit.getServer().getLogger().severe("Could not load alias " + aliases.toString() + " for plugin " + plugin.getName() + ": Illegal Characters");
++                        Bukkit.getServer().getLogger().severe("Could not load alias " + aliases + " for plugin " + plugin.getName() + ": Illegal Characters");
+                     } else {
+                         aliasList.add(aliases.toString());
+                     }
+diff --git a/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java b/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
+index 9f20e08f02e6ab63b8064eed41f6f72793694810..abcdb3f998aadb7838f4df2d50b6ec7293162ad1 100644
+--- a/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
++++ b/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
+@@ -85,14 +85,14 @@ public class ConfigurationSerialization {
+             ConfigurationSerializable result = (ConfigurationSerializable) method.invoke(null, args);
+ 
+             if (result == null) {
+-                Logger.getLogger(ConfigurationSerialization.class.getName()).log(Level.SEVERE, "Could not call method '" + method.toString() + "' of " + clazz + " for deserialization: method returned null");
++                Logger.getLogger(ConfigurationSerialization.class.getName()).log(Level.SEVERE, "Could not call method '" + method + "' of " + clazz + " for deserialization: method returned null");
+             } else {
+                 return result;
+             }
+         } catch (Throwable ex) {
+             Logger.getLogger(ConfigurationSerialization.class.getName()).log(
+                     Level.SEVERE,
+-                    "Could not call method '" + method.toString() + "' of " + clazz + " for deserialization",
++                    "Could not call method '" + method + "' of " + clazz + " for deserialization",
+                     ex instanceof InvocationTargetException ? ex.getCause() : ex);
+         }
+ 
+@@ -106,7 +106,7 @@ public class ConfigurationSerialization {
+         } catch (Throwable ex) {
+             Logger.getLogger(ConfigurationSerialization.class.getName()).log(
+                     Level.SEVERE,
+-                    "Could not call constructor '" + ctor.toString() + "' of " + clazz + " for deserialization",
++                    "Could not call constructor '" + ctor + "' of " + clazz + " for deserialization",
+                     ex instanceof InvocationTargetException ? ex.getCause() : ex);
+         }
+ 
+diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
+index 55695dbcb1923dcac7352ae08f17c783b36369cc..453e5798dd40f69b563908b339208e9253ec0650 100644
+--- a/src/main/java/org/bukkit/event/HandlerList.java
++++ b/src/main/java/org/bukkit/event/HandlerList.java
+@@ -112,7 +112,7 @@ public class HandlerList {
+      */
+     public synchronized void register(@NotNull RegisteredListener listener) {
+         if (handlerslots.get(listener.getPriority()).contains(listener))
+-            throw new IllegalStateException("This listener is already registered to priority " + listener.getPriority().toString());
++            throw new IllegalStateException("This listener is already registered to priority " + listener.getPriority());
+         handlers = null;
+         handlerslots.get(listener.getPriority()).add(listener);
+     }
+diff --git a/src/main/java/org/bukkit/material/Vine.java b/src/main/java/org/bukkit/material/Vine.java
+index 5d17242a8c17e4e78c5c2644c2c725591d357bad..2936af2a17bca15ffd2d34e074f1258cb2d76cd2 100644
+--- a/src/main/java/org/bukkit/material/Vine.java
++++ b/src/main/java/org/bukkit/material/Vine.java
+@@ -144,7 +144,7 @@ public class Vine extends MaterialData {
+             case UP:
+                 break;
+             default:
+-                throw new IllegalArgumentException("Vines can't go on face " + face.toString());
++                throw new IllegalArgumentException("Vines can't go on face " + face);
+         }
+     }
+ 
+@@ -186,7 +186,7 @@ public class Vine extends MaterialData {
+             case UP:
+                 break;
+             default:
+-                throw new IllegalArgumentException("Vines can't go on face " + face.toString());
++                throw new IllegalArgumentException("Vines can't go on face " + face);
+         }
+     }
+ 
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index 58cde8dafeb49ce37a2eae95261ba66edaa2538c..222f828268a94941be77aceb7bdcef8754f12351 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -749,7 +749,7 @@ public final class SimplePluginManager implements PluginManager {
+ 
+             return (HandlerList) method.invoke(null);
+         } catch (Exception e) {
+-            throw new IllegalPluginAccessException("Error while registering listener for event type " + type.toString() + ": " + e.toString());
++            throw new IllegalPluginAccessException("Error while registering listener for event type " + type + ": " + e);
+         }
+     }
+ 

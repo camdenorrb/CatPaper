@@ -1,0 +1,100 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:05:48 -0500
+Subject: [PATCH] Use Math.min
+
+
+diff --git a/src/main/java/io/papermc/paper/util/PoiAccess.java b/src/main/java/io/papermc/paper/util/PoiAccess.java
+index e77e5127adf9b2906510f541463b6da071ed37b6..a125fa5feda6ac46f0a658bac9fd6d1b9b6a4cb1 100644
+--- a/src/main/java/io/papermc/paper/util/PoiAccess.java
++++ b/src/main/java/io/papermc/paper/util/PoiAccess.java
+@@ -31,7 +31,7 @@ import java.util.function.Predicate;
+ public final class PoiAccess {
+ 
+     protected static double clamp(final double val, final double min, final double max) {
+-        return (val < min ? min : (val > max ? max : val));
++        return (val < min ? min : (Math.min(val, max)));
+     }
+ 
+     protected static double getSmallestDistanceSquared(final double boxMinX, final double boxMinY, final double boxMinZ,
+diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+index cd87d114300134c457a4cdc1b9a87da80199fd47..1d6c7c42ddcf70205a35af1804086bca26ab1350 100644
+--- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
++++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+@@ -679,7 +679,7 @@ public class ServerChunkCache extends ChunkSource {
+                 // copied and modified from isOutisdeRange
+                 int chunkRange = level.spigotConfig.mobSpawnRange;
+                 chunkRange = (chunkRange > viewDistance) ? (byte)viewDistance : chunkRange;
+-                chunkRange = (chunkRange > DistanceManager.MOB_SPAWN_RANGE) ? DistanceManager.MOB_SPAWN_RANGE : chunkRange;
++                chunkRange = Math.min(chunkRange, DistanceManager.MOB_SPAWN_RANGE);
+ 
+                 com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent event = new com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent(player.getBukkitEntity(), (byte)chunkRange);
+                 event.callEvent();
+diff --git a/src/main/java/net/minecraft/world/entity/player/Inventory.java b/src/main/java/net/minecraft/world/entity/player/Inventory.java
+index 1d5411762562229cd768f29bec5c15a0e5b44a48..a638d24af84df5a6da8222caf38640f64a3b9440 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Inventory.java
++++ b/src/main/java/net/minecraft/world/entity/player/Inventory.java
+@@ -280,11 +280,7 @@ public class Inventory implements Container, Nameable {
+             this.setItem(slot, itemstack1);
+         }
+ 
+-        int k = j;
+-
+-        if (j > itemstack1.getMaxStackSize() - itemstack1.getCount()) {
+-            k = itemstack1.getMaxStackSize() - itemstack1.getCount();
+-        }
++	    int k = Math.min(j, itemstack1.getMaxStackSize() - itemstack1.getCount());
+ 
+         if (k > this.getMaxStackSize() - itemstack1.getCount()) {
+             k = this.getMaxStackSize() - itemstack1.getCount();
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index 3b34c736ed82448221ece85e60e825b18a99803f..22f6336a85cad87beaf3eabd9681907583f95a01 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -1969,7 +1969,7 @@ public abstract class Player extends LivingEntity {
+         if (!this.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && !this.isSpectator()) {
+             int i = this.experienceLevel * 7;
+ 
+-            return i > 100 ? 100 : i;
++            return Math.min(i, 100);
+         } else {
+             return 0;
+         }
+diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
+index b29448ec41ca9b88fe5e3ea6d99d3cfd4f79ac89..1a24ffac4f3170b34774ef6ae22cf960fe5a1256 100644
+--- a/src/main/java/net/minecraft/world/level/block/Block.java
++++ b/src/main/java/net/minecraft/world/level/block/Block.java
+@@ -600,10 +600,7 @@ public class Block extends BlockBehaviour implements ItemLike {
+         if (value < min) {
+             return min;
+         }
+-        if (value > max) {
+-            return max;
+-        }
+-        return value;
++        return Math.min(value, max);
+     }
+     // Spigot end
+ 
+diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
+index c83818bc871ba918844c98dacce8d3ace21717fc..1c77f0e22831a102e9004dfbb924eab4bd8f04ca 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
++++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
+@@ -291,7 +291,7 @@ public class RegionFile implements AutoCloseable {
+                     int sectorLength = (int)roundToSectors(rawLength);
+ 
+                     if (newSectorAllocations.tryAllocate(sectorOffset, sectorLength)) {
+-                        calculatedOffsets[location] = sectorOffset << 8 | (sectorLength > 255 ? 255 : sectorLength); // support forge style oversized
++                        calculatedOffsets[location] = sectorOffset << 8 | (Math.min(sectorLength, 255)); // support forge style oversized
+                     } else {
+                         LOGGER.error("Failed to allocate space for local chunk (overlapping data??) at (" + chunkX + "," + chunkZ + ") in regionfile " + this.regionFile.toAbsolutePath() + ", chunk will be regenerated");
+                     }
+@@ -314,7 +314,7 @@ public class RegionFile implements AutoCloseable {
+                     try {
+                         this.file.write(RegionFile.createExternalStub(oversizedCompressionTypes[location]), sectorOffset * 4096);
+                         // only allocate in the new offsets if the write succeeds
+-                        calculatedOffsets[location] = sectorOffset << 8 | (sectorLength > 255 ? 255 : sectorLength); // support forge style oversized
++                        calculatedOffsets[location] = sectorOffset << 8 | (Math.min(sectorLength, 255)); // support forge style oversized
+                     } catch (IOException ex) {
+                         newSectorAllocations.free(sectorOffset, sectorLength);
+                         LOGGER.error("Failed to write new oversized chunk data holder, local chunk at (" + chunkX + "," + chunkZ + ") in regionfile " + this.regionFile.toAbsolutePath() + " will be regenerated");

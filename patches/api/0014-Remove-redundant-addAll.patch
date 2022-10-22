@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:33:52 -0500
+Subject: [PATCH] Remove redundant addAll
+
+
+diff --git a/src/main/java/org/bukkit/conversations/ConversationFactory.java b/src/main/java/org/bukkit/conversations/ConversationFactory.java
+index 14d73e37fdb23872cc30bbb9332ec7d654637c2c..f6e095b929756d5bc5e2f0c67dfe2de9d8f7d23b 100644
+--- a/src/main/java/org/bukkit/conversations/ConversationFactory.java
++++ b/src/main/java/org/bukkit/conversations/ConversationFactory.java
+@@ -201,8 +201,7 @@ public class ConversationFactory {
+         }
+ 
+         //Clone any initial session data
+-        Map<Object, Object> copiedInitialSessionData = new HashMap<Object, Object>();
+-        copiedInitialSessionData.putAll(initialSessionData);
++        Map<Object, Object> copiedInitialSessionData = new HashMap<Object, Object>(initialSessionData);
+ 
+         //Build and return a conversation
+         Conversation conversation = new Conversation(plugin, forWhom, firstPrompt, copiedInitialSessionData);

@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:32:38 -0500
+Subject: [PATCH] Fix reflection static crash
+
+
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+index 0005e53f8667a7c3b3e9904e87076bf8f7221869..75405b9a468e4cac9f28d993e7084860294f4d42 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+@@ -130,22 +130,22 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+ 
+         double d = this.getFloorLevel(new BlockPos(node.x, node.y, node.z));
+         Node node2 = this.findAcceptedNode(node.x, node.y, node.z + 1, j, d, Direction.SOUTH, blockPathTypes2);
+-        if (WalkNodeEvaluator.isNeighborValid(node2, node)) {
++        if (isNeighborValid(node2, node)) {
+             successors[i++] = node2;
+         }
+ 
+         Node node3 = this.findAcceptedNode(node.x - 1, node.y, node.z, j, d, Direction.WEST, blockPathTypes2);
+-        if (WalkNodeEvaluator.isNeighborValid(node3, node)) {
++        if (isNeighborValid(node3, node)) {
+             successors[i++] = node3;
+         }
+ 
+         Node node4 = this.findAcceptedNode(node.x + 1, node.y, node.z, j, d, Direction.EAST, blockPathTypes2);
+-        if (WalkNodeEvaluator.isNeighborValid(node4, node)) {
++        if (isNeighborValid(node4, node)) {
+             successors[i++] = node4;
+         }
+ 
+         Node node5 = this.findAcceptedNode(node.x, node.y, node.z - 1, j, d, Direction.NORTH, blockPathTypes2);
+-        if (WalkNodeEvaluator.isNeighborValid(node5, node)) {
++        if (isNeighborValid(node5, node)) {
+             successors[i++] = node5;
+         }
+ 
+@@ -172,7 +172,8 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+         return i;
+     }
+ 
+-    protected static boolean isNeighborValid(@Nullable Node node, Node successor1) {
++    // Can't be static, due to library looking for non-static method
++    protected boolean isNeighborValid(@Nullable Node node, Node successor1) {
+         return node != null && !node.closed && (node.costMalus >= 0.0F || successor1.costMalus < 0.0F);
+     }
+ 

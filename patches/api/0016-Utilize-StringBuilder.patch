@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:38:35 -0500
+Subject: [PATCH] Utilize StringBuilder
+
+
+diff --git a/src/main/java/org/bukkit/ChatColor.java b/src/main/java/org/bukkit/ChatColor.java
+index bb6d77d2b7128f36d1359a7a7f5e1da9a90be5bf..79e841b43b498367490fe9c4db90710feb088866 100644
+--- a/src/main/java/org/bukkit/ChatColor.java
++++ b/src/main/java/org/bukkit/ChatColor.java
+@@ -374,7 +374,7 @@ public enum ChatColor {
+     public static String getLastColors(@NotNull String input) {
+         Preconditions.checkArgument(input != null, "Cannot get last colors from null text");
+ 
+-        String result = "";
++        StringBuilder result = new StringBuilder();
+         int length = input.length();
+ 
+         // Search backwards from the end as it is faster
+@@ -385,7 +385,7 @@ public enum ChatColor {
+                 if (index > 11 && input.charAt(index - 12) == COLOR_CHAR && (input.charAt(index - 11) == 'x' || input.charAt(index - 11) == 'X')) {
+                     String color = input.substring(index - 12, index + 2);
+                     if (HEX_COLOR_PATTERN.matcher(color).matches()) {
+-                        result = color + result;
++                        result.insert(0, color);
+                         break;
+                     }
+                 }
+@@ -394,7 +394,7 @@ public enum ChatColor {
+                 ChatColor color = getByChar(c);
+ 
+                 if (color != null) {
+-                    result = color.toString() + result;
++                    result.insert(0, color.toString());
+ 
+                     // Once we find a color or reset we can stop searching
+                     if (color.isColor() || color.equals(RESET)) {
+@@ -404,7 +404,7 @@ public enum ChatColor {
+             }
+         }
+ 
+-        return result;
++        return result.toString();
+     }
+ 
+     static {

@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:01:26 -0500
+Subject: [PATCH] AutoBox
+
+
+diff --git a/src/main/java/co/aikar/util/Counter.java b/src/main/java/co/aikar/util/Counter.java
+index 71b4a2cff62dd4552140b3c8ae53b9a001ffb5fd..2422959b56b3454edb693ab71630e03b6ce95f48 100644
+--- a/src/main/java/co/aikar/util/Counter.java
++++ b/src/main/java/co/aikar/util/Counter.java
+@@ -22,7 +22,7 @@ public class Counter <T> extends ForwardingMap<T, Long> {
+     public long increment(@Nullable T key, long amount) {
+         long count = Long.valueOf(this.getCount(key));
+         count = count + amount;
+-        this.counts.put(key, count);
++        this.counts.put(key, Long.valueOf(count));
+         return count;
+     }
+ 

@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:02:29 -0500
+Subject: [PATCH] Simplify array copy
+
+
+diff --git a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+index bec457ba3491e12a0195344c055e9630a46e5049..2e30756758e5f3d38bca12ce0d7a436bba3ac843 100644
+--- a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
++++ b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+@@ -142,9 +142,7 @@ public final class ChunkEntitySlices {
+ 
+         final Entity[] rawData = this.entities.getRawData();
+         final List<Entity> collectedEntities = new ArrayList<>(len);
+-        for (int i = 0; i < len; ++i) {
+-            collectedEntities.add(rawData[i]);
+-        }
++	    collectedEntities.addAll(Arrays.asList(rawData).subList(0, len));
+ 
+         return collectedEntities;
+     }

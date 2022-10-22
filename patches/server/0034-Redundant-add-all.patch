@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:03:00 -0500
+Subject: [PATCH] Redundant add all
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java b/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
+index 8060d82f3a2824b95d249764f3dadb8f22f7a2e1..8dbf7c396a2a7376927d0c35b9d625adbed0e57d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
+@@ -179,8 +179,7 @@ public final class WeakCollection<T> implements Collection<T> {
+     }
+ 
+     private @NotNull Collection<T> toCollection() {
+-        ArrayList<T> collection = new ArrayList<T>();
+-	    collection.addAll(this);
++        ArrayList<T> collection = new ArrayList<T>(this);
+         return collection;
+     }
+ }

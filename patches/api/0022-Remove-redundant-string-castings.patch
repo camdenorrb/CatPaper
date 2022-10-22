@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:54:33 -0500
+Subject: [PATCH] Remove redundant string castings
+
+
+diff --git a/src/main/java/org/bukkit/ChatColor.java b/src/main/java/org/bukkit/ChatColor.java
+index fcfa52055d6edd81517831301c149287e68fe68e..f80644af2be594f69ef7aee9253a2a9e8a92c1ce 100644
+--- a/src/main/java/org/bukkit/ChatColor.java
++++ b/src/main/java/org/bukkit/ChatColor.java
+@@ -238,7 +238,7 @@ public enum ChatColor {
+      * you need to dynamically convert colour codes from your custom format.
+      */
+     public static final char COLOR_CHAR = '\u00A7';
+-    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf(COLOR_CHAR) + "[0-9A-FK-ORX]");
++    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-ORX]");
+ 
+     private final int intCode;
+     private final char code;

@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:04:37 -0500
+Subject: [PATCH] Use Arrays.fill
+
+
+diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
+index 2b6e100026033dbe0bafe566191471abe499533f..44a715ffabb835334cc3962fe2ff40dc39f80786 100644
+--- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
++++ b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
+@@ -47,16 +47,7 @@ import org.yaml.snakeyaml.util.ArrayStack;
+ 
+ import java.io.IOException;
+ import java.io.Writer;
+-import java.util.ArrayDeque;
+-import java.util.HashMap;
+-import java.util.HashSet;
+-import java.util.Iterator;
+-import java.util.LinkedHashMap;
+-import java.util.List;
+-import java.util.Map;
+-import java.util.Queue;
+-import java.util.Set;
+-import java.util.TreeSet;
++import java.util.*;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
+@@ -1274,9 +1265,7 @@ public final class Emitter implements Emitable {
+         }
+         this.whitespace = true;
+         char[] data = new char[length];
+-        for (int i = 0; i < data.length; i++) {
+-            data[i] = ' ';
+-        }
++        Arrays.fill(data, ' ');
+         this.column += length;
+         stream.write(data);
+     }

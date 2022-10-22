@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:36:15 -0500
+Subject: [PATCH] Utilize enumset
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerArmorChangeEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerArmorChangeEvent.java
+index 4c4669471089af530dbb457e7ecab21d4432a6fa..42bf14c87bae08e38088ec70a4e7c7a27019623d 100644
+--- a/src/main/java/com/destroystokyo/paper/event/player/PlayerArmorChangeEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerArmorChangeEvent.java
+@@ -6,10 +6,8 @@ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.player.PlayerEvent;
+ import org.bukkit.inventory.ItemStack;
+ 
+-import java.util.Arrays;
+-import java.util.Collections;
+-import java.util.HashSet;
+-import java.util.Set;
++import java.util.*;
++
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+@@ -86,7 +84,7 @@ public class PlayerArmorChangeEvent extends PlayerEvent {
+         LEGS(NETHERITE_LEGGINGS, DIAMOND_LEGGINGS, GOLDEN_LEGGINGS, IRON_LEGGINGS, CHAINMAIL_LEGGINGS, LEATHER_LEGGINGS),
+         FEET(NETHERITE_BOOTS, DIAMOND_BOOTS, GOLDEN_BOOTS, IRON_BOOTS, CHAINMAIL_BOOTS, LEATHER_BOOTS);
+ 
+-        private final Set<Material> mutableTypes = new HashSet<>();
++        private final Set<Material> mutableTypes = EnumSet.noneOf(Material.class);
+         private Set<Material> immutableTypes;
+ 
+         SlotType(Material... types) {

@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:39:20 -0500
+Subject: [PATCH] Use isEmpty rather than equal check
+
+
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+index 0c802f3033b0d8b09031560cf859922376ea0343..dedb23756c703976e5fdbf3e24d8d85958c28f95 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+@@ -183,7 +183,7 @@ public abstract class JavaPlugin extends PluginBase {
+ 
+     @Override
+     public void saveResource(@NotNull String resourcePath, boolean replace) {
+-        if (resourcePath == null || resourcePath.equals("")) {
++        if (resourcePath == null || resourcePath.isEmpty()) {
+             throw new IllegalArgumentException("ResourcePath cannot be null or empty");
+         }
+ 

@@ -1,0 +1,123 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:04:10 -0500
+Subject: [PATCH] Remove redundant checks
+
+
+diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
+index abe37c7c3c6f5ab73afd738ec78f06d7e4d2ed96..21604fb28c413dff0927afbeee231743ffffc672 100644
+--- a/src/main/java/net/minecraft/CrashReport.java
++++ b/src/main/java/net/minecraft/CrashReport.java
+@@ -58,7 +58,7 @@ public class CrashReport {
+             this.uncategorizedStackTrace = (StackTraceElement[]) ArrayUtils.subarray(((CrashReportCategory) this.details.get(0)).getStacktrace(), 0, 1);
+         }
+ 
+-        if (this.uncategorizedStackTrace != null && this.uncategorizedStackTrace.length > 0) {
++        if (this.uncategorizedStackTrace.length > 0) {
+             crashReportBuilder.append("-- Head --\n");
+             crashReportBuilder.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
+             crashReportBuilder.append("Stacktrace:\n");
+diff --git a/src/main/java/net/minecraft/world/entity/ExperienceOrb.java b/src/main/java/net/minecraft/world/entity/ExperienceOrb.java
+index 4932eb36be6e89f34c906c7e25704661bd96c050..b1db01aa691fcf9bf024d9058c1d8a7af40b94ab 100644
+--- a/src/main/java/net/minecraft/world/entity/ExperienceOrb.java
++++ b/src/main/java/net/minecraft/world/entity/ExperienceOrb.java
+@@ -155,7 +155,7 @@ public class ExperienceOrb extends Entity {
+             }
+         }
+ 
+-        if (this.followingPlayer != null && !cancelled) {
++        if (!cancelled) {
+             // CraftBukkit end
+             Vec3 vec3d = new Vec3(this.followingPlayer.getX() - this.getX(), this.followingPlayer.getY() + (double) this.followingPlayer.getEyeHeight() / 2.0D - this.getY(), this.followingPlayer.getZ() - this.getZ());
+             double d0 = vec3d.lengthSqr();
+diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
+index 5b56b7edd6b753d510246a047758208ff5944a4e..62a3b5cab3c16eded5545fe0761a9ccb83a90a9b 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
++++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
+@@ -510,7 +510,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
+                 }
+ 
+                 entity = source.getEntity();
+-                if (entity != null && !(entity instanceof Player) && entity instanceof LivingEntity && ((LivingEntity) entity).getMobType() == this.getMobType()) {
++                if (!(entity instanceof Player) && entity instanceof LivingEntity && ((LivingEntity) entity).getMobType() == this.getMobType()) {
+                     return false;
+                 } else {
+                     if (this.destroyBlocksTick <= 0) {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Shulker.java b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
+index 938386096d305e0093b0d0d6550990101acc0a4e..472d6a8e98894b807a93de5ba137ab64e222950e 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Shulker.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
+@@ -596,7 +596,7 @@ public class Shulker extends AbstractGolem implements Enemy {
+     public DyeColor getColor() {
+         byte b0 = ((Byte) this.entityData.get(Shulker.DATA_COLOR_ID)).byteValue();
+ 
+-        return b0 != 16 && b0 <= 15 ? DyeColor.byId(b0) : null;
++        return b0 <= 15 ? DyeColor.byId(b0) : null;
+     }
+ 
+     private class ShulkerLookControl extends LookControl {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
+index 2dcda3b03796655da443e1b3dd68c6f6bca20d21..f8c427b5fecda183d0772e378e4199eb5d29c4c0 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
+@@ -127,7 +127,7 @@ public class Silverfish extends Monster {
+         if (checkAnyLightMonsterSpawnRules(type, world, spawnReason, pos, random)) {
+             Player entityhuman = world.getNearestPlayer((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, 5.0D, true);
+ 
+-            return !(entityhuman != null && !entityhuman.affectsSpawning) && entityhuman == null; // Paper - Affects Spawning API
++            return entityhuman == null; // Paper - Affects Spawning API
+         } else {
+             return false;
+         }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+index e13003f21c0ff94ff6b94d354c1a3ee0b4ae8961..cf870f50d9297cf7ac8f0c50aa86fcc6bda0edb9 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+@@ -436,7 +436,7 @@ public abstract class AbstractArrow extends Projectile {
+                 }
+ 
+                 this.doPostHurtEffects(entityliving);
+-                if (entity1 != null && entityliving != entity1 && entityliving instanceof Player && entity1 instanceof ServerPlayer && !this.isSilent()) {
++                if (entityliving != entity1 && entityliving instanceof Player && entity1 instanceof ServerPlayer && !this.isSilent()) {
+                     ((ServerPlayer) entity1).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                 }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/ConduitBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/ConduitBlockEntity.java
+index 05eab04e4aec4151018f25b59f92ddbbb4c09f87..68703fdfd17f3295dd37ea276f1cfcf9afee06e3 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/ConduitBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/ConduitBlockEntity.java
+@@ -169,7 +169,7 @@ public class ConduitBlockEntity extends BlockEntity {
+                     int i1 = Math.abs(j);
+                     int j1 = Math.abs(k);
+ 
+-                    if ((l > 1 || i1 > 1 || j1 > 1) && (i == 0 && (i1 == 2 || j1 == 2) || j == 0 && (l == 2 || j1 == 2) || k == 0 && (l == 2 || i1 == 2))) {
++                    if ((i == 0 && (i1 == 2 || j1 == 2) || j == 0 && (l == 2 || j1 == 2) || k == 0 && (l == 2 || i1 == 2))) {
+                         BlockPos blockposition2 = pos.offset(i, j, k);
+                         BlockState iblockdata = world.getBlockState(blockposition2);
+                         Block[] ablock = ConduitBlockEntity.VALID_BLOCKS;
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+index d498418bb6394d625a278247c22a01eba737b5e4..fa8742723a12e4c0c20e68cbbc56cc1d0d21ff41 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+@@ -171,7 +171,7 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+ 
+     @Override
+     public boolean equals(@Nullable Object obj) {
+-        if (obj == null || !(obj instanceof OfflinePlayer)) {
++        if (!(obj instanceof OfflinePlayer)) {
+             return false;
+         }
+ 
+diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
+index 3651bb1c399c5c5604101dfb24d87361925a450b..2b6e100026033dbe0bafe566191471abe499533f 100644
+--- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
++++ b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
+@@ -1321,7 +1321,7 @@ public final class Emitter implements Emitable {
+                 ch = text.charAt(end);
+             }
+             if (spaces) {
+-                if (ch == 0 || ch != ' ') {
++                if (ch != ' ') {
+                     if (start + 1 == end && this.column > this.bestWidth && split && start != 0
+                         && end != text.length()) {
+                         writeIndent();

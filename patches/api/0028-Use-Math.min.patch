@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:05:48 -0500
+Subject: [PATCH] Use Math.min
+
+
+diff --git a/src/main/java/org/bukkit/util/ChatPaginator.java b/src/main/java/org/bukkit/util/ChatPaginator.java
+index b2d8566e2984c512b5589144b526eacaed46a940..d63c4b83a3970bd37bf004be014bbe2760730251 100644
+--- a/src/main/java/org/bukkit/util/ChatPaginator.java
++++ b/src/main/java/org/bukkit/util/ChatPaginator.java
+@@ -46,10 +46,10 @@ public class ChatPaginator {
+         String[] lines = wordWrap(unpaginatedString, lineLength);
+ 
+         int totalPages = lines.length / pageHeight + (lines.length % pageHeight == 0 ? 0 : 1);
+-        int actualPageNumber = pageNumber <= totalPages ? pageNumber : totalPages;
++        int actualPageNumber = Math.min(pageNumber, totalPages);
+ 
+         int from = (actualPageNumber - 1) * pageHeight;
+-        int to = from + pageHeight <= lines.length ? from + pageHeight : lines.length;
++        int to = Math.min(from + pageHeight, lines.length);
+         String[] selectedLines = Arrays.copyOfRange(lines, from, to);
+ 
+         return new ChatPage(selectedLines, actualPageNumber, totalPages);

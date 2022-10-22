@@ -1,0 +1,656 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:58:29 -0500
+Subject: [PATCH] Use record classes
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/SkinParts.java b/src/main/java/com/destroystokyo/paper/SkinParts.java
+index 4a0c39405d4fbed457787e3c6ded4cc6591bc8c2..1c98225a87ccf60c8a980b45c7abe9a4f5186fbf 100644
+--- a/src/main/java/com/destroystokyo/paper/SkinParts.java
++++ b/src/main/java/com/destroystokyo/paper/SkinParts.java
+@@ -16,5 +16,5 @@ public interface SkinParts {
+ 
+     boolean hasHatsEnabled();
+ 
+-    int getRaw();
++    int raw();
+ }
+diff --git a/src/main/java/com/destroystokyo/paper/block/TargetBlockInfo.java b/src/main/java/com/destroystokyo/paper/block/TargetBlockInfo.java
+index c81d87d3238762fd0a3ca1e418ea184b658510bd..0d41fc2d1ac48c4e8f34b10712940fe2b734e89d 100644
+--- a/src/main/java/com/destroystokyo/paper/block/TargetBlockInfo.java
++++ b/src/main/java/com/destroystokyo/paper/block/TargetBlockInfo.java
+@@ -4,25 +4,20 @@ import org.bukkit.block.Block;
+ import org.bukkit.block.BlockFace;
+ import org.jetbrains.annotations.NotNull;
+ 
++
+ /**
+  * Represents information about a targeted block
+  */
+-public class TargetBlockInfo {
+-    private final @NotNull Block block;
+-    private final @NotNull BlockFace blockFace;
+-
+-    public TargetBlockInfo(@NotNull Block block, @NotNull BlockFace blockFace) {
+-        this.block = block;
+-        this.blockFace = blockFace;
+-    }
++public record TargetBlockInfo(@NotNull Block block, @NotNull BlockFace blockFace) {
+ 
+     /**
+      * Get the block that is targeted
+      *
+      * @return Targeted block
+      */
++    @Override
+     @NotNull
+-    public Block getBlock() {
++    public Block block() {
+         return block;
+     }
+ 
+@@ -31,8 +26,9 @@ public class TargetBlockInfo {
+      *
+      * @return Targeted blockface
+      */
++    @Override
+     @NotNull
+-    public BlockFace getBlockFace() {
++    public BlockFace blockFace() {
+         return blockFace;
+     }
+ 
+diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
+index a024ce0ef4cb8577206b71bcbb07b908f95d325f..31f267078be9616baf71dbca73293a124f78bf6c 100644
+--- a/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
+@@ -75,7 +75,7 @@ public class PlayerClientOptionsChangeEvent extends PlayerEvent {
+     }
+ 
+     public boolean hasSkinPartsChanged() {
+-        return skinparts.getRaw() != player.getClientOption(ClientOption.SKIN_PARTS).getRaw();
++        return skinparts.raw() != player.getClientOption(ClientOption.SKIN_PARTS).raw();
+     }
+ 
+     @NotNull
+diff --git a/src/main/java/com/destroystokyo/paper/event/server/AsyncTabCompleteEvent.java b/src/main/java/com/destroystokyo/paper/event/server/AsyncTabCompleteEvent.java
+index 77e84b28ebb0a1b44cafdfcbe5a63d7c9365f49a..0ac40d41f3f5b53bcddfb91055c020b66d4d2d10 100644
+--- a/src/main/java/com/destroystokyo/paper/event/server/AsyncTabCompleteEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/server/AsyncTabCompleteEvent.java
+@@ -283,46 +283,24 @@ public class AsyncTabCompleteEvent extends Event implements Cancellable {
+         }
+     }
+ 
+-    static final class CompletionImpl implements Completion {
+-        private final @NotNull String suggestion;
+-        private final @Nullable Component tooltip;
+-
+-        CompletionImpl(final @NotNull String suggestion, final @Nullable Component tooltip) {
+-            this.suggestion = suggestion;
+-            this.tooltip = tooltip;
+-        }
+-
+-        @Override
+-        public @NotNull String suggestion() {
+-            return this.suggestion;
+-        }
+-
+-        @Override
+-        public @Nullable Component tooltip() {
+-            return this.tooltip;
+-        }
+-
+-        @Override
+-        public boolean equals(final @Nullable Object o) {
+-            if (this == o) {
+-                return true;
+-            }
+-            if (o == null || this.getClass() != o.getClass()) {
+-                return false;
+-            }
+-            final CompletionImpl that = (CompletionImpl) o;
+-            return this.suggestion.equals(that.suggestion)
+-                && java.util.Objects.equals(this.tooltip, that.tooltip);
+-        }
+-
+-        @Override
+-        public int hashCode() {
+-            return java.util.Objects.hash(this.suggestion, this.tooltip);
+-        }
+-
+-        @Override
+-        public @NotNull String toString() {
+-            return StringExaminer.simpleEscaping().examine(this);
+-        }
+-    }
++	record CompletionImpl(@NotNull String suggestion, @Nullable Component tooltip) implements Completion {
++
++		@Override
++		public boolean equals(final @Nullable Object o) {
++			if (this == o) {
++				return true;
++			}
++			if (o == null || this.getClass() != o.getClass()) {
++				return false;
++			}
++			final CompletionImpl that = (CompletionImpl) o;
++			return this.suggestion.equals(that.suggestion)
++				&& java.util.Objects.equals(this.tooltip, that.tooltip);
++		}
++
++		@Override
++		public @NotNull String toString() {
++			return StringExaminer.simpleEscaping().examine(this);
++		}
++	}
+ }
+diff --git a/src/main/java/org/bukkit/Vibration.java b/src/main/java/org/bukkit/Vibration.java
+index 9b1143afb0553f618d7c115b0f18e91fb67277dc..9b4d178760d1751d0d9c68ca5f597595dca2c064 100644
+--- a/src/main/java/org/bukkit/Vibration.java
++++ b/src/main/java/org/bukkit/Vibration.java
+@@ -60,19 +60,9 @@ public class Vibration {
+ 
+     public interface Destination {
+ 
+-        public static class EntityDestination implements Destination {
++	    public record EntityDestination(@NotNull Entity entity) implements Destination {
+ 
+-            private final @NotNull Entity entity;
+-
+-            public EntityDestination(@NotNull Entity entity) {
+-                this.entity = entity;
+-            }
+-
+-            @NotNull
+-            public Entity getEntity() {
+-                return entity;
+-            }
+-        }
++	    }
+ 
+         public static class BlockDestination implements Destination {
+ 
+diff --git a/src/main/java/org/bukkit/command/defaults/HelpCommand.java b/src/main/java/org/bukkit/command/defaults/HelpCommand.java
+index c9607878844fea46c20682e3f4b9998f13083cf8..bffc801c719545ac0cbc7192d10d893984cb10dc 100644
+--- a/src/main/java/org/bukkit/command/defaults/HelpCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/HelpCommand.java
+@@ -91,11 +91,11 @@ public class HelpCommand extends BukkitCommand {
+         header.append("Help: ");
+         header.append(topic.getName());
+         header.append(" ");
+-        if (page.getTotalPages() > 1) {
++        if (page.totalPages() > 1) {
+             header.append("(");
+-            header.append(page.getPageNumber());
++            header.append(page.pageNumber());
+             header.append("/");
+-            header.append(page.getTotalPages());
++            header.append(page.totalPages());
+             header.append(") ");
+         }
+         header.append(ChatColor.YELLOW);
+@@ -104,7 +104,7 @@ public class HelpCommand extends BukkitCommand {
+         }
+         sender.sendMessage(header.toString());
+ 
+-        sender.sendMessage(page.getLines());
++        sender.sendMessage(page.lines());
+ 
+         return true;
+     }
+diff --git a/src/main/java/org/bukkit/permissions/PermissibleBase.java b/src/main/java/org/bukkit/permissions/PermissibleBase.java
+index 4b37788e744ff361681e54eca24970771998e58f..b708b4aaa8ea1dc845b242d12dcf6fb08be65cdf 100644
+--- a/src/main/java/org/bukkit/permissions/PermissibleBase.java
++++ b/src/main/java/org/bukkit/permissions/PermissibleBase.java
+@@ -75,7 +75,7 @@ public class PermissibleBase implements Permissible {
+         // Paper start
+         PermissionAttachmentInfo info = permissions.get(name);
+         if (info != null) {
+-            return info.getValue();
++            return info.value();
+             // Paper end
+         } else {
+             Permission perm = Bukkit.getServer().getPluginManager().getPermission(name);
+@@ -99,7 +99,7 @@ public class PermissibleBase implements Permissible {
+         // Paper start
+         PermissionAttachmentInfo info = permissions.get(name);
+         if (info != null) {
+-            return info.getValue();
++            return info.value();
+         }
+         // Paper end
+         return perm.getDefault().getValue(isOp());
+@@ -254,16 +254,11 @@ public class PermissibleBase implements Permissible {
+         return new HashSet<PermissionAttachmentInfo>(permissions.values());
+     }
+ 
+-    private static class RemoveAttachmentRunnable implements Runnable {
+-        private final @NotNull PermissionAttachment attachment;
++	private record RemoveAttachmentRunnable(@NotNull PermissionAttachment attachment) implements Runnable {
+ 
+-        public RemoveAttachmentRunnable(@NotNull PermissionAttachment attachment) {
+-            this.attachment = attachment;
+-        }
+-
+-        @Override
+-        public void run() {
+-            attachment.remove();
+-        }
+-    }
++		@Override
++		public void run() {
++			attachment.remove();
++		}
++	}
+ }
+diff --git a/src/main/java/org/bukkit/permissions/PermissionAttachmentInfo.java b/src/main/java/org/bukkit/permissions/PermissionAttachmentInfo.java
+index f8b3357864569c72d39359510190797e157c3129..e26ccd3ecbd197ae6ad603ee6191f0d0a67a810b 100644
+--- a/src/main/java/org/bukkit/permissions/PermissionAttachmentInfo.java
++++ b/src/main/java/org/bukkit/permissions/PermissionAttachmentInfo.java
+@@ -3,27 +3,20 @@ package org.bukkit.permissions;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
++
+ /**
+  * Holds information on a permission and which {@link PermissionAttachment}
+  * provides it
+  */
+-public class PermissionAttachmentInfo {
+-    private final @NotNull Permissible permissible;
+-    private final @NotNull String permission;
+-    private final @Nullable PermissionAttachment attachment;
+-    private final boolean value;
+-
+-    public PermissionAttachmentInfo(@NotNull Permissible permissible, @NotNull String permission, @Nullable PermissionAttachment attachment, boolean value) {
++public record PermissionAttachmentInfo(@NotNull Permissible permissible, @NotNull String permission,
++                                       @Nullable PermissionAttachment attachment, boolean value) {
++    public PermissionAttachmentInfo {
+         if (permissible == null) {
+             throw new IllegalArgumentException("Permissible may not be null");
+         } else if (permission == null) {
+             throw new IllegalArgumentException("Permission may not be null");
+         }
+ 
+-        this.permissible = permissible;
+-        this.permission = permission;
+-        this.attachment = attachment;
+-        this.value = value;
+     }
+ 
+     /**
+@@ -31,8 +24,9 @@ public class PermissionAttachmentInfo {
+      *
+      * @return Permissible this permission is for
+      */
++    @Override
+     @NotNull
+-    public Permissible getPermissible() {
++    public Permissible permissible() {
+         return permissible;
+     }
+ 
+@@ -41,8 +35,9 @@ public class PermissionAttachmentInfo {
+      *
+      * @return Name of the permission
+      */
++    @Override
+     @NotNull
+-    public String getPermission() {
++    public String permission() {
+         return permission;
+     }
+ 
+@@ -52,8 +47,9 @@ public class PermissionAttachmentInfo {
+      *
+      * @return Attachment
+      */
++    @Override
+     @Nullable
+-    public PermissionAttachment getAttachment() {
++    public PermissionAttachment attachment() {
+         return attachment;
+     }
+ 
+@@ -62,7 +58,8 @@ public class PermissionAttachmentInfo {
+      *
+      * @return Value of the permission
+      */
+-    public boolean getValue() {
++    @Override
++    public boolean value() {
+         return value;
+     }
+ }
+diff --git a/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java b/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
+index e92458d4f3c9abe9dc55c693f03216f880284db1..5ec066cdfd00f35ef765f2e1e9d4613cd43a742f 100644
+--- a/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
++++ b/src/main/java/org/bukkit/plugin/RegisteredServiceProvider.java
+@@ -2,17 +2,14 @@ package org.bukkit.plugin;
+ 
+ import org.jetbrains.annotations.NotNull;
+ 
++
+ /**
+  * A registered service provider.
+  *
+  * @param <T> Service
+  */
+-public class RegisteredServiceProvider<T> implements Comparable<RegisteredServiceProvider<?>> {
+-
+-    private final Class<T> service;
+-    private final Plugin plugin;
+-    private final T provider;
+-    private final ServicePriority priority;
++public record RegisteredServiceProvider<T>(Class<T> service, T provider, ServicePriority priority,
++                                           Plugin plugin) implements Comparable<RegisteredServiceProvider<?>> {
+ 
+     public RegisteredServiceProvider(@NotNull Class<T> service, @NotNull T provider, @NotNull ServicePriority priority, @NotNull Plugin plugin) {
+         this.service = service;
+@@ -21,32 +18,36 @@ public class RegisteredServiceProvider<T> implements Comparable<RegisteredServic
+         this.priority = priority;
+     }
+ 
++    @Override
+     @NotNull
+-    public Class<T> getService() {
++    public Class<T> service() {
+         return service;
+     }
+ 
++    @Override
+     @NotNull
+-    public Plugin getPlugin() {
++    public Plugin plugin() {
+         return plugin;
+     }
+ 
++    @Override
+     @NotNull
+-    public T getProvider() {
++    public T provider() {
+         return provider;
+     }
+ 
++    @Override
+     @NotNull
+-    public ServicePriority getPriority() {
++    public ServicePriority priority() {
+         return priority;
+     }
+ 
+     @Override
+     public int compareTo(@NotNull RegisteredServiceProvider<?> other) {
+-        if (priority.ordinal() == other.getPriority().ordinal()) {
++        if (priority.ordinal() == other.priority().ordinal()) {
+             return 0;
+         } else {
+-            return priority.ordinal() < other.getPriority().ordinal() ? 1 : -1;
++            return priority.ordinal() < other.priority().ordinal() ? 1 : -1;
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/plugin/SimpleServicesManager.java b/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
+index f3dd8490230b85be7e03f7c0f0c20b476e1574fd..c96d881b024591fce465cfa6723aeea233b8c2b6 100644
+--- a/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
++++ b/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
+@@ -81,7 +81,7 @@ public class SimpleServicesManager implements ServicesManager {
+                         while (it2.hasNext()) {
+                             RegisteredServiceProvider<?> registered = it2.next();
+ 
+-                            if (registered.getPlugin().equals(plugin)) {
++                            if (registered.plugin().equals(plugin)) {
+                                 it2.remove();
+                                 unregisteredEvents.add(new ServiceUnregisterEvent(registered));
+                             }
+@@ -130,7 +130,7 @@ public class SimpleServicesManager implements ServicesManager {
+                         while (it2.hasNext()) {
+                             RegisteredServiceProvider<?> registered = it2.next();
+ 
+-                            if (registered.getProvider() == provider) {
++                            if (registered.provider() == provider) {
+                                 it2.remove();
+                                 unregisteredEvents.add(new ServiceUnregisterEvent(registered));
+                             }
+@@ -172,7 +172,7 @@ public class SimpleServicesManager implements ServicesManager {
+                         while (it2.hasNext()) {
+                             RegisteredServiceProvider<?> registered = it2.next();
+ 
+-                            if (registered.getProvider().equals(provider)) {
++                            if (registered.provider().equals(provider)) {
+                                 it2.remove();
+                                 unregisteredEvents.add(new ServiceUnregisterEvent(registered));
+                             }
+@@ -211,7 +211,7 @@ public class SimpleServicesManager implements ServicesManager {
+             }
+ 
+             // This should not be null!
+-            return service.cast(registered.get(0).getProvider());
++            return service.cast(registered.get(0).provider());
+         }
+     }
+ 
+@@ -252,7 +252,7 @@ public class SimpleServicesManager implements ServicesManager {
+         synchronized (providers) {
+             for (List<RegisteredServiceProvider<?>> registered : providers.values()) {
+                 for (RegisteredServiceProvider<?> provider : registered) {
+-                    if (provider.getPlugin().equals(plugin)) {
++                    if (provider.plugin().equals(plugin)) {
+                         ret.add(provider);
+                     }
+                 }
+diff --git a/src/main/java/org/bukkit/util/ChatPaginator.java b/src/main/java/org/bukkit/util/ChatPaginator.java
+index 293f9c35a0f05f6fc145cbc750704dc481ebaee8..b2d8566e2984c512b5589144b526eacaed46a940 100644
+--- a/src/main/java/org/bukkit/util/ChatPaginator.java
++++ b/src/main/java/org/bukkit/util/ChatPaginator.java
+@@ -142,29 +142,18 @@ public class ChatPaginator {
+         return lines.toArray(new String[0]);
+     }
+ 
+-    public static class ChatPage {
++    public record ChatPage(String[] lines, int pageNumber, int totalPages) {
+ 
+-        private final String[] lines;
+-        private final int pageNumber;
+-        private final int totalPages;
+-
+-        public ChatPage(@NotNull String[] lines, int pageNumber, int totalPages) {
+-            this.lines = lines;
+-            this.pageNumber = pageNumber;
+-            this.totalPages = totalPages;
+-        }
+-
+-        public int getPageNumber() {
+-            return pageNumber;
+-        }
+-
+-        public int getTotalPages() {
+-            return totalPages;
+-        }
++            public ChatPage(@NotNull String[] lines, int pageNumber, int totalPages) {
++                this.lines = lines;
++                this.pageNumber = pageNumber;
++                this.totalPages = totalPages;
++            }
+ 
+-        @NotNull
+-        public String[] getLines() {
+-            return lines;
++            @Override
++            @NotNull
++            public String[] lines() {
++                return lines;
++            }
+         }
+-    }
+ }
+diff --git a/src/main/java/org/bukkit/util/EulerAngle.java b/src/main/java/org/bukkit/util/EulerAngle.java
+index 56ba1a70ce6311c3727d005ea9a78249248fb2a4..dc8b7cc346968be28d0a424da062840a34dce6c3 100644
+--- a/src/main/java/org/bukkit/util/EulerAngle.java
++++ b/src/main/java/org/bukkit/util/EulerAngle.java
+@@ -8,17 +8,13 @@ import org.jetbrains.annotations.Nullable;
+  * EulerAngle is used to represent 3 angles, one for each
+  * axis (x, y, z). The angles are in radians
+  */
+-public class EulerAngle {
++public record EulerAngle(double x, double y, double z) {
+ 
+     /**
+      * A EulerAngle with every axis set to 0
+      */
+     public static final EulerAngle ZERO = new EulerAngle(0, 0, 0);
+ 
+-    private final double x;
+-    private final double y;
+-    private final double z;
+-
+     /**
+      * Creates a EularAngle with each axis set to the
+      * passed angle in radians
+@@ -27,10 +23,7 @@ public class EulerAngle {
+      * @param y the angle for the y axis in radians
+      * @param z the angle for the z axis in radians
+      */
+-    public EulerAngle(double x, double y, double z) {
+-        this.x = x;
+-        this.y = y;
+-        this.z = z;
++    public EulerAngle {
+     }
+ 
+     /**
+@@ -38,7 +31,8 @@ public class EulerAngle {
+      *
+      * @return the angle in radians
+      */
+-    public double getX() {
++    @Override
++    public double x() {
+         return x;
+     }
+ 
+@@ -47,7 +41,8 @@ public class EulerAngle {
+      *
+      * @return the angle in radians
+      */
+-    public double getY() {
++    @Override
++    public double y() {
+         return y;
+     }
+ 
+@@ -56,7 +51,8 @@ public class EulerAngle {
+      *
+      * @return the angle in radians
+      */
+-    public double getZ() {
++    @Override
++    public double z() {
+         return z;
+     }
+ 
+@@ -108,9 +104,9 @@ public class EulerAngle {
+     @NotNull
+     public EulerAngle add(double x, double y, double z) {
+         return new EulerAngle(
+-                this.x + x,
+-                this.y + y,
+-                this.z + z
++            this.x + x,
++            this.y + y,
++            this.z + z
+         );
+     }
+ 
+@@ -136,8 +132,8 @@ public class EulerAngle {
+         EulerAngle that = (EulerAngle) o;
+ 
+         return Double.compare(that.x, x) == 0
+-                && Double.compare(that.y, y) == 0
+-                && Double.compare(that.z, z) == 0;
++            && Double.compare(that.y, y) == 0
++            && Double.compare(that.z, z) == 0;
+ 
+     }
+ 
+diff --git a/src/main/java/org/bukkit/util/StructureSearchResult.java b/src/main/java/org/bukkit/util/StructureSearchResult.java
+index 129c14ef4a89bcd14b31343a756773bde43d48ab..a2a81643216ef58213990b4a2ed2e2a35c02a20c 100644
+--- a/src/main/java/org/bukkit/util/StructureSearchResult.java
++++ b/src/main/java/org/bukkit/util/StructureSearchResult.java
+@@ -20,7 +20,7 @@ public interface StructureSearchResult {
+      * @return the found structure.
+      */
+     @NotNull
+-    Structure getStructure();
++    Structure structure();
+ 
+     /**
+      * Return the location of the structure.
+@@ -28,5 +28,5 @@ public interface StructureSearchResult {
+      * @return the location the structure was found.
+      */
+     @NotNull
+-    Location getLocation();
++    Location location();
+ }
+diff --git a/src/test/java/org/bukkit/ChatPaginatorTest.java b/src/test/java/org/bukkit/ChatPaginatorTest.java
+index ad8c0679c1b80e85757c16ae7db5e287595a56a9..90697b669b764f5e979829bfd6cdaaea4f6851e7 100644
+--- a/src/test/java/org/bukkit/ChatPaginatorTest.java
++++ b/src/test/java/org/bukkit/ChatPaginatorTest.java
+@@ -2,7 +2,7 @@ package org.bukkit;
+ 
+ import static org.hamcrest.CoreMatchers.*;
+ import static org.hamcrest.MatcherAssert.assertThat;
+-import static org.junit.jupiter.api.Assertions.*;
++
+ import org.bukkit.util.ChatPaginator;
+ import org.junit.jupiter.api.Test;
+ 
+@@ -152,11 +152,11 @@ public class ChatPaginatorTest {
+         String rawString = "1234 123456789 123456789 123456789";
+         ChatPaginator.ChatPage page = ChatPaginator.paginate(rawString, 1, 6, 2);
+ 
+-        assertThat(page.getPageNumber(), is(1));
+-        assertThat(page.getTotalPages(), is(4));
+-        assertThat(page.getLines().length, is(2));
+-        assertThat(page.getLines()[0], is("1234"));
+-        assertThat(page.getLines()[1], is("123456"));
++        assertThat(page.pageNumber(), is(1));
++        assertThat(page.totalPages(), is(4));
++        assertThat(page.lines().length, is(2));
++        assertThat(page.lines()[0], is("1234"));
++        assertThat(page.lines()[1], is("123456"));
+     }
+ 
+     @Test
+@@ -164,11 +164,11 @@ public class ChatPaginatorTest {
+         String rawString = "1234 123456789 123456789 123456789";
+         ChatPaginator.ChatPage page = ChatPaginator.paginate(rawString, 2, 6, 2);
+ 
+-        assertThat(page.getPageNumber(), is(2));
+-        assertThat(page.getTotalPages(), is(4));
+-        assertThat(page.getLines().length, is(2));
+-        assertThat(page.getLines()[0], is("789"));
+-        assertThat(page.getLines()[1], is("123456"));
++        assertThat(page.pageNumber(), is(2));
++        assertThat(page.totalPages(), is(4));
++        assertThat(page.lines().length, is(2));
++        assertThat(page.lines()[0], is("789"));
++        assertThat(page.lines()[1], is("123456"));
+     }
+ 
+     @Test
+@@ -176,9 +176,9 @@ public class ChatPaginatorTest {
+         String rawString = "1234 123456789 123456789 123456789";
+         ChatPaginator.ChatPage page = ChatPaginator.paginate(rawString, 4, 6, 2);
+ 
+-        assertThat(page.getPageNumber(), is(4));
+-        assertThat(page.getTotalPages(), is(4));
+-        assertThat(page.getLines().length, is(1));
+-        assertThat(page.getLines()[0], is("789"));
++        assertThat(page.pageNumber(), is(4));
++        assertThat(page.totalPages(), is(4));
++        assertThat(page.lines().length, is(1));
++        assertThat(page.lines()[0], is("789"));
+     }
+ }

@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:09:22 -0500
+Subject: [PATCH] Remove redundant string operations
+
+
+diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
+index ec6f398f007c607edb50b0b335ee0f8516325585..4bab1bebcea140408c21040a49eafc6d9f19f0e9 100644
+--- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
++++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
+@@ -234,7 +234,7 @@ public class SimpleCommandMap implements CommandMap {
+             return null;
+         }
+ 
+-        String[] args = cmdLine.substring(spaceIndex + 1, cmdLine.length()).split(" ", -1);
++        String[] args = cmdLine.substring(spaceIndex + 1).split(" ", -1);
+ 
+         try {
+             return target.tabComplete(sender, commandName, args, location);

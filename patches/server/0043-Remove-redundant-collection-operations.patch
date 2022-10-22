@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:08:27 -0500
+Subject: [PATCH] Remove redundant collection operations
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/conversations/ConversationTracker.java b/src/main/java/org/bukkit/craftbukkit/conversations/ConversationTracker.java
+index 6e81f2e980775f25e75cce62eb98ea2734f175db..4a4db1d5e4b0e3673842c9bfee5bbb1e0b9e32b5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/conversations/ConversationTracker.java
++++ b/src/main/java/org/bukkit/craftbukkit/conversations/ConversationTracker.java
+@@ -32,9 +32,7 @@ public class ConversationTracker {
+             if (this.conversationQueue.getFirst() == conversation) {
+                 conversation.abandon(details);
+             }
+-            if (this.conversationQueue.contains(conversation)) {
+-                this.conversationQueue.remove(conversation);
+-            }
++            this.conversationQueue.remove(conversation);
+             if (!this.conversationQueue.isEmpty()) {
+                 this.conversationQueue.getFirst().outputNextPrompt();
+             }
+diff --git a/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java b/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
+index 2903f6a30170af0775ade79e9753b8de77519a33..f4275164c0ccdc497db1ca694b41887343c8288c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
++++ b/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
+@@ -143,7 +143,7 @@ public final class CraftMapView implements MapView {
+             this.renderCache.put(context ? player : null, render);
+         }
+ 
+-        if (context && this.renderCache.containsKey(null)) {
++        if (context) {
+             this.renderCache.remove(null);
+         }
+ 

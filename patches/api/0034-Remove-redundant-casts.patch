@@ -1,0 +1,123 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:12:04 -0500
+Subject: [PATCH] Remove redundant casts
+
+
+diff --git a/src/main/java/org/bukkit/configuration/MemorySection.java b/src/main/java/org/bukkit/configuration/MemorySection.java
+index 480c172d710e6ecf5a1d5e734b6597bd0b24ff41..dcfe3e30bd0ac56bbf1041b9d1ed3cef81563cd5 100644
+--- a/src/main/java/org/bukkit/configuration/MemorySection.java
++++ b/src/main/java/org/bukkit/configuration/MemorySection.java
+@@ -481,7 +481,7 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add(Integer.valueOf((int) ((Character) object).charValue()));
++                result.add(Integer.valueOf(((Character) object).charValue()));
+             } else if (object instanceof Number) {
+                 result.add(Integer.valueOf(((Number) object).intValue()));
+             }
+@@ -536,7 +536,7 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add(Double.valueOf((double) ((Character) object).charValue()));
++                result.add(Double.valueOf(((Character) object).charValue()));
+             } else if (object instanceof Number) {
+                 result.add(Double.valueOf(((Number) object).doubleValue()));
+             }
+@@ -565,7 +565,7 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add(Float.valueOf((float) ((Character) object).charValue()));
++                result.add(Float.valueOf(((Character) object).charValue()));
+             } else if (object instanceof Number) {
+                 result.add(Float.valueOf(((Number) object).floatValue()));
+             }
+@@ -594,7 +594,7 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add(Long.valueOf((long) ((Character) object).charValue()));
++                result.add(Long.valueOf(((Character) object).charValue()));
+             } else if (object instanceof Number) {
+                 result.add(Long.valueOf(((Number) object).longValue()));
+             }
+diff --git a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
+index 1ecc405539556156d366a09942ba4eaad8f35157..b20d725514a75e3e7db77658f81926fdc3d156bb 100644
+--- a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
++++ b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
+@@ -37,7 +37,7 @@ public class PotionSplashEvent extends ProjectileHitEvent implements Cancellable
+      */
+     @NotNull
+     public ThrownPotion getPotion() {
+-        return (ThrownPotion) getEntity();
++        return getEntity();
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/inventory/FurnaceRecipe.java b/src/main/java/org/bukkit/inventory/FurnaceRecipe.java
+index 21f6fdec0861d6dd288596e9844b54f35fe30121..bfdb87d1dd148c0599cb0613c1aee4debbfdca72 100644
+--- a/src/main/java/org/bukkit/inventory/FurnaceRecipe.java
++++ b/src/main/java/org/bukkit/inventory/FurnaceRecipe.java
+@@ -98,6 +98,6 @@ public class FurnaceRecipe extends CookingRecipe<FurnaceRecipe> {
+     @NotNull
+     @Override
+     public FurnaceRecipe setInputChoice(@NotNull RecipeChoice input) {
+-        return (FurnaceRecipe) super.setInputChoice(input);
++        return super.setInputChoice(input);
+     }
+ }
+diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
+index 0eeddae98e101bf046eee07777469e0a993dd24c..9d0f4328f5206b3365f10a410f90aa2f5902851c 100644
+--- a/src/main/java/org/bukkit/inventory/ItemStack.java
++++ b/src/main/java/org/bukkit/inventory/ItemStack.java
+@@ -495,7 +495,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
+ 
+         Material type;
+         if (version < 0) {
+-            type = Material.getMaterial(Material.LEGACY_PREFIX + (String) args.get("type"));
++            type = Material.getMaterial(Material.LEGACY_PREFIX + args.get("type"));
+ 
+             byte dataVal = (type != null && type.getMaxDurability() == 0) ? (byte) damage : 0; // Actually durable items get a 0 passed into conversion
+             type = Bukkit.getUnsafe().fromLegacy(new MaterialData(type, dataVal), true);
+diff --git a/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java b/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
+index 2a69c1a997a498973c8d71978c7d910bc9faabae..692a6c17126751180fc76577d4510cb60b9671ab 100644
+--- a/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
++++ b/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
+@@ -74,7 +74,7 @@ public class StonecuttingRecipe implements Recipe, Keyed {
+     @NotNull
+     public StonecuttingRecipe setInputChoice(@NotNull RecipeChoice input) {
+         this.ingredient = input;
+-        return (StonecuttingRecipe) this;
++        return this;
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/material/Mushroom.java b/src/main/java/org/bukkit/material/Mushroom.java
+index 3e6e44c7dca6348672d0a352d3f7e3427b5f2a6f..ff01df08895621de67f9611bafad647b1f9dc67e 100644
+--- a/src/main/java/org/bukkit/material/Mushroom.java
++++ b/src/main/java/org/bukkit/material/Mushroom.java
+@@ -108,7 +108,7 @@ public class Mushroom extends MaterialData {
+      */
+     @Deprecated
+     public void setStem() {
+-        setData((byte) MushroomBlockTexture.STEM_SIDES.getData());
++        setData(MushroomBlockTexture.STEM_SIDES.getData());
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/material/Wood.java b/src/main/java/org/bukkit/material/Wood.java
+index 3ad004b64957559290203d6c5d576135f0d1eb6e..603a935dcf25f15a427afe381aeb1e1b0708b9ee 100644
+--- a/src/main/java/org/bukkit/material/Wood.java
++++ b/src/main/java/org/bukkit/material/Wood.java
+@@ -77,7 +77,7 @@ public class Wood extends MaterialData {
+         switch (getItemType()) {
+             case LEGACY_WOOD:
+             case LEGACY_WOOD_DOUBLE_STEP:
+-                return TreeSpecies.getByData((byte) getData());
++                return TreeSpecies.getByData(getData());
+             case LEGACY_LOG:
+             case LEGACY_LEAVES:
+                 return TreeSpecies.getByData((byte) (getData() & 0x3));

@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:03:08 -0500
+Subject: [PATCH] Utilize early loop break
+
+
+diff --git a/src/main/java/co/aikar/timings/TimingsReportListener.java b/src/main/java/co/aikar/timings/TimingsReportListener.java
+index 11f375d0719f4ff2613739f656da2e3905454199..d8ba8c5a2096fae41004da2592697267235bdcd5 100644
+--- a/src/main/java/co/aikar/timings/TimingsReportListener.java
++++ b/src/main/java/co/aikar/timings/TimingsReportListener.java
+@@ -77,6 +77,7 @@ public class TimingsReportListener implements net.kyori.adventure.audience.Forwa
+         for (CommandSender sender : this.senders) {
+             if (sender instanceof ConsoleCommandSender || sender instanceof RemoteConsoleCommandSender) {
+                 hasConsole = true;
++                break;
+             }
+         }
+         if (!hasConsole) {

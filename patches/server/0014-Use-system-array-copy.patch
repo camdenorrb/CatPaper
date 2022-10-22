@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:05:17 -0500
+Subject: [PATCH] Use system array copy
+
+
+diff --git a/src/main/java/alternate/current/wire/WireHandler.java b/src/main/java/alternate/current/wire/WireHandler.java
+index 1e306b872ad28be1c6fc5110a55786f47284a3c3..837c51be8b60f27252e341919eb6039ca645c7c1 100644
+--- a/src/main/java/alternate/current/wire/WireHandler.java
++++ b/src/main/java/alternate/current/wire/WireHandler.java
+@@ -358,9 +358,7 @@ public class WireHandler {
+         Node[] oldCache = nodeCache;
+         nodeCache = new Node[oldCache.length << 1];
+ 
+-        for (int index = 0; index < oldCache.length; index++) {
+-            nodeCache[index] = oldCache[index];
+-        }
++	    System.arraycopy(oldCache, 0, nodeCache, 0, oldCache.length);
+ 
+         fillNodeCache(oldCache.length, nodeCache.length);
+     }

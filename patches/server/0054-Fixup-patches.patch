@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:29:51 -0500
+Subject: [PATCH] Fixup patches
+
+
+diff --git a/src/main/java/net/minecraft/resources/RegistryLoader.java b/src/main/java/net/minecraft/resources/RegistryLoader.java
+index 58b576d144a1e43181f874e355f9634bd92a4b2a..d6fceacbd3bfb54a3b189dd1e8513c31d2a7f987 100644
+--- a/src/main/java/net/minecraft/resources/RegistryLoader.java
++++ b/src/main/java/net/minecraft/resources/RegistryLoader.java
+@@ -47,7 +47,8 @@ public class RegistryLoader {
+         DataResult<Holder<E>> dataResult = readCache.values.get(entryKey);
+         if (dataResult != null) {
+             // Paper start - register in registry due to craftbukkit running this 3 times instead of once
+-            if (registryRef == Registry.LEVEL_STEM_REGISTRY && dataResult.result().isPresent()) {
++            //noinspection RedundantCast // Needed for some weird reason
++            if (registryRef == (ResourceKey) Registry.LEVEL_STEM_REGISTRY && dataResult.result().isPresent()) {
+                 // OptionalInt.empty() because the LevelStem registry is only loaded from the resource manager, not the InMemory resource access
+                 registry.registerOrOverride(java.util.OptionalInt.empty(), entryKey, dataResult.result().get().value(), dataResult.lifecycle());
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
+index 1a61602b969109f7c71264eba0409ead85a91e68..2da4647600b20663528de71571b37f754f63e9b5 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
+@@ -5,9 +5,9 @@ import java.util.Comparator;
+ import java.util.List;
+ import java.util.Objects;
+ import java.util.Set;
+-import java.util.stream.Collectors;
+ import java.util.stream.Stream;
+ import net.minecraft.server.level.ServerLevel;
++import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.world.entity.EntitySelector;
+ import net.minecraft.world.entity.PathfinderMob;
+ import net.minecraft.world.entity.ai.Brain;
+@@ -43,7 +43,7 @@ public class TemptingSensor extends Sensor<PathfinderMob> {
+         }).filter(this::playerHoldingTemptation);
+ 
+         Objects.requireNonNull(entity);
+-        List<Player> list = stream.sorted(Comparator.comparingDouble(entity::distanceToSqr)).toList();
++        List<ServerPlayer> list = stream.sorted(Comparator.comparingDouble(entity::distanceToSqr)).toList();
+ 
+         if (!list.isEmpty()) {
+             Player entityhuman = list.get(0);
+diff --git a/src/main/java/net/minecraft/world/level/block/DispenserBlock.java b/src/main/java/net/minecraft/world/level/block/DispenserBlock.java
+index 78dec62e80c4e5effcd1b9c09d37e8a12a486b64..0077dd2a87a18854a053cdd322d33e0240c0c3a1 100644
+--- a/src/main/java/net/minecraft/world/level/block/DispenserBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/DispenserBlock.java
+@@ -154,7 +154,7 @@ public class DispenserBlock extends BaseEntityBlock {
+             BlockEntity tileentity = world.getBlockEntity(pos);
+ 
+             if (tileentity instanceof DispenserBlockEntity) {
+-                Containers.dropContents(world, pos, tileentity);
++                Containers.dropContents(world, pos, (Container) tileentity);
+                 world.updateNeighbourForOutputSignal(pos, this);
+             }
+ 

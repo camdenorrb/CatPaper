@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:08:27 -0500
+Subject: [PATCH] Remove redundant collection operations
+
+
+diff --git a/src/main/java/org/bukkit/metadata/MetadataStoreBase.java b/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
+index 17ff1097252e42ae2b1dc3d668f80c54026c727a..eeafc46045088cf158b166624decfb6e04619b21 100644
+--- a/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
++++ b/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
+@@ -141,9 +141,7 @@ public abstract class MetadataStoreBase<T> {
+         Preconditions.checkNotNull(owningPlugin, "Plugin cannot be null");
+         for (Iterator<Map<Plugin, MetadataValue>> iterator = metadataMap.values().iterator(); iterator.hasNext(); ) {
+             Map<Plugin, MetadataValue> values = iterator.next();
+-            if (values.containsKey(owningPlugin)) {
+-                values.remove(owningPlugin);
+-            }
++	        values.remove(owningPlugin);
+             if (values.isEmpty()) {
+                 iterator.remove();
+             }

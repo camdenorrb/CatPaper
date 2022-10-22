@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:08:48 -0500
+Subject: [PATCH] Remove redundant file object creation
+
+
+diff --git a/src/main/java/net/minecraft/server/level/DistanceManager.java b/src/main/java/net/minecraft/server/level/DistanceManager.java
+index f15844862fa8979070add089208ff5ff56afb7ba..76b3eb69396c8505df9dd8d74c958e422202bd9f 100644
+--- a/src/main/java/net/minecraft/server/level/DistanceManager.java
++++ b/src/main/java/net/minecraft/server/level/DistanceManager.java
+@@ -309,7 +309,7 @@ public abstract class DistanceManager {
+ 
+         private void dumpChunks(String path) {
+             try {
+-                FileOutputStream fileoutputstream = new FileOutputStream(new File(path));
++                FileOutputStream fileoutputstream = new FileOutputStream(path);
+ 
+                 try {
+                     ObjectIterator objectiterator = this.chunks.long2ByteEntrySet().iterator();

@@ -1,0 +1,93 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:01:58 -0500
+Subject: [PATCH] Simplify array size
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/profile/PaperGameProfileRepository.java b/src/main/java/com/destroystokyo/paper/profile/PaperGameProfileRepository.java
+index 66e4d57e84fede46e6b893d3bbd9ded871f1ed3c..c7b4d0263fbebe90377263870c8b9f05b486fb9e 100644
+--- a/src/main/java/com/destroystokyo/paper/profile/PaperGameProfileRepository.java
++++ b/src/main/java/com/destroystokyo/paper/profile/PaperGameProfileRepository.java
+@@ -41,7 +41,7 @@ public class PaperGameProfileRepository extends YggdrasilGameProfileRepository {
+ 
+         // Some things were not found.... Proceed to look up.
+         if (!unfoundNames.isEmpty()) {
+-            String[] namesArr = unfoundNames.toArray(new String[unfoundNames.size()]);
++            String[] namesArr = unfoundNames.toArray(new String[0]);
+             super.findProfilesByNames(namesArr, agent, new PreProfileLookupCallback(callback));
+         }
+     }
+diff --git a/src/main/java/com/mojang/brigadier/CommandDispatcher.java b/src/main/java/com/mojang/brigadier/CommandDispatcher.java
+index ca0d191d51a2f5afe4bf913a384b45cbc6868aea..9c80ce6b6b38b2d86889e6128dbb3f57152ac25e 100644
+--- a/src/main/java/com/mojang/brigadier/CommandDispatcher.java
++++ b/src/main/java/com/mojang/brigadier/CommandDispatcher.java
+@@ -454,7 +454,7 @@ public class CommandDispatcher<S> {
+     public String @NotNull [] getAllUsage(final @NotNull CommandNode<S> node, final S source, final boolean restricted) {
+         final ArrayList<String> result = new ArrayList<>();
+         this.getAllUsage(node, source, result, "", restricted);
+-        return result.toArray(new String[result.size()]);
++        return result.toArray(new String[0]);
+     }
+ 
+     private void getAllUsage(final @NotNull CommandNode<S> node, final S source, final @NotNull ArrayList<String> result, final @NotNull String prefix, final boolean restricted) {
+diff --git a/src/main/java/net/minecraft/server/players/OldUsersConverter.java b/src/main/java/net/minecraft/server/players/OldUsersConverter.java
+index 7edd4b88eb0476f0630630bc4681e859bd145b2b..1cc4a8f90eaec869f926b364ff457a45feeaf615 100644
+--- a/src/main/java/net/minecraft/server/players/OldUsersConverter.java
++++ b/src/main/java/net/minecraft/server/players/OldUsersConverter.java
+@@ -330,7 +330,7 @@ public class OldUsersConverter {
+             }
+ 
+             try {
+-                final String[] astring = (String[]) list.toArray(new String[list.size()]);
++                final String[] astring = (String[]) list.toArray(new String[0]);
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback() {
+                     public void onProfileLookupSucceeded(GameProfile gameprofile) {
+                         minecraftServer.getProfileCache().add(gameprofile);
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index f72f61b70c7426d6d8ab05c423cd8c38aa9d59be..a03ceeb3dbd5ff25909275022163cc6e6a35ccd9 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1556,7 +1556,7 @@ public final class CraftServer implements Server {
+                     commands = ImmutableList.of(section.getString(key));
+                 }
+ 
+-                result.put(key, commands.toArray(new String[commands.size()]));
++                result.put(key, commands.toArray(new String[0]));
+             }
+         }
+ 
+@@ -2041,7 +2041,7 @@ public final class CraftServer implements Server {
+ 
+         players.addAll(this.getOnlinePlayers());
+ 
+-        return players.toArray(new OfflinePlayer[players.size()]);
++        return players.toArray(new OfflinePlayer[0]);
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 79d957925da90ee459427d4281de85ed7bcd2739..7fe2dd117145340d0e6f11a6374d80500747822b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -1928,7 +1928,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+ 
+     @Override
+     public String @NotNull [] getGameRules() {
+-        return CraftWorld.getGameRulesNMS().keySet().toArray(new String[CraftWorld.getGameRulesNMS().size()]);
++        return CraftWorld.getGameRulesNMS().keySet().toArray(new String[0]);
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftChatMessage.java b/src/main/java/org/bukkit/craftbukkit/util/CraftChatMessage.java
+index 3aa444a60cf828493ed4a1908d832202c7ec4e55..0e1cefe6540eb94c7b32ec4a77382b02f76cac57 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/CraftChatMessage.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/CraftChatMessage.java
+@@ -167,7 +167,7 @@ public final class CraftChatMessage {
+                 this.appendNewComponent(message.length());
+             }
+ 
+-            this.output = this.list.toArray(new Component[this.list.size()]);
++            this.output = this.list.toArray(new Component[0]);
+         }
+ 
+         private void appendNewComponent(int index) {

@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:41:06 -0500
+Subject: [PATCH] Use primitive type if possible
+
+
+diff --git a/src/main/java/co/aikar/util/Counter.java b/src/main/java/co/aikar/util/Counter.java
+index 51d51a82cedc7f5d13ae5a1e19463740d81035d0..71b4a2cff62dd4552140b3c8ae53b9a001ffb5fd 100644
+--- a/src/main/java/co/aikar/util/Counter.java
++++ b/src/main/java/co/aikar/util/Counter.java
+@@ -20,10 +20,10 @@ public class Counter <T> extends ForwardingMap<T, Long> {
+         return increment(key, -amount);
+     }
+     public long increment(@Nullable T key, long amount) {
+-        Long count = Long.valueOf(this.getCount(key));
+-        count = count.longValue() + amount;
++        long count = Long.valueOf(this.getCount(key));
++        count = count + amount;
+         this.counts.put(key, count);
+-        return count.longValue();
++        return count;
+     }
+ 
+     public long getCount(@Nullable T key) {

@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:00:03 -0500
+Subject: [PATCH] Simplify removeAll
+
+
+diff --git a/src/main/java/io/papermc/paper/tag/BaseTag.java b/src/main/java/io/papermc/paper/tag/BaseTag.java
+index c494885e0a889889e40280eb29283f497708a4a9..a82227ad755111c01f320ea19ccf87d35c21d3f1 100644
+--- a/src/main/java/io/papermc/paper/tag/BaseTag.java
++++ b/src/main/java/io/papermc/paper/tag/BaseTag.java
+@@ -131,7 +131,7 @@ public abstract class BaseTag<T extends Keyed, C extends BaseTag<T, C>> implemen
+     @NotNull
+     public C not(@NotNull T...values) {
+         this.checkLock();
+-        this.tagged.removeAll(Lists.newArrayList(values));
++        Lists.newArrayList(values).forEach(this.tagged::remove);
+         return (C) this;
+     }
+ 

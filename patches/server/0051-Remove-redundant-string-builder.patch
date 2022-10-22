@@ -1,0 +1,84 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:13:45 -0500
+Subject: [PATCH] Remove redundant string builder
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/profile/CraftPlayerProfile.java b/src/main/java/org/bukkit/craftbukkit/profile/CraftPlayerProfile.java
+index 1ef3a1744928c6fcc8d2da0f4a93f034b414bbe8..3b98097bc630ca63f5616dde853c0a410bfd1c45 100644
+--- a/src/main/java/org/bukkit/craftbukkit/profile/CraftPlayerProfile.java
++++ b/src/main/java/org/bukkit/craftbukkit/profile/CraftPlayerProfile.java
+@@ -161,15 +161,14 @@ public final class CraftPlayerProfile implements PlayerProfile, com.destroystoky
+     @Override
+     public @NotNull String toString() {
+         this.rebuildDirtyProperties();
+-        StringBuilder builder = new StringBuilder();
+-        builder.append("CraftPlayerProfile [uniqueId=");
+-        builder.append(uniqueId);
+-        builder.append(", name=");
+-        builder.append(name);
+-        builder.append(", properties=");
+-        builder.append(CraftPlayerProfile.toString(this.properties));
+-        builder.append("]");
+-        return builder.toString();
++        final String builder = "CraftPlayerProfile [uniqueId=" +
++            uniqueId +
++            ", name=" +
++            name +
++            ", properties=" +
++            CraftPlayerProfile.toString(this.properties) +
++            "]";
++        return builder;
+     }
+ 
+     public static @NotNull String toString(@Nonnull PropertyMap propertyMap) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/profile/CraftPlayerTextures.java b/src/main/java/org/bukkit/craftbukkit/profile/CraftPlayerTextures.java
+index 2b2f9c0b34eaee466a8e1a1dfc1b5f3260dc9f10..c9f7140c0d5e44e5ef8a7e2948e3d9a443be2f88 100644
+--- a/src/main/java/org/bukkit/craftbukkit/profile/CraftPlayerTextures.java
++++ b/src/main/java/org/bukkit/craftbukkit/profile/CraftPlayerTextures.java
+@@ -294,11 +294,10 @@ public final class CraftPlayerTextures implements PlayerTextures {
+ 
+     @Override
+     public @NotNull String toString() {
+-        StringBuilder builder = new StringBuilder();
+-        builder.append("CraftPlayerTextures [data=");
+-        builder.append(this.getData());
+-        builder.append("]");
+-        return builder.toString();
++        final String builder = "CraftPlayerTextures [data=" +
++            this.getData() +
++            "]";
++        return builder;
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/profile/CraftProfileProperty.java b/src/main/java/org/bukkit/craftbukkit/profile/CraftProfileProperty.java
+index 14ba46ddd58c5716f7a844ce9ad4a950c5bb818d..4f4611ddb6147160802db1bd4c3c668378952bd6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/profile/CraftProfileProperty.java
++++ b/src/main/java/org/bukkit/craftbukkit/profile/CraftProfileProperty.java
+@@ -91,16 +91,15 @@ public final class CraftProfileProperty {
+ 
+     @Nonnull
+     public static String toString(@Nonnull Property property) {
+-        StringBuilder builder = new StringBuilder();
+-        builder.append("{");
+-        builder.append("name=");
+-        builder.append(property.getName());
+-        builder.append(", value=");
+-        builder.append(property.getValue());
+-        builder.append(", signature=");
+-        builder.append(property.getSignature());
+-        builder.append("}");
+-        return builder.toString();
++	    final String builder = "{" +
++		    "name=" +
++		    property.getName() +
++		    ", value=" +
++		    property.getValue() +
++		    ", signature=" +
++		    property.getSignature() +
++		    "}";
++        return builder;
+     }
+ 
+     public static int hashCode(@Nonnull Property property) {

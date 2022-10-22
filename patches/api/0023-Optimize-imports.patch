@@ -1,0 +1,634 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:57:24 -0500
+Subject: [PATCH] Optimize imports
+
+
+diff --git a/src/main/java/co/aikar/util/JSONUtil.java b/src/main/java/co/aikar/util/JSONUtil.java
+index 3487965277ab502ad6a261ed934937d70b91075c..33e058ae9237d32ab8f6dd74f4d846b3fcd80fd4 100644
+--- a/src/main/java/co/aikar/util/JSONUtil.java
++++ b/src/main/java/co/aikar/util/JSONUtil.java
+@@ -5,10 +5,7 @@ import com.google.common.collect.Lists;
+ import com.google.common.collect.Maps;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import org.json.simple.JSONArray;
+-import org.json.simple.JSONObject;
+ 
+-import java.util.ArrayList;
+ import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
+diff --git a/src/main/java/co/aikar/util/LoadingMap.java b/src/main/java/co/aikar/util/LoadingMap.java
+index b3d086d571d5d8b65ebb0f45efbce7bf4d546397..8fbf1c0da490d9f2eb1db078512bba2b346f53cf 100644
+--- a/src/main/java/co/aikar/util/LoadingMap.java
++++ b/src/main/java/co/aikar/util/LoadingMap.java
+@@ -23,7 +23,6 @@
+  */
+ package co.aikar.util;
+ 
+-import com.google.common.base.Preconditions;
+ import java.lang.reflect.Constructor;
+ import java.util.AbstractMap;
+ import java.util.Collection;
+diff --git a/src/main/java/com/destroystokyo/paper/Title.java b/src/main/java/com/destroystokyo/paper/Title.java
+index dfc2394a78c2ff693d779e12bf058ab090efb0e3..83ed9e483431aec0bff04268c58bb0240ff97d35 100644
+--- a/src/main/java/com/destroystokyo/paper/Title.java
++++ b/src/main/java/com/destroystokyo/paper/Title.java
+@@ -8,10 +8,7 @@ import org.bukkit.entity.Player;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+-import java.util.ArrayList;
+-import java.util.Arrays;
+ import java.util.Collection;
+-import java.util.List;
+ 
+ import static com.google.common.base.Preconditions.checkArgument;
+ import static com.google.common.base.Preconditions.checkNotNull;
+diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EndermanAttackPlayerEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EndermanAttackPlayerEvent.java
+index f530a3d9314e17d1da896cac633f6a422258d9a9..84ee5904b450d0b7e024039875d8a18cf10b03aa 100644
+--- a/src/main/java/com/destroystokyo/paper/event/entity/EndermanAttackPlayerEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/entity/EndermanAttackPlayerEvent.java
+@@ -24,10 +24,8 @@
+ package com.destroystokyo.paper.event.entity;
+ 
+ import org.bukkit.entity.Enderman;
+-import org.bukkit.entity.Entity;
+ import org.bukkit.entity.Player;
+ import org.bukkit.event.Cancellable;
+-import org.bukkit.event.Event;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.entity.EntityEvent;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EndermanEscapeEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EndermanEscapeEvent.java
+index 806112a8b5a7ce31166675f5b074ceaf42e364b6..bed4727417f57337b1f2f5b09e3c7efbbc01e635 100644
+--- a/src/main/java/com/destroystokyo/paper/event/entity/EndermanEscapeEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/entity/EndermanEscapeEvent.java
+@@ -1,9 +1,7 @@
+ package com.destroystokyo.paper.event.entity;
+ 
+ import org.bukkit.entity.Enderman;
+-import org.bukkit.entity.Entity;
+ import org.bukkit.event.Cancellable;
+-import org.bukkit.event.Event;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.entity.EntityEvent;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EntityAddToWorldEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EntityAddToWorldEvent.java
+index 07660202e41ee86f1b66bad3335cf6fe126e7f9c..a8c4c1cee9ed97523458e21995dd2a87818c4ca7 100644
+--- a/src/main/java/com/destroystokyo/paper/event/entity/EntityAddToWorldEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/entity/EntityAddToWorldEvent.java
+@@ -1,7 +1,6 @@
+ package com.destroystokyo.paper.event.entity;
+ 
+ import org.bukkit.entity.Entity;
+-import org.bukkit.event.Event;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.entity.EntityEvent;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EntityRemoveFromWorldEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EntityRemoveFromWorldEvent.java
+index e5dbbd660409bae0d3b96e83390511d3a423a52e..d23773d9013bfa4da085b91669e39768fb6e8800 100644
+--- a/src/main/java/com/destroystokyo/paper/event/entity/EntityRemoveFromWorldEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/entity/EntityRemoveFromWorldEvent.java
+@@ -1,7 +1,6 @@
+ package com.destroystokyo.paper.event.entity;
+ 
+ import org.bukkit.entity.Entity;
+-import org.bukkit.event.Event;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.entity.EntityEvent;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/com/destroystokyo/paper/event/entity/PlayerNaturallySpawnCreaturesEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/PlayerNaturallySpawnCreaturesEvent.java
+index 112a0dbf522b8e74ce882678434923814e6b187f..1a89870e118aae3fd7c0b7f218c14f51083d1946 100644
+--- a/src/main/java/com/destroystokyo/paper/event/entity/PlayerNaturallySpawnCreaturesEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/entity/PlayerNaturallySpawnCreaturesEvent.java
+@@ -2,7 +2,6 @@ package com.destroystokyo.paper.event.entity;
+ 
+ import org.bukkit.entity.Player;
+ import org.bukkit.event.Cancellable;
+-import org.bukkit.event.Event;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.player.PlayerEvent;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java b/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
+index c37584940ce45d7420f5b44102c851922caef3db..d69ef3dda605ad6d90384616e7252ca8f279c078 100644
+--- a/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
++++ b/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
+@@ -8,7 +8,6 @@ import java.lang.reflect.Modifier;
+ import com.destroystokyo.paper.util.SneakyThrow;
+ import com.google.common.base.Preconditions;
+ 
+-import org.bukkit.Bukkit;
+ import org.bukkit.event.Event;
+ import org.bukkit.event.EventException;
+ import org.bukkit.event.Listener;
+diff --git a/src/main/java/com/destroystokyo/paper/event/executor/asm/SafeClassDefiner.java b/src/main/java/com/destroystokyo/paper/event/executor/asm/SafeClassDefiner.java
+index 9fe51164022d058d04958d6619654d40f544a487..1c1554f89739ce37ac4ef28558fee6ee4bd458f6 100644
+--- a/src/main/java/com/destroystokyo/paper/event/executor/asm/SafeClassDefiner.java
++++ b/src/main/java/com/destroystokyo/paper/event/executor/asm/SafeClassDefiner.java
+@@ -1,13 +1,12 @@
+ package com.destroystokyo.paper.event.executor.asm;
+ 
+-import java.util.concurrent.ConcurrentHashMap;
+ import java.util.concurrent.ConcurrentMap;
+ 
+ import com.google.common.base.Preconditions;
+ 
+ import com.google.common.collect.MapMaker;
+ import org.jetbrains.annotations.NotNull;
+-import org.objectweb.asm.Type;
++
+ 
+ public class SafeClassDefiner implements ClassDefiner {
+     /* default */ static final SafeClassDefiner INSTANCE = new SafeClassDefiner();
+diff --git a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
+index 449e8c06f8434b59d49a76481fa60c5c49e80579..7a144854ec8998e758bf2327d30d8165fbf39e0f 100644
+--- a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
+@@ -1,7 +1,5 @@
+ package com.destroystokyo.paper.event.inventory;
+ 
+-import org.bukkit.event.HandlerList;
+-import org.bukkit.event.inventory.InventoryEvent;
+ import org.bukkit.inventory.GrindstoneInventory;
+ import org.bukkit.inventory.InventoryView;
+ import org.bukkit.inventory.ItemStack;
+diff --git a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
+index b5b0f5f097fc57b6d8caf89a7d5347259340e185..476f36ae16115d34cab9748c8d7d0947d0a24b96 100644
+--- a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
+@@ -2,7 +2,6 @@ package com.destroystokyo.paper.event.inventory;
+ 
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.inventory.InventoryEvent;
+-import org.bukkit.event.inventory.InventoryType;
+ import org.bukkit.inventory.InventoryView;
+ import org.bukkit.inventory.ItemStack;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerPickupExperienceEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerPickupExperienceEvent.java
+index f7beb22d5105157940b39efe594ace9d4cb153f5..d117956ca6026ad676e1aa551b4f10ca83be0b7e 100644
+--- a/src/main/java/com/destroystokyo/paper/event/player/PlayerPickupExperienceEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerPickupExperienceEvent.java
+@@ -26,7 +26,6 @@ package com.destroystokyo.paper.event.player;
+ import org.bukkit.entity.ExperienceOrb;
+ import org.bukkit.entity.Player;
+ import org.bukkit.event.Cancellable;
+-import org.bukkit.event.Event;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.player.PlayerEvent;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerReadyArrowEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerReadyArrowEvent.java
+index 5d04a22fd6964d8d44a2aa069c9629722893b1f4..5cf47f7ffd039add8bcdce9e08f52b2fc5aafcc6 100644
+--- a/src/main/java/com/destroystokyo/paper/event/player/PlayerReadyArrowEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerReadyArrowEvent.java
+@@ -25,7 +25,6 @@ package com.destroystokyo.paper.event.player;
+ 
+ import org.bukkit.entity.Player;
+ import org.bukkit.event.Cancellable;
+-import org.bukkit.event.Event;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.player.PlayerEvent;
+ import org.bukkit.inventory.ItemStack;
+diff --git a/src/main/java/com/destroystokyo/paper/event/profile/PreLookupProfileEvent.java b/src/main/java/com/destroystokyo/paper/event/profile/PreLookupProfileEvent.java
+index e91392ad1b975eeddc69a55f8d27c63afbd58eb9..822a5377e4caafc135fbdf60e72aba326313d9f1 100644
+--- a/src/main/java/com/destroystokyo/paper/event/profile/PreLookupProfileEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/profile/PreLookupProfileEvent.java
+@@ -1,8 +1,6 @@
+ package com.destroystokyo.paper.event.profile;
+ 
+-import com.destroystokyo.paper.profile.PlayerProfile;
+ import com.destroystokyo.paper.profile.ProfileProperty;
+-import com.google.common.collect.ArrayListMultimap;
+ import org.bukkit.Bukkit;
+ import org.bukkit.event.Event;
+ import org.bukkit.event.HandlerList;
+diff --git a/src/main/java/com/destroystokyo/paper/network/NetworkClient.java b/src/main/java/com/destroystokyo/paper/network/NetworkClient.java
+index 11ba5bf0b0a84dc42e50608024902645bcefdd95..90701a41a5e4a19a109bd7bebcaac830a1bc3924 100644
+--- a/src/main/java/com/destroystokyo/paper/network/NetworkClient.java
++++ b/src/main/java/com/destroystokyo/paper/network/NetworkClient.java
+@@ -2,7 +2,6 @@ package com.destroystokyo.paper.network;
+ 
+ import java.net.InetSocketAddress;
+ 
+-import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+ /**
+diff --git a/src/main/java/io/papermc/paper/event/block/BellRingEvent.java b/src/main/java/io/papermc/paper/event/block/BellRingEvent.java
+index 06004b21deb372fade3212aa942220f8a594ddf1..18de6a084d87e152c26b66e9cf1b486b6b8bb892 100644
+--- a/src/main/java/io/papermc/paper/event/block/BellRingEvent.java
++++ b/src/main/java/io/papermc/paper/event/block/BellRingEvent.java
+@@ -5,7 +5,6 @@ import org.bukkit.entity.Entity;
+ import org.bukkit.event.Cancellable;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.block.BlockEvent;
+-import org.bukkit.potion.PotionEffect;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+diff --git a/src/main/java/io/papermc/paper/event/entity/ElderGuardianAppearanceEvent.java b/src/main/java/io/papermc/paper/event/entity/ElderGuardianAppearanceEvent.java
+index 209973e66abefa8072e8d2c81c6e866ce7b5a2ac..f28a5627b4cf6090513fccf9fb76901392d97486 100644
+--- a/src/main/java/io/papermc/paper/event/entity/ElderGuardianAppearanceEvent.java
++++ b/src/main/java/io/papermc/paper/event/entity/ElderGuardianAppearanceEvent.java
+@@ -8,8 +8,6 @@ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.entity.EntityEvent;
+ import org.jetbrains.annotations.NotNull;
+ 
+-import java.util.Collections;
+-import java.util.List;
+ 
+ /**
+  * Is called when an {@link org.bukkit.entity.ElderGuardian} appears in front of a {@link org.bukkit.entity.Player}.
+diff --git a/src/main/java/io/papermc/paper/event/entity/EntityLoadCrossbowEvent.java b/src/main/java/io/papermc/paper/event/entity/EntityLoadCrossbowEvent.java
+index 5d20e847a71714abd7d58c56f803819868065f22..8fcb6d8f6da847a28c9d87a7c8bc575532f99810 100644
+--- a/src/main/java/io/papermc/paper/event/entity/EntityLoadCrossbowEvent.java
++++ b/src/main/java/io/papermc/paper/event/entity/EntityLoadCrossbowEvent.java
+@@ -1,7 +1,6 @@
+ package io.papermc.paper.event.entity;
+ 
+ import org.bukkit.entity.LivingEntity;
+-import org.bukkit.entity.Player;
+ import org.bukkit.event.Cancellable;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.entity.EntityEvent;
+diff --git a/src/main/java/io/papermc/paper/event/player/PlayerLecternPageChangeEvent.java b/src/main/java/io/papermc/paper/event/player/PlayerLecternPageChangeEvent.java
+index 0d3b7125317097a06456175d1b00d3ecf00177b5..7032879f0fceeda5a6b2bebd2051fc2ff25cc9ab 100644
+--- a/src/main/java/io/papermc/paper/event/player/PlayerLecternPageChangeEvent.java
++++ b/src/main/java/io/papermc/paper/event/player/PlayerLecternPageChangeEvent.java
+@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.player.PlayerEvent;
+ import org.bukkit.inventory.ItemStack;
+ import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
++
+ 
+ public class PlayerLecternPageChangeEvent extends PlayerEvent implements Cancellable {
+ 
+diff --git a/src/main/java/io/papermc/paper/event/world/WorldGameRuleChangeEvent.java b/src/main/java/io/papermc/paper/event/world/WorldGameRuleChangeEvent.java
+index 6aa0980a82e46703d1fdfe66132a795ee19e2f53..1eb6e9afe5ff7ea3687587649c8881e260f0493b 100644
+--- a/src/main/java/io/papermc/paper/event/world/WorldGameRuleChangeEvent.java
++++ b/src/main/java/io/papermc/paper/event/world/WorldGameRuleChangeEvent.java
+@@ -3,7 +3,6 @@ package io.papermc.paper.event.world;
+ import org.bukkit.GameRule;
+ import org.bukkit.World;
+ import org.bukkit.command.CommandSender;
+-import org.bukkit.entity.Player;
+ import org.bukkit.event.Cancellable;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.world.WorldEvent;
+diff --git a/src/main/java/io/papermc/paper/event/world/border/WorldBorderCenterChangeEvent.java b/src/main/java/io/papermc/paper/event/world/border/WorldBorderCenterChangeEvent.java
+index ec6ed8ad5e51a92fb95c62b8583981ebb35f9858..4f6732ceeeea88b58db0abb21a5648f7c6330a8c 100644
+--- a/src/main/java/io/papermc/paper/event/world/border/WorldBorderCenterChangeEvent.java
++++ b/src/main/java/io/papermc/paper/event/world/border/WorldBorderCenterChangeEvent.java
+@@ -5,7 +5,6 @@ import org.bukkit.World;
+ import org.bukkit.WorldBorder;
+ import org.bukkit.event.Cancellable;
+ import org.bukkit.event.HandlerList;
+-import org.bukkit.event.world.WorldEvent;
+ import org.jetbrains.annotations.NotNull;
+ 
+ /**
+diff --git a/src/main/java/io/papermc/paper/event/world/border/WorldBorderEvent.java b/src/main/java/io/papermc/paper/event/world/border/WorldBorderEvent.java
+index c0703f96933877d9b26ec359ee0c873a0abaa89f..30db0192a907995702695940e9ee083aa291f58f 100644
+--- a/src/main/java/io/papermc/paper/event/world/border/WorldBorderEvent.java
++++ b/src/main/java/io/papermc/paper/event/world/border/WorldBorderEvent.java
+@@ -2,7 +2,6 @@ package io.papermc.paper.event.world.border;
+ 
+ import org.bukkit.World;
+ import org.bukkit.WorldBorder;
+-import org.bukkit.event.Cancellable;
+ import org.bukkit.event.world.WorldEvent;
+ import org.jetbrains.annotations.NotNull;
+ 
+diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
+index 220336daf1c277611d9fab47fc93056867de3b8a..93cf2be32c24fb966aee2bbcd05a73f1c51cdd26 100644
+--- a/src/main/java/org/bukkit/Location.java
++++ b/src/main/java/org/bukkit/Location.java
+@@ -1,6 +1,5 @@
+ package org.bukkit;
+ 
+-import com.google.common.base.Preconditions;
+ import java.lang.ref.Reference;
+ import java.lang.ref.WeakReference;
+ import com.google.common.base.Preconditions; // Paper
+@@ -8,7 +7,6 @@ import java.util.HashMap;
+ import java.util.Map;
+ import org.bukkit.block.Block;
+ import org.bukkit.configuration.serialization.ConfigurationSerializable;
+-import org.bukkit.entity.Entity; // Paper
+ import org.bukkit.util.NumberConversions;
+ import org.bukkit.util.Vector;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
+index b9f9ef01af46cdcb4fbc55039a1f1a956e72644e..fb8a9fb965386b610d5c70742b17e77785df191f 100644
+--- a/src/main/java/org/bukkit/World.java
++++ b/src/main/java/org/bukkit/World.java
+@@ -1,7 +1,6 @@
+ package org.bukkit;
+ 
+ import java.io.File;
+-import org.bukkit.generator.ChunkGenerator;
+ 
+ import java.util.ArrayList;
+ import java.util.Collection;
+diff --git a/src/main/java/org/bukkit/advancement/Advancement.java b/src/main/java/org/bukkit/advancement/Advancement.java
+index 792d5ab90e9252b4f660434f72f004fade14a84c..12beeb80a0e83970be29a14ff8b011181079f150 100644
+--- a/src/main/java/org/bukkit/advancement/Advancement.java
++++ b/src/main/java/org/bukkit/advancement/Advancement.java
+@@ -3,7 +3,7 @@ package org.bukkit.advancement;
+ import java.util.Collection;
+ import org.bukkit.Keyed;
+ import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
++
+ 
+ /**
+  * Represents an advancement that may be awarded to a player. This class is not
+diff --git a/src/main/java/org/bukkit/block/Chest.java b/src/main/java/org/bukkit/block/Chest.java
+index db6affbc78106b2d93b41953b624a0bca0ca1d72..aed5f0d970e9b52bb4ebec1b5ad3d86cbc073c07 100644
+--- a/src/main/java/org/bukkit/block/Chest.java
++++ b/src/main/java/org/bukkit/block/Chest.java
+@@ -1,9 +1,7 @@
+ package org.bukkit.block;
+ 
+ import com.destroystokyo.paper.loottable.LootableBlockInventory; // Paper
+-import org.bukkit.Nameable; // Paper
+ import org.bukkit.inventory.Inventory;
+-import org.bukkit.loot.Lootable;
+ import org.jetbrains.annotations.NotNull;
+ 
+ /**
+diff --git a/src/main/java/org/bukkit/block/Dispenser.java b/src/main/java/org/bukkit/block/Dispenser.java
+index 07af1a3f011d4b96275f919d302ac367198e923e..66f39dd6252ab2d3938ff08caa9f7f90cc8aaf8f 100644
+--- a/src/main/java/org/bukkit/block/Dispenser.java
++++ b/src/main/java/org/bukkit/block/Dispenser.java
+@@ -2,7 +2,6 @@ package org.bukkit.block;
+ 
+ import com.destroystokyo.paper.loottable.LootableBlockInventory;
+ import org.bukkit.Nameable;
+-import org.bukkit.loot.Lootable;
+ import org.bukkit.projectiles.BlockProjectileSource;
+ import org.jetbrains.annotations.Nullable;
+ 
+diff --git a/src/main/java/org/bukkit/block/Dropper.java b/src/main/java/org/bukkit/block/Dropper.java
+index c76202321e29ad67597ca3017eb8d9baf6787383..a41523c8332b1afeb332b096baede6589678f98a 100644
+--- a/src/main/java/org/bukkit/block/Dropper.java
++++ b/src/main/java/org/bukkit/block/Dropper.java
+@@ -1,7 +1,7 @@
+ package org.bukkit.block;
+ 
+ import com.destroystokyo.paper.loottable.LootableBlockInventory;
+-import org.bukkit.loot.Lootable;
++
+ 
+ /**
+  * Represents a captured state of a dropper.
+diff --git a/src/main/java/org/bukkit/block/Hopper.java b/src/main/java/org/bukkit/block/Hopper.java
+index 7ade312f180b7e30871d3a3240c76325cc369c26..01e99f036e5fb3aa9d72320cff72b56b8e3f630b 100644
+--- a/src/main/java/org/bukkit/block/Hopper.java
++++ b/src/main/java/org/bukkit/block/Hopper.java
+@@ -1,7 +1,7 @@
+ package org.bukkit.block;
+ 
+ import com.destroystokyo.paper.loottable.LootableBlockInventory;
+-import org.bukkit.loot.Lootable;
++
+ 
+ /**
+  * Represents a captured state of a hopper.
+diff --git a/src/main/java/org/bukkit/block/ShulkerBox.java b/src/main/java/org/bukkit/block/ShulkerBox.java
+index 5dc5318b0a451937228a8a059dfec1cd9de389a6..b2792d06d70b0e65bd265a119a5ccfe66124652b 100644
+--- a/src/main/java/org/bukkit/block/ShulkerBox.java
++++ b/src/main/java/org/bukkit/block/ShulkerBox.java
+@@ -2,7 +2,6 @@ package org.bukkit.block;
+ 
+ import com.destroystokyo.paper.loottable.LootableBlockInventory;
+ import org.bukkit.DyeColor;
+-import org.bukkit.loot.Lootable;
+ import org.jetbrains.annotations.Nullable;
+ 
+ /**
+diff --git a/src/main/java/org/bukkit/command/defaults/ReloadCommand.java b/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
+index f49398d466437da62fc4c62ca9aeefdbcd6bebd0..050c3c9b170ca400cb59417349ed4cb627bd120b 100644
+--- a/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
+@@ -1,7 +1,5 @@
+ package org.bukkit.command.defaults;
+ 
+-import java.util.Arrays;
+-import java.util.Collections;
+ import java.util.List;
+ import org.bukkit.Bukkit;
+ import org.bukkit.ChatColor;
+diff --git a/src/main/java/org/bukkit/entity/ChestBoat.java b/src/main/java/org/bukkit/entity/ChestBoat.java
+index 4ebe1033c55dbd58d0794809435c935236fabcc2..4921703e0f36e930401c6ce321ca17280e6ffe0b 100644
+--- a/src/main/java/org/bukkit/entity/ChestBoat.java
++++ b/src/main/java/org/bukkit/entity/ChestBoat.java
+@@ -1,7 +1,7 @@
+ package org.bukkit.entity;
+ 
+ import org.bukkit.inventory.InventoryHolder;
+-import org.bukkit.loot.Lootable;
++
+ 
+ /**
+  * A {@link Boat} with a chest.
+diff --git a/src/main/java/org/bukkit/entity/Phantom.java b/src/main/java/org/bukkit/entity/Phantom.java
+index 277bebe057439a0c48b0c6e9c003b27565eb4bd2..b0cc8c81d18896c112e4240683af33c1d67bb599 100644
+--- a/src/main/java/org/bukkit/entity/Phantom.java
++++ b/src/main/java/org/bukkit/entity/Phantom.java
+@@ -1,6 +1,5 @@
+ package org.bukkit.entity;
+ 
+-import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+ /**
+diff --git a/src/main/java/org/bukkit/entity/Tameable.java b/src/main/java/org/bukkit/entity/Tameable.java
+index 65e68da98ab66ed781bce2f0dbe0913be48d2990..48a5abbc44e31568e614f95dbe1eff8344f46b31 100644
+--- a/src/main/java/org/bukkit/entity/Tameable.java
++++ b/src/main/java/org/bukkit/entity/Tameable.java
+@@ -1,6 +1,5 @@
+ package org.bukkit.entity;
+ 
+-import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+ public interface Tameable extends Animals {
+diff --git a/src/main/java/org/bukkit/entity/minecart/HopperMinecart.java b/src/main/java/org/bukkit/entity/minecart/HopperMinecart.java
+index 8e4c6ec409f49d4a3378c466acc47f62c7689c0b..1fc8ea9e0f4b271f6e427e182b5e4d4c00a2c878 100644
+--- a/src/main/java/org/bukkit/entity/minecart/HopperMinecart.java
++++ b/src/main/java/org/bukkit/entity/minecart/HopperMinecart.java
+@@ -3,7 +3,7 @@ package org.bukkit.entity.minecart;
+ import com.destroystokyo.paper.loottable.LootableEntityInventory;
+ import org.bukkit.entity.Minecart;
+ import org.bukkit.inventory.InventoryHolder;
+-import org.bukkit.loot.Lootable;
++
+ 
+ /**
+  * Represents a Minecart with a Hopper inside it
+diff --git a/src/main/java/org/bukkit/entity/minecart/StorageMinecart.java b/src/main/java/org/bukkit/entity/minecart/StorageMinecart.java
+index 238d118f7788b13cd86b7e9ea3a0fc38e2e09715..16ca1d622b967e9ce6a298b7b8f0c4977029a41d 100644
+--- a/src/main/java/org/bukkit/entity/minecart/StorageMinecart.java
++++ b/src/main/java/org/bukkit/entity/minecart/StorageMinecart.java
+@@ -3,7 +3,7 @@ package org.bukkit.entity.minecart;
+ import com.destroystokyo.paper.loottable.LootableEntityInventory;
+ import org.bukkit.entity.Minecart;
+ import org.bukkit.inventory.InventoryHolder;
+-import org.bukkit.loot.Lootable;
++
+ 
+ /**
+  * Represents a minecart with a chest. These types of {@link Minecart
+diff --git a/src/main/java/org/bukkit/event/entity/PigZapEvent.java b/src/main/java/org/bukkit/event/entity/PigZapEvent.java
+index 2bb0c265253a8d1c234e7650ab79c6a538f43609..84ea9e297a54e352ecdbd3993aa3a11cc29b86c3 100644
+--- a/src/main/java/org/bukkit/event/entity/PigZapEvent.java
++++ b/src/main/java/org/bukkit/event/entity/PigZapEvent.java
+@@ -1,13 +1,10 @@
+ package org.bukkit.event.entity;
+ 
+-import java.util.Collections;
+-import org.bukkit.entity.Entity;
+ import com.destroystokyo.paper.event.entity.EntityZapEvent;
+ import org.bukkit.entity.LightningStrike;
+ import org.bukkit.entity.Pig;
+ import org.bukkit.entity.PigZombie;
+ import org.bukkit.event.Cancellable;
+-import org.bukkit.event.HandlerList;
+ import org.jetbrains.annotations.NotNull;
+ 
+ /**
+diff --git a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
+index 84d5f2253921a6206af78e8a0336b2be9b17e975..7b4e0997c18eb147973d347493b287b7b99da266 100644
+--- a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
++++ b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
+@@ -2,7 +2,6 @@ package org.bukkit.event.entity;
+ 
+ import java.util.List;
+ 
+-import org.bukkit.GameMode;
+ import org.bukkit.entity.Player;
+ import org.bukkit.inventory.ItemStack;
+ import org.jetbrains.annotations.NotNull;
+diff --git a/src/main/java/org/bukkit/event/entity/SheepDyeWoolEvent.java b/src/main/java/org/bukkit/event/entity/SheepDyeWoolEvent.java
+index ddf4aec01e4873aa799721ce615f5d7c929dc915..156580d66e3f5a6b281b4763492be15d7b24b4d6 100644
+--- a/src/main/java/org/bukkit/event/entity/SheepDyeWoolEvent.java
++++ b/src/main/java/org/bukkit/event/entity/SheepDyeWoolEvent.java
+@@ -4,7 +4,6 @@ import org.bukkit.DyeColor;
+ import org.bukkit.entity.Player;
+ import org.bukkit.entity.Sheep;
+ import org.bukkit.event.Cancellable;
+-import org.bukkit.event.HandlerList;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+diff --git a/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java b/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
+index f1f6f4ab4f81a3f21e757fef4a30b00e94371f8d..04e9626ef920f90a8e287a36e003bc4c4a6c5ede 100644
+--- a/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
++++ b/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
+@@ -1,7 +1,6 @@
+ package org.bukkit.event.inventory;
+ 
+ import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
+-import org.bukkit.event.HandlerList;
+ import org.bukkit.inventory.AnvilInventory;
+ import org.bukkit.inventory.InventoryView;
+ import org.bukkit.inventory.ItemStack;
+diff --git a/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java b/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
+index 0bc0ca4f96c800e9c46c61710f44446691d8b93f..4c8659b479842853739b43d685f5bc82820639c7 100644
+--- a/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
++++ b/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
+@@ -1,7 +1,6 @@
+ package org.bukkit.event.inventory;
+ 
+ import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
+-import org.bukkit.event.HandlerList;
+ import org.bukkit.inventory.InventoryView;
+ import org.bukkit.inventory.ItemStack;
+ import org.bukkit.inventory.SmithingInventory;
+diff --git a/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java b/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java
+index 3372683366f258ed18549184f20bd5a61cdab0be..5972c97e944462d1fb124e8d2a1a4b33905a0fb9 100644
+--- a/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java
++++ b/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java
+@@ -2,7 +2,6 @@ package org.bukkit.event.vehicle;
+ 
+ import org.bukkit.block.Block;
+ import org.bukkit.entity.Vehicle;
+-import org.bukkit.event.HandlerList;
+ import org.jetbrains.annotations.NotNull;
+ 
+ /**
+diff --git a/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java b/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
+index ce01c577dc81ba2024f217dc4ccacb8fe31357ed..218e3cb7a34f5c5d76e4d95807391f4075bf3e04 100644
+--- a/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
++++ b/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
+@@ -3,7 +3,6 @@ package org.bukkit.event.vehicle;
+ import org.bukkit.entity.Entity;
+ import org.bukkit.entity.Vehicle;
+ import org.bukkit.event.Cancellable;
+-import org.bukkit.event.HandlerList;
+ import org.jetbrains.annotations.NotNull;
+ 
+ /**
+diff --git a/src/main/java/org/bukkit/generator/LimitedRegion.java b/src/main/java/org/bukkit/generator/LimitedRegion.java
+index e0b249d328f7671894cea94bc00d54ab54aacd36..5e9640d4b49492d3e119e13703ef7fa1c401edeb 100644
+--- a/src/main/java/org/bukkit/generator/LimitedRegion.java
++++ b/src/main/java/org/bukkit/generator/LimitedRegion.java
+@@ -3,7 +3,6 @@ package org.bukkit.generator;
+ import java.util.List;
+ import org.bukkit.Location;
+ import org.bukkit.RegionAccessor;
+-import org.bukkit.block.BlockState;
+ // Paper start
+ import org.bukkit.World;
+ import org.bukkit.block.BlockState;
+diff --git a/src/main/java/org/bukkit/inventory/HorseInventory.java b/src/main/java/org/bukkit/inventory/HorseInventory.java
+index 53498debe4cfb80592ef3025270bc8e5df4a5fec..e14c1277c3051acd1aa47658f58e3ef3e4a3662f 100644
+--- a/src/main/java/org/bukkit/inventory/HorseInventory.java
++++ b/src/main/java/org/bukkit/inventory/HorseInventory.java
+@@ -1,7 +1,5 @@
+ package org.bukkit.inventory;
+ 
+-import org.jetbrains.annotations.Nullable;
+-
+ /**
+  * An interface to the inventory of a Horse.
+  */
+diff --git a/src/main/java/org/bukkit/metadata/MetadataStoreBase.java b/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
+index 1a7f3fbf5ca43501a2d982d23569a957322a804f..17ff1097252e42ae2b1dc3d668f80c54026c727a 100644
+--- a/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
++++ b/src/main/java/org/bukkit/metadata/MetadataStoreBase.java
+@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
+ import java.util.ArrayList;
+ import java.util.Collection;
+ import java.util.Collections;
+-import java.util.HashMap;
+ import java.util.Iterator; // Paper
+ import java.util.List;
+ import java.util.Map;
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+index dedb23756c703976e5fdbf3e24d8d85958c28f95..71c2055d1a15d9a5997e122fbee8f708f9357902 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+@@ -25,7 +25,6 @@ import org.bukkit.generator.ChunkGenerator;
+ import org.bukkit.plugin.PluginBase;
+ import org.bukkit.plugin.PluginDescriptionFile;
+ import org.bukkit.plugin.PluginLoader;
+-import org.bukkit.plugin.PluginLogger;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+diff --git a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
+index 786b2f7e1295b9f4f517558b4125893fe7b4bd51..b6159a10b0fb0b85d118e565d04f2d4163f39a82 100644
+--- a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
+@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
+ import java.net.URL;
+ import java.net.URLClassLoader;
+ import java.util.ArrayList;
+-import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.List;
+ import java.util.logging.Level;

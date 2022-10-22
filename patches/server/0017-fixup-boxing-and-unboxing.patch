@@ -1,0 +1,106 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:28:04 -0500
+Subject: [PATCH] fixup boxing and unboxing
+
+
+diff --git a/src/main/java/net/minecraft/nbt/ByteArrayTag.java b/src/main/java/net/minecraft/nbt/ByteArrayTag.java
+index 5a02b5a903366c698a6493e5a31408548d73de6f..a333bb203b2b09a05668030ea1e1c23e44925765 100644
+--- a/src/main/java/net/minecraft/nbt/ByteArrayTag.java
++++ b/src/main/java/net/minecraft/nbt/ByteArrayTag.java
+@@ -67,7 +67,7 @@ public class ByteArrayTag extends CollectionTag<ByteTag> {
+         for (int i = 0; i < list.size(); ++i) {
+             Byte obyte = (Byte) list.get(i);
+ 
+-            abyte[i] = (obyte == null ? Integer.valueOf(0) : obyte).byteValue();
++            abyte[i] = obyte == null ? 0 : obyte;
+         }
+ 
+         return abyte;
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
+index 422c46c9ef64b0ee576f421345af4ae22f650410..6d3207ee00a217e9451d3c5e0604f99368e1936e 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
+@@ -1,6 +1,8 @@
+ package net.minecraft.world.entity.ai.behavior;
+ 
+ import java.util.Map;
++import java.util.Objects;
++
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
+index af351de70af84d618b1ae2a206974a40cc0a8a4c..1d38fb2a49d2364ecb2a68b3887f07088e6b564f 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.entity.ai.sensing;
+ 
++import java.util.Objects;
+ import java.util.Set;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.util.RandomSource;
+diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
+index 2fe0dfeea945866c14a1b6a7948f5ac039c62feb..b5c47e10a1d42dd73a4de54c39e8c3b17fa1983d 100644
+--- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
++++ b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
+@@ -1046,7 +1046,7 @@ public final class Emitter implements Emitable {
+             throw new EmitterException("anchor must not be empty");
+         }
+         for (Character invalid : INVALID_ANCHOR) {
+-            if (anchor.indexOf(invalid.intValue()) > -1) {
++            if (anchor.indexOf(invalid) > -1) {
+                 throw new EmitterException("Invalid character '" + invalid + "' in the anchor: " + anchor);
+             }
+         }
+@@ -1381,8 +1381,8 @@ public final class Emitter implements Emitable {
+             if (end < text.length()) {
+                 ch = Character.valueOf(text.charAt(end));
+             }
+-            if (ch == null || "\"\\\u0085\u2028\u2029\uFEFF".indexOf(ch.intValue()) != -1
+-                || !('\u0020' <= ch.intValue() && ch.intValue() <= '\u007E')) {
++            if (ch == null || "\"\\\u0085\u2028\u2029\uFEFF".indexOf(ch) != -1
++                || !('\u0020' <= ch && ch <= '\u007E')) {
+                 if (start < end) {
+                     int len = end - start;
+                     this.column += len;
+@@ -1393,23 +1393,23 @@ public final class Emitter implements Emitable {
+                     String data;
+                     if (ESCAPE_REPLACEMENTS.containsKey(ch)) {
+                         data = "\\" + ESCAPE_REPLACEMENTS.get(ch);
+-                    } else if (!this.allowUnicode || !StreamReader.isPrintable(ch.intValue())) {
++                    } else if (!this.allowUnicode || !StreamReader.isPrintable(ch)) {
+                         // if !allowUnicode or the character is not printable,
+                         // we must encode it
+-                        if (ch.intValue() <= '\u00FF') {
+-                            String s = "0" + Integer.toString(ch.intValue(), 16);
++                        if (ch <= '\u00FF') {
++                            String s = "0" + Integer.toString(ch, 16);
+                             data = "\\x" + s.substring(s.length() - 2);
+-                        } else if (ch.intValue() >= '\uD800' && ch.intValue() <= '\uDBFF') {
++                        } else if (ch >= '\uD800' && ch <= '\uDBFF') {
+                             if (end + 1 < text.length()) {
+                                 Character ch2 = Character.valueOf(text.charAt(++end));
+                                 String s = "000" + Long.toHexString(Character.toCodePoint(ch.charValue(), ch2.charValue()));
+                                 data = "\\U" + s.substring(s.length() - 8);
+                             } else {
+-                                String s = "000" + Integer.toString(ch.intValue(), 16);
++                                String s = "000" + Integer.toString(ch, 16);
+                                 data = "\\u" + s.substring(s.length() - 4);
+                             }
+                         } else {
+-                            String s = "000" + Integer.toString(ch.intValue(), 16);
++                            String s = "000" + Integer.toString(ch, 16);
+                             data = "\\u" + s.substring(s.length() - 4);
+                         }
+                     } else {
+@@ -1420,7 +1420,7 @@ public final class Emitter implements Emitable {
+                     start = end + 1;
+                 }
+             }
+-            if ((0 < end && end < (text.length() - 1)) && (ch.intValue() == ' ' || start >= end)
++            if ((0 < end && end < (text.length() - 1)) && (ch == ' ' || start >= end)
+                 && (this.column + (end - start)) > this.bestWidth && split) {
+                 String data;
+                 if (start >= end) {

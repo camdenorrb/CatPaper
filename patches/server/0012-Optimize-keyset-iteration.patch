@@ -1,0 +1,153 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:04:11 -0500
+Subject: [PATCH] Optimize keyset iteration
+
+
+diff --git a/src/main/java/ca/spottedleaf/dataconverter/minecraft/versions/V2550.java b/src/main/java/ca/spottedleaf/dataconverter/minecraft/versions/V2550.java
+index 3a3f3fa5e26c073e38cf8a7f163adb93c604b7d6..4f2a4d145ea78b443eb52060730fb2823b06a631 100644
+--- a/src/main/java/ca/spottedleaf/dataconverter/minecraft/versions/V2550.java
++++ b/src/main/java/ca/spottedleaf/dataconverter/minecraft/versions/V2550.java
+@@ -273,8 +273,8 @@ public final class V2550 {
+         final MapType<String> ret = Types.NBT.createEmptyMap();
+         final MapType<String> structuresSerialized = Types.NBT.createEmptyMap();
+         ret.setMap("structures", structuresSerialized);
+-        for (final String key : newStructures.keySet()) {
+-            structuresSerialized.setMap(key, newStructures.get(key).serialize());
++        for (final Map.Entry<String, StructureFeatureConfiguration> entry : newStructures.entrySet()) {
++            structuresSerialized.setMap(entry.getKey(), entry.getValue().serialize());
+         }
+ 
+         if (stronghold) {
+diff --git a/src/main/java/io/papermc/paper/util/table/ZeroCollidingReferenceStateTable.java b/src/main/java/io/papermc/paper/util/table/ZeroCollidingReferenceStateTable.java
+index dbf51c3180c926561265afc89ce03f5f75d6c348..73f532540189c1a05b3ad99d5de8d6fee4b94c85 100644
+--- a/src/main/java/io/papermc/paper/util/table/ZeroCollidingReferenceStateTable.java
++++ b/src/main/java/io/papermc/paper/util/table/ZeroCollidingReferenceStateTable.java
+@@ -58,8 +58,9 @@ public final class ZeroCollidingReferenceStateTable {
+         this.value_table = new StateHolder[max_id + 1][];
+ 
+         final Map<Property<?>, Map<Comparable<?>, StateHolder<?, ?>>> map = table.rowMap();
+-        for (final Property<?> property : map.keySet()) {
+-            final Map<Comparable<?>, StateHolder<?, ?>> propertyMap = map.get(property);
++        for (final Map.Entry<Property<?>, Map<Comparable<?>, StateHolder<?, ?>>> e : map.entrySet()) {
++	        final Property<?> property = e.getKey();
++	        final Map<Comparable<?>, StateHolder<?, ?>> propertyMap = e.getValue();
+ 
+             final int id = lookup_vindex(property, this.index_table);
+             final StateHolder<?, ?>[] states = this.value_table[id] = new StateHolder[property.getPossibleValues().size()];
+diff --git a/src/main/java/net/minecraft/nbt/CompoundTag.java b/src/main/java/net/minecraft/nbt/CompoundTag.java
+index 912fd5135e89348bdd3c0a8b6c07860ebc106df3..ceb3d4eddfcd6a0aac3a6e155d7aa95f1b529d8a 100644
+--- a/src/main/java/net/minecraft/nbt/CompoundTag.java
++++ b/src/main/java/net/minecraft/nbt/CompoundTag.java
+@@ -133,9 +133,9 @@ public class CompoundTag implements Tag {
+ 
+     @Override
+     public void write(DataOutput output) throws IOException {
+-        for(String string : this.tags.keySet()) {
+-            Tag tag = this.tags.get(string);
+-            writeNamedTag(string, tag, output);
++        for(final Map.Entry<String, Tag> entry : this.tags.entrySet()) {
++            Tag tag = entry.getValue();
++            writeNamedTag(entry.getKey(), tag, output);
+         }
+ 
+         output.writeByte(0);
+@@ -505,8 +505,9 @@ public class CompoundTag implements Tag {
+     }
+ 
+     public CompoundTag merge(CompoundTag source) {
+-        for(String string : source.tags.keySet()) {
+-            Tag tag = source.tags.get(string);
++        for(final Map.Entry<String, Tag> entry : source.tags.entrySet()) {
++            String string = entry.getKey();
++            Tag tag = entry.getValue();
+             if (tag.getId() == 10) {
+                 if (this.contains(string, 10)) {
+                     CompoundTag compoundTag = this.getCompound(string);
+diff --git a/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java b/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
+index aa277479f5552503a202a057b1a3ede379f2bbbf..719f5679a73a3e12f1d04aebb6d73383ba1b615c 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
++++ b/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
+@@ -32,9 +32,8 @@ public class GossipContainer {
+     @VisibleForDebug
+     public Map<UUID, Object2IntMap<GossipType>> getGossipEntries() {
+         Map<UUID, Object2IntMap<GossipType>> map = Maps.newHashMap();
+-        this.gossips.keySet().forEach((uuid) -> {
+-            GossipContainer.EntityGossips entityGossips = this.gossips.get(uuid);
+-            map.put(uuid, entityGossips.entries);
++        this.gossips.forEach((uuid, entityGossips) -> {
++	        map.put(uuid, entityGossips.entries);
+         });
+         return map;
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/help/SimpleHelpMap.java b/src/main/java/org/bukkit/craftbukkit/help/SimpleHelpMap.java
+index 36e51384a62e45e073582d057506048073f89543..8b27744d27054044c10acf07501ef4f3631a9fe0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/help/SimpleHelpMap.java
++++ b/src/main/java/org/bukkit/craftbukkit/help/SimpleHelpMap.java
+@@ -132,14 +132,15 @@ public class SimpleHelpMap implements HelpMap {
+             }
+ 
+             // Register a topic
+-            for (Class c : this.topicFactoryMap.keySet()) {
+-                if (c.isAssignableFrom(command.getClass())) {
+-                    HelpTopic t = this.topicFactoryMap.get(c).createTopic(command);
++            for (final Map.Entry<Class, HelpTopicFactory<Command>> entry : this.topicFactoryMap.entrySet()) {
++	            Class c = entry.getKey();
++	            if (c.isAssignableFrom(command.getClass())) {
++                    HelpTopic t = entry.getValue().createTopic(command);
+                     if (t != null) this.addTopic(t);
+                     continue outer;
+                 }
+                 if (command instanceof PluginCommand && c.isAssignableFrom(((PluginCommand) command).getExecutor().getClass())) {
+-                    HelpTopic t = this.topicFactoryMap.get(c).createTopic(command);
++                    HelpTopic t = entry.getValue().createTopic(command);
+                     if (t != null) this.addTopic(t);
+                     continue outer;
+                 }
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java
+index 34b744540a6e6e706a52b9ac36c26a4561c7610b..94b8d4474c72921c5b7f68e18e6cfbf085474a4c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java
+@@ -34,8 +34,9 @@ public class CraftShapedRecipe extends ShapedRecipe implements CraftRecipe {
+         String[] shape = recipe.getShape();
+         ret.shape(shape);
+         Map<Character, RecipeChoice> ingredientMap = recipe.getChoiceMap();
+-        for (char c : ingredientMap.keySet()) {
+-            RecipeChoice stack = ingredientMap.get(Character.valueOf(c));
++        for (final Map.Entry<Character, RecipeChoice> entry : ingredientMap.entrySet()) {
++	        char c = entry.getKey();
++	        RecipeChoice stack = ingredientMap.get(Character.valueOf(c));
+             if (stack != null) {
+                 ret.setIngredient(c, stack);
+             }
+diff --git a/src/main/java/org/bukkit/craftbukkit/map/CraftMapRenderer.java b/src/main/java/org/bukkit/craftbukkit/map/CraftMapRenderer.java
+index 74620bd0b4b5e51c52cf4978167640316600239b..61944d5ff80226328caaeb5c55a698275c6ed8b3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/map/CraftMapRenderer.java
++++ b/src/main/java/org/bukkit/craftbukkit/map/CraftMapRenderer.java
+@@ -11,6 +11,8 @@ import org.bukkit.map.MapRenderer;
+ import org.bukkit.map.MapView;
+ import org.jetbrains.annotations.NotNull;
+ 
++import java.util.Map;
++
+ 
+ public class CraftMapRenderer extends MapRenderer {
+ 
+@@ -36,14 +38,14 @@ public class CraftMapRenderer extends MapRenderer {
+             cursors.removeCursor(cursors.getCursor(0));
+         }
+ 
+-        for (String key : worldMap.decorations.keySet()) {
++        for (final Map.Entry<String, MapDecoration> entry : worldMap.decorations.entrySet()) {
+             // If this cursor is for a player check visibility with vanish system
+-            Player other = Bukkit.getPlayerExact((String) key);
++            Player other = Bukkit.getPlayerExact((String) entry.getKey());
+             if (other != null && !player.canSee(other)) {
+                 continue;
+             }
+ 
+-            MapDecoration decoration = worldMap.decorations.get(key);
++            MapDecoration decoration = entry.getValue();
+             cursors.addCursor(decoration.getX(), decoration.getY(), (byte) (decoration.getRot() & 15), decoration.getType().getIcon(), true, decoration.getName() == null ? null : io.papermc.paper.adventure.PaperAdventure.asAdventure(decoration.getName())); // Paper
+         }
+     }

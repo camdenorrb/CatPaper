@@ -1,0 +1,1234 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 02:55:45 -0500
+Subject: [PATCH] Autoboxing
+
+
+diff --git a/src/main/java/co/aikar/timings/TimingData.java b/src/main/java/co/aikar/timings/TimingData.java
+index 92ce1f95daef668c2ad3e346ca59176b0a53a84b..c122a2e2994f2dcff9a06244dfe7738e26ec3344 100644
+--- a/src/main/java/co/aikar/timings/TimingData.java
++++ b/src/main/java/co/aikar/timings/TimingData.java
+@@ -86,12 +86,12 @@ class TimingData {
+     @NotNull
+     List<Object> export() {
+         List<Object> list = toArray(
+-            id,
+-            count,
+-            totalTime);
++	        Integer.valueOf(id),
++	        Integer.valueOf(count),
++	        Long.valueOf(totalTime));
+         if (lagCount > 0) {
+-            list.add(lagCount);
+-            list.add(lagTotalTime);
++            list.add(Integer.valueOf(lagCount));
++            list.add(Long.valueOf(lagTotalTime));
+         }
+         return list;
+     }
+diff --git a/src/main/java/co/aikar/timings/TimingHistory.java b/src/main/java/co/aikar/timings/TimingHistory.java
+index 9bdc5f8127c33017be901e1181f9249ed9a7aaec..e4f420614cd18196161be36226264e38784793a0 100644
+--- a/src/main/java/co/aikar/timings/TimingHistory.java
++++ b/src/main/java/co/aikar/timings/TimingHistory.java
+@@ -63,7 +63,7 @@ public class TimingHistory {
+         @NotNull
+         @Override
+         public Integer apply(@Nullable String input) {
+-            return worldIdPool++;
++            return Integer.valueOf(worldIdPool++);
+         }
+     });
+     private final long endTime;
+@@ -135,8 +135,8 @@ public class TimingHistory {
+                         @Override
+                         public Object apply(@NotNull RegionData input) {
+                             return toArray(
+-                                input.regionId.x,
+-                                input.regionId.z,
++                                Integer.valueOf(input.regionId.x),
++                                Integer.valueOf(input.regionId.z),
+                                 toObjectMapper(input.entityCounts.entrySet(),
+                                     new Function<Map.Entry<EntityType, Counter>, JSONPair>() {
+                                         @NotNull
+@@ -145,7 +145,7 @@ public class TimingHistory {
+                                             entityTypeSet.add(entry.getKey());
+                                             return pair(
+                                                     String.valueOf(entry.getKey().ordinal()),
+-                                                    entry.getValue().count()
++                                                Integer.valueOf(entry.getValue().count())
+                                             );
+                                         }
+                                     }
+@@ -158,7 +158,7 @@ public class TimingHistory {
+                                             tileEntityTypeSet.add(entry.getKey());
+                                             return pair(
+                                                     String.valueOf(entry.getKey().ordinal()),
+-                                                    entry.getValue().count()
++                                                Integer.valueOf(entry.getValue().count())
+                                             );
+                                         }
+                                     }
+@@ -254,10 +254,10 @@ public class TimingHistory {
+     @NotNull
+     Object export() {
+         return createObject(
+-            pair("s", startTime),
+-            pair("e", endTime),
+-            pair("tk", totalTicks),
+-            pair("tm", totalTime),
++            pair("s", Long.valueOf(startTime)),
++            pair("e", Long.valueOf(endTime)),
++            pair("tk", Long.valueOf(totalTicks)),
++            pair("tm", Long.valueOf(totalTime)),
+             pair("w", worlds),
+             pair("h", toArrayMapper(entries, new Function<TimingHistoryEntry, Object>() {
+                 @Nullable
+@@ -294,19 +294,19 @@ public class TimingHistory {
+         @NotNull
+         List<Object> export() {
+             return toArray(
+-                time,
+-                Math.round(tps * 100D) / 100D,
+-                Math.round(pingRecord.avg * 100D) / 100D,
++                Long.valueOf(time),
++                Double.valueOf(Math.round(tps * 100D) / 100D),
++                Double.valueOf(Math.round(pingRecord.avg * 100D) / 100D),
+                 fst.export(),
+-                toArray(ticksRecord.timed,
+-                    ticksRecord.player,
+-                    ticksRecord.entity,
+-                    ticksRecord.activatedEntity,
+-                    ticksRecord.tileEntity
++                toArray(Long.valueOf(ticksRecord.timed),
++                    Long.valueOf(ticksRecord.player),
++                    Long.valueOf(ticksRecord.entity),
++                    Long.valueOf(ticksRecord.activatedEntity),
++                    Long.valueOf(ticksRecord.tileEntity)
+                 ),
+-                usedMemory,
+-                freeMemory,
+-                loadAvg
++                Double.valueOf(usedMemory),
++                Double.valueOf(freeMemory),
++                Double.valueOf(loadAvg)
+             );
+         }
+     }
+diff --git a/src/main/java/co/aikar/util/Counter.java b/src/main/java/co/aikar/util/Counter.java
+index eff63c371c39e21a5a9cb5af8c2dcf78a60dd52b..140cc5c5ae6ac5d9776dfaab5307530a91ab823c 100644
+--- a/src/main/java/co/aikar/util/Counter.java
++++ b/src/main/java/co/aikar/util/Counter.java
+@@ -20,14 +20,14 @@ public class Counter <T> extends ForwardingMap<T, Long> {
+         return increment(key, -amount);
+     }
+     public long increment(@Nullable T key, long amount) {
+-        Long count = this.getCount(key);
++        Long count = Long.valueOf(this.getCount(key));
+         count += amount;
+         this.counts.put(key, count);
+         return count;
+     }
+ 
+     public long getCount(@Nullable T key) {
+-        return this.counts.getOrDefault(key, 0L);
++        return this.counts.getOrDefault(key, Long.valueOf(0L));
+     }
+ 
+     @NotNull
+diff --git a/src/main/java/co/aikar/util/LoadingIntMap.java b/src/main/java/co/aikar/util/LoadingIntMap.java
+index 13cc2968cbe63f151757c6290d249f7b6c68a680..b22f066d1b771d7125a5a11e166741ce6387a447 100644
+--- a/src/main/java/co/aikar/util/LoadingIntMap.java
++++ b/src/main/java/co/aikar/util/LoadingIntMap.java
+@@ -50,7 +50,7 @@ public class LoadingIntMap<V> extends Int2ObjectOpenHashMap<V> {
+     public V get(int key) {
+         V res = super.get(key);
+         if (res == null) {
+-            res = loader.apply(key);
++            res = loader.apply(Integer.valueOf(key));
+             if (res != null) {
+                 put(key, res);
+             }
+diff --git a/src/main/java/io/papermc/paper/world/MoonPhase.java b/src/main/java/io/papermc/paper/world/MoonPhase.java
+index df05153397b42930cd53d37b30824c7e5f008f7e..7b22ce4c81c66886388efdc2494e150a1540581b 100644
+--- a/src/main/java/io/papermc/paper/world/MoonPhase.java
++++ b/src/main/java/io/papermc/paper/world/MoonPhase.java
+@@ -25,12 +25,12 @@ public enum MoonPhase {
+ 
+     static {
+         for (MoonPhase phase : values()) {
+-            BY_DAY.put(phase.day, phase);
++            BY_DAY.put(Long.valueOf(phase.day), phase);
+         }
+     }
+ 
+     @NotNull
+     public static MoonPhase getPhase(long day) {
+-        return BY_DAY.get(day % 8L);
++        return BY_DAY.get(Long.valueOf(day % 8L));
+     }
+ }
+diff --git a/src/main/java/org/bukkit/Art.java b/src/main/java/org/bukkit/Art.java
+index 24c2dc2035fd9452a25490d1bb2b1d4c40742413..a5daea2daf79a3207e1dbf84ca182912157badad 100644
+--- a/src/main/java/org/bukkit/Art.java
++++ b/src/main/java/org/bukkit/Art.java
+@@ -98,7 +98,7 @@ public enum Art implements Keyed {
+     @Deprecated
+     @Nullable
+     public static Art getById(int id) {
+-        return BY_ID.get(id);
++        return BY_ID.get(Integer.valueOf(id));
+     }
+ 
+     /**
+@@ -118,7 +118,7 @@ public enum Art implements Keyed {
+ 
+     static {
+         for (Art art : values()) {
+-            BY_ID.put(art.id, art);
++            BY_ID.put(Integer.valueOf(art.id), art);
+             BY_NAME.put(art.toString().toLowerCase(java.util.Locale.ENGLISH), art);
+         }
+     }
+diff --git a/src/main/java/org/bukkit/ChatColor.java b/src/main/java/org/bukkit/ChatColor.java
+index 01ab0516a75505a87d9c8a194b6e3593d0551f83..bb6d77d2b7128f36d1359a7a7f5e1da9a90be5bf 100644
+--- a/src/main/java/org/bukkit/ChatColor.java
++++ b/src/main/java/org/bukkit/ChatColor.java
+@@ -305,7 +305,7 @@ public enum ChatColor {
+      */
+     @Nullable
+     public static ChatColor getByChar(char code) {
+-        return BY_CHAR.get(code);
++        return BY_CHAR.get(Character.valueOf(code));
+     }
+ 
+     /**
+@@ -320,7 +320,7 @@ public enum ChatColor {
+         Preconditions.checkArgument(code != null, "Code cannot be null");
+         Preconditions.checkArgument(code.length() > 0, "Code must have at least one char");
+ 
+-        return BY_CHAR.get(code.charAt(0));
++        return BY_CHAR.get(Character.valueOf(code.charAt(0)));
+     }
+ 
+     /**
+@@ -409,8 +409,8 @@ public enum ChatColor {
+ 
+     static {
+         for (ChatColor color : values()) {
+-            BY_ID.put(color.intCode, color);
+-            BY_CHAR.put(color.code, color);
++            BY_ID.put(Integer.valueOf(color.intCode), color);
++            BY_CHAR.put(Character.valueOf(color.code), color);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/CoalType.java b/src/main/java/org/bukkit/CoalType.java
+index c07499dbdd49d70717dbd674d97b6dbcfd7e9d5b..ce7e4ba40cef270628d5535fc7bab947214ea4b5 100644
+--- a/src/main/java/org/bukkit/CoalType.java
++++ b/src/main/java/org/bukkit/CoalType.java
+@@ -40,12 +40,12 @@ public enum CoalType {
+     @Deprecated
+     @Nullable
+     public static CoalType getByData(final byte data) {
+-        return BY_DATA.get(data);
++        return BY_DATA.get(Byte.valueOf(data));
+     }
+ 
+     static {
+         for (CoalType type : values()) {
+-            BY_DATA.put(type.data, type);
++            BY_DATA.put(Byte.valueOf(type.data), type);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/Color.java b/src/main/java/org/bukkit/Color.java
+index f67dd97da3767aa6eeed026a042dd8fed62135aa..cd9c992f9331291c8752e19bc438f8111e9b0115 100644
+--- a/src/main/java/org/bukkit/Color.java
++++ b/src/main/java/org/bukkit/Color.java
+@@ -325,9 +325,9 @@ public final class Color implements ConfigurationSerializable {
+     @NotNull
+     public Map<String, Object> serialize() {
+         return ImmutableMap.<String, Object>of(
+-            "RED", getRed(),
+-            "BLUE", getBlue(),
+-            "GREEN", getGreen()
++            "RED", Integer.valueOf(getRed()),
++            "BLUE", Integer.valueOf(getBlue()),
++            "GREEN", Integer.valueOf(getGreen())
+         );
+     }
+ 
+diff --git a/src/main/java/org/bukkit/CropState.java b/src/main/java/org/bukkit/CropState.java
+index fb4832fb796a38c0f5f51cf80a67259924f2c607..219edb8deafcc49a8f89b53bbdab91411a5ba1a0 100644
+--- a/src/main/java/org/bukkit/CropState.java
++++ b/src/main/java/org/bukkit/CropState.java
+@@ -71,12 +71,12 @@ public enum CropState {
+     @Deprecated
+     @Nullable
+     public static CropState getByData(final byte data) {
+-        return BY_DATA.get(data);
++        return BY_DATA.get(Byte.valueOf(data));
+     }
+ 
+     static {
+         for (CropState cropState : values()) {
+-            BY_DATA.put(cropState.getData(), cropState);
++            BY_DATA.put(Byte.valueOf(cropState.getData()), cropState);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/Difficulty.java b/src/main/java/org/bukkit/Difficulty.java
+index 122884098f08c9aa5e144876746b5ce4e8f1a4b6..f03199c2d21b692550b74574edd1300f2eba10cc 100644
+--- a/src/main/java/org/bukkit/Difficulty.java
++++ b/src/main/java/org/bukkit/Difficulty.java
+@@ -68,12 +68,12 @@ public enum Difficulty implements net.kyori.adventure.translation.Translatable {
+     @Deprecated
+     @Nullable
+     public static Difficulty getByValue(final int value) {
+-        return BY_ID.get(value);
++        return BY_ID.get(Integer.valueOf(value));
+     }
+ 
+     static {
+         for (Difficulty diff : values()) {
+-            BY_ID.put(diff.value, diff);
++            BY_ID.put(Integer.valueOf(diff.value), diff);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/Effect.java b/src/main/java/org/bukkit/Effect.java
+index 6616bd900d7f85972dcf2ddc21378ffea78315bc..23fc945f0344fa1588acf6117f9d1fc5e8906609 100644
+--- a/src/main/java/org/bukkit/Effect.java
++++ b/src/main/java/org/bukkit/Effect.java
+@@ -455,13 +455,13 @@ public enum Effect {
+     @Deprecated
+     @Nullable
+     public static Effect getById(int id) {
+-        return BY_ID.get(id);
++        return BY_ID.get(Integer.valueOf(id));
+     }
+ 
+     static {
+         for (Effect effect : values()) {
+             if (!isDeprecated(effect)) // Paper
+-            BY_ID.put(effect.id, effect);
++            BY_ID.put(Integer.valueOf(effect.id), effect);
+         }
+     }
+ 
+diff --git a/src/main/java/org/bukkit/FireworkEffect.java b/src/main/java/org/bukkit/FireworkEffect.java
+index d625930561c604c6ea0e1089f3c445be009977d4..d74d373390ee4a5f5e4b9df644581baee63dcbc2 100644
+--- a/src/main/java/org/bukkit/FireworkEffect.java
++++ b/src/main/java/org/bukkit/FireworkEffect.java
+@@ -404,8 +404,8 @@ public final class FireworkEffect implements ConfigurationSerializable {
+     @Override
+     public Map<String, Object> serialize() {
+         return ImmutableMap.<String, Object>of(
+-            FLICKER, flicker,
+-            TRAIL, trail,
++            FLICKER, Boolean.valueOf(flicker),
++            TRAIL, Boolean.valueOf(trail),
+             COLORS, colors,
+             FADE_COLORS, fadeColors,
+             TYPE, type.name()
+diff --git a/src/main/java/org/bukkit/GameMode.java b/src/main/java/org/bukkit/GameMode.java
+index e34a51e123890ddac5a88cd6733578b900a375af..a20ad2d433a9973941219a28f046ca0e07fac489 100644
+--- a/src/main/java/org/bukkit/GameMode.java
++++ b/src/main/java/org/bukkit/GameMode.java
+@@ -72,12 +72,12 @@ public enum GameMode implements net.kyori.adventure.translation.Translatable { /
+     @Deprecated
+     @Nullable
+     public static GameMode getByValue(final int value) {
+-        return BY_ID.get(value);
++        return BY_ID.get(Integer.valueOf(value));
+     }
+ 
+     static {
+         for (GameMode mode : values()) {
+-            BY_ID.put(mode.getValue(), mode);
++            BY_ID.put(Integer.valueOf(mode.getValue()), mode);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/GrassSpecies.java b/src/main/java/org/bukkit/GrassSpecies.java
+index f8ae143acbf586d5279b44f7311ca97f3ae4ead2..0ad046fa4ce3b89d13f9964aa9e8aca738ff112f 100644
+--- a/src/main/java/org/bukkit/GrassSpecies.java
++++ b/src/main/java/org/bukkit/GrassSpecies.java
+@@ -53,12 +53,12 @@ public enum GrassSpecies {
+     @Deprecated
+     @Nullable
+     public static GrassSpecies getByData(final byte data) {
+-        return BY_DATA.get(data);
++        return BY_DATA.get(Byte.valueOf(data));
+     }
+ 
+     static {
+         for (GrassSpecies grassSpecies : values()) {
+-            BY_DATA.put(grassSpecies.getData(), grassSpecies);
++            BY_DATA.put(Byte.valueOf(grassSpecies.getData()), grassSpecies);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/Instrument.java b/src/main/java/org/bukkit/Instrument.java
+index 92194803bcdfbcfdb99567835906ce9219eabd04..ca79912f6258b14b5b640c277f39da3faa748aa2 100644
+--- a/src/main/java/org/bukkit/Instrument.java
++++ b/src/main/java/org/bukkit/Instrument.java
+@@ -102,12 +102,12 @@ public enum Instrument {
+     @Deprecated
+     @Nullable
+     public static Instrument getByType(final byte type) {
+-        return BY_DATA.get(type);
++        return BY_DATA.get(Byte.valueOf(type));
+     }
+ 
+     static {
+         for (Instrument instrument : Instrument.values()) {
+-            BY_DATA.put(instrument.getType(), instrument);
++            BY_DATA.put(Byte.valueOf(instrument.getType()), instrument);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
+index 70e95a38c9eb7f3229a4f0f4a83111ba6c70c472..220336daf1c277611d9fab47fc93056867de3b8a 100644
+--- a/src/main/java/org/bukkit/Location.java
++++ b/src/main/java/org/bukkit/Location.java
+@@ -1112,12 +1112,12 @@ public class Location implements Cloneable, ConfigurationSerializable {
+             data.put("world", getWorld().getName());
+         }
+ 
+-        data.put("x", this.x);
+-        data.put("y", this.y);
+-        data.put("z", this.z);
++        data.put("x", Double.valueOf(this.x));
++        data.put("y", Double.valueOf(this.y));
++        data.put("z", Double.valueOf(this.z));
+ 
+-        data.put("yaw", this.yaw);
+-        data.put("pitch", this.pitch);
++        data.put("yaw", Float.valueOf(this.yaw));
++        data.put("pitch", Float.valueOf(this.pitch));
+ 
+         return data;
+     }
+diff --git a/src/main/java/org/bukkit/Material.java b/src/main/java/org/bukkit/Material.java
+index c3996241e7b8e23fff757434328602205d555acf..2155d172fd5264857da4c390a745c31d0dd910ba 100644
+--- a/src/main/java/org/bukkit/Material.java
++++ b/src/main/java/org/bukkit/Material.java
+@@ -4294,7 +4294,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+     public MaterialData getNewData(final byte raw) {
+         Preconditions.checkArgument(legacy, "Cannot get new data of Modern Material");
+         try {
+-            return ctor.newInstance(this, raw);
++            return ctor.newInstance(this, Byte.valueOf(raw));
+         } catch (InstantiationException ex) {
+             final Throwable t = ex.getCause();
+             if (t instanceof RuntimeException) {
+diff --git a/src/main/java/org/bukkit/Note.java b/src/main/java/org/bukkit/Note.java
+index 95f79cdbc586a0d3bd46b2e0b13ee5696c45ac44..c1f3e497ca3655c5abc58bf48062d6c92b3ab2b2 100644
+--- a/src/main/java/org/bukkit/Note.java
++++ b/src/main/java/org/bukkit/Note.java
+@@ -102,17 +102,17 @@ public class Note {
+         @Deprecated
+         @Nullable
+         public static Tone getById(byte id) {
+-            return BY_DATA.get(id);
++            return BY_DATA.get(Byte.valueOf(id));
+         }
+ 
+         static {
+             for (Tone tone : values()) {
+                 int id = tone.id % TONES_COUNT;
+-                BY_DATA.put((byte) id, tone);
++                BY_DATA.put(Byte.valueOf((byte) id), tone);
+ 
+                 if (tone.isSharpable()) {
+                     id = (id + 1) % TONES_COUNT;
+-                    BY_DATA.put((byte) id, tone);
++                    BY_DATA.put(Byte.valueOf((byte) id), tone);
+                 }
+             }
+         }
+diff --git a/src/main/java/org/bukkit/SandstoneType.java b/src/main/java/org/bukkit/SandstoneType.java
+index 10f5cfb1885833a1d2c1027c03974da45ab28e2f..ca7624624ca0b47120753c623f8d84b8f1dd26ea 100644
+--- a/src/main/java/org/bukkit/SandstoneType.java
++++ b/src/main/java/org/bukkit/SandstoneType.java
+@@ -43,12 +43,12 @@ public enum SandstoneType {
+     @Deprecated
+     @Nullable
+     public static SandstoneType getByData(final byte data) {
+-        return BY_DATA.get(data);
++        return BY_DATA.get(Byte.valueOf(data));
+     }
+ 
+     static {
+         for (SandstoneType type : values()) {
+-            BY_DATA.put(type.data, type);
++            BY_DATA.put(Byte.valueOf(type.data), type);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/TreeSpecies.java b/src/main/java/org/bukkit/TreeSpecies.java
+index 01285301621c88c9e383e18c46eabd302341a338..4899a84d77e92b339dd8b26d972a1ef9d9923836 100644
+--- a/src/main/java/org/bukkit/TreeSpecies.java
++++ b/src/main/java/org/bukkit/TreeSpecies.java
+@@ -67,12 +67,12 @@ public enum TreeSpecies {
+     @Deprecated
+     @Nullable
+     public static TreeSpecies getByData(final byte data) {
+-        return BY_DATA.get(data);
++        return BY_DATA.get(Byte.valueOf(data));
+     }
+ 
+     static {
+         for (TreeSpecies species : values()) {
+-            BY_DATA.put(species.data, species);
++            BY_DATA.put(Byte.valueOf(species.data), species);
+         }
+     }
+ }
+diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
+index 9e71e519cda72a1e2a01474f238b97015ec5115e..b9f9ef01af46cdcb4fbc55039a1f1a956e72644e 100644
+--- a/src/main/java/org/bukkit/World.java
++++ b/src/main/java/org/bukkit/World.java
+@@ -4035,12 +4035,12 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+         @Deprecated
+         @Nullable
+         public static Environment getEnvironment(int id) {
+-            return lookup.get(id);
++            return lookup.get(Integer.valueOf(id));
+         }
+ 
+         static {
+             for (Environment env : values()) {
+-                lookup.put(env.getId(), env);
++                lookup.put(Integer.valueOf(env.getId()), env);
+             }
+         }
+     }
+diff --git a/src/main/java/org/bukkit/attribute/AttributeModifier.java b/src/main/java/org/bukkit/attribute/AttributeModifier.java
+index 5e09f95a9bcd840a03d4c41f82fec51550829284..b77fa36209e923b493a149a4d5e60e20781b7a12 100644
+--- a/src/main/java/org/bukkit/attribute/AttributeModifier.java
++++ b/src/main/java/org/bukkit/attribute/AttributeModifier.java
+@@ -97,8 +97,8 @@ public class AttributeModifier implements ConfigurationSerializable {
+         Map<String, Object> data = new HashMap<String, Object>();
+         data.put("uuid", uuid.toString());
+         data.put("name", name);
+-        data.put("operation", operation.ordinal());
+-        data.put("amount", amount);
++        data.put("operation", Integer.valueOf(operation.ordinal()));
++        data.put("amount", Double.valueOf(amount));
+         if (slot != null) {
+             data.put("slot", slot.name());
+         }
+diff --git a/src/main/java/org/bukkit/block/PistonMoveReaction.java b/src/main/java/org/bukkit/block/PistonMoveReaction.java
+index 554e391174ed25d11ab08ff60db240d133cc3a45..5d49af5d8560fb90936ad79e467fdc82d7b0c762 100644
+--- a/src/main/java/org/bukkit/block/PistonMoveReaction.java
++++ b/src/main/java/org/bukkit/block/PistonMoveReaction.java
+@@ -40,7 +40,7 @@ public enum PistonMoveReaction {
+     private static @NotNull Map<Integer, PistonMoveReaction> byId = new HashMap<Integer, PistonMoveReaction>();
+     static {
+         for (PistonMoveReaction reaction : PistonMoveReaction.values()) {
+-            byId.put(reaction.id, reaction);
++            byId.put(Integer.valueOf(reaction.id), reaction);
+         }
+     }
+ 
+@@ -65,6 +65,6 @@ public enum PistonMoveReaction {
+     @Deprecated
+     @Nullable
+     public static PistonMoveReaction getById(int id) {
+-        return byId.get(id);
++        return byId.get(Integer.valueOf(id));
+     }
+ }
+diff --git a/src/main/java/org/bukkit/command/defaults/HelpCommand.java b/src/main/java/org/bukkit/command/defaults/HelpCommand.java
+index d3426fa3120e08d1f5fbcd2a813069e86864bfe7..86a120dd02e959b99faf882df07115f35e600383 100644
+--- a/src/main/java/org/bukkit/command/defaults/HelpCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/HelpCommand.java
+@@ -203,15 +203,15 @@ public class HelpCommand extends BukkitCommand {
+ 
+         Map<Character, Integer> sd = new HashMap<Character, Integer>();
+         for (char Letter : (s1 + s2).toCharArray()) {
+-            if (!sd.containsKey(Letter)) {
+-                sd.put(Letter, 0);
++            if (!sd.containsKey(Character.valueOf(Letter))) {
++                sd.put(Character.valueOf(Letter), Integer.valueOf(0));
+             }
+         }
+ 
+         for (int i = 1; i <= s1Len; i++) {
+             int DB = 0;
+             for (int j = 1; j <= s2Len; j++) {
+-                int i1 = sd.get(s2.charAt(j - 1));
++                int i1 = sd.get(Character.valueOf(s2.charAt(j - 1)));
+                 int j1 = DB;
+ 
+                 if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+@@ -223,7 +223,7 @@ public class HelpCommand extends BukkitCommand {
+ 
+                 H[i + 1][j + 1] = Math.min(H[i + 1][j + 1], H[i1][j1] + (i - i1 - 1) + 1 + (j - j1 - 1));
+             }
+-            sd.put(s1.charAt(i - 1), i);
++            sd.put(Character.valueOf(s1.charAt(i - 1)), Integer.valueOf(i));
+         }
+ 
+         return H[s1Len + 1][s2Len + 1];
+diff --git a/src/main/java/org/bukkit/configuration/MemorySection.java b/src/main/java/org/bukkit/configuration/MemorySection.java
+index cc4778f78398987d3b089432416f4a40bc4f5183..944934f0c98f4a8f19e11de8acced232e8502fe6 100644
+--- a/src/main/java/org/bukkit/configuration/MemorySection.java
++++ b/src/main/java/org/bukkit/configuration/MemorySection.java
+@@ -355,7 +355,7 @@ public class MemorySection implements ConfigurationSection {
+ 
+     @Override
+     public int getInt(@NotNull String path, int def) {
+-        Object val = get(path, def);
++        Object val = get(path, Integer.valueOf(def));
+         return (val instanceof Number) ? toInt(val) : def;
+     }
+ 
+@@ -373,7 +373,7 @@ public class MemorySection implements ConfigurationSection {
+ 
+     @Override
+     public boolean getBoolean(@NotNull String path, boolean def) {
+-        Object val = get(path, def);
++        Object val = get(path, Boolean.valueOf(def));
+         return (val instanceof Boolean) ? (Boolean) val : def;
+     }
+ 
+@@ -391,7 +391,7 @@ public class MemorySection implements ConfigurationSection {
+ 
+     @Override
+     public double getDouble(@NotNull String path, double def) {
+-        Object val = get(path, def);
++        Object val = get(path, Double.valueOf(def));
+         return (val instanceof Number) ? toDouble(val) : def;
+     }
+ 
+@@ -409,7 +409,7 @@ public class MemorySection implements ConfigurationSection {
+ 
+     @Override
+     public long getLong(@NotNull String path, long def) {
+-        Object val = get(path, def);
++        Object val = get(path, Long.valueOf(def));
+         return (val instanceof Number) ? toLong(val) : def;
+     }
+ 
+@@ -481,9 +481,9 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add((int) ((Character) object).charValue());
++                result.add(Integer.valueOf((int) ((Character) object).charValue()));
+             } else if (object instanceof Number) {
+-                result.add(((Number) object).intValue());
++                result.add(Integer.valueOf(((Number) object).intValue()));
+             }
+         }
+ 
+@@ -506,9 +506,9 @@ public class MemorySection implements ConfigurationSection {
+                 result.add((Boolean) object);
+             } else if (object instanceof String) {
+                 if (Boolean.TRUE.toString().equals(object)) {
+-                    result.add(true);
++                    result.add(Boolean.TRUE);
+                 } else if (Boolean.FALSE.toString().equals(object)) {
+-                    result.add(false);
++                    result.add(Boolean.FALSE);
+                 }
+             }
+         }
+@@ -536,9 +536,9 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add((double) ((Character) object).charValue());
++                result.add(Double.valueOf((double) ((Character) object).charValue()));
+             } else if (object instanceof Number) {
+-                result.add(((Number) object).doubleValue());
++                result.add(Double.valueOf(((Number) object).doubleValue()));
+             }
+         }
+ 
+@@ -565,9 +565,9 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add((float) ((Character) object).charValue());
++                result.add(Float.valueOf((float) ((Character) object).charValue()));
+             } else if (object instanceof Number) {
+-                result.add(((Number) object).floatValue());
++                result.add(Float.valueOf(((Number) object).floatValue()));
+             }
+         }
+ 
+@@ -594,9 +594,9 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add((long) ((Character) object).charValue());
++                result.add(Long.valueOf((long) ((Character) object).charValue()));
+             } else if (object instanceof Number) {
+-                result.add(((Number) object).longValue());
++                result.add(Long.valueOf(((Number) object).longValue()));
+             }
+         }
+ 
+@@ -623,9 +623,9 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add((byte) ((Character) object).charValue());
++                result.add(Byte.valueOf((byte) ((Character) object).charValue()));
+             } else if (object instanceof Number) {
+-                result.add(((Number) object).byteValue());
++                result.add(Byte.valueOf(((Number) object).byteValue()));
+             }
+         }
+ 
+@@ -650,10 +650,10 @@ public class MemorySection implements ConfigurationSection {
+                 String str = (String) object;
+ 
+                 if (str.length() == 1) {
+-                    result.add(str.charAt(0));
++                    result.add(Character.valueOf(str.charAt(0)));
+                 }
+             } else if (object instanceof Number) {
+-                result.add((char) ((Number) object).intValue());
++                result.add(Character.valueOf((char) ((Number) object).intValue()));
+             }
+         }
+ 
+@@ -680,9 +680,9 @@ public class MemorySection implements ConfigurationSection {
+                 } catch (Exception ex) {
+                 }
+             } else if (object instanceof Character) {
+-                result.add((short) ((Character) object).charValue());
++                result.add(Short.valueOf((short) ((Character) object).charValue()));
+             } else if (object instanceof Number) {
+-                result.add(((Number) object).shortValue());
++                result.add(Short.valueOf(((Number) object).shortValue()));
+             }
+         }
+ 
+diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
+index 33a6b7a27dc91552799c07a7aad9b3df31ad13f7..b7dfbbfadeebf771ad26bfee5db4a59f36f9c233 100644
+--- a/src/main/java/org/bukkit/entity/Entity.java
++++ b/src/main/java/org/bukkit/entity/Entity.java
+@@ -250,7 +250,7 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+     @NotNull
+     public default java.util.concurrent.CompletableFuture<Boolean> teleportAsync(@NotNull Location loc, @NotNull TeleportCause cause) {
+         java.util.concurrent.CompletableFuture<Boolean> future = new java.util.concurrent.CompletableFuture<>();
+-        loc.getWorld().getChunkAtAsyncUrgently(loc).thenAccept((chunk) -> future.complete(teleport(loc, cause))).exceptionally(ex -> {
++        loc.getWorld().getChunkAtAsyncUrgently(loc).thenAccept((chunk) -> future.complete(Boolean.valueOf(teleport(loc, cause)))).exceptionally(ex -> {
+             future.completeExceptionally(ex);
+             return null;
+         });
+diff --git a/src/main/java/org/bukkit/entity/EntityType.java b/src/main/java/org/bukkit/entity/EntityType.java
+index b75c16cb8397d91c6dcf850e27a496ee0eb9de77..fdd4d060613f2a7c153ac2fe7713b200e1351af2 100644
+--- a/src/main/java/org/bukkit/entity/EntityType.java
++++ b/src/main/java/org/bukkit/entity/EntityType.java
+@@ -307,7 +307,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
+                 NAME_MAP.put(type.name.toLowerCase(java.util.Locale.ENGLISH), type);
+             }
+             if (type.typeId > 0) {
+-                ID_MAP.put(type.typeId, type);
++                ID_MAP.put(Short.valueOf(type.typeId), type);
+             }
+         }
+ 
+@@ -406,7 +406,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
+         if (id > Short.MAX_VALUE) {
+             return null;
+         }
+-        return ID_MAP.get((short) id);
++        return ID_MAP.get(Short.valueOf((short) id));
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
+index bd97bf58ca778c01e25a2fae692098bfc6fae7e6..c8b9348499d712c0415a7d5cc58ca0e0b7691ac7 100644
+--- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
++++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
+@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
+ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+     private static final HandlerList handlers = new HandlerList();
+     private static final DamageModifier[] MODIFIERS = DamageModifier.values();
+-    private static final Function<? super Double, Double> ZERO = Functions.constant(-0.0);
++    private static final Function<? super Double, Double> ZERO = Functions.constant(Double.valueOf(-0.0));
+     private final @NotNull Map<DamageModifier, Double> modifiers;
+     private final @NotNull Map<DamageModifier, ? extends Function<? super Double, Double>> modifierFunctions;
+     private final @NotNull Map<DamageModifier, Double> originals;
+@@ -28,7 +28,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+     private final @NotNull DamageCause cause;
+ 
+     public EntityDamageEvent(@NotNull final Entity damagee, @NotNull final DamageCause cause, final double damage) {
+-        this(damagee, cause, new EnumMap<DamageModifier, Double>(ImmutableMap.of(DamageModifier.BASE, damage)), new EnumMap<DamageModifier, Function<? super Double, Double>>(ImmutableMap.of(DamageModifier.BASE, ZERO)));
++        this(damagee, cause, new EnumMap<DamageModifier, Double>(ImmutableMap.of(DamageModifier.BASE, Double.valueOf(damage))), new EnumMap<DamageModifier, Function<? super Double, Double>>(ImmutableMap.of(DamageModifier.BASE, ZERO)));
+     }
+ 
+     public EntityDamageEvent(@NotNull final Entity damagee, @NotNull final DamageCause cause, @NotNull final Map<DamageModifier, Double> modifiers, @NotNull final Map<DamageModifier, ? extends Function<? super Double, Double>> modifierFunctions) {
+@@ -88,7 +88,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+         if (!modifiers.containsKey(type)) {
+             throw type == null ? new IllegalArgumentException("Cannot have null DamageModifier") : new UnsupportedOperationException(type + " is not applicable to " + getEntity());
+         }
+-        modifiers.put(type, damage);
++        modifiers.put(type, Double.valueOf(damage));
+     }
+ 
+     /**
+@@ -164,8 +164,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+             }
+ 
+             Function<? super Double, Double> modifierFunction = modifierFunctions.get(modifier);
+-            double newVanilla = modifierFunction.apply(remaining);
+-            double oldVanilla = modifierFunction.apply(oldRemaining);
++            double newVanilla = modifierFunction.apply(Double.valueOf(remaining));
++            double oldVanilla = modifierFunction.apply(Double.valueOf(oldRemaining));
+             double difference = oldVanilla - newVanilla;
+ 
+             // Don't allow value to cross zero, assume zero values should be negative
+diff --git a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
+index 8c530f05d5f1c1ce251490813111cdfcab32b1be..c19fb029246bcbd9ceec9510b4e526b9cad6404c 100644
+--- a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
++++ b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
+@@ -74,7 +74,7 @@ public class PotionSplashEvent extends ProjectileHitEvent implements Cancellable
+         if (intensity <= 0.0) {
+             affectedEntities.remove(entity);
+         } else {
+-            affectedEntities.put(entity, Math.min(intensity, 1.0));
++            affectedEntities.put(entity, Double.valueOf(Math.min(intensity, 1.0)));
+         }
+     }
+ 
+diff --git a/src/main/java/org/bukkit/event/inventory/InventoryDragEvent.java b/src/main/java/org/bukkit/event/inventory/InventoryDragEvent.java
+index deef4e50872d02f572bf0db4d95ea727b3a029b8..beb05575bc540ed4b921c9179a507dddae0d3922 100644
+--- a/src/main/java/org/bukkit/event/inventory/InventoryDragEvent.java
++++ b/src/main/java/org/bukkit/event/inventory/InventoryDragEvent.java
+@@ -74,7 +74,7 @@ public class InventoryDragEvent extends InventoryInteractEvent {
+         this.addedItems = slots;
+         ImmutableSet.Builder<Integer> b = ImmutableSet.builder();
+         for (Integer slot : slots.keySet()) {
+-            b.add(what.convertSlot(slot));
++            b.add(Integer.valueOf(what.convertSlot(slot)));
+         }
+         this.containerSlots = b.build();
+     }
+diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
+index 56ba0a004f55a61841c64219823ada8378361272..2dd0e244c11a094e1befe4c02b0164f71d94abcd 100644
+--- a/src/main/java/org/bukkit/inventory/ItemStack.java
++++ b/src/main/java/org/bukkit/inventory/ItemStack.java
+@@ -461,11 +461,11 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
+     public Map<String, Object> serialize() {
+         Map<String, Object> result = new LinkedHashMap<String, Object>();
+ 
+-        result.put("v", Bukkit.getUnsafe().getDataVersion()); // Include version to indicate we are using modern material names (or LEGACY prefix)
++        result.put("v", Integer.valueOf(Bukkit.getUnsafe().getDataVersion())); // Include version to indicate we are using modern material names (or LEGACY prefix)
+         result.put("type", getType().name());
+ 
+         if (getAmount() != 1) {
+-            result.put("amount", getAmount());
++            result.put("amount", Integer.valueOf(getAmount()));
+         }
+ 
+         ItemMeta meta = getItemMeta();
+diff --git a/src/main/java/org/bukkit/inventory/ShapedRecipe.java b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
+index ddabcc344ebe5c6d114b0b576f211e68d8528b36..21d3d7e97db1f4a0c835b1695fb884add6518f80 100644
+--- a/src/main/java/org/bukkit/inventory/ShapedRecipe.java
++++ b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
+@@ -127,22 +127,22 @@ public class ShapedRecipe implements Recipe, Keyed {
+     @Deprecated
+     @NotNull
+     public ShapedRecipe setIngredient(char key, @NotNull Material ingredient, int raw) {
+-        Preconditions.checkArgument(ingredients.containsKey(key), "Symbol does not appear in the shape:", key);
++        Preconditions.checkArgument(ingredients.containsKey(Character.valueOf(key)), "Symbol does not appear in the shape:", key);
+ 
+         // -1 is the old wildcard, map to Short.MAX_VALUE as the new one
+         if (raw == -1) {
+             raw = Short.MAX_VALUE;
+         }
+ 
+-        ingredients.put(key, new RecipeChoice.MaterialChoice(Collections.singletonList(ingredient)));
++        ingredients.put(Character.valueOf(key), new RecipeChoice.MaterialChoice(Collections.singletonList(ingredient)));
+         return this;
+     }
+ 
+     @NotNull
+     public ShapedRecipe setIngredient(char key, @NotNull RecipeChoice ingredient) {
+-        Preconditions.checkArgument(ingredients.containsKey(key), "Symbol does not appear in the shape:", key);
++        Preconditions.checkArgument(ingredients.containsKey(Character.valueOf(key)), "Symbol does not appear in the shape:", key);
+ 
+-        ingredients.put(key, ingredient);
++        ingredients.put(Character.valueOf(key), ingredient);
+         return this;
+     }
+ 
+diff --git a/src/main/java/org/bukkit/map/MapFont.java b/src/main/java/org/bukkit/map/MapFont.java
+index 7c6404da755f2364e705038c2eb89eeb4f62bf50..4fab8d47f80b6bfc0a2289755be27611f2fdd745 100644
+--- a/src/main/java/org/bukkit/map/MapFont.java
++++ b/src/main/java/org/bukkit/map/MapFont.java
+@@ -26,7 +26,7 @@ public class MapFont {
+             throw new IllegalStateException("this font is not malleable");
+         }
+ 
+-        chars.put(ch, sprite);
++        chars.put(Character.valueOf(ch), sprite);
+         if (sprite.getHeight() > height) {
+             height = sprite.getHeight();
+         }
+@@ -41,7 +41,7 @@ public class MapFont {
+      */
+     @Nullable
+     public CharacterSprite getChar(char ch) {
+-        return chars.get(ch);
++        return chars.get(Character.valueOf(ch));
+     }
+ 
+     /**
+@@ -71,7 +71,7 @@ public class MapFont {
+                 }
+                 throw new IllegalArgumentException("Text contains unterminated color string");
+             }
+-            result += chars.get(ch).getWidth();
++            result += chars.get(Character.valueOf(ch)).getWidth();
+         }
+         result += text.length() - 1; // Account for 1px spacing between characters
+ 
+@@ -98,7 +98,7 @@ public class MapFont {
+         for (int i = 0; i < text.length(); ++i) {
+             char ch = text.charAt(i);
+             if (ch == ChatColor.COLOR_CHAR || ch == '\n') continue;
+-            if (chars.get(ch) == null) return false;
++            if (chars.get(Character.valueOf(ch)) == null) return false;
+         }
+         return true;
+     }
+diff --git a/src/main/java/org/bukkit/material/types/MushroomBlockTexture.java b/src/main/java/org/bukkit/material/types/MushroomBlockTexture.java
+index 3608108989162541389b386a0c1d561d10af5357..ed2dd5ed9f5b27f9d446028d0594236f461d5733 100644
+--- a/src/main/java/org/bukkit/material/types/MushroomBlockTexture.java
++++ b/src/main/java/org/bukkit/material/types/MushroomBlockTexture.java
+@@ -73,7 +73,7 @@ public enum MushroomBlockTexture {
+     private final BlockFace capFace;
+ 
+     private MushroomBlockTexture(final int data, /*@Nullable*/ final BlockFace capFace) {
+-        this.data = (byte) data;
++        this.data = Byte.valueOf((byte) data);
+         this.capFace = capFace;
+     }
+ 
+@@ -109,7 +109,7 @@ public enum MushroomBlockTexture {
+     @Deprecated
+     @Nullable
+     public static MushroomBlockTexture getByData(final byte data) {
+-        return BY_DATA.get(data);
++        return BY_DATA.get(Byte.valueOf(data));
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/permissions/Permission.java b/src/main/java/org/bukkit/permissions/Permission.java
+index 7af400cb1d714d5387da707db3b6133f707fb7f0..6c54c76892e356528c4c22905cfd58702cd62a9b 100644
+--- a/src/main/java/org/bukkit/permissions/Permission.java
++++ b/src/main/java/org/bukkit/permissions/Permission.java
+@@ -207,7 +207,7 @@ public class Permission {
+      * @param value The value to set this permission to
+      */
+     public void addParent(@NotNull Permission perm, boolean value) {
+-        perm.getChildren().put(getName(), value);
++        perm.getChildren().put(getName(), Boolean.valueOf(value));
+         perm.recalculatePermissibles();
+     }
+ 
+diff --git a/src/main/java/org/bukkit/permissions/PermissionAttachment.java b/src/main/java/org/bukkit/permissions/PermissionAttachment.java
+index 6d1e29c2a53e50910c8cac3b765bf9437a1ca6e3..35e9eda170eddaffafba159304087f7461bac63f 100644
+--- a/src/main/java/org/bukkit/permissions/PermissionAttachment.java
++++ b/src/main/java/org/bukkit/permissions/PermissionAttachment.java
+@@ -89,7 +89,7 @@ public class PermissionAttachment {
+      * @param value New value of the permission
+      */
+     public void setPermission(@NotNull String name, boolean value) {
+-        permissions.put(name.toLowerCase(java.util.Locale.ENGLISH), value);
++        permissions.put(name.toLowerCase(java.util.Locale.ENGLISH), Boolean.valueOf(value));
+         permissible.recalculatePermissions();
+     }
+ 
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42924d6e31 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -61,8 +61,8 @@ public final class SimplePluginManager implements PluginManager {
+         server = instance;
+         this.commandMap = commandMap;
+ 
+-        defaultPerms.put(true, new LinkedHashSet<Permission>());
+-        defaultPerms.put(false, new LinkedHashSet<Permission>());
++        defaultPerms.put(Boolean.TRUE, new LinkedHashSet<Permission>());
++        defaultPerms.put(Boolean.FALSE, new LinkedHashSet<Permission>());
+     }
+ 
+     /**
+@@ -638,8 +638,8 @@ public final class SimplePluginManager implements PluginManager {
+             HandlerList.unregisterAll();
+             fileAssociations.clear();
+             permissions.clear();
+-            defaultPerms.get(true).clear();
+-            defaultPerms.get(false).clear();
++            defaultPerms.get(Boolean.TRUE).clear();
++            defaultPerms.get(Boolean.FALSE).clear();
+         }
+     }
+     private void fireEvent(@NotNull Event event) { callEvent(event); } // Paper - support old method incase plugin uses reflection
+@@ -799,7 +799,7 @@ public final class SimplePluginManager implements PluginManager {
+     @Override
+     @NotNull
+     public Set<Permission> getDefaultPermissions(boolean op) {
+-        return ImmutableSet.copyOf(defaultPerms.get(op));
++        return ImmutableSet.copyOf(defaultPerms.get(Boolean.valueOf(op)));
+     }
+ 
+     @Override
+@@ -815,8 +815,8 @@ public final class SimplePluginManager implements PluginManager {
+     @Override
+     public void recalculatePermissionDefaults(@NotNull Permission perm) {
+         if (perm != null && permissions.containsKey(perm.getName().toLowerCase(java.util.Locale.ENGLISH))) {
+-            defaultPerms.get(true).remove(perm);
+-            defaultPerms.get(false).remove(perm);
++            defaultPerms.get(Boolean.TRUE).remove(perm);
++            defaultPerms.get(Boolean.FALSE).remove(perm);
+ 
+             calculatePermissionDefault(perm, true);
+         }
+@@ -824,13 +824,13 @@ public final class SimplePluginManager implements PluginManager {
+ 
+     private void calculatePermissionDefault(@NotNull Permission perm, boolean dirty) {
+         if ((perm.getDefault() == PermissionDefault.OP) || (perm.getDefault() == PermissionDefault.TRUE)) {
+-            defaultPerms.get(true).add(perm);
++            defaultPerms.get(Boolean.TRUE).add(perm);
+             if (dirty) {
+                 dirtyPermissibles(true);
+             }
+         }
+         if ((perm.getDefault() == PermissionDefault.NOT_OP) || (perm.getDefault() == PermissionDefault.TRUE)) {
+-            defaultPerms.get(false).add(perm);
++            defaultPerms.get(Boolean.FALSE).add(perm);
+             if (dirty) {
+                 dirtyPermissibles(false);
+             }
+@@ -861,7 +861,7 @@ public final class SimplePluginManager implements PluginManager {
+             permSubs.put(name, map);
+         }
+ 
+-        map.put(permissible, true);
++        map.put(permissible, Boolean.TRUE);
+     }
+ 
+     @Override
+@@ -893,25 +893,25 @@ public final class SimplePluginManager implements PluginManager {
+ 
+     @Override
+     public void subscribeToDefaultPerms(boolean op, @NotNull Permissible permissible) {
+-        Map<Permissible, Boolean> map = defSubs.get(op);
++        Map<Permissible, Boolean> map = defSubs.get(Boolean.valueOf(op));
+ 
+         if (map == null) {
+             map = new WeakHashMap<Permissible, Boolean>();
+-            defSubs.put(op, map);
++            defSubs.put(Boolean.valueOf(op), map);
+         }
+ 
+-        map.put(permissible, true);
++        map.put(permissible, Boolean.TRUE);
+     }
+ 
+     @Override
+     public void unsubscribeFromDefaultPerms(boolean op, @NotNull Permissible permissible) {
+-        Map<Permissible, Boolean> map = defSubs.get(op);
++        Map<Permissible, Boolean> map = defSubs.get(Boolean.valueOf(op));
+ 
+         if (map != null) {
+             map.remove(permissible);
+ 
+             if (map.isEmpty()) {
+-                defSubs.remove(op);
++                defSubs.remove(Boolean.valueOf(op));
+             }
+         }
+     }
+@@ -919,7 +919,7 @@ public final class SimplePluginManager implements PluginManager {
+     @Override
+     @NotNull
+     public Set<Permissible> getDefaultPermSubscriptions(boolean op) {
+-        Map<Permissible, Boolean> map = defSubs.get(op);
++        Map<Permissible, Boolean> map = defSubs.get(Boolean.valueOf(op));
+ 
+         if (map == null) {
+             return ImmutableSet.of();
+@@ -969,8 +969,8 @@ public final class SimplePluginManager implements PluginManager {
+     // Paper start
+     public void clearPermissions() {
+         permissions.clear();
+-        defaultPerms.get(true).clear();
+-        defaultPerms.get(false).clear();
++        defaultPerms.get(Boolean.TRUE).clear();
++        defaultPerms.get(Boolean.FALSE).clear();
+     }
+     // Paper end
+ 
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+index 7b9470a434dd2bed01eec2317f7582ddfd08326a..40b2a4692779fae04de7f2b7e735cdef34f880a9 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+@@ -219,7 +219,7 @@ public final class JavaPluginLoader implements PluginLoader {
+         java.util.concurrent.locks.ReentrantReadWriteLock lock;
+         synchronized (classLoadLock) {
+             lock = classLoadLock.computeIfAbsent(name, (x) -> new java.util.concurrent.locks.ReentrantReadWriteLock());
+-            classLoadLockCount.compute(name, (x, prev) -> prev != null ? prev + 1 : 1);
++            classLoadLockCount.compute(name, (x, prev) -> Integer.valueOf(prev != null ? prev + 1 : 1));
+         }
+         lock.writeLock().lock();try {
+             // Paper start - prioritize self
+@@ -244,7 +244,7 @@ public final class JavaPluginLoader implements PluginLoader {
+                     classLoadLock.remove(name);
+                     classLoadLockCount.remove(name);
+                 } else {
+-                    classLoadLockCount.compute(name, (x, prev) -> prev - 1);
++                    classLoadLockCount.compute(name, (x, prev) -> Integer.valueOf(prev - 1));
+                 }
+             }
+         }
+diff --git a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
+index 1ea4a3dc6f258aa61a2482f512fb977a240aac7b..30dd1637458780bfb045f4bd46f0db912b408e89 100644
+--- a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
+@@ -79,7 +79,7 @@ class LibraryLoader
+         }
+         logger.log( Level.INFO, "[{0}] Loading {1} libraries... please wait", new Object[]
+         {
+-            desc.getName(), desc.getLibraries().size()
++            desc.getName(), Integer.valueOf(desc.getLibraries().size())
+         } );
+ 
+         List<Dependency> dependencies = new ArrayList<>();
+diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+index 4d8894f4775c46254048d5bdd60b8aba5b744cfc..57017530704f3a3e9c46b6d354e7c1887288651a 100644
+--- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+@@ -268,7 +268,7 @@ public final class PluginClassLoader extends URLClassLoader { // Spigot
+         JavaPlugin currPlugin = plugin != null ? plugin : pluginInit;
+         return "PluginClassLoader{" +
+                    "plugin=" + currPlugin +
+-                   ", pluginEnabled=" + (currPlugin == null ? "uninitialized" : currPlugin.isEnabled()) +
++                   ", pluginEnabled=" + (currPlugin == null ? "uninitialized" : Boolean.valueOf(currPlugin.isEnabled())) +
+                    ", url=" + file +
+                    '}';
+     }
+diff --git a/src/main/java/org/bukkit/potion/PotionEffect.java b/src/main/java/org/bukkit/potion/PotionEffect.java
+index a6d766555f664626dd390ed7db350ca47af7b636..4797e071ce5b008e0fcd6d8a68ac3267b3139c43 100644
+--- a/src/main/java/org/bukkit/potion/PotionEffect.java
++++ b/src/main/java/org/bukkit/potion/PotionEffect.java
+@@ -158,12 +158,12 @@ public class PotionEffect implements ConfigurationSerializable {
+     @NotNull
+     public Map<String, Object> serialize() {
+         return ImmutableMap.<String, Object>builder()
+-            .put(TYPE, type.getId())
+-            .put(DURATION, duration)
+-            .put(AMPLIFIER, amplifier)
+-            .put(AMBIENT, ambient)
+-            .put(PARTICLES, particles)
+-            .put(ICON, icon)
++            .put(TYPE, Integer.valueOf(type.getId()))
++            .put(DURATION, Integer.valueOf(duration))
++            .put(AMPLIFIER, Integer.valueOf(amplifier))
++            .put(AMBIENT, Boolean.valueOf(ambient))
++            .put(PARTICLES, Boolean.valueOf(particles))
++            .put(ICON, Boolean.valueOf(icon))
+             .build();
+     }
+ 
+diff --git a/src/main/java/org/bukkit/util/BoundingBox.java b/src/main/java/org/bukkit/util/BoundingBox.java
+index 35463c4a57c23489d3182480e921f48f4c71c209..322b950db20067d90a14c5e1de686fb130e3b73c 100644
+--- a/src/main/java/org/bukkit/util/BoundingBox.java
++++ b/src/main/java/org/bukkit/util/BoundingBox.java
+@@ -1024,12 +1024,12 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
+     @Override
+     public Map<String, Object> serialize() {
+         Map<String, Object> result = new LinkedHashMap<String, Object>();
+-        result.put("minX", minX);
+-        result.put("minY", minY);
+-        result.put("minZ", minZ);
+-        result.put("maxX", maxX);
+-        result.put("maxY", maxY);
+-        result.put("maxZ", maxZ);
++        result.put("minX", Double.valueOf(minX));
++        result.put("minY", Double.valueOf(minY));
++        result.put("minZ", Double.valueOf(minZ));
++        result.put("maxX", Double.valueOf(maxX));
++        result.put("maxY", Double.valueOf(maxY));
++        result.put("maxZ", Double.valueOf(maxZ));
+         return result;
+     }
+ 
+diff --git a/src/main/java/org/bukkit/util/Vector.java b/src/main/java/org/bukkit/util/Vector.java
+index 8b102ab7b1e30b688b884b74cad7be37eacf4574..16264877779a470d60c8ed1b18814efc811ce98a 100644
+--- a/src/main/java/org/bukkit/util/Vector.java
++++ b/src/main/java/org/bukkit/util/Vector.java
+@@ -865,9 +865,9 @@ public class Vector implements Cloneable, ConfigurationSerializable {
+     public Map<String, Object> serialize() {
+         Map<String, Object> result = new LinkedHashMap<String, Object>();
+ 
+-        result.put("x", getX());
+-        result.put("y", getY());
+-        result.put("z", getZ());
++        result.put("x", Double.valueOf(getX()));
++        result.put("y", Double.valueOf(getY()));
++        result.put("z", Double.valueOf(getZ()));
+ 
+         return result;
+     }
+diff --git a/src/main/java/org/bukkit/util/permissions/DefaultPermissions.java b/src/main/java/org/bukkit/util/permissions/DefaultPermissions.java
+index e1a4ddf2c07cdd242fa8054a0152522fe4039e85..9e0326cf85324223ab543a352f87bef7bc2008ae 100644
+--- a/src/main/java/org/bukkit/util/permissions/DefaultPermissions.java
++++ b/src/main/java/org/bukkit/util/permissions/DefaultPermissions.java
+@@ -31,7 +31,7 @@ public final class DefaultPermissions {
+ 
+         if (withLegacy) {
+             Permission legacy = new Permission(LEGACY_PREFIX + result.getName(), result.getDescription(), PermissionDefault.FALSE);
+-            legacy.getChildren().put(result.getName(), true);
++            legacy.getChildren().put(result.getName(), Boolean.TRUE);
+             registerPermission(perm, false);
+         }
+ 
+@@ -40,7 +40,7 @@ public final class DefaultPermissions {
+ 
+     @NotNull
+     public static Permission registerPermission(@NotNull Permission perm, @NotNull Permission parent) {
+-        parent.getChildren().put(perm.getName(), true);
++        parent.getChildren().put(perm.getName(), Boolean.TRUE);
+         return registerPermission(perm);
+     }
+ 
+@@ -53,7 +53,7 @@ public final class DefaultPermissions {
+     @NotNull
+     public static Permission registerPermission(@NotNull String name, @Nullable String desc, @NotNull Permission parent) {
+         Permission perm = registerPermission(name, desc);
+-        parent.getChildren().put(perm.getName(), true);
++        parent.getChildren().put(perm.getName(), Boolean.TRUE);
+         return perm;
+     }
+ 
+@@ -66,7 +66,7 @@ public final class DefaultPermissions {
+     @NotNull
+     public static Permission registerPermission(@NotNull String name, @Nullable String desc, @Nullable PermissionDefault def, @NotNull Permission parent) {
+         Permission perm = registerPermission(name, desc, def);
+-        parent.getChildren().put(perm.getName(), true);
++        parent.getChildren().put(perm.getName(), Boolean.TRUE);
+         return perm;
+     }
+ 
+@@ -79,7 +79,7 @@ public final class DefaultPermissions {
+     @NotNull
+     public static Permission registerPermission(@NotNull String name, @Nullable String desc, @Nullable PermissionDefault def, @Nullable Map<String, Boolean> children, @NotNull Permission parent) {
+         Permission perm = registerPermission(name, desc, def, children);
+-        parent.getChildren().put(perm.getName(), true);
++        parent.getChildren().put(perm.getName(), Boolean.TRUE);
+         return perm;
+     }
+ 

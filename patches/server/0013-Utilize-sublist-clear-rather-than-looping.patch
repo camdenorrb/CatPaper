@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:04:59 -0500
+Subject: [PATCH] Utilize sublist clear rather than looping
+
+
+diff --git a/src/main/java/io/papermc/paper/util/PoiAccess.java b/src/main/java/io/papermc/paper/util/PoiAccess.java
+index e3b7440173a243c11fe0a915a52f9b1a6194cd2b..e77e5127adf9b2906510f541463b6da071ed37b6 100644
+--- a/src/main/java/io/papermc/paper/util/PoiAccess.java
++++ b/src/main/java/io/papermc/paper/util/PoiAccess.java
+@@ -650,8 +650,8 @@ public final class PoiAccess {
+         });
+ 
+         // trim out any entries exceeding our maximum
+-        for (int i = closestRecordsUnsorted.size() - 1; i >= max; --i) {
+-            closestRecordsUnsorted.remove(i);
++        if (closestRecordsUnsorted.size() > max) {
++            closestRecordsUnsorted.subList(max, closestRecordsUnsorted.size()).clear();
+         }
+ 
+         // now we match perfectly what vanilla would have outputted, without having to search the whole radius (hopefully).

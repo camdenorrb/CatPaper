@@ -1,0 +1,134 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:12:28 -0500
+Subject: [PATCH] Simplify steam api chain
+
+
+diff --git a/src/main/java/ca/spottedleaf/starlight/common/light/BlockStarLightEngine.java b/src/main/java/ca/spottedleaf/starlight/common/light/BlockStarLightEngine.java
+index e6e91ef20e78a213a377bf3d2bb8b2c3e02c611a..f1acb5bb30156848b5442eef21218555c09b7c2d 100644
+--- a/src/main/java/ca/spottedleaf/starlight/common/light/BlockStarLightEngine.java
++++ b/src/main/java/ca/spottedleaf/starlight/common/light/BlockStarLightEngine.java
+@@ -241,7 +241,7 @@ public final class BlockStarLightEngine extends StarLightEngine {
+             // the missing sources from checkBlock.
+             for (;;) {
+                 try {
+-                    return chunk.getLights().collect(Collectors.toList()).iterator();
++                    return chunk.getLights().toList().iterator();
+                 } catch (final Exception cme) {
+                     continue;
+                 }
+diff --git a/src/main/java/com/mojang/brigadier/CommandDispatcher.java b/src/main/java/com/mojang/brigadier/CommandDispatcher.java
+index 494131fdca607dc14eb24c974af89082b8eced90..5174eb4d16b20b751ce583735f707af8a268580d 100644
+--- a/src/main/java/com/mojang/brigadier/CommandDispatcher.java
++++ b/src/main/java/com/mojang/brigadier/CommandDispatcher.java
+@@ -525,7 +525,7 @@ public class CommandDispatcher<S> {
+                 final String redirect = node.getRedirect() == this.root ? "..." : "-> " + node.getRedirect().getUsageText();
+                 return self + CommandDispatcher.ARGUMENT_SEPARATOR + redirect;
+             } else {
+-                final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
++                final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).toList();
+                 if (children.size() == 1) {
+                     final String usage = this.getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
+                     if (usage != null) {
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 0e0018941da6410b19d62c2ee0351899a36de7aa..b3aaf4ae5a666627c8b28266d685daa28c4136ec 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -610,7 +610,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+         // Paper start - Handle collideRule team for player collision toggle
+         final ServerScoreboard scoreboard = this.getScoreboard();
+-        final java.util.Collection<String> toRemove = scoreboard.getPlayerTeams().stream().filter(team -> team.getName().startsWith("collideRule_")).map(net.minecraft.world.scores.PlayerTeam::getName).collect(java.util.stream.Collectors.toList());
++        final java.util.Collection<String> toRemove = scoreboard.getPlayerTeams().stream().map(net.minecraft.world.scores.PlayerTeam::getName).filter(name -> name.startsWith("collideRule_")).toList();
+         for (String teamName : toRemove) {
+             scoreboard.removePlayerTeam(scoreboard.getPlayerTeam(teamName)); // Clean up after ourselves
+         }
+diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
+index 872ec842d7917f469afea151246d73e6874f486d..9bf631d7d8cd32dd24255d5f6cc750b0a34766b4 100644
+--- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
++++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
+@@ -175,7 +175,7 @@ public class PlayerAdvancements {
+                     }
+ 
+                     Stream<Entry<ResourceLocation, AdvancementProgress>> stream = map.entrySet().stream().sorted(Entry.comparingByValue());
+-                    Iterator iterator = ((List) stream.collect(Collectors.toList())).iterator();
++                    Iterator iterator = ((List) stream.toList()).iterator();
+ 
+                     while (iterator.hasNext()) {
+                         Entry<ResourceLocation, AdvancementProgress> entry = (Entry) iterator.next();
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 05095585a59de08fc0e7acf673f27e9a625981eb..bbeb35042b2a19628bfc44a53b153d1ab36bd293 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -787,7 +787,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+     private void wakeUpAllPlayers() {
+         this.sleepStatus.removeAllSleepers();
+-        (this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList())).forEach((entityplayer) -> { // CraftBukkit - decompile error
++        (this.players.stream().filter(LivingEntity::isSleeping).toList()).forEach((entityplayer) -> { // CraftBukkit - decompile error
+             entityplayer.stopSleepInBed(false, false);
+         });
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
+index 46e2ee430c5a7b5634bc6295fcd01c5ed32e2deb..953ca6f8f8742c043aad0c6afaea11b86cba5381 100644
+--- a/src/main/java/net/minecraft/world/entity/Mob.java
++++ b/src/main/java/net/minecraft/world/entity/Mob.java
+@@ -778,7 +778,7 @@ public abstract class Mob extends LivingEntity {
+     public static boolean canReplaceEqualItem(ItemStack newStack, ItemStack oldStack) {
+         return newStack.getDamageValue() >= oldStack.getDamageValue() && (!newStack.hasTag() || oldStack.hasTag()) ? (newStack.hasTag() && oldStack.hasTag() ? newStack.getTag().getAllKeys().stream().anyMatch((s) -> {
+             return !s.equals("Damage");
+-        }) && !oldStack.getTag().getAllKeys().stream().anyMatch((s) -> {
++        }) && oldStack.getTag().getAllKeys().stream().noneMatch((s) -> {
+             return !s.equals("Damage");
+         }) : false) : true;
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
+index 82a95e83d5005f6e6092960e8b21306a999bf060..1a61602b969109f7c71264eba0409ead85a91e68 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
+@@ -43,7 +43,7 @@ public class TemptingSensor extends Sensor<PathfinderMob> {
+         }).filter(this::playerHoldingTemptation);
+ 
+         Objects.requireNonNull(entity);
+-        List<Player> list = stream.sorted(Comparator.comparingDouble(entity::distanceToSqr)).collect(Collectors.toList());
++        List<Player> list = stream.sorted(Comparator.comparingDouble(entity::distanceToSqr)).toList();
+ 
+         if (!list.isEmpty()) {
+             Player entityhuman = list.get(0);
+diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+index c445d0ab2d26e10feb34e9801b44753fb30a1a58..36ae251326d00da80b33822d895e091bf1d7a7e0 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+@@ -959,7 +959,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+             List<Villager> list = world.getEntitiesOfClass(Villager.class, axisalignedbb);
+             List<Villager> list1 = list.stream().filter((entityvillager) -> {
+                 return entityvillager.wantsToSpawnGolem(time);
+-            }).limit(5L).collect(Collectors.toList());
++            }).limit(5L).toList();
+ 
+             if (list1.size() >= requiredCount) {
+                 if (SpawnUtil.trySpawnMob(EntityType.IRON_GOLEM, MobSpawnType.MOB_SUMMONED, world, this.blockPosition(), 10, 8, 6, SpawnUtil.Strategy.LEGACY_IRON_GOLEM, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE, () -> {GolemSensor.golemDetected(this);}).isPresent()) { // CraftBukkit // Paper - Set Golem Last Seen to stop it from spawning another one
+diff --git a/src/main/java/net/minecraft/world/entity/npc/VillagerTrades.java b/src/main/java/net/minecraft/world/entity/npc/VillagerTrades.java
+index bfa308406d0fe5c55ed535dda45972ca1f3d00af..d616dd6f232b20985f269e065f967a70f54d7cbc 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/VillagerTrades.java
++++ b/src/main/java/net/minecraft/world/entity/npc/VillagerTrades.java
+@@ -185,7 +185,7 @@ public class VillagerTrades {
+ 
+         @Override
+         public MerchantOffer getOffer(Entity entity, RandomSource random) {
+-            List<Enchantment> list = Registry.ENCHANTMENT.stream().filter(Enchantment::isTradeable).collect(Collectors.toList());
++            List<Enchantment> list = Registry.ENCHANTMENT.stream().filter(Enchantment::isTradeable).toList();
+             Enchantment enchantment = list.get(random.nextInt(list.size()));
+             int i = Mth.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
+             ItemStack itemStack = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i));
+@@ -355,8 +355,8 @@ public class VillagerTrades {
+         public MerchantOffer getOffer(Entity entity, RandomSource random) {
+             ItemStack itemStack = new ItemStack(Items.EMERALD, this.emeraldCost);
+             List<Potion> list = Registry.POTION.stream().filter((potionx) -> {
+-                return !potionx.getEffects().isEmpty() && PotionBrewing.isBrewablePotion(potionx);
+-            }).collect(Collectors.toList());
++	            return !potionx.getEffects().isEmpty() && PotionBrewing.isBrewablePotion(potionx);
++            }).toList();
+             Potion potion = list.get(random.nextInt(list.size()));
+             ItemStack itemStack2 = PotionUtils.setPotion(new ItemStack(this.toItem.getItem(), this.toCount), potion);
+             return new MerchantOffer(itemStack, new ItemStack(this.fromItem, this.fromCount), itemStack2, this.maxUses, this.villagerXp, this.priceMultiplier);

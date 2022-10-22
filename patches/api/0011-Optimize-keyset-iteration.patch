@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:04:11 -0500
+Subject: [PATCH] Optimize keyset iteration
+
+
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index 5ab93237a4dab733fb28df95d018158b69719e6c..d6b45f96841ce956fb8092228ddc14147c88fc17 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -121,7 +121,6 @@ public final class SimplePluginManager implements PluginManager {
+         Preconditions.checkArgument(directory.isDirectory(), "Directory must be a directory");
+ 
+         List<Plugin> result = new ArrayList<Plugin>();
+-        Set<Pattern> filters = fileAssociations.keySet();
+ 
+         if (!(server.getUpdateFolder().equals(""))) {
+             updateDirectory = new File(directory, server.getUpdateFolder());
+@@ -141,10 +140,10 @@ public final class SimplePluginManager implements PluginManager {
+             if (file.getName().startsWith(".") && !extraPluginJars.contains(file)) continue; // Don't load plugin if the file name starts with a dot, except if it's a extra plugin jar.
+             // Paper end
+             PluginLoader loader = null;
+-            for (Pattern filter : filters) {
+-                Matcher match = filter.matcher(file.getName());
++            for (final Map.Entry<Pattern, PluginLoader> entry : fileAssociations.entrySet()) {
++                Matcher match = entry.getKey().matcher(file.getName());
+                 if (match.find()) {
+-                    loader = fileAssociations.get(filter);
++                    loader = entry.getValue();
+                 }
+             }
+ 
+@@ -398,15 +397,14 @@ public final class SimplePluginManager implements PluginManager {
+ 
+         file = checkUpdate(file); // Paper - update the reference in case checkUpdate renamed it
+ 
+-        Set<Pattern> filters = fileAssociations.keySet();
+         Plugin result = null;
+ 
+-        for (Pattern filter : filters) {
++        for (final Map.Entry<Pattern, PluginLoader> entry : fileAssociations.entrySet()) {
+             String name = file.getName();
+-            Matcher match = filter.matcher(name);
++            Matcher match = entry.getKey().matcher(name);
+ 
+             if (match.find()) {
+-                PluginLoader loader = fileAssociations.get(filter);
++                PluginLoader loader = entry.getValue();
+ 
+                 result = loader.loadPlugin(file);
+             }
+@@ -468,11 +466,10 @@ public final class SimplePluginManager implements PluginManager {
+ 
+     @Nullable
+     private PluginLoader getPluginLoader(@NotNull File file) {
+-        Set<Pattern> filters = fileAssociations.keySet();
+-        for (Pattern filter : filters) {
+-            Matcher match = filter.matcher(file.getName());
++        for (final Map.Entry<Pattern, PluginLoader> entry : fileAssociations.entrySet()) {
++            Matcher match = entry.getKey().matcher(file.getName());
+             if (match.find()) {
+-                return fileAssociations.get(filter);
++                return entry.getValue();
+             }
+         }
+         return null;

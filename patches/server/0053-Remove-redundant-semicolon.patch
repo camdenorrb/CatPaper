@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 04:14:48 -0500
+Subject: [PATCH] Remove redundant semicolon
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 2e1eb7e61aec70120f3e26b0de784193f83e5040..028a96b7723f86fd837bd2618b080de605b776e7 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -60,7 +60,7 @@ dependencies {
+     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
+     testImplementation("org.hamcrest:hamcrest-library:2.2")
+ 
+-    implementation("io.netty:netty-all:4.1.84.Final"); // Paper - Bump netty
++    implementation("io.netty:netty-all:4.1.84.Final") // Paper - Bump netty
+ }
+ 
+ val craftbukkitPackageVersion = "1_19_R1" // Paper

@@ -1,0 +1,149 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:01:58 -0500
+Subject: [PATCH] Simplify array size
+
+
+diff --git a/src/main/java/co/aikar/timings/TimingHistory.java b/src/main/java/co/aikar/timings/TimingHistory.java
+index 1e74db13757e898f088167df8b634c345c339e5e..49186b4fcb81b284cebb57052b208bc8c17a4be6 100644
+--- a/src/main/java/co/aikar/timings/TimingHistory.java
++++ b/src/main/java/co/aikar/timings/TimingHistory.java
+@@ -84,7 +84,7 @@ public class TimingHistory {
+             this.minuteReports = MINUTE_REPORTS.toArray(new MinuteReport[MINUTE_REPORTS.size() + 1]);
+             this.minuteReports[this.minuteReports.length - 1] = new MinuteReport();
+         } else {
+-            this.minuteReports = MINUTE_REPORTS.toArray(new MinuteReport[MINUTE_REPORTS.size()]);
++            this.minuteReports = MINUTE_REPORTS.toArray(new MinuteReport[0]);
+         }
+         long ticks = 0;
+         for (MinuteReport mp : this.minuteReports) {
+diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
+index d417b98581cdfa1654307e424be6cfe4f17ea00a..e6e2e680ab68f281a7cac3ad62e5e95f4b23d0e0 100644
+--- a/src/main/java/org/bukkit/GameRule.java
++++ b/src/main/java/org/bukkit/GameRule.java
+@@ -286,7 +286,7 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+      */
+     @NotNull
+     public static GameRule<?> @NotNull [] values() {
+-        return gameRules.values().toArray(new GameRule<?>[gameRules.size()]);
++        return gameRules.values().toArray(new GameRule<?>[0]);
+     }
+ 
+     // Paper start
+diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
+index 832867887f99ce31fefe1f3c9225126bdc34b1c4..ec6f398f007c607edb50b0b335ee0f8516325585 100644
+--- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
++++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
+@@ -287,7 +287,7 @@ public class SimpleCommandMap implements CommandMap {
+ 
+             // We register these as commands so they have absolute priority.
+             if (targets.size() > 0) {
+-                knownCommands.put(alias.toLowerCase(java.util.Locale.ENGLISH), new FormattedCommandAlias(alias.toLowerCase(java.util.Locale.ENGLISH), targets.toArray(new String[targets.size()])));
++                knownCommands.put(alias.toLowerCase(java.util.Locale.ENGLISH), new FormattedCommandAlias(alias.toLowerCase(java.util.Locale.ENGLISH), targets.toArray(new String[0])));
+             } else {
+                 knownCommands.remove(alias.toLowerCase(java.util.Locale.ENGLISH));
+             }
+diff --git a/src/main/java/org/bukkit/enchantments/Enchantment.java b/src/main/java/org/bukkit/enchantments/Enchantment.java
+index 4360347c61b3b969d551e5a82c4d580e02b06722..e9425309bcfb352c242702634858ab718bd80548 100644
+--- a/src/main/java/org/bukkit/enchantments/Enchantment.java
++++ b/src/main/java/org/bukkit/enchantments/Enchantment.java
+@@ -441,6 +441,6 @@ public abstract class Enchantment implements Keyed, net.kyori.adventure.translat
+      */
+     @NotNull
+     public static Enchantment @NotNull [] values() {
+-        return byName.values().toArray(new Enchantment[byName.size()]);
++        return byName.values().toArray(new Enchantment[0]);
+     }
+ }
+diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
+index 839917c466163a0d58c4472105e4e85a8fdce73c..fe60c6e7c474bf21c98e331f13e214e10e9e3107 100644
+--- a/src/main/java/org/bukkit/event/HandlerList.java
++++ b/src/main/java/org/bukkit/event/HandlerList.java
+@@ -184,7 +184,7 @@ public class HandlerList {
+         for (Entry<EventPriority, ArrayList<RegisteredListener>> entry : handlerslots.entrySet()) {
+             entries.addAll(entry.getValue());
+         }
+-        handlers = entries.toArray(new RegisteredListener[entries.size()]);
++        handlers = entries.toArray(new RegisteredListener[0]);
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index e916436b710b9ab1044e3f71b311ee42924d6e31..5ab93237a4dab733fb28df95d018158b69719e6c 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -376,7 +376,7 @@ public final class SimplePluginManager implements PluginManager {
+             }
+         }
+ 
+-        return result.toArray(new Plugin[result.size()]);
++        return result.toArray(new Plugin[0]);
+     }
+ 
+     /**
+@@ -496,7 +496,7 @@ public final class SimplePluginManager implements PluginManager {
+     @Override
+     @NotNull
+     public synchronized Plugin @NotNull [] getPlugins() {
+-        return plugins.toArray(new Plugin[plugins.size()]);
++        return plugins.toArray(new Plugin[0]);
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
+index 7d9c00f8fc58ae3eade0e0eabf08c665a0df0e12..786b2f7e1295b9f4f517558b4125893fe7b4bd51 100644
+--- a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
+@@ -122,7 +122,7 @@ class LibraryLoader
+             } );
+         }
+ 
+-        URLClassLoader loader = new URLClassLoader( jarFiles.toArray( new URL[ jarFiles.size() ] ), getClass().getClassLoader() );
++        URLClassLoader loader = new URLClassLoader( jarFiles.toArray(new URL[0]), getClass().getClassLoader() );
+ 
+         return loader;
+     }
+diff --git a/src/main/java/org/bukkit/plugin/messaging/StandardMessenger.java b/src/main/java/org/bukkit/plugin/messaging/StandardMessenger.java
+index 9cff8e93032d732df3c70ed19d9611cba1c76f59..7a5da262c58c6439de8f1fac40739b161ff31f16 100644
+--- a/src/main/java/org/bukkit/plugin/messaging/StandardMessenger.java
++++ b/src/main/java/org/bukkit/plugin/messaging/StandardMessenger.java
+@@ -73,7 +73,7 @@ public class StandardMessenger implements Messenger {
+             Set<String> channels = outgoingByPlugin.get(plugin);
+ 
+             if (channels != null) {
+-                String[] toRemove = channels.toArray(new String[channels.size()]);
++                String[] toRemove = channels.toArray(new String[0]);
+ 
+                 outgoingByPlugin.remove(plugin);
+ 
+@@ -143,7 +143,7 @@ public class StandardMessenger implements Messenger {
+             Set<PluginMessageListenerRegistration> registrations = incomingByPlugin.get(plugin);
+ 
+             if (registrations != null) {
+-                PluginMessageListenerRegistration[] toRemove = registrations.toArray(new PluginMessageListenerRegistration[registrations.size()]);
++                PluginMessageListenerRegistration[] toRemove = registrations.toArray(new PluginMessageListenerRegistration[0]);
+ 
+                 for (PluginMessageListenerRegistration registration : toRemove) {
+                     if (registration.getChannel().equals(channel)) {
+@@ -159,7 +159,7 @@ public class StandardMessenger implements Messenger {
+             Set<PluginMessageListenerRegistration> registrations = incomingByPlugin.get(plugin);
+ 
+             if (registrations != null) {
+-                PluginMessageListenerRegistration[] toRemove = registrations.toArray(new PluginMessageListenerRegistration[registrations.size()]);
++                PluginMessageListenerRegistration[] toRemove = registrations.toArray(new PluginMessageListenerRegistration[0]);
+ 
+                 incomingByPlugin.remove(plugin);
+ 
+diff --git a/src/main/java/org/bukkit/util/ChatPaginator.java b/src/main/java/org/bukkit/util/ChatPaginator.java
+index 409116796f6159b74bc485870ee89c119e422d6f..e4bc5e065ce2187cf2e09a8afb125fba490a6c41 100644
+--- a/src/main/java/org/bukkit/util/ChatPaginator.java
++++ b/src/main/java/org/bukkit/util/ChatPaginator.java
+@@ -139,7 +139,7 @@ public class ChatPaginator {
+             lines.set(i, color + subLine);
+         }
+ 
+-        return lines.toArray(new String[lines.size()]);
++        return lines.toArray(new String[0]);
+     }
+ 
+     public static class ChatPage {

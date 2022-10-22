@@ -1,0 +1,84 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 02:59:10 -0500
+Subject: [PATCH] Simplify Arrays.asList
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+index 0df9ba225ff1bc7e605545c5dabf7eeaf09af467..cb4a14e1cbcc1bd1cfbb559a4b179fee66fb54c3 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+@@ -450,7 +450,7 @@ public abstract class AbstractArrow extends Projectile {
+                     if (this.piercedAndKilledEntities != null && this.shotFromCrossbow()) {
+                         CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(entityplayer, (Collection) this.piercedAndKilledEntities);
+                     } else if (!entity.isAlive() && this.shotFromCrossbow()) {
+-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(entityplayer, (Collection) Arrays.asList(entity));
++                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(entityplayer, (Collection) List.of(entity));
+                     }
+                 }
+             }
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/LecternBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/LecternBlockEntity.java
+index cbe0749b4ce57a773c2a0f56fcf0eaac33424372..c157be4c92343ef14b6496ae5f532d8ace9470aa 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/LecternBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/LecternBlockEntity.java
+@@ -50,7 +50,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, MenuPr
+ 
+         @Override
+         public List<ItemStack> getContents() {
+-            return Arrays.asList(book);
++            return List.of(book);
+         }
+ 
+         @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index 912c5ed715cdc28e6d01b1958bf0b959b7ed9aa2..b02f00eee359fbd14b4694f5088d3e23a9db57e2 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -2,11 +2,9 @@ package org.bukkit.craftbukkit.entity;
+ 
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.ImmutableSet;
+-import java.util.ArrayList;
+-import java.util.Arrays;
+-import java.util.Collection;
+-import java.util.Optional;
+-import java.util.Set;
++
++import java.util.*;
++
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.network.chat.Component;
+@@ -641,7 +639,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+ 
+     @Override
+     public boolean discoverRecipe(NamespacedKey recipe) {
+-        return this.discoverRecipes(Arrays.asList(recipe)) != 0;
++        return this.discoverRecipes(Collections.singletonList(recipe)) != 0;
+     }
+ 
+     @Override
+@@ -651,7 +649,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+ 
+     @Override
+     public boolean undiscoverRecipe(NamespacedKey recipe) {
+-        return this.undiscoverRecipes(Arrays.asList(recipe)) != 0;
++        return this.undiscoverRecipes(Collections.singletonList(recipe)) != 0;
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index eeb8bf7f355fc43e6976e872cff8ac1b9c939f2e..9a4f7db8723d8920eb09d3351bc11c5a1020ed99 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1100,8 +1100,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+         if (this.getHandle().connection == null) return;
+ 
+-        List<Pair<net.minecraft.world.entity.EquipmentSlot, net.minecraft.world.item.ItemStack>> equipment = Arrays.asList(
+-                new Pair<>(CraftEquipmentSlot.getNMS(slot), CraftItemStack.asNMSCopy(item))
++        List<Pair<net.minecraft.world.entity.EquipmentSlot, net.minecraft.world.item.ItemStack>> equipment = List.of(
++            new Pair<>(CraftEquipmentSlot.getNMS(slot), CraftItemStack.asNMSCopy(item))
+         );
+ 
+         this.getHandle().connection.send(new ClientboundSetEquipmentPacket(entity.getEntityId(), equipment));

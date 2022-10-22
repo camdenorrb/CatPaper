@@ -1,0 +1,368 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 02:56:33 -0500
+Subject: [PATCH] Auto unboxing
+
+
+diff --git a/src/main/java/co/aikar/timings/TimingHistory.java b/src/main/java/co/aikar/timings/TimingHistory.java
+index e4f420614cd18196161be36226264e38784793a0..1e74db13757e898f088167df8b634c345c339e5e 100644
+--- a/src/main/java/co/aikar/timings/TimingHistory.java
++++ b/src/main/java/co/aikar/timings/TimingHistory.java
+@@ -129,7 +129,7 @@ public class TimingHistory {
+                     }
+                 }
+                 return pair(
+-                    worldMap.get(world.getName()),
++                    worldMap.get(world.getName()).longValue(),
+                     toArrayMapper(regions.values(),new Function<RegionData, Object>() {
+                         @NotNull
+                         @Override
+diff --git a/src/main/java/co/aikar/util/Counter.java b/src/main/java/co/aikar/util/Counter.java
+index 140cc5c5ae6ac5d9776dfaab5307530a91ab823c..51d51a82cedc7f5d13ae5a1e19463740d81035d0 100644
+--- a/src/main/java/co/aikar/util/Counter.java
++++ b/src/main/java/co/aikar/util/Counter.java
+@@ -21,13 +21,13 @@ public class Counter <T> extends ForwardingMap<T, Long> {
+     }
+     public long increment(@Nullable T key, long amount) {
+         Long count = Long.valueOf(this.getCount(key));
+-        count += amount;
++        count = count.longValue() + amount;
+         this.counts.put(key, count);
+-        return count;
++        return count.longValue();
+     }
+ 
+     public long getCount(@Nullable T key) {
+-        return this.counts.getOrDefault(key, Long.valueOf(0L));
++        return this.counts.getOrDefault(key, Long.valueOf(0L)).longValue();
+     }
+ 
+     @NotNull
+diff --git a/src/main/java/com/destroystokyo/paper/entity/villager/Reputation.java b/src/main/java/com/destroystokyo/paper/entity/villager/Reputation.java
+index 1cc9ef255df888cb7dd7f7f2c5014e818d1be613..01dcf6cd3faf1fd5b4a328c3da337b1e66b90167 100644
+--- a/src/main/java/com/destroystokyo/paper/entity/villager/Reputation.java
++++ b/src/main/java/com/destroystokyo/paper/entity/villager/Reputation.java
+@@ -26,7 +26,7 @@ public final class Reputation {
+         Preconditions.checkNotNull(reputation, "reputation cannot be null");
+ 
+         for (Map.Entry<ReputationType, Integer> entry : reputation.entrySet()) {
+-            setReputation(entry.getKey(), entry.getValue());
++            setReputation(entry.getKey(), entry.getValue().intValue());
+         }
+     }
+ 
+diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
+index 8355a68f6ef9e40cb389046afb3981b93127e0a7..a024ce0ef4cb8577206b71bcbb07b908f95d325f 100644
+--- a/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
++++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
+@@ -49,7 +49,7 @@ public class PlayerClientOptionsChangeEvent extends PlayerEvent {
+     }
+ 
+     public boolean hasViewDistanceChanged() {
+-        return viewDistance != player.getClientOption(ClientOption.VIEW_DISTANCE);
++        return viewDistance != player.<Integer>getClientOption(ClientOption.VIEW_DISTANCE).intValue();
+     }
+ 
+     @NotNull
+@@ -66,7 +66,7 @@ public class PlayerClientOptionsChangeEvent extends PlayerEvent {
+     }
+ 
+     public boolean hasChatColorsEnabledChanged() {
+-        return chatColors != player.getClientOption(ClientOption.CHAT_COLORS_ENABLED);
++        return chatColors != player.<Boolean>getClientOption(ClientOption.CHAT_COLORS_ENABLED).booleanValue();
+     }
+ 
+     @NotNull
+diff --git a/src/main/java/org/bukkit/FireworkEffect.java b/src/main/java/org/bukkit/FireworkEffect.java
+index d74d373390ee4a5f5e4b9df644581baee63dcbc2..ae5117ee3628b81729e06f6520ae7c0cda45045e 100644
+--- a/src/main/java/org/bukkit/FireworkEffect.java
++++ b/src/main/java/org/bukkit/FireworkEffect.java
+@@ -392,8 +392,8 @@ public final class FireworkEffect implements ConfigurationSerializable {
+         Type type = Type.valueOf((String) map.get(TYPE));
+ 
+         return builder()
+-            .flicker((Boolean) map.get(FLICKER))
+-            .trail((Boolean) map.get(TRAIL))
++            .flicker(((Boolean) map.get(FLICKER)).booleanValue())
++            .trail(((Boolean) map.get(TRAIL)).booleanValue())
+             .withColor((Iterable<?>) map.get(COLORS))
+             .withFade((Iterable<?>) map.get(FADE_COLORS))
+             .with(type)
+diff --git a/src/main/java/org/bukkit/command/Command.java b/src/main/java/org/bukkit/command/Command.java
+index 5bf4394eafe9b63a3fa4d97c2b3878b14648771b..fa272d950b3f5febad2d4c687323e17afc612f80 100644
+--- a/src/main/java/org/bukkit/command/Command.java
++++ b/src/main/java/org/bukkit/command/Command.java
+@@ -446,14 +446,14 @@ public abstract class Command {
+         if (source instanceof BlockCommandSender) {
+             BlockCommandSender blockCommandSender = (BlockCommandSender) source;
+ 
+-            if (!blockCommandSender.getBlock().getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
++            if (!blockCommandSender.getBlock().getWorld().<Boolean>getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT).booleanValue()) {
+                 Bukkit.getConsoleSender().sendMessage(result);
+                 return;
+             }
+         } else if (source instanceof CommandMinecart) {
+             CommandMinecart commandMinecart = (CommandMinecart) source;
+ 
+-            if (!commandMinecart.getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
++            if (!commandMinecart.getWorld().<Boolean>getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT).booleanValue()) {
+                 Bukkit.getConsoleSender().sendMessage(result);
+                 return;
+             }
+diff --git a/src/main/java/org/bukkit/command/defaults/HelpCommand.java b/src/main/java/org/bukkit/command/defaults/HelpCommand.java
+index 86a120dd02e959b99faf882df07115f35e600383..cd8544b881d6e0393bef3af8135323ebb2e4f4c0 100644
+--- a/src/main/java/org/bukkit/command/defaults/HelpCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/HelpCommand.java
+@@ -46,7 +46,7 @@ public class HelpCommand extends BukkitCommand {
+         } else if (args[args.length - 1].chars().allMatch(Character::isDigit)) {
+             command = Joiner.on(" ").join(Arrays.copyOfRange(args, 0, args.length - 1));
+             try {
+-                pageNumber = Integer.decode(args[args.length - 1]);
++                pageNumber = Integer.decode(args[args.length - 1]).intValue();
+             } catch (NumberFormatException exception) {
+                 pageNumber = 1;
+             }
+@@ -211,7 +211,7 @@ public class HelpCommand extends BukkitCommand {
+         for (int i = 1; i <= s1Len; i++) {
+             int DB = 0;
+             for (int j = 1; j <= s2Len; j++) {
+-                int i1 = sd.get(Character.valueOf(s2.charAt(j - 1)));
++                int i1 = sd.get(Character.valueOf(s2.charAt(j - 1))).intValue();
+                 int j1 = DB;
+ 
+                 if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+diff --git a/src/main/java/org/bukkit/configuration/MemorySection.java b/src/main/java/org/bukkit/configuration/MemorySection.java
+index 944934f0c98f4a8f19e11de8acced232e8502fe6..36e83de4be9a879b5e61d28feaae88c06317ee3c 100644
+--- a/src/main/java/org/bukkit/configuration/MemorySection.java
++++ b/src/main/java/org/bukkit/configuration/MemorySection.java
+@@ -368,13 +368,13 @@ public class MemorySection implements ConfigurationSection {
+     @Override
+     public boolean getBoolean(@NotNull String path) {
+         Object def = getDefault(path);
+-        return getBoolean(path, (def instanceof Boolean) ? (Boolean) def : false);
++        return getBoolean(path, (def instanceof Boolean) ? ((Boolean) def).booleanValue() : false);
+     }
+ 
+     @Override
+     public boolean getBoolean(@NotNull String path, boolean def) {
+         Object val = get(path, Boolean.valueOf(def));
+-        return (val instanceof Boolean) ? (Boolean) val : def;
++        return (val instanceof Boolean) ? ((Boolean) val).booleanValue() : def;
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
+index c8b9348499d712c0415a7d5cc58ca0e0b7691ac7..7553dcf655ccab55563847e2ef6cee79b8429191 100644
+--- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
++++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
+@@ -65,7 +65,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+     public double getOriginalDamage(@NotNull DamageModifier type) throws IllegalArgumentException {
+         final Double damage = originals.get(type);
+         if (damage != null) {
+-            return damage;
++            return damage.doubleValue();
+         }
+         if (type == null) {
+             throw new IllegalArgumentException("Cannot have null DamageModifier");
+@@ -102,7 +102,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+     public double getDamage(@NotNull DamageModifier type) throws IllegalArgumentException {
+         Preconditions.checkArgument(type != null, "Cannot have null DamageModifier");
+         final Double damage = modifiers.get(type);
+-        return damage == null ? 0 : damage;
++        return damage == null ? 0 : damage.doubleValue();
+     }
+ 
+     /**
+@@ -164,8 +164,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+             }
+ 
+             Function<? super Double, Double> modifierFunction = modifierFunctions.get(modifier);
+-            double newVanilla = modifierFunction.apply(Double.valueOf(remaining));
+-            double oldVanilla = modifierFunction.apply(Double.valueOf(oldRemaining));
++            double newVanilla = modifierFunction.apply(Double.valueOf(remaining)).doubleValue();
++            double oldVanilla = modifierFunction.apply(Double.valueOf(oldRemaining)).doubleValue();
+             double difference = oldVanilla - newVanilla;
+ 
+             // Don't allow value to cross zero, assume zero values should be negative
+diff --git a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
+index c19fb029246bcbd9ceec9510b4e526b9cad6404c..1ecc405539556156d366a09942ba4eaad8f35157 100644
+--- a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
++++ b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
+@@ -60,7 +60,7 @@ public class PotionSplashEvent extends ProjectileHitEvent implements Cancellable
+      */
+     public double getIntensity(@NotNull LivingEntity entity) {
+         Double intensity = affectedEntities.get(entity);
+-        return intensity != null ? intensity : 0.0;
++        return intensity != null ? intensity.doubleValue() : 0.0;
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
+index 2dd0e244c11a094e1befe4c02b0164f71d94abcd..6709fb1561cf9fa7e30c3698d97d6e6cf8aa213b 100644
+--- a/src/main/java/org/bukkit/inventory/ItemStack.java
++++ b/src/main/java/org/bukkit/inventory/ItemStack.java
+@@ -89,7 +89,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
+             setDurability(damage);
+         }
+         if (data != null) {
+-            createData(data);
++            createData(data.byteValue());
+         }
+     }
+ 
+@@ -377,7 +377,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
+     public void addEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
+         Preconditions.checkArgument(enchantments != null, "Enchantments cannot be null");
+         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+-            addEnchantment(entry.getKey(), entry.getValue());
++            addEnchantment(entry.getKey(), entry.getValue().intValue());
+         }
+     }
+ 
+@@ -416,7 +416,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
+     @Utility
+     public void addUnsafeEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
+         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+-            addUnsafeEnchantment(entry.getKey(), entry.getValue());
++            addUnsafeEnchantment(entry.getKey(), entry.getValue().intValue());
+         }
+     }
+ 
+@@ -524,7 +524,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
+                     Enchantment enchantment = Enchantment.getByName(entry.getKey().toString());
+ 
+                     if ((enchantment != null) && (entry.getValue() instanceof Integer)) {
+-                        result.addUnsafeEnchantment(enchantment, (Integer) entry.getValue());
++                        result.addUnsafeEnchantment(enchantment, ((Integer) entry.getValue()).intValue());
+                     }
+                 }
+             }
+diff --git a/src/main/java/org/bukkit/material/types/MushroomBlockTexture.java b/src/main/java/org/bukkit/material/types/MushroomBlockTexture.java
+index ed2dd5ed9f5b27f9d446028d0594236f461d5733..66a13aa5e3b00bea772fddd8b3ea26c0ab95404b 100644
+--- a/src/main/java/org/bukkit/material/types/MushroomBlockTexture.java
++++ b/src/main/java/org/bukkit/material/types/MushroomBlockTexture.java
+@@ -85,7 +85,7 @@ public enum MushroomBlockTexture {
+      */
+     @Deprecated
+     public byte getData() {
+-        return data;
++        return data.byteValue();
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/metadata/MetadataValueAdapter.java b/src/main/java/org/bukkit/metadata/MetadataValueAdapter.java
+index a3d4fcd1858f1dff7f84c457882d2ef876d481f8..69f2fcb28b24ac64a3a5b3e5df3d1074a9afbf94 100644
+--- a/src/main/java/org/bukkit/metadata/MetadataValueAdapter.java
++++ b/src/main/java/org/bukkit/metadata/MetadataValueAdapter.java
+@@ -62,7 +62,7 @@ public abstract class MetadataValueAdapter implements MetadataValue {
+     public boolean asBoolean() {
+         Object value = value();
+         if (value instanceof Boolean) {
+-            return (Boolean) value;
++            return ((Boolean) value).booleanValue();
+         }
+ 
+         if (value instanceof Number) {
+diff --git a/src/main/java/org/bukkit/permissions/PermissibleBase.java b/src/main/java/org/bukkit/permissions/PermissibleBase.java
+index 68ae337a841263a38ad97ff00c21e4036db539e7..4b37788e744ff361681e54eca24970771998e58f 100644
+--- a/src/main/java/org/bukkit/permissions/PermissibleBase.java
++++ b/src/main/java/org/bukkit/permissions/PermissibleBase.java
+@@ -196,7 +196,7 @@ public class PermissibleBase implements Permissible {
+             String name = entry.getKey();
+ 
+             Permission perm = Bukkit.getServer().getPluginManager().getPermission(name);
+-            boolean value = entry.getValue() ^ invert;
++            boolean value = entry.getValue().booleanValue() ^ invert;
+             String lname = name.toLowerCase(java.util.Locale.ENGLISH);
+ 
+             permissions.put(lname, new PermissionAttachmentInfo(parent, lname, attachment, value));
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+index 40b2a4692779fae04de7f2b7e735cdef34f880a9..360dc42337f03918ae2b6f0e7b6409ac3f1cc9c7 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+@@ -240,7 +240,7 @@ public final class JavaPluginLoader implements PluginLoader {
+         } finally {
+             synchronized (classLoadLock) {
+                 lock.writeLock().unlock();
+-                if (classLoadLockCount.get(name) == 1) {
++                if (classLoadLockCount.get(name).intValue() == 1) {
+                     classLoadLock.remove(name);
+                     classLoadLockCount.remove(name);
+                 } else {
+diff --git a/src/main/java/org/bukkit/plugin/messaging/Messenger.java b/src/main/java/org/bukkit/plugin/messaging/Messenger.java
+index 682c77188436d696d4dafbc70cf131d5c921e94d..700a65904a1fe84fd0b42c1d7fe2fcc534bb23b2 100644
+--- a/src/main/java/org/bukkit/plugin/messaging/Messenger.java
++++ b/src/main/java/org/bukkit/plugin/messaging/Messenger.java
+@@ -24,7 +24,7 @@ public interface Messenger {
+     /**
+      * Represents the largest size that a Plugin Channel may be.
+      */
+-    public static final int MAX_CHANNEL_SIZE = Integer.getInteger("paper.maxCustomChannelName", 64); // Paper
++    public static final int MAX_CHANNEL_SIZE = Integer.getInteger("paper.maxCustomChannelName", 64).intValue(); // Paper
+ 
+     /**
+      * Checks if the specified channel is a reserved name.
+diff --git a/src/main/java/org/bukkit/potion/PotionEffect.java b/src/main/java/org/bukkit/potion/PotionEffect.java
+index 4797e071ce5b008e0fcd6d8a68ac3267b3139c43..c46ef748a84a72b5aff4572a16611a5aa45e4b9a 100644
+--- a/src/main/java/org/bukkit/potion/PotionEffect.java
++++ b/src/main/java/org/bukkit/potion/PotionEffect.java
+@@ -141,7 +141,7 @@ public class PotionEffect implements ConfigurationSerializable {
+     private static int getInt(@NotNull Map<?, ?> map, @NotNull Object key) {
+         Object num = map.get(key);
+         if (num instanceof Integer) {
+-            return (Integer) num;
++            return ((Integer) num).intValue();
+         }
+         throw new NoSuchElementException(map + " does not contain " + key);
+     }
+@@ -149,7 +149,7 @@ public class PotionEffect implements ConfigurationSerializable {
+     private static boolean getBool(@NotNull Map<?, ?> map, @NotNull Object key, boolean def) {
+         Object bool = map.get(key);
+         if (bool instanceof Boolean) {
+-            return (Boolean) bool;
++            return ((Boolean) bool).booleanValue();
+         }
+         return def;
+     }
+diff --git a/src/main/java/org/bukkit/util/BlockVector.java b/src/main/java/org/bukkit/util/BlockVector.java
+index 0d8384d2230ef07e898dc372ddab31b934cae902..e0feeb33cb6a934598bcac58899aa6a69f29403a 100644
+--- a/src/main/java/org/bukkit/util/BlockVector.java
++++ b/src/main/java/org/bukkit/util/BlockVector.java
+@@ -116,13 +116,13 @@ public class BlockVector extends Vector {
+         double z = 0;
+ 
+         if (args.containsKey("x")) {
+-            x = (Double) args.get("x");
++            x = ((Double) args.get("x")).doubleValue();
+         }
+         if (args.containsKey("y")) {
+-            y = (Double) args.get("y");
++            y = ((Double) args.get("y")).doubleValue();
+         }
+         if (args.containsKey("z")) {
+-            z = (Double) args.get("z");
++            z = ((Double) args.get("z")).doubleValue();
+         }
+ 
+         return new BlockVector(x, y, z);
+diff --git a/src/main/java/org/bukkit/util/Vector.java b/src/main/java/org/bukkit/util/Vector.java
+index 16264877779a470d60c8ed1b18814efc811ce98a..8b16caa17a51d90aaeff55ca1186528b1214f01a 100644
+--- a/src/main/java/org/bukkit/util/Vector.java
++++ b/src/main/java/org/bukkit/util/Vector.java
+@@ -879,13 +879,13 @@ public class Vector implements Cloneable, ConfigurationSerializable {
+         double z = 0;
+ 
+         if (args.containsKey("x")) {
+-            x = (Double) args.get("x");
++            x = ((Double) args.get("x")).doubleValue();
+         }
+         if (args.containsKey("y")) {
+-            y = (Double) args.get("y");
++            y = ((Double) args.get("y")).doubleValue();
+         }
+         if (args.containsKey("z")) {
+-            z = (Double) args.get("z");
++            z = ((Double) args.get("z")).doubleValue();
+         }
+ 
+         return new Vector(x, y, z);

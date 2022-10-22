@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 02:57:23 -0500
+Subject: [PATCH] Bulk operation
+
+
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+index 360dc42337f03918ae2b6f0e7b6409ac3f1cc9c7..0caca8466cb5a806cb540fc14d1814dc413351e7 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+@@ -279,12 +279,8 @@ public final class JavaPluginLoader implements PluginLoader {
+             Method[] publicMethods = listener.getClass().getMethods();
+             Method[] privateMethods = listener.getClass().getDeclaredMethods();
+             methods = new HashSet<Method>(publicMethods.length + privateMethods.length, 1.0f);
+-            for (Method method : publicMethods) {
+-                methods.add(method);
+-            }
+-            for (Method method : privateMethods) {
+-                methods.add(method);
+-            }
++            methods.addAll(Arrays.asList(publicMethods));
++            methods.addAll(Arrays.asList(privateMethods));
+         } catch (NoClassDefFoundError e) {
+             plugin.getLogger().severe("Plugin " + plugin.getDescription().getFullName() + " has failed to register events for " + listener.getClass() + " because " + e.getMessage() + " does not exist.");
+             return ret;
+diff --git a/src/main/java/org/bukkit/util/ChatPaginator.java b/src/main/java/org/bukkit/util/ChatPaginator.java
+index 1c15b186e1b733955181029b5e940e30c61f760d..409116796f6159b74bc485870ee89c119e422d6f 100644
+--- a/src/main/java/org/bukkit/util/ChatPaginator.java
++++ b/src/main/java/org/bukkit/util/ChatPaginator.java
+@@ -94,9 +94,7 @@ public class ChatPaginator {
+ 
+             if (c == ' ' || c == '\n') {
+                 if (line.length() == 0 && word.length() > lineLength) { // special case: extremely long word begins a line
+-                    for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
+-                        lines.add(partialWord);
+-                    }
++                    lines.addAll(Arrays.asList(word.toString().split("(?<=\\G.{" + lineLength + "})")));
+                 } else if (line.length() + 1 + word.length() - lineColorChars == lineLength) { // Line exactly the correct length...newline
+                     if (line.length() > 0) {
+                         line.append(' ');

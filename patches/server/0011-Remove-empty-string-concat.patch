@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 03:02:27 -0500
+Subject: [PATCH] Remove empty string concat
+
+
+diff --git a/src/main/java/ca/spottedleaf/dataconverter/minecraft/converters/chunk/ConverterFlattenChunk.java b/src/main/java/ca/spottedleaf/dataconverter/minecraft/converters/chunk/ConverterFlattenChunk.java
+index 7256e71eec7ba5efdd779f512cfc02772b2a1c24..57e7876eed2136e70ae8904dac2438a6173600a3 100644
+--- a/src/main/java/ca/spottedleaf/dataconverter/minecraft/converters/chunk/ConverterFlattenChunk.java
++++ b/src/main/java/ca/spottedleaf/dataconverter/minecraft/converters/chunk/ConverterFlattenChunk.java
+@@ -166,7 +166,7 @@ public final class ConverterFlattenChunk extends DataConverter<MapType<String>,
+         into.put(oldId + "west",  HelperBlockFlatteningV1450.parseTag("{Name:'minecraft:" + newId + "_wall_" + skullType + "',Properties:{facing:'west'}}"));
+ 
+         for (int rotation = 0; rotation < 16; ++rotation) {
+-            into.put(oldId + "" + rotation,
++            into.put(oldId + String.valueOf(rotation),
+                     HelperBlockFlatteningV1450.parseTag("{Name:'minecraft:" + newId + "_" + skullType + "',Properties:{rotation:'" + rotation + "'}}"));
+         }
+     }
+@@ -314,7 +314,7 @@ public final class ConverterFlattenChunk extends DataConverter<MapType<String>,
+ 
+     private static void addBanners(final @NotNull Map<String, MapType<String>> into, final int colourId, final String colourName) {
+         for(int rotation = 0; rotation < 16; ++rotation) {
+-            into.put("" + rotation + "_" + colourId, HelperBlockFlatteningV1450.parseTag("{Name:'minecraft:" + colourName + "_banner',Properties:{rotation:'" + rotation + "'}}"));
++            into.put(rotation + "_" + colourId, HelperBlockFlatteningV1450.parseTag("{Name:'minecraft:" + colourName + "_banner',Properties:{rotation:'" + rotation + "'}}"));
+         }
+ 
+         into.put("north_" + colourId, HelperBlockFlatteningV1450.parseTag("{Name:'minecraft:" + colourName + "_wall_banner',Properties:{facing:'north'}}"));

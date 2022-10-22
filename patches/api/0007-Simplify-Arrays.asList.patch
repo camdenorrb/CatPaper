@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 02:59:10 -0500
+Subject: [PATCH] Simplify Arrays.asList
+
+
+diff --git a/src/main/java/org/bukkit/command/defaults/PluginsCommand.java b/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
+index 1aa58c59e1e8738bbdc77752885ff3b18b29de42..c479dc290c7c0028ff7be617a428f81982d69535 100644
+--- a/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
+@@ -18,7 +18,7 @@ public class PluginsCommand extends BukkitCommand {
+         this.description = "Gets a list of plugins running on the server";
+         this.usageMessage = "/plugins";
+         this.setPermission("bukkit.command.plugins");
+-        this.setAliases(Arrays.asList("pl"));
++        this.setAliases(List.of("pl"));
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/command/defaults/ReloadCommand.java b/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
+index 6df8b7182f1d4b3ddefb146c935805f7151434e3..f49398d466437da62fc4c62ca9aeefdbcd6bebd0 100644
+--- a/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
+@@ -15,7 +15,7 @@ public class ReloadCommand extends BukkitCommand {
+         this.description = "Reloads the server configuration and plugins";
+         this.usageMessage = "/reload [permissions|commands|confirm]"; // Paper
+         this.setPermission("bukkit.command.reload");
+-        this.setAliases(Arrays.asList("rl"));
++        this.setAliases(List.of("rl"));
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/inventory/RecipeChoice.java b/src/main/java/org/bukkit/inventory/RecipeChoice.java
+index 1abe1b49935c1be2e6b462f2ab6a90c08935b5ce..ad7b2c50d70950592f69e19116b103d208c3a265 100644
+--- a/src/main/java/org/bukkit/inventory/RecipeChoice.java
++++ b/src/main/java/org/bukkit/inventory/RecipeChoice.java
+@@ -45,7 +45,7 @@ public interface RecipeChoice extends Predicate<ItemStack>, Cloneable {
+         private List<Material> choices;
+ 
+         public MaterialChoice(@NotNull Material choice) {
+-            this(Arrays.asList(choice));
++            this(List.of(choice));
+         }
+ 
+         public MaterialChoice(@NotNull Material... choices) {
+@@ -156,7 +156,7 @@ public interface RecipeChoice extends Predicate<ItemStack>, Cloneable {
+         private List<ItemStack> choices;
+ 
+         public ExactChoice(@NotNull ItemStack stack) {
+-            this(Arrays.asList(stack));
++            this(List.of(stack));
+         }
+ 
+         public ExactChoice(@NotNull ItemStack... stacks) {
+diff --git a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
+index 30dd1637458780bfb045f4bd46f0db912b408e89..7d9c00f8fc58ae3eade0e0eabf08c665a0df0e12 100644
+--- a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
+@@ -7,6 +7,7 @@ import java.net.URL;
+ import java.net.URLClassLoader;
+ import java.util.ArrayList;
+ import java.util.Arrays;
++import java.util.Collections;
+ import java.util.List;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
+@@ -67,7 +68,7 @@ class LibraryLoader
+         } );
+         session.setReadOnly();
+ 
+-        this.repositories = repository.newResolutionRepositories( session, Arrays.asList( new RemoteRepository.Builder( "central", "default", "https://repo.maven.apache.org/maven2" ).build() ) );
++        this.repositories = repository.newResolutionRepositories( session, Collections.singletonList(new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2").build()));
+     }
+ 
+     @Nullable

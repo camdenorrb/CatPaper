@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 19:38:26 -0500
+Subject: [PATCH] Add Kotlin
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 9e2038a064b170c2846228c6b6503a8adb8d5624..a2e04763a92dbfb7f74baaf7c367cb850faca9ce 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -73,8 +73,16 @@ dependencies {
+     testImplementation("org.ow2.asm:asm-tree:9.4")
+ }
+ 
+-tasks.test {
+-    useJUnitPlatform()
++tasks {
++    test {
++        useJUnitPlatform()
++    }
++    compileKotlin {
++        kotlinOptions.jvmTarget = "18"
++    }
++    compileTestKotlin {
++        kotlinOptions.jvmTarget = "18"
++    }
+ }
+ 
+ configure<PublishingExtension> {

@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 22 Oct 2022 19:48:37 -0500
+Subject: [PATCH] Add mockito
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index a2e04763a92dbfb7f74baaf7c367cb850faca9ce..72a35332ee6ce6e675bdcd06f7d14c1b99580ab0 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -71,6 +71,7 @@ dependencies {
+     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
+     testImplementation("org.hamcrest:hamcrest-library:2.2")
+     testImplementation("org.ow2.asm:asm-tree:9.4")
++    testImplementation("org.mockito:mockito-core:4.8.0")
+ }
+ 
+ tasks {

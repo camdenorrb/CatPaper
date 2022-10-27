@@ -49,7 +49,7 @@ index e16c8642203f55255dc54ab01569f091af530728..ef9c254f798deb2c05878387d34c5091
              return optional1;
          }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index b85527f821bebaeb8aef36c47c13329df757eecb..14b67d781078b086efe6f8fc5326a2f7e536a2f0 100644
+index fc69e6663bd258670a246bed3e68129d8d10d774..075b8f7dcd60efd7027c208ffc5e7b22840ebc1f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1344,7 +1344,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -75,7 +75,7 @@ index 46fff641abef20753c4f72a3d5fb71769eeb964a..9df486c17d44db247216cf9e20830a59
                      }
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index fbd0457e83d12334e48b8dd363aaca5173431e80..097d9f890c274535195383d23bde8935adc23736 100644
+index 0cbe5dba03b0017e25c952071e2722681468d614..bf60394e5d9d5007d1f77288fdb8213111c37325 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -1240,7 +1240,7 @@ public class ServerPlayer extends Player {
@@ -214,10 +214,10 @@ index fa345c090b517c2a2571149de01b13ef2eb399b9..b4eb410403c1277f1a93fe7951f6f2df
                  }
  
 diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-index 926254253c1d6163cada17d45b4730b9d58528e6..a4157da6c04d5c7dd8984099116f1c7e965dbf8d 100644
+index 9cce3bd9dcb455f1530a007e343f13c9b4a200ce..f9b781d651c611f1780ba33e86cf68c3ab016d0c 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-@@ -662,7 +662,7 @@ public class PiglinAi {
+@@ -666,7 +666,7 @@ public class PiglinAi {
          Optional<LivingEntity> optional = PiglinAi.getAngerTarget(piglin);
          LivingEntity entityliving1 = BehaviorUtils.getNearestTarget(piglin, optional, target);
  
@@ -227,10 +227,10 @@ index 926254253c1d6163cada17d45b4730b9d58528e6..a4157da6c04d5c7dd8984099116f1c7e
          }
      }
 diff --git a/src/main/java/net/minecraft/world/entity/raid/Raider.java b/src/main/java/net/minecraft/world/entity/raid/Raider.java
-index 3b6350000a7d86efa2bd315aad2accf72ac52ca5..1d9df9a50e6d70120f3f075aa4727fb231d14091 100644
+index fa86b87f044930c85fdbae0c09fa4215b13fcad9..056f8f976a0ffb9d539430730b2173944e3c5eb1 100644
 --- a/src/main/java/net/minecraft/world/entity/raid/Raider.java
 +++ b/src/main/java/net/minecraft/world/entity/raid/Raider.java
-@@ -383,7 +383,7 @@ public abstract class Raider extends PatrollingMonster {
+@@ -385,7 +385,7 @@ public abstract class Raider extends PatrollingMonster {
                  return holder.is(PoiTypes.HOME);
              }, this::hasNotVisited, PoiManager.Occupancy.ANY, blockposition, 48, this.raider.random);
  

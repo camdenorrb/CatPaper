@@ -31,7 +31,7 @@ index 2d1228670696224452cb432e0279456d8c5fe710..b631b673ade57016ef956c1b728edc1d
              Vec3 vec3d = new Vec3(this.followingPlayer.getX() - this.getX(), this.followingPlayer.getY() + (double) this.followingPlayer.getEyeHeight() / 2.0D - this.getY(), this.followingPlayer.getZ() - this.getZ());
              double d0 = vec3d.lengthSqr();
 diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index b7537299fa57f4c7b11927a0127856b2d6d80079..6ba917d74b78b714883c7f827240e038d3bfe848 100644
+index 1978a4060052f30861f2550e6c4550fb0e3bd600..3e2d3d07217afcfe151c20566e9e8db3c7f2ab3c 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 @@ -512,7 +512,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
@@ -57,7 +57,7 @@ index 45a2afb4ad8d5c3f6e20412b4990a18ef020bc89..9c9e0951922268f72b99b567f59fdf59
  
      private class ShulkerLookControl extends LookControl {
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
-index 2dcda3b03796655da443e1b3dd68c6f6bca20d21..f8c427b5fecda183d0772e378e4199eb5d29c4c0 100644
+index 37d3b670a93c26b87ffc5c93ad7828f45b4b0217..8501c50059631c6b8dc3c1592b9f8d11398ef4ef 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
 @@ -127,7 +127,7 @@ public class Silverfish extends Monster {
@@ -108,16 +108,3 @@ index d498418bb6394d625a278247c22a01eba737b5e4..fa8742723a12e4c0c20e68cbbc56cc1d
              return false;
          }
  
-diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-index 28f7919ed489de0475aa6b379d5679e5d309c938..d2775a42f803b9467da3dda74b2e3ec72645c91c 100644
---- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-+++ b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-@@ -1322,7 +1322,7 @@ public final class Emitter implements Emitable {
-                 ch = text.charAt(end);
-             }
-             if (spaces) {
--                if (ch == 0 || ch != ' ') {
-+                if (ch != ' ') {
-                     if (start + 1 == end && this.column > this.bestWidth && split && start != 0
-                         && end != text.length()) {
-                         writeIndent();

@@ -92,7 +92,7 @@ index 7280c57aaee9856988b739b6ef6f82604ad90e96..37d172017ab34650575cfb51f42e7ef3
      }
  } 
 diff --git a/src/main/java/com/destroystokyo/paper/util/misc/AreaMap.java b/src/main/java/com/destroystokyo/paper/util/misc/AreaMap.java
-index 7080532228afe4619a9f107ad2a309be175cacaa..0cb91bbaf6e1e15531d2b531b5781135cc1d4a5d 100644
+index 0b0cff6b205c238386ecc624b2cc9e5dfa9c7fa9..e5b0c7a2697426a59e61e48de92fe5cb5ca9762e 100644
 --- a/src/main/java/com/destroystokyo/paper/util/misc/AreaMap.java
 +++ b/src/main/java/com/destroystokyo/paper/util/misc/AreaMap.java
 @@ -215,7 +215,7 @@ public abstract class AreaMap<E> {
@@ -127,7 +127,7 @@ index 5d60a88196e0a23c3fdaad19f84254f274005f7b..1852d8c22303167f6173f67fee452355
      }
  }
 diff --git a/src/main/java/io/papermc/paper/chunk/SingleThreadChunkRegionManager.java b/src/main/java/io/papermc/paper/chunk/SingleThreadChunkRegionManager.java
-index 852695880552b75d48b2b1556597bef4ac844d2a..7ca2722ed6c27a01a4078361366cb9f7b04107a2 100644
+index 61024773ec5fdefc25bdafe76103e7ed462b5526..d2d2f12f3a2cbba912710f8436312501a1945a26 100644
 --- a/src/main/java/io/papermc/paper/chunk/SingleThreadChunkRegionManager.java
 +++ b/src/main/java/io/papermc/paper/chunk/SingleThreadChunkRegionManager.java
 @@ -408,7 +408,7 @@ public final class SingleThreadChunkRegionManager {
@@ -335,7 +335,7 @@ index 89a5537f3a789b48e7a0c1ebbd332dc923b8b726..9ea6e60bf5374d6881962ab1447ada6f
              }
          }
 diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
-index 9fad2a7b575a58e45b5092b4f363c3fe06d7a733..3e5edc02d98acf6a9235b01bba6abc29477e50d6 100644
+index d5ba9099e36c887567a931680201890353b19a8b..b8849248a7398f25894ef215aa250a2c7f714950 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
 +++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
 @@ -774,7 +774,7 @@ public final class ChunkTaskScheduler {
@@ -383,7 +383,7 @@ index 137c9059d3519fc86f5457d5a2f83d0db65d9307..b6e0c58b68101c90f81100ca5a4d5c45
                      GenericDataLoadTask.this.chunkX, GenericDataLoadTask.this.chunkZ, Map.of(
                          "Callback throwable", ChunkTaskScheduler.stringIfNull(throwable)
 diff --git a/src/main/java/io/papermc/paper/command/subcommands/ChunkDebugCommand.java b/src/main/java/io/papermc/paper/command/subcommands/ChunkDebugCommand.java
-index 628c549b1436c3de75071ecd6182a9beadd4840b..699542f571d9f575a6826e4d8fc126d0304b30da 100644
+index a6fb7ae77d7cad2243e28a33718e4631f65697fa..5a177e1bf36db9c7cf741cca6805a0386bf7f3fe 100644
 --- a/src/main/java/io/papermc/paper/command/subcommands/ChunkDebugCommand.java
 +++ b/src/main/java/io/papermc/paper/command/subcommands/ChunkDebugCommand.java
 @@ -252,7 +252,7 @@ public final class ChunkDebugCommand implements PaperSubcommand {
@@ -409,11 +409,11 @@ index 903e126facf5d8abb9520e8385faba65924fdbb1..b70968f18842684309bcb33d34c74fb4
          }
      }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index ea22d05ab9483094de943c9f638ade0783597f2c..2aa8ab73c3eab7433fc49cfe5a5d929aeed6b872 100644
+index 13b0b2a5b1c228a17075ab3dabab5b9ea6bba978..af15842c622fb11a0ee2ed871655affdf6a11f84 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -469,7 +469,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-                     net.minecraft.server.MCUtil.dumpChunks(file, true);
+                     io.papermc.paper.util.MCUtil.dumpChunks(file, true);
                      sender.sendMessage(net.kyori.adventure.text.Component.text("Successfully written chunk information!", net.kyori.adventure.text.format.NamedTextColor.GREEN));
                  } catch (Throwable thr) {
 -                    MinecraftServer.LOGGER.warn("Failed to dump chunk information to file " + file.toString(), thr);
@@ -422,7 +422,7 @@ index ea22d05ab9483094de943c9f638ade0783597f2c..2aa8ab73c3eab7433fc49cfe5a5d929a
                  }
              };
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index af17e62c55c1385b28470866f338c8a7a20492a9..adaeca524cf5ad202186a04df88920bf53b602d5 100644
+index 365b599c054ab18e0ba5c38057534e5f7b94f5ce..9881924f74103aaad96aca54ec7329cc73c8e3e8 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -394,7 +394,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -444,10 +444,10 @@ index af17e62c55c1385b28470866f338c8a7a20492a9..adaeca524cf5ad202186a04df88920bf
              this.removePlayerImmediately((ServerPlayer) entity, Entity.RemovalReason.DISCARDED);
          }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index d5faef554e6e7e133d8117c1b5f37dee367b816c..92e401fa3046bf7438e1b948b065685cdc18759e 100644
+index f472e0b103463f3b45b6b316d08c50b6a093de78..d53f1895a853d2e33d79df3c7eeb98cd3b5d87be 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -1257,7 +1257,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -1274,7 +1274,7 @@ public class LevelChunk extends ChunkAccess {
          }
  
          public String toString() {
@@ -494,7 +494,7 @@ index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..ba2f0b3c7ab09b685e2e33089e93d8d5
                      player1.setFirstPlayed(modified);
                  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 6bcf8a731ce752d038710f9f87c99e6379788c0b..e7e8289c4ccdee4e184b6b737d69da62b22b3c9e 100644
+index 26f8aff3685d11ccc2d7d9124895ffa520564810..939226a32fbab022c0b2a45184249177b54dcf63 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1094,7 +1094,7 @@ public final class CraftServer implements Server {

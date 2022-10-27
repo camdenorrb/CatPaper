@@ -40,7 +40,7 @@ index aa6dbe801e0859541a325550717037ca8bf889e9..71814a6df07d410f467a36d04059c0e8
                  }
  
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 16776646ab91cdfc863b132f6c3d3cbdc8e3ac7a..8fd70320e19ba92defe812133c00e9cfbe6618b7 100644
+index cfd32f66ab3a1972af44ae606823b894b132a03b..e033b84ce797ec5921ca0941bdf7744d5e6d0919 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -310,7 +310,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -127,7 +127,7 @@ index 01bb98746d6718ac9aff7874ae65ccbc34fed92a..be05d3f37374179ae09f0110f3ca7e9e
  
              if (!continueCheck.getAsBoolean()) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 14b67d781078b086efe6f8fc5326a2f7e536a2f0..6db985537f941f8a5999b7a67bfebff2bc28ba4f 100644
+index 075b8f7dcd60efd7027c208ffc5e7b22840ebc1f..3832f00c73f86bccad2726e68d22a48e72ad2259 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1352,8 +1352,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -280,7 +280,7 @@ index 1cc4a8f90eaec869f926b364ff457a45feeaf615..8e594797aeaeac8d7161fc7e50b32614
              } else {
                  return UUIDUtil.getOrCreatePlayerUUID(new GameProfile((UUID) null, name));
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index f28a74883bc7062de9b8f0e2c50b565a1694d3ec..331a06d61fe8418c1a48cdd475f3152230099829 100644
+index 34b604c2b4a4a26e7d9d83f30571b00eb9ea18f4..49d9320dc3b0592d51df3ad1386c1ba3fe62a241 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -397,7 +397,7 @@ public abstract class PlayerList {
@@ -371,10 +371,10 @@ index 5bbde809b12029d5da8dec14cbb1046ef3c24e7f..31673a4ce6e21c3368a6e2f3a027e126
          this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, (entityliving) -> {
              return entityliving instanceof Enemy && !(entityliving instanceof Creeper);
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-index d96fcf2ca7c02d77c4c83aaa2f1de91734b8aa6a..bf59d0bd839b1ef40d1048e3a5c407dfcac385e2 100644
+index 31c349ec573b4124737cf54cdb40945e0c03e296..56b0bc873810ba6306a39fb7dcf37af235b07437 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-@@ -276,7 +276,7 @@ public class Panda extends Animal {
+@@ -277,7 +277,7 @@ public class Panda extends Animal {
          this.goalSelector.addGoal(12, new Panda.PandaRollGoal(this));
          this.goalSelector.addGoal(13, new FollowParentGoal(this, 1.25D));
          this.goalSelector.addGoal(14, new WaterAvoidingRandomStrollGoal(this, 1.0D));
@@ -473,7 +473,7 @@ index 4e17f9f98fc135541c122c518c8e8628f6005d10..76b036b5c868336203a99de752b000ed
      public static final double GOAT_SCREAMING_CHANCE = 0.02D;
      public static final double UNIHORN_CHANCE = 0.10000000149011612D;
 diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index 6ba917d74b78b714883c7f827240e038d3bfe848..cabd7e278d78dbede2771de6cd8d3d58fc8d0466 100644
+index 3e2d3d07217afcfe151c20566e9e8db3c7f2ab3c..922793c40ee9f0cd8f30a11414f5e4b9ece0d878 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 @@ -115,7 +115,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
@@ -590,7 +590,7 @@ index 9c9e0951922268f72b99b567f59fdf59d82a6db9..eb49b3f782515a31940eca346664563b
          this.targetSelector.addGoal(3, new Shulker.ShulkerDefenseAttackGoal(this));
      }
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
-index f8c427b5fecda183d0772e378e4199eb5d29c4c0..26454bd79ea46a35a68556f7f493b6511225bf3d 100644
+index 8501c50059631c6b8dc3c1592b9f8d11398ef4ef..f8d0f42369fe8e745e72eaaadada6761c83ee2e8 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
 @@ -50,7 +50,7 @@ public class Silverfish extends Monster {
@@ -869,10 +869,10 @@ index 00cb9dafc711607f28529ea9afbcdb492b1b2595..6fa74d1031988ff3be99b57e3bae24c5
          int i = 0;
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 92e401fa3046bf7438e1b948b065685cdc18759e..a7d4894992ebf6d63c71fbc9fd9c60d7392ed35a 100644
+index d53f1895a853d2e33d79df3c7eeb98cd3b5d87be..4d358e22a348a5b37f4dea1df3371e5153f476ab 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -1290,7 +1290,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -1307,7 +1307,7 @@ public class LevelChunk extends ChunkAccess {
                              this.loggedInvalidBlockState = false;
                          } else if (!this.loggedInvalidBlockState) {
                              this.loggedInvalidBlockState = true;
@@ -978,7 +978,7 @@ index d617acd8c66d0230fed254924f2d9027365ba117..afa4aa6f167191e4b883b2622989966a
              k1 = this.usedSectors.allocate(j1);
              regionfile_b = this.writeToExternalFile(path, bytebuffer);
 diff --git a/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java b/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
-index 703691de4250c5607e40910b7648b3e523172aa4..348b97bde6ce94ca73d01b18a7eaa394208b0836 100644
+index cddf192c01ec2669f5a871cfeb032c6cd62decb3..8101927b020c02a0a2986c7227ce2a1a93905d23 100644
 --- a/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 +++ b/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 @@ -464,7 +464,7 @@ public class PersistentEntitySectionManager<T extends EntityAccess> implements A

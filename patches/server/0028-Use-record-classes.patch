@@ -303,7 +303,7 @@ index c7b4d0263fbebe90377263870c8b9f05b486fb9e..fc00a7ab0a7c959f3ee3c2b39a7a3a3e
 +	}
  }
 diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
-index 5bd346fe0c1f31a31446c287bfd5f4493b970afe..af239b5108deb7f506d5b2fa4df6b6c53e0a03c6 100644
+index 42afe116a9f0ab2d03d64edfc5b52e8871d996b7..64e03f7cfbfcaed848997479a5cef7f0b2a60877 100644
 --- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 +++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 @@ -746,19 +746,8 @@ public final class PlayerChunkLoader {
@@ -533,7 +533,7 @@ index f1e568e3e5c753796d39bdbb77bcbe30cc98f3d6..2a62cc67480a4a47114338c94fd51b90
 +	}
  }
 diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
-index 3e5edc02d98acf6a9235b01bba6abc29477e50d6..12cb261fbcf1ca64a4c88e39e76aeef5661a42c0 100644
+index b8849248a7398f25894ef215aa250a2c7f714950..30217a040626ef91f5657fbcddf0d5ca414ff62e 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
 +++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
 @@ -721,23 +721,13 @@ public final class ChunkTaskScheduler {
@@ -988,7 +988,7 @@ index 550234b82d2b29acab77f0ff453a512412270910..07d3633231c91f8aad55f907d0335d1c
              } else {
                  throw new IllegalArgumentException("Unknown vibration destination " + vibration.getDestination());
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index c8b33606a5e94a1df984e81e47fd43b40b438022..868b34cea0499476807be48244fb527160a7bff8 100644
+index 972e1c5afb38f712509daf302812c814da2f6d27..3461d7197b5c17685619d218ee2dddd92aaa3e01 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -2121,7 +2121,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -1191,10 +1191,10 @@ index 4dd0515a380e946dfba45079df17116d86cbcb1e..69bfcef5237540b7fda549e09b2e93e4
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 5fe2c212bdccd01d6559d66016c10ec258e66d69..8f100d0e5560a1fe080e7401975c6d6651c6aa50 100644
+index b040539175d1de4afb5214e759a23cd57336841c..f5ca81f07139a5aa7b2242de606a2b653ba7a399 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2504,7 +2504,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2508,7 +2508,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
          CraftAdvancement craft = (CraftAdvancement) advancement;
          PlayerAdvancements data = this.getHandle().getAdvancements();

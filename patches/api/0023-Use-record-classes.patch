@@ -61,10 +61,10 @@ index c81d87d3238762fd0a3ca1e418ea184b658510bd..0d41fc2d1ac48c4e8f34b10712940fe2
      }
  
 diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
-index a024ce0ef4cb8577206b71bcbb07b908f95d325f..31f267078be9616baf71dbca73293a124f78bf6c 100644
+index e5844a1a20014536a3f9857755a585481f17b11d..2537a109e30f1af07bc7de1d2b814476be2afb24 100644
 --- a/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
 +++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
-@@ -75,7 +75,7 @@ public class PlayerClientOptionsChangeEvent extends PlayerEvent {
+@@ -93,7 +93,7 @@ public class PlayerClientOptionsChangeEvent extends PlayerEvent {
      }
  
      public boolean hasSkinPartsChanged() {

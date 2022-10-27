@@ -18,7 +18,7 @@ index 1d5bc86516df3781aea894c3afd340421ba51a17..b7e67dc7c1e12eecfca00a7b17c89523
                  net.minecraft.resources.ResourceLocation.CODEC.fieldOf("random_name").forGetter(PaperBedrockConditionSource::randomName),
                  VerticalAnchor.CODEC.fieldOf("true_at_and_below").forGetter(PaperBedrockConditionSource::trueAtAndBelow),
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 6db985537f941f8a5999b7a67bfebff2bc28ba4f..980ccc4aa69b0f595bb085ce11c383d75a92a620 100644
+index 3832f00c73f86bccad2726e68d22a48e72ad2259..c8459167f4556b54cbb1b289228b96697c1a1c9c 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -2028,7 +2028,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -57,7 +57,7 @@ index ca771d60283d94c00aa65d06ef93071e412357e8..521da0aadc8f2ea3a9cb344f6ec7bc07
          });
      }
 diff --git a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-index 82f68bebc227a3dbd846fed237c77a6710aa0b63..8c8becc1cf83527962fc74d68de5520c0ce01a33 100644
+index 01094f2237db2e75cc74de9bcab067e09d23189b..aaae1296817ddf59be21c579883313979f226541 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 @@ -188,7 +188,7 @@ public class PoiManager extends SectionStorage<PoiSection> {
@@ -96,7 +96,7 @@ index 087f2d32b680992ff2ea7901e34bc7cc416d08e8..4910354f780be26c39feb159dbf2c0fb
  
      public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String name, Class<T> type, T... values) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e7e8289c4ccdee4e184b6b737d69da62b22b3c9e..4130856fd37b23ea3724f19544b262ae7b7f4f8a 100644
+index 939226a32fbab022c0b2a45184249177b54dcf63..09b2651fcf2394b8784c8f5ae69578cf76264848 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -2248,7 +2248,7 @@ public final class CraftServer implements Server {

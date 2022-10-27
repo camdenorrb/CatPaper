@@ -19,18 +19,3 @@ index d97e8b97c3201f2178939efb064700add881e716..b235dee8e8483ef6355e4b0b071b97a1
          } catch (NumberFormatException var3) {
              return Optional.empty();
          }
-diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-index 9561337bede57bef50c21b359d223af6138063ff..7466551e3e45c30fbca7549baf1cf17fa8c9d4c8 100644
---- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-+++ b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-@@ -1402,8 +1402,8 @@ public final class Emitter implements Emitable {
-                             data = "\\x" + s.substring(s.length() - 2);
-                         } else if (ch >= '\uD800' && ch <= '\uDBFF') {
-                             if (end + 1 < text.length()) {
--                                Character ch2 = Character.valueOf(text.charAt(++end));
--                                String s = "000" + Long.toHexString(Character.toCodePoint(ch.charValue(), ch2.charValue()));
-+                                char ch2 = Character.valueOf(text.charAt(++end));
-+                                String s = "000" + Long.toHexString(Character.toCodePoint(ch.charValue(), ch2));
-                                 data = "\\U" + s.substring(s.length() - 8);
-                             } else {
-                                 String s = "000" + Integer.toString(ch, 16);

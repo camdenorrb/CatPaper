@@ -18,7 +18,7 @@ index e77e5127adf9b2906510f541463b6da071ed37b6..a125fa5feda6ac46f0a658bac9fd6d1b
  
      protected static double getSmallestDistanceSquared(final double boxMinX, final double boxMinY, final double boxMinZ,
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index 6d1f929eb717f62f0d7ebb9e9b52c3788061e240..f99924ca10715801b88fbaf300624fcd95da53d6 100644
+index be97d38f45046a7f6d2337d879651f04cf9ff825..425cc33566edbe44423d6e7d93376f476735256b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 @@ -680,7 +680,7 @@ public class ServerChunkCache extends ChunkSource {

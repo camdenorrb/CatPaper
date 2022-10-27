@@ -146,12 +146,12 @@ index ca9fb5ef2b85338bcaa04013b1412caf36e9a8d7..fb457d4de0027c210e4cf5f9a5881e7c
  public class UnmodifiableAttributeMap implements Attributable {
  
 diff --git a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
-index a9dc20e888ad7681f24da057da1c6bdfee119a14..fca5a6140132a04d2a53cb806beee34c103f62f4 100644
+index 834b92195861883cd4cd1b8c027fb23bec31701d..3ef398885526c9133c2205dd8b143703b1e09672 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
 +++ b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
 @@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
  import net.minecraft.core.BlockPos;
- import net.minecraft.server.ChunkSystem;
+ import io.papermc.paper.chunk.system.ChunkSystem;
  import net.minecraft.server.level.ChunkHolder;
 -import net.minecraft.server.level.ChunkMap;
  import net.minecraft.server.level.ServerLevel;
@@ -170,7 +170,7 @@ index 1d50392687302cd2d4191084c136a694673a3708..6da9811aeb6e9bd68e75de17b3a61a33
  import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
  import it.unimi.dsi.fastutil.shorts.ShortCollection;
 diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
-index 69043c8a387fd24f079432fd20550097b2350009..ab3b519878ede19482488371595f16111aaf2cf9 100644
+index 5151c67d26cdde6608694f9ed7efc3f73ba7c89d..7b3df576a12d693b74d96a0dbbc94d425a851427 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
 +++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
 @@ -2,7 +2,6 @@ package io.papermc.paper.chunk.system.scheduling;
@@ -278,6 +278,51 @@ index 88adbf5b38cbe62c7f61f74e54315af416b09b40..840f77c41e79716a8d2188f9b4d13240
  import net.minecraft.world.level.material.FluidState;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
+diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
+index c935676453b36950dddafda5a47494fdaacff3a9..1d4321b1e7effd564c9d4f657a82573e04a56b1e 100644
+--- a/src/main/java/io/papermc/paper/util/MCUtil.java
++++ b/src/main/java/io/papermc/paper/util/MCUtil.java
+@@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
+ import com.google.gson.JsonObject;
+ import com.google.gson.internal.Streams;
+ import com.google.gson.stream.JsonWriter;
+-import com.mojang.datafixers.util.Either;
+ import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet;
+ import java.lang.ref.Cleaner;
+ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+@@ -17,16 +16,12 @@ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.server.level.ChunkHolder;
+-import net.minecraft.server.level.ChunkMap;
+-import net.minecraft.server.level.DistanceManager;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+-import net.minecraft.server.level.Ticket;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.level.ChunkPos;
+ import net.minecraft.world.level.ClipContext;
+ import net.minecraft.world.level.Level;
+-import net.minecraft.world.level.chunk.ChunkAccess;
+ import net.minecraft.world.level.chunk.ChunkStatus;
+ import org.apache.commons.lang.exception.ExceptionUtils;
+ import com.mojang.authlib.GameProfile;
+@@ -34,7 +29,6 @@ import org.bukkit.Location;
+ import org.bukkit.block.BlockFace;
+ import org.bukkit.craftbukkit.CraftWorld;
+ import org.bukkit.craftbukkit.util.Waitable;
+-import org.spigotmc.AsyncCatcher;
+ 
+ import javax.annotation.Nonnull;
+ import javax.annotation.Nullable;
+@@ -42,7 +36,6 @@ import java.io.*;
+ import java.nio.charset.StandardCharsets;
+ import java.util.List;
+ import java.util.Queue;
+-import java.util.Set;
+ import java.util.concurrent.CompletableFuture;
+ import java.util.concurrent.ExecutionException;
+ import java.util.concurrent.LinkedBlockingQueue;
 diff --git a/src/main/java/io/papermc/paper/util/TickThread.java b/src/main/java/io/papermc/paper/util/TickThread.java
 index d8b7c903237f8c557135d516fd28d4b21630805e..b52a04cc6167d50ac573698069780033a2c2f20b 100644
 --- a/src/main/java/io/papermc/paper/util/TickThread.java
@@ -388,7 +433,7 @@ index 5dd7be70603e8754d2625bb9d16900cb01b9c730..a3e858167a1fad13b43c0dc7d087e987
  
  public class CipherEncoder extends io.netty.handler.codec.MessageToMessageEncoder<ByteBuf> { // Paper - change superclass
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 1466222406fa67f88389b7a04ad9e6d2b4765ac3..16776646ab91cdfc863b132f6c3d3cbdc8e3ac7a 100644
+index bba253c39134f7fb1ccfe0b0111cec4a4cdde3cf..cfd32f66ab3a1972af44ae606823b894b132a03b 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -20,7 +20,6 @@ import io.netty.channel.epoll.EpollSocketChannel;
@@ -438,51 +483,6 @@ index 877c3500e4cedca487968577637f255a55e6a5e1..beb63538b3fc19b88e03027afe03a07c
  import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.world.entity.Entity;
  import org.apache.commons.lang3.ObjectUtils;
-diff --git a/src/main/java/net/minecraft/server/MCUtil.java b/src/main/java/net/minecraft/server/MCUtil.java
-index 6b192474627d328087025e988602af6eb00f1bd3..8cf16b793451380c44870039e8c627809bd9103c 100644
---- a/src/main/java/net/minecraft/server/MCUtil.java
-+++ b/src/main/java/net/minecraft/server/MCUtil.java
-@@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
- import com.google.gson.JsonObject;
- import com.google.gson.internal.Streams;
- import com.google.gson.stream.JsonWriter;
--import com.mojang.datafixers.util.Either;
- import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet;
- import java.lang.ref.Cleaner;
- import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-@@ -16,16 +15,12 @@ import net.minecraft.core.Direction;
- import net.minecraft.nbt.CompoundTag;
- import net.minecraft.network.chat.Component;
- import net.minecraft.server.level.ChunkHolder;
--import net.minecraft.server.level.ChunkMap;
--import net.minecraft.server.level.DistanceManager;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.server.level.ServerPlayer;
--import net.minecraft.server.level.Ticket;
- import net.minecraft.world.entity.Entity;
- import net.minecraft.world.level.ChunkPos;
- import net.minecraft.world.level.ClipContext;
- import net.minecraft.world.level.Level;
--import net.minecraft.world.level.chunk.ChunkAccess;
- import net.minecraft.world.level.chunk.ChunkStatus;
- import org.apache.commons.lang.exception.ExceptionUtils;
- import com.mojang.authlib.GameProfile;
-@@ -33,7 +28,6 @@ import org.bukkit.Location;
- import org.bukkit.block.BlockFace;
- import org.bukkit.craftbukkit.CraftWorld;
- import org.bukkit.craftbukkit.util.Waitable;
--import org.spigotmc.AsyncCatcher;
- 
- import javax.annotation.Nonnull;
- import javax.annotation.Nullable;
-@@ -41,7 +35,6 @@ import java.io.*;
- import java.nio.charset.StandardCharsets;
- import java.util.List;
- import java.util.Queue;
--import java.util.Set;
- import java.util.concurrent.CompletableFuture;
- import java.util.concurrent.ExecutionException;
- import java.util.concurrent.LinkedBlockingQueue;
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
 index 9fddb70fe57a90950799c5eb1a05d31457af03cb..01bb98746d6718ac9aff7874ae65ccbc34fed92a 100644
 --- a/src/main/java/net/minecraft/server/Main.java
@@ -590,7 +590,7 @@ index 29a22da1b94d51300481c071aa16bfd8cd02178f..4d78798f19cb235cace941b2732d6718
  
  public class ServerStatusPacketListenerImpl implements ServerStatusPacketListener {
 diff --git a/src/main/java/net/minecraft/server/players/GameProfileCache.java b/src/main/java/net/minecraft/server/players/GameProfileCache.java
-index 84bdf4a849b09a90da6c22f4080386e85a53f6b3..4dfbbc04de67d9931f6bef0d4310a93b3cb0d36a 100644
+index b48650c38751a925b83fb4c19ac02f87cb1bef6e..997393c4e89394d7fdf5c7bb8853be51f76bf726 100644
 --- a/src/main/java/net/minecraft/server/players/GameProfileCache.java
 +++ b/src/main/java/net/minecraft/server/players/GameProfileCache.java
 @@ -1,7 +1,6 @@
@@ -743,7 +743,7 @@ index 6bea1489808551a28304b0e8d976baaeed356f08..f32f71c1d9ff693070c0f01e1a4102dd
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.particles.ParticleTypes;
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-index b9040d0718d1289c3690eeaa07c583266ea3f2c5..d96fcf2ca7c02d77c4c83aaa2f1de91734b8aa6a 100644
+index 0fc54c90220cb63786acd240c7c53cec3709d9f7..31c349ec573b4124737cf54cdb40945e0c03e296 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
 @@ -5,7 +5,6 @@ import java.util.Comparator;
@@ -923,18 +923,6 @@ index c157be4c92343ef14b6496ae5f532d8ace9470aa..fb6fa3b6e09679dc2407173171c083b9
  import org.bukkit.Location;
  import org.bukkit.block.Lectern;
  import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-diff --git a/src/main/java/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-index 56d68b87287f0bb2c79ce0bed02fa333b85c4287..38818130b2103144bcf85ed8d2ceff2b1060eafd 100644
---- a/src/main/java/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-+++ b/src/main/java/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-@@ -11,7 +11,6 @@ import net.minecraft.data.worldgen.features.EndFeatures;
- import net.minecraft.nbt.CompoundTag;
- import net.minecraft.nbt.NbtUtils;
- import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
--import net.minecraft.server.MCUtil;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.server.level.ServerPlayer;
- import net.minecraft.util.Mth;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
 index 7908360dd47937b2cb702e381802b7b278a5198e..c3717d033a6110a55ed345fe2e83ce5ad17ae2e3 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java

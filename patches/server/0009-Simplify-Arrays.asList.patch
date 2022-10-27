@@ -68,10 +68,10 @@ index 912c5ed715cdc28e6d01b1958bf0b959b7ed9aa2..b02f00eee359fbd14b4694f5088d3e23
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index eeb8bf7f355fc43e6976e872cff8ac1b9c939f2e..9a4f7db8723d8920eb09d3351bc11c5a1020ed99 100644
+index e252944464af0b944691b364e5c8e32c7b33a980..9115e40d531b973d831c0dd0d2514cd2d5b7c63a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1100,8 +1100,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1104,8 +1104,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
          if (this.getHandle().connection == null) return;
  

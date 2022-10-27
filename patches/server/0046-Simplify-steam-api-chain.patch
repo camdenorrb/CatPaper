@@ -31,7 +31,7 @@ index 494131fdca607dc14eb24c974af89082b8eced90..5174eb4d16b20b751ce583735f707af8
                      final String usage = this.getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
                      if (usage != null) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 8f6ba130ecc284fae04c99d63d377662565dc25e..3750b0c941bfecb6f91b9aa737e5cfe2e7672785 100644
+index ca7384b61cf554afbc524b085ce3e531701025d1..72d9a2126f5f8622c03b5adee489b280c00a7b68 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -621,7 +621,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -57,7 +57,7 @@ index 09ac53cfd77a97a932f90857559b3892dad6c7db..1498f17e3349929e43dad914d6a49211
                      while (iterator.hasNext()) {
                          Entry<ResourceLocation, AdvancementProgress> entry = (Entry) iterator.next();
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index b56b1efe437286d48086086ef13d0faedc015dbc..a7fd5d23ffeecb92ac31da28451648bf6c943c34 100644
+index 3bb42a14a4be4daa0a867ffc4065d539f1ee2ce4..2d5f013a8bb5d9441060f3b57511e89efe43c367 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -788,7 +788,7 @@ public class ServerLevel extends Level implements WorldGenLevel {

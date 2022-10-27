@@ -43,25 +43,3 @@ index b235dee8e8483ef6355e4b0b071b97a1fb0fcfa9..53832a5c572b4ff74dd8e78f74473258
          } catch (NumberFormatException var3) {
              return Optional.empty();
          }
-diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-index 7466551e3e45c30fbca7549baf1cf17fa8c9d4c8..28f7919ed489de0475aa6b379d5679e5d309c938 100644
---- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-+++ b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-@@ -325,7 +325,7 @@ public final class Emitter implements Emitable {
-                 indent = Integer.valueOf(0);
-             }
-         } else if (!indentless) {
--            this.indent = this.indent.intValue() + bestIndent;
-+            this.indent = Integer.valueOf(this.indent.intValue() + bestIndent);
-         }
-     }
- 
-@@ -698,7 +698,7 @@ public final class Emitter implements Emitable {
-                 }
-                 writeIndicator("-", true, false, true);
-                 if (indentWithIndicator && this.first) {
--                    indent = indent.intValue() + indicatorIndent;
-+                    indent = Integer.valueOf(indent.intValue() + indicatorIndent);
-                 }
-                 if (!blockCommentsCollector.isEmpty()) {
-                     increaseIndent(false, false);

@@ -1903,7 +1903,7 @@ index d6a14103642541abae36d2ed9b7a0e9f15ea8c6b..db8808acc5c89015e21f4e3944427d75
          FileConfiguration config = getConfig();
  
 diff --git a/src/test/java/org/bukkit/configuration/file/YamlConfigurationTest.java b/src/test/java/org/bukkit/configuration/file/YamlConfigurationTest.java
-index 9f83d16341b4efd5c7150d2ab9abd579f373fa95..c6da050f76d158f88d589a1aab71ac04cc3bb4bc 100644
+index 194949d74a3f1c69f7869a826ee3a011a6c26786..679d162196fb2746de719d9613bb14522f831812 100644
 --- a/src/test/java/org/bukkit/configuration/file/YamlConfigurationTest.java
 +++ b/src/test/java/org/bukkit/configuration/file/YamlConfigurationTest.java
 @@ -1,6 +1,6 @@
@@ -1914,17 +1914,16 @@ index 9f83d16341b4efd5c7150d2ab9abd579f373fa95..c6da050f76d158f88d589a1aab71ac04
  import java.util.ArrayList;
  import java.util.Arrays;
  import java.util.HashMap;
-@@ -11,7 +11,8 @@ import java.util.Map.Entry;
+@@ -11,7 +11,7 @@ import java.util.Map.Entry;
  import org.bukkit.configuration.ConfigurationSection;
  import org.bukkit.configuration.InvalidConfigurationException;
  import org.bukkit.configuration.MemoryConfiguration;
 -import org.junit.Test;
-+import org.junit.jupiter.api.Disabled;
 +import org.junit.jupiter.api.Test;
  
  public class YamlConfigurationTest extends FileConfigurationTest {
  
-@@ -97,7 +98,7 @@ public class YamlConfigurationTest extends FileConfigurationTest {
+@@ -97,7 +97,7 @@ public class YamlConfigurationTest extends FileConfigurationTest {
          assertEquals(expected, result);
      }
  
@@ -1933,7 +1932,7 @@ index 9f83d16341b4efd5c7150d2ab9abd579f373fa95..c6da050f76d158f88d589a1aab71ac04
      public void testAnchorNode() throws InvalidConfigurationException {
          YamlConfiguration config = getConfig();
          String content = "effects:\n"
-@@ -121,7 +122,7 @@ public class YamlConfigurationTest extends FileConfigurationTest {
+@@ -121,7 +121,7 @@ public class YamlConfigurationTest extends FileConfigurationTest {
          assertEquals(expected, config.saveToString());
      }
  
@@ -1942,16 +1941,7 @@ index 9f83d16341b4efd5c7150d2ab9abd579f373fa95..c6da050f76d158f88d589a1aab71ac04
      public void testMergeNode() throws InvalidConfigurationException {
          YamlConfiguration config = getConfig();
          String content = "effects:\n"
-@@ -152,7 +153,7 @@ public class YamlConfigurationTest extends FileConfigurationTest {
-     }
- 
-     @Test
--    @org.junit.Ignore // Paper - ignore test because our fix doesn't work in testing environment
-+    @Disabled // Paper - ignore test because our fix doesn't work in testing environment
-     public void test100Comments() throws InvalidConfigurationException {
-         StringBuilder commentBuilder = new StringBuilder();
-         for (int i = 0; i < 100; i++) {
-@@ -182,7 +183,7 @@ public class YamlConfigurationTest extends FileConfigurationTest {
+@@ -181,7 +181,7 @@ public class YamlConfigurationTest extends FileConfigurationTest {
          assertEquals(expected, result);
      }
  

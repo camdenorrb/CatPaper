@@ -153,7 +153,7 @@ index f7c38d22c33df863dd5d0241d6be41c3625b5f2e..36ac623b4ecd8f0235ca399d5ea83d01
  
      public static @Nullable ChatFormatting asVanilla(final @NotNull TextColor color) {
 diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
-index fa6ea8ed9a191a59ac31df702a8932819cf1f6af..9fad2a7b575a58e45b5092b4f363c3fe06d7a733 100644
+index 3634983f8af80da0019f2e0bc4880e781cabdbf7..d5ba9099e36c887567a931680201890353b19a8b 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
 +++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkTaskScheduler.java
 @@ -70,7 +70,7 @@ public final class ChunkTaskScheduler {
@@ -310,7 +310,7 @@ index 19cca9f826d478c4a75aa5a048fb1cf20e2aa923..8205af621b62c13e1e4a9927f2b470d1
              }
          }
 diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
-index 35a24471553be07269d2cddaaf3afc50aaa09ff3..9226a7e26a426a8d4a91c40ed6f2b62355e09f48 100644
+index 26747f271e69a320baaf60b13f2340ed5b2f2d40..1297991c54b32f29d75f0214e784070cbcfc53f8 100644
 --- a/src/main/java/net/minecraft/Util.java
 +++ b/src/main/java/net/minecraft/Util.java
 @@ -159,7 +159,7 @@ public class Util {
@@ -430,10 +430,10 @@ index 0edb86709d44ec51e42fb2c6794e57b41075726f..d508e454a316caa6f4bbe786da87275a
          });
          CauldronInteraction.addDefaultInteractions(CauldronInteraction.POWDER_SNOW);
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index 105649fb861eca9d10aa7549241f3808f687e00a..e5a6ba8544057e917e72efcdca35ccd0d40c8ce9 100644
+index b7521e9678082e8e77cd09e8252a1178c971706f..b9bc2e10d814711221e43d01597be1cbbf4ff682 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -1061,7 +1061,7 @@ public interface DispenseItemBehavior {
+@@ -1062,7 +1062,7 @@ public interface DispenseItemBehavior {
  
                  if (iblockdata.is(BlockTags.BEEHIVES, (blockbase_blockdata) -> {
                      return blockbase_blockdata.hasProperty(BeehiveBlock.HONEY_LEVEL) && blockbase_blockdata.getBlock() instanceof BeehiveBlock;
@@ -442,7 +442,7 @@ index 105649fb861eca9d10aa7549241f3808f687e00a..e5a6ba8544057e917e72efcdca35ccd0
                      ((BeehiveBlock) iblockdata.getBlock()).releaseBeesAndResetHoneyLevel(worldserver, iblockdata, blockposition, (Player) null, BeehiveBlockEntity.BeeReleaseStatus.BEE_RELEASED);
                      this.setSuccess(true);
                      return this.takeLiquid(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
-@@ -1083,7 +1083,7 @@ public interface DispenseItemBehavior {
+@@ -1084,7 +1084,7 @@ public interface DispenseItemBehavior {
  
                  this.setSuccess(true);
                  if (iblockdata.is(Blocks.RESPAWN_ANCHOR)) {
@@ -578,7 +578,7 @@ index 62c5c438c2f9a5d97dfc70b003a4c8b12be9a551..9fddb70fe57a90950799c5eb1a05d314
                          dedicatedserver1.setPort(port);
                      }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 1c9c90aeb608b32583aad2cc0ec08f7233661599..d5729df2fb1d00c035bbcbf980ba6edca5df2d6e 100644
+index 9c5b470a75e5d931e8e6d3e61ff28683c0bad443..aa708ddce7f4dfd2ccf7635fe3ef9d92b9f3f3ab 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -2128,7 +2128,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -620,7 +620,7 @@ index dc96b30c70cd79d7b2a0322f32b9399a0f2faa41..bf4c65a2edbcedc7676146d5fe1ca29d
      }
      @Override
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 1b6fdf6f0b06572129fa16d864c400cda6c7709d..ea22d05ab9483094de943c9f638ade0783597f2c 100644
+index a7c670c5865334b22eb0a9d296b538db893855ea..13b0b2a5b1c228a17075ab3dabab5b9ea6bba978 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -230,7 +230,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -674,7 +674,7 @@ index b23c2a0b0cf8d95795bc5057cb858e94f03a18f9..b3e0b0835ef1def599b01d3b241ebaaa
  
      protected Settings<T>.MutableValue<Boolean> getMutable(String key, boolean fallback) {
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 1b6224f8a561cb0bdca20063de3e865916681e95..6cb6d8c7b6d421bddc5eaa15d5fa56f34e10213c 100644
+index 2495ae6726f56b0eeb0902410a234a0ac5e477b2..ecf56b2e62c34840786bffce60ed1f1ad889e784 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -1416,7 +1416,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -821,7 +821,7 @@ index 72dcbffa5c758d0666b12e15c3d1514f2874dc55..8170ac81ee98699bfa954e29e40c4fe1
                  List<MobEffectInstance> list = Lists.newArrayList();
                  Iterator iterator = this.potion.getEffects().iterator();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 8c236ccd1f7bbef0dfc2fbf574ac5b166b41dc47..3dbbaf1fc409e601cef2f75966081bc1298aec1b 100644
+index 320d51277132648a6264b968b2bdbc396ea0ca7a..148104ea0eee3064cb4a262aa0035adc195a37b0 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -598,7 +598,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -893,7 +893,7 @@ index 8c236ccd1f7bbef0dfc2fbf574ac5b166b41dc47..3dbbaf1fc409e601cef2f75966081bc1
  
      public final void teleportToWithTicket(double destX, double destY, double destZ) {
 diff --git a/src/main/java/net/minecraft/world/entity/EntityType.java b/src/main/java/net/minecraft/world/entity/EntityType.java
-index 701a7d80fef290f42de91575843e6b160207a640..fa8cc2ce785521ae2dc3c55397bf3fc813e706d9 100644
+index fb35575b6baca2868e7b24e3900cfdb67c05d16d..7cb87dab5105d961f37d1948b63ffb972a3d2979 100644
 --- a/src/main/java/net/minecraft/world/entity/EntityType.java
 +++ b/src/main/java/net/minecraft/world/entity/EntityType.java
 @@ -571,7 +571,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T> {
@@ -1093,7 +1093,7 @@ index 84da09a53fb42449c250785326aea2023461c1bb..c7a9ed0cab2eec6bf8600574d071f129
  
      public void setBaby(boolean baby) {}
 diff --git a/src/main/java/net/minecraft/world/entity/TamableAnimal.java b/src/main/java/net/minecraft/world/entity/TamableAnimal.java
-index 5c91d8b572143dac27b5cc87379f30a3dd1cd379..7faa37a4e029bb33bec7c5275cddd32214a2e35d 100644
+index 2d9c36c393326804373457c4edc6cc77f4681778..013dc299d2a24780097890f3ccee4f2dd96efb5b 100644
 --- a/src/main/java/net/minecraft/world/entity/TamableAnimal.java
 +++ b/src/main/java/net/minecraft/world/entity/TamableAnimal.java
 @@ -103,11 +103,11 @@ public abstract class TamableAnimal extends Animal implements OwnableEntity {
@@ -1110,7 +1110,7 @@ index 5c91d8b572143dac27b5cc87379f30a3dd1cd379..7faa37a4e029bb33bec7c5275cddd322
          if (tamed) {
              this.entityData.set(DATA_FLAGS_ID, Byte.valueOf((byte) (b | 4)));
          } else {
-@@ -121,11 +121,11 @@ public abstract class TamableAnimal extends Animal implements OwnableEntity {
+@@ -121,7 +121,7 @@ public abstract class TamableAnimal extends Animal implements OwnableEntity {
      }
  
      public boolean isInSittingPose() {
@@ -1119,6 +1119,10 @@ index 5c91d8b572143dac27b5cc87379f30a3dd1cd379..7faa37a4e029bb33bec7c5275cddd322
      }
  
      public void setInSittingPose(boolean inSittingPose) {
+@@ -131,7 +131,7 @@ public abstract class TamableAnimal extends Animal implements OwnableEntity {
+     public void setInSittingPose(boolean inSittingPose, boolean callEvent) {
+     // Paper end
+         if (callEvent && !new io.papermc.paper.event.entity.EntityToggleSitEvent(this.getBukkitEntity(), inSittingPose).callEvent()) return; // Paper start - call EntityToggleSitEvent
 -        byte b = this.entityData.get(DATA_FLAGS_ID);
 +        byte b = this.entityData.<Byte>get(DATA_FLAGS_ID).byteValue();
          if (inSittingPose) {
@@ -1260,7 +1264,7 @@ index 3d1b12fd9a8c00efe43a4d7dd8edf0263e55065f..af351de70af84d618b1ae2a206974a40
              // Paper end
              this.doTick(world, entity);
 diff --git a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-index ace59afa0f2eb81afa8eed4bee416cc43af419d0..204bdfa22b2ef770379bb50c41a347bed823f665 100644
+index 09bce1cf9250d82270d24b1bdbe6dcefa5deaeb9..6c8bbb0c0c748519182e478730b41702ccbc671d 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 @@ -102,7 +102,7 @@ public class PoiManager extends SectionStorage<PoiSection> {
@@ -1458,7 +1462,7 @@ index 50a863db8c81b060922aef97780ba236511fe2b0..3217447c36f6ba757900e4376b276107
  
      public void setMoisntessLevel(int moistness) {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Fox.java b/src/main/java/net/minecraft/world/entity/animal/Fox.java
-index 41ac4523b439b78c7d42f69509ea7296d3fc5a9b..20d55a05b0eb7e2ccd22e3a35e31840ee9229619 100644
+index 33eef7a4e737e25e19c4040c21fb18d8567787c5..15e1f5126a07831d5fecb2918cdcfc2a5ea2da1a 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Fox.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Fox.java
 @@ -364,7 +364,7 @@ public class Fox extends Animal {
@@ -1470,7 +1474,7 @@ index 41ac4523b439b78c7d42f69509ea7296d3fc5a9b..20d55a05b0eb7e2ccd22e3a35e31840e
      }
  
      public void setFoxType(Fox.Type type) {
-@@ -472,7 +472,7 @@ public class Fox extends Animal {
+@@ -478,7 +478,7 @@ public class Fox extends Animal {
      }
  
      private boolean getFlag(int bitmask) {
@@ -1479,7 +1483,7 @@ index 41ac4523b439b78c7d42f69509ea7296d3fc5a9b..20d55a05b0eb7e2ccd22e3a35e31840e
      }
  
      @Override
-@@ -1263,7 +1263,7 @@ public class Fox extends Animal {
+@@ -1269,7 +1269,7 @@ public class Fox extends Animal {
          protected boolean isValidTarget(LevelReader world, BlockPos pos) {
              BlockState iblockdata = world.getBlockState(pos);
  
@@ -1488,7 +1492,7 @@ index 41ac4523b439b78c7d42f69509ea7296d3fc5a9b..20d55a05b0eb7e2ccd22e3a35e31840e
          }
  
          @Override
-@@ -1299,7 +1299,7 @@ public class Fox extends Animal {
+@@ -1305,7 +1305,7 @@ public class Fox extends Animal {
          }
  
          private void pickSweetBerries(BlockState state) {
@@ -1542,7 +1546,7 @@ index e7457633982eeb2f52d3ee932aa5ad9a4e06b168..6bea1489808551a28304b0e8d976baae
  
      public void setTrusting(boolean trusting) {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-index cb248715a124857dfd1941b56188c12871e56084..b9040d0718d1289c3690eeaa07c583266ea3f2c5 100644
+index b25b0efef2a6602ce177665864c50f0650ebfa34..0fc54c90220cb63786acd240c7c53cec3709d9f7 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
 @@ -115,7 +115,7 @@ public class Panda extends Animal {
@@ -1554,7 +1558,7 @@ index cb248715a124857dfd1941b56188c12871e56084..b9040d0718d1289c3690eeaa07c58326
      }
  
      public void setUnhappyCounter(int askForBambooTicks) {
-@@ -143,7 +143,7 @@ public class Panda extends Animal {
+@@ -144,7 +144,7 @@ public class Panda extends Animal {
      }
  
      public boolean isEating() {
@@ -1563,7 +1567,7 @@ index cb248715a124857dfd1941b56188c12871e56084..b9040d0718d1289c3690eeaa07c58326
      }
  
      public void eat(boolean eating) {
-@@ -151,7 +151,7 @@ public class Panda extends Animal {
+@@ -152,7 +152,7 @@ public class Panda extends Animal {
      }
  
      public int getEatCounter() {
@@ -1572,7 +1576,7 @@ index cb248715a124857dfd1941b56188c12871e56084..b9040d0718d1289c3690eeaa07c58326
      }
  
      public void setEatCounter(int eatingTicks) {
-@@ -167,7 +167,7 @@ public class Panda extends Animal {
+@@ -168,7 +168,7 @@ public class Panda extends Animal {
      }
  
      public int getSneezeCounter() {
@@ -1581,7 +1585,7 @@ index cb248715a124857dfd1941b56188c12871e56084..b9040d0718d1289c3690eeaa07c58326
      }
  
      public void setSneezeCounter(int sneezeProgress) {
-@@ -175,7 +175,7 @@ public class Panda extends Animal {
+@@ -176,7 +176,7 @@ public class Panda extends Animal {
      }
  
      public Panda.Gene getMainGene() {
@@ -1590,7 +1594,7 @@ index cb248715a124857dfd1941b56188c12871e56084..b9040d0718d1289c3690eeaa07c58326
      }
  
      public void setMainGene(Panda.Gene gene) {
-@@ -187,7 +187,7 @@ public class Panda extends Animal {
+@@ -188,7 +188,7 @@ public class Panda extends Animal {
      }
  
      public Panda.Gene getHiddenGene() {
@@ -1599,7 +1603,7 @@ index cb248715a124857dfd1941b56188c12871e56084..b9040d0718d1289c3690eeaa07c58326
      }
  
      public void setHiddenGene(Panda.Gene gene) {
-@@ -218,11 +218,11 @@ public class Panda extends Animal {
+@@ -219,11 +219,11 @@ public class Panda extends Animal {
      }
  
      private boolean getFlag(int bitmask) {
@@ -1710,7 +1714,7 @@ index 74ea040db2f03e022e4c6cd23c1f3ca7a3f793a7..2ba45ff931749bd3e99238d244d79888
          if (hasPumpkin) {
              this.entityData.set(SnowGolem.DATA_PUMPKIN_ID, Byte.valueOf((byte) (b0 | 16)));
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Turtle.java b/src/main/java/net/minecraft/world/entity/animal/Turtle.java
-index 4738e4d6affdc240429029cde40c240e3a7a49b8..7fd5f643ef7a3f3cbce15c80d3495fb07224e734 100644
+index 8b09161e7edf124e59d63f251ef4e8885020a248..fdbf274e5b3bb95cfd887cfb530e5d8fb9dccf3f 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Turtle.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Turtle.java
 @@ -99,7 +99,7 @@ public class Turtle extends Animal {
@@ -1942,7 +1946,7 @@ index 40302b99961818978899d63c6c1bdb7d42bfb355..b7587cbed0e9af5e16283e4f86ba6339
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-index 302f83ee7308eb49e5245969031b854cc1df05d3..85329b6cb81e7a0f5678d5bd50c48dc2029a7184 100644
+index 161da407c6d8eccd00ad0749da5337244818561a..3e859c506564c6ba79a79a4fb4195e88f64a6fd4 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 @@ -1047,7 +1047,7 @@ public class EnderDragon extends Mob implements Enemy {
@@ -1955,7 +1959,7 @@ index 302f83ee7308eb49e5245969031b854cc1df05d3..85329b6cb81e7a0f5678d5bd50c48dc2
  
          super.onSyncedDataUpdated(data);
 diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index a04f74a66ccab615a74f6d24272e6814afb94365..b7537299fa57f4c7b11927a0127856b2d6d80079 100644
+index 7efc8568cb65c9ce329ce1fcd4a7ff191b1a7387..1978a4060052f30861f2550e6c4550fb0e3bd600 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 @@ -574,7 +574,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
@@ -2373,10 +2377,10 @@ index 00df9e2fbd078288e37ba60b3afff4e0235f6106..839a832a9173e8ed09d8297d7c9dc360
  
      public void setDancing(boolean dancing) {
 diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-index 503ed1f891f43849e0459e38216f5f9eacec90ee..926254253c1d6163cada17d45b4730b9d58528e6 100644
+index 7f07dde379bf18860186bc6aeab0d7acbe4938cd..9cce3bd9dcb455f1530a007e343f13c9b4a200ce 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-@@ -713,8 +713,8 @@ public class PiglinAi {
+@@ -717,8 +717,8 @@ public class PiglinAi {
      }
  
      private static boolean hoglinsOutnumberPiglins(Piglin piglins) {
@@ -2651,7 +2655,7 @@ index 82de8105f7f166ab67417c8a81463fb53826aeba..d10160031c02d9b7f222893c29a405cf
  
      public void setDangerous(boolean charged) {
 diff --git a/src/main/java/net/minecraft/world/entity/raid/Raider.java b/src/main/java/net/minecraft/world/entity/raid/Raider.java
-index d10852dc074546b369429229a617e83ad91cfa10..3b6350000a7d86efa2bd315aad2accf72ac52ca5 100644
+index 9312e1c3207ecbf73a5ecd3026f0f0ec58643034..fa86b87f044930c85fdbae0c09fa4215b13fcad9 100644
 --- a/src/main/java/net/minecraft/world/entity/raid/Raider.java
 +++ b/src/main/java/net/minecraft/world/entity/raid/Raider.java
 @@ -201,7 +201,7 @@ public abstract class Raider extends PatrollingMonster {
@@ -2873,7 +2877,7 @@ index 166f20cc9ea67f13672459de6da83ca84c9e92df..727031d49946df536a6ee3094929294d
                              } catch (IllegalArgumentException e) {
                                  /* Just swallow invalid enchantments */
 diff --git a/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java b/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
-index 740b778ce14f241e509f17c3a84b9ed47cdeeebe..122d5f92b6bd37e96d88ddd8c41de557ae460cd9 100644
+index 447f0f5f37e445a350d06deeac326feab2d66999..b6a7eeb00dc775ac725775560142d3da7de26435 100644
 --- a/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
 +++ b/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
 @@ -131,7 +131,7 @@ public class GrindstoneMenu extends AbstractContainerMenu {
@@ -2924,7 +2928,7 @@ index d38161d6266c2460666434d5f0930ecf16096977..490d116e58c19cc0b3701cffd0179f9e
                      world.gameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Context.of((Entity) user));
                      SoundEvent soundeffect = user instanceof Fox ? SoundEvents.FOX_TELEPORT : SoundEvents.CHORUS_FRUIT_TELEPORT;
 diff --git a/src/main/java/net/minecraft/world/item/EnderEyeItem.java b/src/main/java/net/minecraft/world/item/EnderEyeItem.java
-index c5b2f1c0b6be3b65ac875f25d9f6cb780cd579b7..5290a46b51ebac598a360b4c22ff7dbffad416e6 100644
+index 096a62e78c51f390d9d8a78d67f132edeba6f833..e9f35b0dfb40a438bda7e350a254458b4b343ae3 100644
 --- a/src/main/java/net/minecraft/world/item/EnderEyeItem.java
 +++ b/src/main/java/net/minecraft/world/item/EnderEyeItem.java
 @@ -38,7 +38,7 @@ public class EnderEyeItem extends Item {
@@ -3020,7 +3024,7 @@ index 182e242d14e1bf8d5e78700f45e4b266438084f5..2d82dc25b112c17eae14986b60e64dfb
  
      static class CacheKey {
 diff --git a/src/main/java/net/minecraft/world/level/NaturalSpawner.java b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
-index 212ab73c650e8cc848900f9d71fc225b3d866218..fc67dcff79a4f59d2f0193c519306c097549ca45 100644
+index 1d2aee697189e728cfbf12f4c28c7844f9b260d2..08ecffefdd5757fce5f17c14ee0308f5fb0e3c03 100644
 --- a/src/main/java/net/minecraft/world/level/NaturalSpawner.java
 +++ b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
 @@ -282,7 +282,7 @@ public final class NaturalSpawner {
@@ -3074,7 +3078,7 @@ index b6abdff8659cf7c97e9eef031f7ed9a58c7e6a7a..f93ae6c0224b75bdd34d028d874dd178
                  AbstractCandleBlock.addParticlesAndSound(world, vec3d.add((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()), random);
              });
 diff --git a/src/main/java/net/minecraft/world/level/block/BambooBlock.java b/src/main/java/net/minecraft/world/level/block/BambooBlock.java
-index 6e2ee4078890f0a747d84ad02b328aee886bda26..2161276fde2a21bb5ee204e5e5ea2ef215f4873a 100644
+index 9009a96f37cfeeb014e0caf5308ab451cc878880..8e8025eb382ca0bad841b57d9d449eecc96af521 100644
 --- a/src/main/java/net/minecraft/world/level/block/BambooBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/BambooBlock.java
 @@ -97,7 +97,7 @@ public class BambooBlock extends Block implements BonemealableBlock {
@@ -3098,7 +3102,7 @@ index 6e2ee4078890f0a747d84ad02b328aee886bda26..2161276fde2a21bb5ee204e5e5ea2ef2
      public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
 -        if ((Integer) state.getValue(BambooBlock.STAGE) == 0) {
 +        if (((Integer) state.getValue(BambooBlock.STAGE)).intValue() == 0) {
-             if (random.nextInt(Math.max(1, (int) (100.0F / world.spigotConfig.bambooModifier) * 3)) == 0 && world.isEmptyBlock(pos.above()) && world.getRawBrightness(pos.above(), 0) >= 9) { // Spigot
+             if (random.nextFloat() < (world.spigotConfig.bambooModifier / (100.0f * 3)) && world.isEmptyBlock(pos.above()) && world.getRawBrightness(pos.above(), 0) >= 9) { // Spigot - SPIGOT-7159: Better modifier resolution
                  int i = this.getHeightBelowUpToMax(world, pos) + 1;
  
 @@ -149,7 +149,7 @@ public class BambooBlock extends Block implements BonemealableBlock {
@@ -3172,7 +3176,7 @@ index bce6972e79ae2f3ad33a079032b4cdacd4709847..558397716c0013086e81acc771122186
                      player.displayClientMessage(Component.translatable("block.minecraft.bed.occupied"), true);
                  }
 diff --git a/src/main/java/net/minecraft/world/level/block/BeehiveBlock.java b/src/main/java/net/minecraft/world/level/block/BeehiveBlock.java
-index 4731755d54e536df1740a4a34bddeca010fec932..941810c78907afe7b5a42620dc18eed4290a3a14 100644
+index 4cfdc7c251d241689b716bfebe996691e934278f..6a4e040a175ac14a0fbae6672f9862236c51b613 100644
 --- a/src/main/java/net/minecraft/world/level/block/BeehiveBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/BeehiveBlock.java
 @@ -73,7 +73,7 @@ public class BeehiveBlock extends BaseEntityBlock {
@@ -3212,7 +3216,7 @@ index 4731755d54e536df1740a4a34bddeca010fec932..941810c78907afe7b5a42620dc18eed4
  
                  if (flag || i > 0) {
 diff --git a/src/main/java/net/minecraft/world/level/block/BellBlock.java b/src/main/java/net/minecraft/world/level/block/BellBlock.java
-index 14002e1f67e3dce421584c01e8f91769509638b7..f89979a72e9f13a1650c92d1c180f8dc532fbf2a 100644
+index 3dfbc517e8867029b9821ec605dffb1ae476260a..1d1fc8231408a6f58a00c0346dac2936df44cdaa 100644
 --- a/src/main/java/net/minecraft/world/level/block/BellBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/BellBlock.java
 @@ -63,7 +63,7 @@ public class BellBlock extends BaseEntityBlock {
@@ -3369,7 +3373,7 @@ index 939f39236736ca4bb9a7868f3dc73c8387340359..a81aae522bba9909898faf09c36cb823
          // CraftBukkit start - Call interact event when arrows turn on wooden buttons
          if (flag1 != flag && flag) {
 diff --git a/src/main/java/net/minecraft/world/level/block/CactusBlock.java b/src/main/java/net/minecraft/world/level/block/CactusBlock.java
-index 45fdccbc6aa03a21682eabbf6ae322e7b03e0b47..aa24ff69cda7545ba3ca99b19f3b62ab983985d1 100644
+index fb020447a843e4df66d9be1b00850dd61d92c059..9a2f61f9f956b782522ec962a85858598df3ba40 100644
 --- a/src/main/java/net/minecraft/world/level/block/CactusBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/CactusBlock.java
 @@ -56,7 +56,7 @@ public class CactusBlock extends Block {
@@ -3379,8 +3383,8 @@ index 45fdccbc6aa03a21682eabbf6ae322e7b03e0b47..aa24ff69cda7545ba3ca99b19f3b62ab
 -                int j = (Integer) state.getValue(CactusBlock.AGE);
 +                int j = ((Integer) state.getValue(CactusBlock.AGE)).intValue();
  
-                 if (j >= (byte) range(3, ((100.0F / world.spigotConfig.cactusModifier) * 15) + 0.5F, 15)) { // Spigot
-                     CraftEventFactory.handleBlockGrowEvent(world, blockposition1, this.defaultBlockState()); // CraftBukkit
+                 int modifier = world.spigotConfig.cactusModifier; // Spigot - SPIGOT-7159: Better modifier resolution
+                 if (j >= 15 || (modifier != 100 && random.nextFloat() < (modifier / (100.0f * 16)))) { // Spigot - SPIGOT-7159: Better modifier resolution
 diff --git a/src/main/java/net/minecraft/world/level/block/CakeBlock.java b/src/main/java/net/minecraft/world/level/block/CakeBlock.java
 index 60630b5bcf4351b5df09837208dec49a19327b01..2724da92c7a6eab9442b84e140cf173c03118592 100644
 --- a/src/main/java/net/minecraft/world/level/block/CakeBlock.java
@@ -3612,7 +3616,7 @@ index 54aedb271e1878b9502d5dc637cc793c83887fc5..83694b3963b3bc0392f9240128e76740
              if (i < 5) {
                  boolean flag = false;
 diff --git a/src/main/java/net/minecraft/world/level/block/CocoaBlock.java b/src/main/java/net/minecraft/world/level/block/CocoaBlock.java
-index 7ce7ceaa3a0b3af90a3ae282e710233f9555368f..cc548ad4421eb7c6eae7d705ef2161ea3d6e1749 100644
+index fd521c6897b1940c781d881de89f7725a146e558..cf2103c4bde0d2243745be14604e7e85cbbf6df9 100644
 --- a/src/main/java/net/minecraft/world/level/block/CocoaBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/CocoaBlock.java
 @@ -46,13 +46,13 @@ public class CocoaBlock extends HorizontalDirectionalBlock implements Bonemealab
@@ -3625,7 +3629,7 @@ index 7ce7ceaa3a0b3af90a3ae282e710233f9555368f..cc548ad4421eb7c6eae7d705ef2161ea
  
      @Override
      public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
-         if (world.random.nextInt(Math.max(1, (int) (100.0F / world.spigotConfig.cocoaModifier) * 5)) == 0) { // Spigot
+         if (world.random.nextFloat() < (world.spigotConfig.cocoaModifier / (100.0f * 5))) { // Spigot - SPIGOT-7159: Better modifier resolution
 -            int i = (Integer) state.getValue(CocoaBlock.AGE);
 +            int i = ((Integer) state.getValue(CocoaBlock.AGE)).intValue();
  
@@ -3787,7 +3791,7 @@ index 71967d7301fc67b931bdac36066019ba6580e4c9..9e3ab5aa2530ffefa97fc490f4eed046
              }
  
 diff --git a/src/main/java/net/minecraft/world/level/block/CropBlock.java b/src/main/java/net/minecraft/world/level/block/CropBlock.java
-index 7453286fa4991817bd4114f6f22fea92cb96ad65..dfb1c3cc128e28ba84bea44a8724b4a607ab9ecc 100644
+index 1863a1b0fca3c7ba2f489e5feab5be4f865032e1..b175bcb7760b6097baa40758bb0463c39637c778 100644
 --- a/src/main/java/net/minecraft/world/level/block/CropBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/CropBlock.java
 @@ -35,7 +35,7 @@ public class CropBlock extends BushBlock implements BonemealableBlock {
@@ -4145,7 +4149,7 @@ index 869294677736d815f105fddb6ad487e369185b26..9840f75e81ce1d917367aea2d21382aa
                      world.gameEvent((Entity) null, flag1 ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
                  }
 diff --git a/src/main/java/net/minecraft/world/level/block/FireBlock.java b/src/main/java/net/minecraft/world/level/block/FireBlock.java
-index 66bcc01b1040d865f8e74e51f9ca1983e7c6c0c1..9cdd621f166928efe3af2dbdb02feec9141c96dc 100644
+index b0a1c408b7940d2882ecb02ff5eb2628b1b74fe7..c6a34f0d025447952a91ea1fb39bd6fc800ed95e 100644
 --- a/src/main/java/net/minecraft/world/level/block/FireBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/FireBlock.java
 @@ -68,30 +68,30 @@ public class FireBlock extends BaseFireBlock {
@@ -4249,7 +4253,7 @@ index a3af96b2518b41f370d09cfda26dc589b9ee977b..86240bb2f257438f37cfa0106a8a82ea
              world.setBlock(pos, state.setValue(AGE, Integer.valueOf(i + 1)), 2);
              return false;
 diff --git a/src/main/java/net/minecraft/world/level/block/GrowingPlantHeadBlock.java b/src/main/java/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
-index c614762cbe4de7ed03e4b75490dbbf9c01bbeb7b..8e0ca6158ecb1d93d34448f0629c71d9ed98c932 100644
+index d82c7e439d81db4906a5e12a1f64b9f900c2ecf2..a7abaf6cc96d0d8319cd5422e10474ac1aa9db9c 100644
 --- a/src/main/java/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
 @@ -35,7 +35,7 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
@@ -4261,16 +4265,16 @@ index c614762cbe4de7ed03e4b75490dbbf9c01bbeb7b..8e0ca6158ecb1d93d34448f0629c71d9
      }
  
      @Override
-@@ -53,7 +53,7 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
+@@ -51,7 +51,7 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
          } else {
-             modifier = 100; // Above cases are exhaustive as of 1.18
+             modifier = world.spigotConfig.caveVinesModifier;
          }
--        if ((Integer) state.getValue(GrowingPlantHeadBlock.AGE) < 25 && random.nextDouble() < (modifier / 100.0D) * this.growPerTickProbability) { // Spigot // Paper - fix growth modifier having the reverse effect
-+        if (((Integer) state.getValue(GrowingPlantHeadBlock.AGE)).intValue() < 25 && random.nextDouble() < (modifier / 100.0D) * this.growPerTickProbability) { // Spigot // Paper - fix growth modifier having the reverse effect
-             // Paper end
+-        if ((Integer) state.getValue(GrowingPlantHeadBlock.AGE) < 25 && random.nextDouble() < ((modifier / 100.0D) * this.growPerTickProbability)) { // Spigot - SPIGOT-7159: Better modifier resolution
++        if (((Integer) state.getValue(GrowingPlantHeadBlock.AGE)).intValue() < 25 && random.nextDouble() < ((modifier / 100.0D) * this.growPerTickProbability)) { // Spigot - SPIGOT-7159: Better modifier resolution
+             // Spigot end
              BlockPos blockposition1 = pos.relative(this.growthDirection);
  
-@@ -79,7 +79,7 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
+@@ -77,7 +77,7 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
      }
  
      public boolean isMaxAge(BlockState state) {
@@ -4279,7 +4283,7 @@ index c614762cbe4de7ed03e4b75490dbbf9c01bbeb7b..8e0ca6158ecb1d93d34448f0629c71d9
      }
  
      protected BlockState updateBodyAfterConvertedFromHead(BlockState from, BlockState to) {
-@@ -121,7 +121,7 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
+@@ -119,7 +119,7 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
      @Override
      public void performBonemeal(ServerLevel world, RandomSource random, BlockPos pos, BlockState state) {
          BlockPos blockposition1 = pos.relative(this.growthDirection);
@@ -4706,7 +4710,7 @@ index 64ad4c2ed5529ae5538e32239953efe69d749658..46bb3eade972119bd42ad8add63db038
  
      public Optional<MultifaceSpreader.SpreadPos> spreadFromFaceTowardRandomDirection(BlockState state, LevelAccessor world, BlockPos pos, Direction direction, RandomSource random, boolean markForPostProcessing) {
 diff --git a/src/main/java/net/minecraft/world/level/block/NetherWartBlock.java b/src/main/java/net/minecraft/world/level/block/NetherWartBlock.java
-index a881b2e6c56985a6385b98d96028ff36bb300c74..202332e611e5ad6223198d11fee58f1cdfe460e9 100644
+index 8f4c9920bdb3ef9e1150ec24675af4e4c37199f1..0e2e961fac06c6f55bbcddbdbcc245683cb2113a 100644
 --- a/src/main/java/net/minecraft/world/level/block/NetherWartBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/NetherWartBlock.java
 @@ -27,7 +27,7 @@ public class NetherWartBlock extends BushBlock {
@@ -4731,7 +4735,7 @@ index a881b2e6c56985a6385b98d96028ff36bb300c74..202332e611e5ad6223198d11fee58f1c
 -        int i = (Integer) state.getValue(NetherWartBlock.AGE);
 +        int i = ((Integer) state.getValue(NetherWartBlock.AGE)).intValue();
  
-         if (i < 3 && random.nextInt(Math.max(1, (int) (100.0F / world.spigotConfig.wartModifier) * 10)) == 0) { // Spigot
+         if (i < 3 && random.nextFloat() < (world.spigotConfig.wartModifier / (100.0f * 10))) { // Spigot - SPIGOT-7159: Better modifier resolution
              state = (BlockState) state.setValue(NetherWartBlock.AGE, Integer.valueOf(i + 1));
 diff --git a/src/main/java/net/minecraft/world/level/block/NoteBlock.java b/src/main/java/net/minecraft/world/level/block/NoteBlock.java
 index e0837d5a41e28aeecbf195ab1eb50c642668c3dc..6a758e5bd70cbbad5fbd0c3827e2953dd5c5e789 100644
@@ -5071,7 +5075,7 @@ index 78cf6f19051a986ecde9b3bb95a087eb316a8075..eb31613a1d69827ad08a07afeb992ed3
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/block/SaplingBlock.java b/src/main/java/net/minecraft/world/level/block/SaplingBlock.java
-index d4b74f7647d6ad8a6087a39e5c8300fc5020b80f..96bd91b03e14898b9f4ce39d194762ee9c5a4b5d 100644
+index 91096779001fc9efafee4134268826e5eda150ae..194322a25bc876457e55dd799bfbe0916508f7c4 100644
 --- a/src/main/java/net/minecraft/world/level/block/SaplingBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/SaplingBlock.java
 @@ -47,7 +47,7 @@ public class SaplingBlock extends BushBlock implements BonemealableBlock {
@@ -5420,7 +5424,7 @@ index af46c05a34292d271fd4a809398e6b299e10b12b..c3de7825d1f61c3bc40ef326279febbc
          } else if (iblockdata1.getFluidState().getAmount() == 8) {
              return false;
 diff --git a/src/main/java/net/minecraft/world/level/block/StemBlock.java b/src/main/java/net/minecraft/world/level/block/StemBlock.java
-index a885874028c91d5677c4132573e7e90d902f10e8..49d2174d3f93b60e362b914a4d5deecb016f8fff 100644
+index 0aa0aa90ca68f8b87cb388e62afbc0f23fb9b4b9..acfb02c80db8a9b12e2d50f9b5ba90a9eeeb6b9e 100644
 --- a/src/main/java/net/minecraft/world/level/block/StemBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/StemBlock.java
 @@ -39,7 +39,7 @@ public class StemBlock extends BushBlock implements BonemealableBlock {
@@ -5435,7 +5439,7 @@ index a885874028c91d5677c4132573e7e90d902f10e8..49d2174d3f93b60e362b914a4d5deecb
 @@ -53,7 +53,7 @@ public class StemBlock extends BushBlock implements BonemealableBlock {
              float f = CropBlock.getGrowthSpeed(this, world, pos);
  
-             if (random.nextInt((int) ((100.0F / (this == Blocks.PUMPKIN_STEM ? world.spigotConfig.pumpkinModifier : world.spigotConfig.melonModifier)) * (25.0F / f)) + 1) == 0) { // Spigot
+             if (random.nextFloat() < (this == Blocks.PUMPKIN_STEM ? world.spigotConfig.pumpkinModifier : world.spigotConfig.melonModifier / (100.0f * (Math.floor((25.0F / f) + 1))))) { // Spigot - SPIGOT-7159: Better modifier resolution
 -                int i = (Integer) state.getValue(StemBlock.AGE);
 +                int i = ((Integer) state.getValue(StemBlock.AGE)).intValue();
  
@@ -5460,7 +5464,7 @@ index a885874028c91d5677c4132573e7e90d902f10e8..49d2174d3f93b60e362b914a4d5deecb
  
          CraftEventFactory.handleBlockGrowEvent(world, pos, iblockdata1, 2); // CraftBukkit
 diff --git a/src/main/java/net/minecraft/world/level/block/SugarCaneBlock.java b/src/main/java/net/minecraft/world/level/block/SugarCaneBlock.java
-index 7db231a5e5f4157e1a9469d4ba50114bda051c76..8c89df242fb17ab7f47a2b30cd6e78f2873cc237 100644
+index b103d470c5a3439a158b13f668e9cb406a30ead0..f8bb8c1d5ecab58957219db0255ef68c80babf32 100644
 --- a/src/main/java/net/minecraft/world/level/block/SugarCaneBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/SugarCaneBlock.java
 @@ -53,7 +53,7 @@ public class SugarCaneBlock extends Block {
@@ -5470,10 +5474,10 @@ index 7db231a5e5f4157e1a9469d4ba50114bda051c76..8c89df242fb17ab7f47a2b30cd6e78f2
 -                int j = (Integer) state.getValue(SugarCaneBlock.AGE);
 +                int j = ((Integer) state.getValue(SugarCaneBlock.AGE)).intValue();
  
-                 if (j >= (byte) range(3, ((100.0F / world.spigotConfig.caneModifier) * 15) + 0.5F, 15)) { // Spigot
-                     org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockGrowEvent(world, pos.above(), this.defaultBlockState()); // CraftBukkit
+                 int modifier = world.spigotConfig.caneModifier; // Spigot - SPIGOT-7159: Better modifier resolution
+                 if (j >= 15 || (modifier != 100 && random.nextFloat() < (modifier / (100.0f * 16)))) { // Spigot - SPIGOT-7159: Better modifier resolution
 diff --git a/src/main/java/net/minecraft/world/level/block/SweetBerryBushBlock.java b/src/main/java/net/minecraft/world/level/block/SweetBerryBushBlock.java
-index 317e1241ab0c71e0db6c30f27bba4fe7086ee66a..b22cd00acc3faae17a9e3a3ccd17d7f45e7f050e 100644
+index c5d8fc8867b4a42ea2c54c28b27e178ec0b5b6de..28b5aa40754730e3cb643ec8099de9530ad49731 100644
 --- a/src/main/java/net/minecraft/world/level/block/SweetBerryBushBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/SweetBerryBushBlock.java
 @@ -54,17 +54,17 @@ public class SweetBerryBushBlock extends BushBlock implements BonemealableBlock
@@ -5495,7 +5499,7 @@ index 317e1241ab0c71e0db6c30f27bba4fe7086ee66a..b22cd00acc3faae17a9e3a3ccd17d7f4
 -        int i = (Integer) state.getValue(SweetBerryBushBlock.AGE);
 +        int i = ((Integer) state.getValue(SweetBerryBushBlock.AGE)).intValue();
  
-         if (i < 3 && random.nextInt(Math.max(1, (int) (100.0F / world.spigotConfig.sweetBerryModifier) * 5)) == 0 && world.getRawBrightness(pos.above(), 0) >= 9) { // Spigot
+         if (i < 3 && random.nextFloat() < (world.spigotConfig.sweetBerryModifier / (100.0f * 5)) && world.getRawBrightness(pos.above(), 0) >= 9) { // Spigot - SPIGOT-7159: Better modifier resolution
              BlockState iblockdata1 = (BlockState) state.setValue(SweetBerryBushBlock.AGE, Integer.valueOf(i + 1));
 @@ -80,7 +80,7 @@ public class SweetBerryBushBlock extends BushBlock implements BonemealableBlock
          if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(world, pos)).callEvent()) { return; } // Paper
@@ -5565,7 +5569,7 @@ index 69eaf1341d282c4783dab84533ea2c053deed529..6905a85e69fc08278e0fffdf514410e4
              }
  
 diff --git a/src/main/java/net/minecraft/world/level/block/TntBlock.java b/src/main/java/net/minecraft/world/level/block/TntBlock.java
-index 5293004b566555d6a3d4888f76549248652ab617..7ccfc9bd15e7d29b8c4aa81fc168c660937fdbcd 100644
+index a1acbc382a11858d2816eda3aabbea606519f6fb..b3e3c9dae23c4c5293bd52eb4b6db5a4671d4e8c 100644
 --- a/src/main/java/net/minecraft/world/level/block/TntBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/TntBlock.java
 @@ -66,7 +66,7 @@ public class TntBlock extends Block {
@@ -5816,7 +5820,7 @@ index c2e23afc4ba79abcc6d7587b0328e0f9aa63b57a..da34ae0ac7d8ba4c15cdc75e2ef01286
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/block/VineBlock.java b/src/main/java/net/minecraft/world/level/block/VineBlock.java
-index 20d8fd45c8eb9b7f298f6abe69e404647b2c4e44..0ea721b8fc71182b7da0bdc7fcfc1009d972a1ce 100644
+index 4223de1de112266116bfcac4c01d6661e83acd37..ee94680513a04b0226adc07f2022f8d47df22fb3 100644
 --- a/src/main/java/net/minecraft/world/level/block/VineBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/VineBlock.java
 @@ -51,23 +51,23 @@ public class VineBlock extends Block {
@@ -6130,7 +6134,7 @@ index c8268755902ca617b68a9e88135bd487f0ba15c1..4f817672959f86a0e7c02891ebf90777
  
      public int generateHashCode() {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/ChunkGenerator.java b/src/main/java/net/minecraft/world/level/chunk/ChunkGenerator.java
-index 7fe581083b45a11c8e1d6ec513758a090d9b450f..16a32d472b97cc0272e3b2436dd200e8b97d0b6c 100644
+index a2174d699336587b7fa4c1ef00f3c6141eeed65f..0b8db1e77dae8e8162d51d32200d20d7c3f0701f 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -243,7 +243,7 @@ public abstract class ChunkGenerator {
@@ -6143,10 +6147,10 @@ index 7fe581083b45a11c8e1d6ec513758a090d9b450f..16a32d472b97cc0272e3b2436dd200e8
              randomsource.setSeed(this instanceof FlatLevelSource ? 0L : randomstate.legacyLevelSeed());
              }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 11079395d9922b60e2995d2396938aeb11c2529d..d5faef554e6e7e133d8117c1b5f37dee367b816c 100644
+index 73fa9fe6f8bbed2eda42a2fd9afda923d6e51541..f472e0b103463f3b45b6b316d08c50b6a093de78 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -1045,7 +1045,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -1062,7 +1062,7 @@ public class LevelChunk extends ChunkAccess {
  
                  while (shortlistiterator.hasNext()) {
                      Short oshort = (Short) shortlistiterator.next();
@@ -6561,7 +6565,7 @@ index 0cd1fc22490164f81daa6ed878c2e3120ca1a6ce..63ba5d5ee35323de7fbc475cff18e0f9
          throw new IllegalArgumentException(particle.getDataType().toString());
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 90d0459c4b9dd670292bd917e149e9d28d6371a0..f72f61b70c7426d6d8ab05c423cd8c38aa9d59be 100644
+index 0f1e2c4121f81fa4df92b40dbffeccc4b8aca120..9dff3fe3f6fe949e86c45d8c872c3b4b11610b71 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -763,7 +763,7 @@ public final class CraftServer implements Server {
@@ -6583,7 +6587,7 @@ index 90d0459c4b9dd670292bd917e149e9d28d6371a0..f72f61b70c7426d6d8ab05c423cd8c38
                  Thread.currentThread().interrupt(); // This is proper habit for java. If we aren't handling it, pass it on!
              } catch (Exception e) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 3a38eb0b2550cf39bc350e5464f67c5367b60fa9..79d957925da90ee459427d4281de85ed7bcd2739 100644
+index e94319f4f8b2351326707b6bc658f865687f1a71..1a68ede179f898ee4f8b7e6a31dc40b33b393e60 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -368,7 +368,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -9483,19 +9487,19 @@ index c46466931ef425644bff9d63e726f4a65525d868..5723942e9611932bb4ae587202f5f9f7
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 890967c56b28982927c0354cc6dbf296a1561cb9..eeb8bf7f355fc43e6976e872cff8ac1b9c939f2e 100644
+index 096b069213924556d6700faae88a4297614aa0c4..e252944464af0b944691b364e5c8e32c7b33a980 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -624,7 +624,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      @Override
      public <T> @NotNull T getClientOption(com.destroystokyo.paper.@NotNull ClientOption<T> type) {
-         if(com.destroystokyo.paper.ClientOption.SKIN_PARTS.equals(type)) {
+         if (com.destroystokyo.paper.ClientOption.SKIN_PARTS == type) {
 -            return type.getType().cast(new com.destroystokyo.paper.PaperSkinParts(getHandle().getEntityData().get(net.minecraft.world.entity.player.Player.DATA_PLAYER_MODE_CUSTOMISATION)));
 +            return type.getType().cast(new com.destroystokyo.paper.PaperSkinParts(getHandle().getEntityData().<Byte>get(net.minecraft.world.entity.player.Player.DATA_PLAYER_MODE_CUSTOMISATION).intValue()));
-         } else if(com.destroystokyo.paper.ClientOption.CHAT_COLORS_ENABLED.equals(type)) {
+         } else if (com.destroystokyo.paper.ClientOption.CHAT_COLORS_ENABLED == type) {
              return type.getType().cast(Boolean.valueOf(getHandle().canChatInColor()));
-         } else if(com.destroystokyo.paper.ClientOption.CHAT_VISIBILITY.equals(type)) {
-@@ -2511,7 +2511,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         } else if (com.destroystokyo.paper.ClientOption.CHAT_VISIBILITY == type) {
+@@ -2515,7 +2515,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public int getClientViewDistance() {
@@ -9865,260 +9869,3 @@ index 5b44b251ee21bcf42435181d399fd3d46e06e1fc..c21a3d2871e741e37c0078ed1d5c564a
          if (!(color instanceof net.kyori.adventure.text.format.NamedTextColor)) throw new IllegalStateException("Team doesn't have a NamedTextColor");
          return (net.kyori.adventure.text.format.NamedTextColor) color;
      }
-diff --git a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-index 48a7887e94233c032136dd96b1f7e2e15609b1d9..e9f24f60804d029376e28d5ddf554ae81aa60ea5 100644
---- a/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-+++ b/src/main/java/org/yaml/snakeyaml/emitter/Emitter.java
-@@ -325,7 +325,7 @@ public final class Emitter implements Emitable {
-                 indent = Integer.valueOf(0);
-             }
-         } else if (!indentless) {
--            this.indent += bestIndent;
-+            this.indent = this.indent.intValue() + bestIndent;
-         }
-     }
- 
-@@ -387,14 +387,14 @@ public final class Emitter implements Emitable {
-                         writeTagDirective(handleText, prefixText);
-                     }
-                 }
--                boolean implicit = first && !ev.getExplicit() && !canonical
-+                boolean implicit = first && !ev.getExplicit() && !canonical.booleanValue()
-                     && ev.getVersion() == null
-                     && (ev.getTags() == null || ev.getTags().isEmpty())
-                     && !checkEmptyDocument();
-                 if (!implicit) {
-                     writeIndent();
-                     writeIndicator("---", true, false, false);
--                    if (canonical) {
-+                    if (canonical.booleanValue()) {
-                         writeIndent();
-                     }
-                 }
-@@ -459,14 +459,14 @@ public final class Emitter implements Emitable {
-             if (event instanceof ScalarEvent) {
-                 expectScalar();
-             } else if (event instanceof SequenceStartEvent) {
--                if (flowLevel != 0 || canonical || ((SequenceStartEvent) event).isFlow()
-+                if (flowLevel != 0 || canonical.booleanValue() || ((SequenceStartEvent) event).isFlow()
-                     || checkEmptySequence()) {
-                     expectFlowSequence();
-                 } else {
-                     expectBlockSequence();
-                 }
-             } else {// MappingStartEvent
--                if (flowLevel != 0 || canonical || ((MappingStartEvent) event).isFlow()
-+                if (flowLevel != 0 || canonical.booleanValue() || ((MappingStartEvent) event).isFlow()
-                     || checkEmptyMapping()) {
-                     expectFlowMapping();
-                 } else {
-@@ -499,7 +499,7 @@ public final class Emitter implements Emitable {
-         writeIndicator("[", true, true, false);
-         flowLevel++;
-         increaseIndent(true, false);
--        if (prettyFlow) {
-+        if (prettyFlow.booleanValue()) {
-             writeIndent();
-         }
-         state = new ExpectFirstFlowSequenceItem();
-@@ -518,7 +518,7 @@ public final class Emitter implements Emitable {
-                 blockCommentsCollector.collectEvents(event);
-                 writeBlockComment();
-             } else {
--                if (canonical || (column > bestWidth && splitLines) || prettyFlow) {
-+                if (canonical.booleanValue() || (column > bestWidth && splitLines) || prettyFlow.booleanValue()) {
-                     writeIndent();
-                 }
-                 states.push(new ExpectFlowSequenceItem());
-@@ -534,16 +534,16 @@ public final class Emitter implements Emitable {
-             if (event instanceof SequenceEndEvent) {
-                 indent = indents.pop();
-                 flowLevel--;
--                if (canonical) {
-+                if (canonical.booleanValue()) {
-                     writeIndicator(",", false, false, false);
-                     writeIndent();
--                } else if (prettyFlow) {
-+                } else if (prettyFlow.booleanValue()) {
-                     writeIndent();
-                 }
-                 writeIndicator("]", false, false, false);
-                 inlineCommentsCollector.collectEvents();
-                 writeInlineComments();
--                if (prettyFlow) {
-+                if (prettyFlow.booleanValue()) {
-                     writeIndent();
-                 }
-                 state = states.pop();
-@@ -552,7 +552,7 @@ public final class Emitter implements Emitable {
-             } else {
-                 writeIndicator(",", false, false, false);
-                 writeBlockComment();
--                if (canonical || (column > bestWidth && splitLines) || prettyFlow) {
-+                if (canonical.booleanValue() || (column > bestWidth && splitLines) || prettyFlow.booleanValue()) {
-                     writeIndent();
-                 }
-                 states.push(new ExpectFlowSequenceItem());
-@@ -569,7 +569,7 @@ public final class Emitter implements Emitable {
-         writeIndicator("{", true, true, false);
-         flowLevel++;
-         increaseIndent(true, false);
--        if (prettyFlow) {
-+        if (prettyFlow.booleanValue()) {
-             writeIndent();
-         }
-         state = new ExpectFirstFlowMappingKey();
-@@ -587,10 +587,10 @@ public final class Emitter implements Emitable {
-                 writeInlineComments();
-                 state = states.pop();
-             } else {
--                if (canonical || (column > bestWidth && splitLines) || prettyFlow) {
-+                if (canonical.booleanValue() || (column > bestWidth && splitLines) || prettyFlow.booleanValue()) {
-                     writeIndent();
-                 }
--                if (!canonical && checkSimpleKey()) {
-+                if (!canonical.booleanValue() && checkSimpleKey()) {
-                     states.push(new ExpectFlowMappingSimpleValue());
-                     expectNode(false, true, true);
-                 } else {
-@@ -607,11 +607,11 @@ public final class Emitter implements Emitable {
-             if (event instanceof MappingEndEvent) {
-                 indent = indents.pop();
-                 flowLevel--;
--                if (canonical) {
-+                if (canonical.booleanValue()) {
-                     writeIndicator(",", false, false, false);
-                     writeIndent();
-                 }
--                if (prettyFlow) {
-+                if (prettyFlow.booleanValue()) {
-                     writeIndent();
-                 }
-                 writeIndicator("}", false, false, false);
-@@ -622,10 +622,10 @@ public final class Emitter implements Emitable {
-                 writeIndicator(",", false, false, false);
-                 event = blockCommentsCollector.collectEventsAndPoll(event);
-                 writeBlockComment();
--                if (canonical || (column > bestWidth && splitLines) || prettyFlow) {
-+                if (canonical.booleanValue() || (column > bestWidth && splitLines) || prettyFlow.booleanValue()) {
-                     writeIndent();
-                 }
--                if (!canonical && checkSimpleKey()) {
-+                if (!canonical.booleanValue() && checkSimpleKey()) {
-                     states.push(new ExpectFlowMappingSimpleValue());
-                     expectNode(false, true, true);
-                 } else {
-@@ -651,7 +651,7 @@ public final class Emitter implements Emitable {
- 
-     private class ExpectFlowMappingValue implements EmitterState {
-         public void expect() throws IOException {
--            if (canonical || (column > bestWidth) || prettyFlow) {
-+            if (canonical.booleanValue() || (column > bestWidth) || prettyFlow.booleanValue()) {
-                 writeIndent();
-             }
-             writeIndicator(":", true, false, false);
-@@ -698,7 +698,7 @@ public final class Emitter implements Emitable {
-                 }
-                 writeIndicator("-", true, false, true);
-                 if (indentWithIndicator && this.first) {
--                    indent += indicatorIndent;
-+                    indent = indent.intValue() + indicatorIndent;
-                 }
-                 if (!blockCommentsCollector.isEmpty()) {
-                     increaseIndent(false, false);
-@@ -884,7 +884,7 @@ public final class Emitter implements Emitable {
-             if (style == null) {
-                 style = chooseScalarStyle();
-             }
--            if ((!canonical || tag == null) && ((style == null && ev.getImplicit()
-+            if ((!canonical.booleanValue() || tag == null) && ((style == null && ev.getImplicit()
-                 .canOmitTagInPlainScalar()) || (style != null && ev.getImplicit()
-                 .canOmitTagInNonPlainScalar()))) {
-                 preparedTag = null;
-@@ -897,7 +897,7 @@ public final class Emitter implements Emitable {
-         } else {
-             CollectionStartEvent ev = (CollectionStartEvent) event;
-             tag = ev.getTag();
--            if ((!canonical || tag == null) && ev.getImplicit()) {
-+            if ((!canonical.booleanValue() || tag == null) && ev.getImplicit()) {
-                 preparedTag = null;
-                 return;
-             }
-@@ -917,7 +917,7 @@ public final class Emitter implements Emitable {
-         if (analysis == null) {
-             analysis = analyzeScalar(ev.getValue());
-         }
--        if (!ev.isPlain() && ev.getScalarStyle() == DumperOptions.ScalarStyle.DOUBLE_QUOTED || this.canonical) {
-+        if (!ev.isPlain() && ev.getScalarStyle() == DumperOptions.ScalarStyle.DOUBLE_QUOTED || this.canonical.booleanValue()) {
-             return DumperOptions.ScalarStyle.DOUBLE_QUOTED;
-         }
-         if (ev.isPlain() && ev.getImplicit().canOmitTagInPlainScalar()) {
-@@ -1047,7 +1047,7 @@ public final class Emitter implements Emitable {
-             throw new EmitterException("anchor must not be empty");
-         }
-         for (Character invalid : INVALID_ANCHOR) {
--            if (anchor.indexOf(invalid) > -1) {
-+            if (anchor.indexOf(invalid.intValue()) > -1) {
-                 throw new EmitterException("Invalid character '" + invalid + "' in the anchor: " + anchor);
-             }
-         }
-@@ -1257,7 +1257,7 @@ public final class Emitter implements Emitable {
-     void writeIndent() throws IOException {
-         int indent;
-         if (this.indent != null) {
--            indent = this.indent;
-+            indent = this.indent.intValue();
-         } else {
-             indent = 0;
-         }
-@@ -1382,8 +1382,8 @@ public final class Emitter implements Emitable {
-             if (end < text.length()) {
-                 ch = Character.valueOf(text.charAt(end));
-             }
--            if (ch == null || "\"\\\u0085\u2028\u2029\uFEFF".indexOf(ch) != -1
--                || !('\u0020' <= ch && ch <= '\u007E')) {
-+            if (ch == null || "\"\\\u0085\u2028\u2029\uFEFF".indexOf(ch.intValue()) != -1
-+                || !('\u0020' <= ch.intValue() && ch.intValue() <= '\u007E')) {
-                 if (start < end) {
-                     int len = end - start;
-                     this.column += len;
-@@ -1394,23 +1394,23 @@ public final class Emitter implements Emitable {
-                     String data;
-                     if (ESCAPE_REPLACEMENTS.containsKey(ch)) {
-                         data = "\\" + ESCAPE_REPLACEMENTS.get(ch);
--                    } else if (!this.allowUnicode || !StreamReader.isPrintable(ch)) {
-+                    } else if (!this.allowUnicode || !StreamReader.isPrintable(ch.intValue())) {
-                         // if !allowUnicode or the character is not printable,
-                         // we must encode it
--                        if (ch <= '\u00FF') {
--                            String s = "0" + Integer.toString(ch, 16);
-+                        if (ch.intValue() <= '\u00FF') {
-+                            String s = "0" + Integer.toString(ch.intValue(), 16);
-                             data = "\\x" + s.substring(s.length() - 2);
--                        } else if (ch >= '\uD800' && ch <= '\uDBFF') {
-+                        } else if (ch.intValue() >= '\uD800' && ch.intValue() <= '\uDBFF') {
-                             if (end + 1 < text.length()) {
-                                 Character ch2 = Character.valueOf(text.charAt(++end));
--                                String s = "000" + Long.toHexString(Character.toCodePoint(ch, ch2));
-+                                String s = "000" + Long.toHexString(Character.toCodePoint(ch.charValue(), ch2.charValue()));
-                                 data = "\\U" + s.substring(s.length() - 8);
-                             } else {
--                                String s = "000" + Integer.toString(ch, 16);
-+                                String s = "000" + Integer.toString(ch.intValue(), 16);
-                                 data = "\\u" + s.substring(s.length() - 4);
-                             }
-                         } else {
--                            String s = "000" + Integer.toString(ch, 16);
-+                            String s = "000" + Integer.toString(ch.intValue(), 16);
-                             data = "\\u" + s.substring(s.length() - 4);
-                         }
-                     } else {
-@@ -1421,7 +1421,7 @@ public final class Emitter implements Emitable {
-                     start = end + 1;
-                 }
-             }
--            if ((0 < end && end < (text.length() - 1)) && (ch == ' ' || start >= end)
-+            if ((0 < end && end < (text.length() - 1)) && (ch.intValue() == ' ' || start >= end)
-                 && (this.column + (end - start)) > this.bestWidth && split) {
-                 String data;
-                 if (start >= end) {

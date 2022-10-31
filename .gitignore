@@ -8,3 +8,25 @@ catpaper-api
 catpaper-server
 
 run
+
+
+# Server files
+/eula.txt
+/server.properties
+/banned-ips.json
+/banned-players.json
+/ops.json
+/usercache.json
+/version_history.json
+/whitelist.json
+/bukkit.yml
+/commands.yml
+/help.yml
+/permissions.yml
+/spigot.yml
+/world/
+/world_nether/
+/world_the_end/
+/logs/
+/plugins/
+/config/

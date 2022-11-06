@@ -11,5 +11,6 @@ steps:
   - name: test
     image: openjdk:20-slim
     commands:
+      - apt-get install git
       - ./gradlew applyPatches
       - ./gradlew test

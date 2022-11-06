@@ -1,0 +1,82 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 6 Nov 2022 03:03:46 -0600
+Subject: [PATCH] More testing
+
+
+diff --git a/src/test/kotlin/dev/twelveoclock/catpaper/level/ServerLevelTest.kt b/src/test/kotlin/dev/twelveoclock/catpaper/level/ServerLevelTest.kt
+index 59eb634b6d29b1cd1aa8f9cb753204043ce2f3ff..10d981a16491a9e47dc6b17628f0e5b579dd20aa 100644
+--- a/src/test/kotlin/dev/twelveoclock/catpaper/level/ServerLevelTest.kt
++++ b/src/test/kotlin/dev/twelveoclock/catpaper/level/ServerLevelTest.kt
+@@ -32,6 +32,7 @@ import net.minecraft.util.profiling.jfr.JvmProfiler
+ import net.minecraft.world.entity.Entity
+ import net.minecraft.world.entity.EntityType.*
+ import net.minecraft.world.entity.animal.Cat
++import net.minecraft.world.entity.boss.enderdragon.EnderDragon
+ import net.minecraft.world.entity.npc.VillagerTrades
+ import net.minecraft.world.level.DataPackConfig
+ import net.minecraft.world.level.dimension.LevelStem
+@@ -39,6 +40,7 @@ import net.minecraft.world.level.storage.*
+ import org.bukkit.configuration.file.YamlConfiguration
+ import org.bukkit.craftbukkit.entity.CraftCat
+ import org.bukkit.entity.EntityType
++import org.bukkit.entity.Zombie
+ import org.bukkit.scheduler.BukkitTask
+ import org.junit.jupiter.api.BeforeAll
+ import org.junit.jupiter.api.Test
+@@ -50,6 +52,11 @@ import java.text.SimpleDateFormat
+ import java.util.*
+ import java.util.concurrent.Executor
+ import java.util.concurrent.atomic.AtomicReference
++import java.util.concurrent.locks.Lock
++import java.util.concurrent.locks.ReentrantLock
++import kotlin.concurrent.thread
++import kotlin.io.path.Path
++import kotlin.io.path.deleteIfExists
+ import kotlin.time.Duration.Companion.seconds
+ import kotlin.time.measureTime
+ import kotlin.time.toJavaDuration
+@@ -179,6 +186,10 @@ internal object ServerLevelTest {
+ 	@BeforeAll
+ 	fun startServer() {
+ 
++		Path("world/session.lock").deleteIfExists()
++		Path("world_nether/session.lock").deleteIfExists()
++		Path("world_the_end/session.lock").deleteIfExists()
++
+ 		val optionSet = optionParser.parse()
+ 
+ 		SharedConstants.tryDetectVersion()
+@@ -349,29 +360,11 @@ internal object ServerLevelTest {
+ 			}
+ 		}
+ 
+-		File("world/session.lock").deleteOnExit()
+-		File("world_nether/session.lock").deleteOnExit()
+-		File("world_the_end/session.lock").deleteOnExit()
++		Thread.sleep(10000)
+ 	}
+ 
+ 	@Test
+ 	fun testCatTick() {
+-
+-		val levelWorld = dedicatedServer.allLevels.find { it.world.name == "world" }!!
+-
+-		Thread.sleep(10000)
+-
+-		dedicatedServer.execute {
+-
+-			val cat = Cat(CAT, levelWorld)
+-			levelWorld.addFreshEntity(cat)
+-
+-			repeat(10000) {
+-				cat.tick()
+-				println("Here: $cat")
+-			}
+-		}
+-
+-		Thread.sleep(10000)
++		dedicatedServer.tickServer { false }
+ 	}
+ }
+\ No newline at end of file

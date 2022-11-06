@@ -9,9 +9,7 @@ platform:
 steps:
 
   - name: test
-    image: openjdk:20-slim
+    image: openjdk:20-bullseye
     commands:
-      - apt-get update
-      - apt-get install git -y
       - ./gradlew applyPatches
       - ./gradlew check

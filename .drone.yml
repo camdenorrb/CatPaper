@@ -12,4 +12,4 @@ steps:
     image: gradle:latest
     commands:
       - gradle applyPatches
-      - gradle build --no-daemon
+      - gradle test

@@ -1,0 +1,772 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Mon, 31 Oct 2022 20:32:35 -0500
+Subject: [PATCH] Initial testing
+
+
+diff --git a/.gitignore b/.gitignore
+index 37c3a00659ce21623be07317f4f6a45bf990d799..6052d3231397021d37210d976dc9934e17e716d0 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -45,3 +45,24 @@ dependency-reduced-pom.xml
+ # vs code
+ /.vscode
+ /.factorypath
++
++# Server files
++/eula.txt
++/server.properties
++/banned-ips.json
++/banned-players.json
++/ops.json
++/usercache.json
++/version_history.json
++/whitelist.json
++/bukkit.yml
++/commands.yml
++/help.yml
++/permissions.yml
++/spigot.yml
++/world/
++/world_nether/
++/world_the_end/
++/logs/
++/plugins/
++/config/
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 38b7001fba54499e0ac5c560e997620902b92a57..9c8c67fea967dd7774623c6e58431d9c594dcbe1 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -7,6 +7,7 @@ plugins {
+     `maven-publish`
+     id("com.github.johnrengelman.shadow")
+     kotlin("jvm") version "1.7.20"
++    id("org.jetbrains.kotlinx.benchmark") version "0.4.5"
+ }
+ 
+ configurations.all {
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 11e4aa0def11d3a4cda6c765a82caf794c8e1d3c..10a3c76fca3997ce0cbca8f1a782bda5140bf9a0 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -86,10 +86,42 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+     @Nullable
+     private final TextFilterClient textFilterClient;
+ 
++    private boolean shouldTick;
++
++    public DedicatedServer(
++        joptsimple.OptionSet options,
++        DataPackConfig datapackconfiguration,
++        DynamicOps<Tag> registryreadops,
++        Thread thread,
++        LevelStorageSource.LevelStorageAccess convertable_conversionsession,
++        PackRepository resourcepackrepository,
++        WorldStem worldstem,
++        DedicatedServerSettings dedicatedserversettings,
++        DataFixer datafixer,
++        Services services,
++        ChunkProgressListenerFactory worldloadlistenerfactory
++    ) {
++        this(options, datapackconfiguration, registryreadops, thread, convertable_conversionsession, resourcepackrepository, worldstem, dedicatedserversettings, datafixer, services, true, worldloadlistenerfactory);
++    }
++
+     // CraftBukkit start - Signature changed
+-    public DedicatedServer(joptsimple.OptionSet options, DataPackConfig datapackconfiguration, DynamicOps<Tag> registryreadops, Thread thread, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PackRepository resourcepackrepository, WorldStem worldstem, DedicatedServerSettings dedicatedserversettings, DataFixer datafixer, Services services, ChunkProgressListenerFactory worldloadlistenerfactory) {
++    public DedicatedServer(
++        joptsimple.OptionSet options,
++        DataPackConfig datapackconfiguration,
++        DynamicOps<Tag> registryreadops,
++        Thread thread,
++        LevelStorageSource.LevelStorageAccess convertable_conversionsession,
++        PackRepository resourcepackrepository,
++        WorldStem worldstem,
++        DedicatedServerSettings dedicatedserversettings,
++        DataFixer datafixer,
++        Services services,
++        boolean shouldTick,
++        ChunkProgressListenerFactory worldloadlistenerfactory
++    ) {
+         super(options, datapackconfiguration, registryreadops, thread, convertable_conversionsession, resourcepackrepository, worldstem, Proxy.NO_PROXY, datafixer, services, worldloadlistenerfactory);
+         // CraftBukkit end
++        this.shouldTick = shouldTick;
+         this.settings = dedicatedserversettings;
+         this.rconConsoleSource = new RconConsoleSource(this);
+         this.textFilterClient = TextFilterClient.createFromConfig(dedicatedserversettings.getProperties().textFilteringConfig);
+@@ -443,7 +475,9 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+ 
+     @Override
+     public void tickChildren(BooleanSupplier shouldKeepTicking) {
+-        super.tickChildren(shouldKeepTicking);
++        if (shouldTick) {
++            super.tickChildren(shouldKeepTicking);
++        }
+         this.handleConsoleInputs();
+     }
+ 
+diff --git a/src/test/kotlin/dev/twelveoclock/catpaper/level/ServerLevelTest.kt b/src/test/kotlin/dev/twelveoclock/catpaper/level/ServerLevelTest.kt
+index 6a156eefac1de4baca6be8e9aaa8000270f7d073..59eb634b6d29b1cd1aa8f9cb753204043ce2f3ff 100644
+--- a/src/test/kotlin/dev/twelveoclock/catpaper/level/ServerLevelTest.kt
++++ b/src/test/kotlin/dev/twelveoclock/catpaper/level/ServerLevelTest.kt
+@@ -1,339 +1,377 @@
+ package dev.twelveoclock.catpaper.level
+ 
+-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
+-import com.mojang.datafixers.DSL
+-import com.mojang.datafixers.DataFixerBuilder
+-import com.mojang.datafixers.schemas.Schema
+-import com.mojang.serialization.Dynamic
+-import com.mojang.serialization.Lifecycle
++import com.destroystokyo.paper.profile.PaperAuthenticationService
++import com.google.common.base.Charsets
++import com.mojang.datafixers.util.Pair
++import com.mojang.serialization.DynamicOps
+ import io.papermc.paper.configuration.PaperConfigurations
++import io.papermc.paper.util.ServerEnvironment
+ import joptsimple.OptionParser
++import net.minecraft.CrashReport
+ import net.minecraft.SharedConstants
++import net.minecraft.Util
+ import net.minecraft.commands.Commands
+-import net.minecraft.core.Holder
+-import net.minecraft.core.MappedRegistry
+-import net.minecraft.core.Registry
+ import net.minecraft.core.RegistryAccess
+-import net.minecraft.resources.ResourceKey
+-import net.minecraft.resources.ResourceLocation
++import net.minecraft.nbt.NbtOps
++import net.minecraft.nbt.Tag
++import net.minecraft.resources.RegistryOps
+ import net.minecraft.server.*
+-import net.minecraft.server.dedicated.DedicatedPlayerList
++import net.minecraft.server.WorldLoader.InitConfig
+ import net.minecraft.server.dedicated.DedicatedServer
+ import net.minecraft.server.dedicated.DedicatedServerSettings
+-import net.minecraft.server.level.ServerLevel
+ import net.minecraft.server.level.progress.LoggerChunkProgressListener
+ import net.minecraft.server.packs.PackType
++import net.minecraft.server.packs.repository.FolderRepositorySource
+ import net.minecraft.server.packs.repository.PackRepository
+-import net.minecraft.server.packs.resources.MultiPackResourceManager
+-import net.minecraft.server.players.PlayerList
+-import net.minecraft.world.Difficulty
++import net.minecraft.server.packs.repository.PackSource
++import net.minecraft.server.packs.repository.ServerPacksSource
++import net.minecraft.server.packs.resources.ResourceManager
++import net.minecraft.util.datafix.DataFixers
++import net.minecraft.util.profiling.jfr.Environment
++import net.minecraft.util.profiling.jfr.JvmProfiler
++import net.minecraft.world.entity.Entity
++import net.minecraft.world.entity.EntityType.*
++import net.minecraft.world.entity.animal.Cat
++import net.minecraft.world.entity.npc.VillagerTrades
+ import net.minecraft.world.level.DataPackConfig
+-import net.minecraft.world.level.GameRules
+-import net.minecraft.world.level.GameType
+-import net.minecraft.world.level.LevelSettings
+ import net.minecraft.world.level.dimension.LevelStem
+-import net.minecraft.world.level.levelgen.WorldGenSettings
+-import net.minecraft.world.level.storage.DataVersion
+-import net.minecraft.world.level.storage.LevelStorageSource
+-import net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess
+-import net.minecraft.world.level.storage.PlayerDataStorage
+-import net.minecraft.world.level.storage.PrimaryLevelData
+-import org.bukkit.Bukkit
+-import org.bukkit.World
+-import org.bukkit.block.Biome
++import net.minecraft.world.level.storage.*
+ import org.bukkit.configuration.file.YamlConfiguration
+-import org.bukkit.craftbukkit.CraftServer
+-import org.bukkit.craftbukkit.Main
+-import org.bukkit.generator.WorldInfo
++import org.bukkit.craftbukkit.entity.CraftCat
++import org.bukkit.entity.EntityType
++import org.bukkit.scheduler.BukkitTask
++import org.junit.jupiter.api.BeforeAll
+ import org.junit.jupiter.api.Test
+ import org.spigotmc.SpigotConfig
+ import java.io.File
++import java.io.InputStreamReader
+ import java.net.Proxy
+ import java.text.SimpleDateFormat
+ import java.util.*
+-import java.util.concurrent.Executors
+-import java.util.stream.Stream
+-import kotlin.io.path.createTempDirectory
+-
+-internal class ServerLevelTest {
+-
+-	val optionParser = OptionParser().apply {
+-			acceptsAll(listOf("?", "help"), "Show the help")
+-			acceptsAll(listOf("c", "config"), "Properties file to use")
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(File("server.properties"))
+-				.describedAs("Properties file")
+-			acceptsAll(listOf("P", "plugins"), "Plugin directory to use")
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(File("plugins"))
+-				.describedAs("Plugin directory")
+-			acceptsAll(listOf("h", "host", "server-ip"), "Host to listen on")
+-				.withRequiredArg()
+-				.ofType(String::class.java)
+-				.describedAs("Hostname or IP")
+-			acceptsAll(listOf("W", "world-dir", "universe", "world-container"), "World container")
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(File("."))
+-				.describedAs("Directory containing worlds")
+-			acceptsAll(listOf("w", "world", "level-name"), "World name")
+-				.withRequiredArg()
+-				.ofType(String::class.java)
+-				.describedAs("World name")
+-			acceptsAll(listOf("p", "port", "server-port"), "Port to listen on")
+-				.withRequiredArg()
+-				.ofType(Int::class.java)
+-				.describedAs("Port")
+-			acceptsAll(listOf("o", "online-mode"), "Whether to use online authentication")
+-				.withRequiredArg()
+-				.ofType(Boolean::class.java)
+-				.describedAs("Authentication")
+-			acceptsAll(listOf("s", "size", "max-players"), "Maximum amount of players")
+-				.withRequiredArg()
+-				.ofType(Int::class.java)
+-				.describedAs("Server size")
+-			acceptsAll(
+-				listOf("d", "date-format"),
+-				"Format of the date to display in the console (for log entries)"
+-			)
+-				.withRequiredArg()
+-				.ofType(SimpleDateFormat::class.java)
+-				.describedAs("Log date format")
+-			acceptsAll(listOf("log-pattern"), "Specfies the log filename pattern")
+-				.withRequiredArg()
+-				.ofType(String::class.java)
+-				.defaultsTo("server.log")
+-				.describedAs("Log filename")
+-			acceptsAll(listOf("log-limit"), "Limits the maximum size of the log file (0 = unlimited)")
+-				.withRequiredArg()
+-				.ofType(Int::class.java)
+-				.defaultsTo(Integer.valueOf(0))
+-				.describedAs("Max log size")
+-			acceptsAll(listOf("log-count"), "Specified how many log files to cycle through")
+-				.withRequiredArg()
+-				.ofType(Int::class.java)
+-				.defaultsTo(Integer.valueOf(1))
+-				.describedAs("Log count")
+-			acceptsAll(listOf("log-append"), "Whether to append to the log file")
+-				.withRequiredArg()
+-				.ofType(Boolean::class.java)
+-				.defaultsTo(java.lang.Boolean.TRUE)
+-				.describedAs("Log append")
+-			acceptsAll(listOf("log-strip-color"), "Strips color codes from log file")
+-			acceptsAll(listOf("b", "bukkit-settings"), "File for bukkit settings")
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(File("bukkit.yml"))
+-				.describedAs("Yml file")
+-			acceptsAll(listOf("C", "commands-settings"), "File for command settings")
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(File("commands.yml"))
+-				.describedAs("Yml file")
+-			acceptsAll(listOf("forceUpgrade"), "Whether to force a world upgrade")
+-			acceptsAll(listOf("eraseCache"), "Whether to force cache erase during world upgrade")
+-			acceptsAll(listOf("nogui"), "Disables the graphical console")
+-			acceptsAll(listOf("nojline"), "Disables jline and emulates the vanilla console")
+-			acceptsAll(listOf("noconsole"), "Disables the console")
+-			acceptsAll(listOf("v", "version"), "Show the CraftBukkit Version")
+-			acceptsAll(listOf("demo"), "Demo mode")
+-			acceptsAll(
+-				listOf("initSettings"),
+-				"Only create configuration files and then exit"
+-			) // SPIGOT-5761: Add initSettings option
+-
+-			// Spigot Start
+-			acceptsAll(listOf("S", "spigot-settings"), "File for spigot settings")
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(File("spigot.yml"))
+-				.describedAs("Yml file")
+-			// Spigot End
+-
+-			// Paper Start
+-			acceptsAll(listOf("paper-dir", "paper-settings-directory"), "Directory for Paper settings")
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(File(PaperConfigurations.CONFIG_DIR))
+-				.describedAs("Config directory")
+-			acceptsAll(listOf("paper", "paper-settings"), "File for Paper settings")
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(File("paper.yml"))
+-				.describedAs("Yml file")
+-			acceptsAll(
+-				listOf("add-plugin", "add-extra-plugin-jar"),
+-				"Specify paths to extra plugin jars to be loaded in addition to those in the plugins folder. This argument can be specified multiple times, once for each extra plugin jar path."
+-			)
+-				.withRequiredArg()
+-				.ofType(File::class.java)
+-				.defaultsTo(arrayOf())
+-				.describedAs("Jar file")
+-			// Paper end
+-
+-			// Paper start
+-			acceptsAll(listOf("server-name"), "Name of the server")
+-				.withRequiredArg()
+-				.ofType(String::class.java)
+-				.defaultsTo("Unknown Server")
+-				.describedAs("Name")
+-			// Paper end
+-	}
+-
+-	@Test
+-	fun test() {
+-
+-		SharedConstants.setVersion(WorldVersion)
+-		Bootstrap.bootStrap()
+-
+-		val levelStorageSource = LevelStorageSource(createTempDirectory("Saves"), createTempDirectory("Backup"), DataFixerBuilder(1).buildUnoptimized()).LevelStorageAccess(
+-			"levelID",
+-			ResourceKey.create(Registry.LEVEL_STEM_REGISTRY, ResourceLocation("world")),
++import java.util.concurrent.Executor
++import java.util.concurrent.atomic.AtomicReference
++import kotlin.time.Duration.Companion.seconds
++import kotlin.time.measureTime
++import kotlin.time.toJavaDuration
++
++internal object ServerLevelTest {
++
++	private val optionParser = OptionParser().apply {
++		acceptsAll(listOf("?", "help"), "Show the help")
++		acceptsAll(listOf("c", "config"), "Properties file to use")
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(File("server.properties"))
++			.describedAs("Properties file")
++		acceptsAll(listOf("P", "plugins"), "Plugin directory to use")
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(File("plugins"))
++			.describedAs("Plugin directory")
++		acceptsAll(listOf("h", "host", "server-ip"), "Host to listen on")
++			.withRequiredArg()
++			.ofType(String::class.java)
++			.describedAs("Hostname or IP")
++		acceptsAll(listOf("W", "world-dir", "universe", "world-container"), "World container")
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(File("."))
++			.describedAs("Directory containing worlds")
++		acceptsAll(listOf("w", "world", "level-name"), "World name")
++			.withRequiredArg()
++			.ofType(String::class.java)
++			.describedAs("World name")
++		acceptsAll(listOf("p", "port", "server-port"), "Port to listen on")
++			.withRequiredArg()
++			.ofType(Int::class.java)
++			.describedAs("Port")
++		acceptsAll(listOf("o", "online-mode"), "Whether to use online authentication")
++			.withRequiredArg()
++			.ofType(Boolean::class.java)
++			.describedAs("Authentication")
++		acceptsAll(listOf("s", "size", "max-players"), "Maximum amount of players")
++			.withRequiredArg()
++			.ofType(Int::class.java)
++			.describedAs("Server size")
++		acceptsAll(
++			listOf("d", "date-format"),
++			"Format of the date to display in the console (for log entries)"
++		)
++			.withRequiredArg()
++			.ofType(SimpleDateFormat::class.java)
++			.describedAs("Log date format")
++		acceptsAll(listOf("log-pattern"), "Specfies the log filename pattern")
++			.withRequiredArg()
++			.ofType(String::class.java)
++			.defaultsTo("server.log")
++			.describedAs("Log filename")
++		acceptsAll(listOf("log-limit"), "Limits the maximum size of the log file (0 = unlimited)")
++			.withRequiredArg()
++			.ofType(Int::class.java)
++			.defaultsTo(Integer.valueOf(0))
++			.describedAs("Max log size")
++		acceptsAll(listOf("log-count"), "Specified how many log files to cycle through")
++			.withRequiredArg()
++			.ofType(Int::class.java)
++			.defaultsTo(Integer.valueOf(1))
++			.describedAs("Log count")
++		acceptsAll(listOf("log-append"), "Whether to append to the log file")
++			.withRequiredArg()
++			.ofType(Boolean::class.java)
++			.defaultsTo(java.lang.Boolean.TRUE)
++			.describedAs("Log append")
++		acceptsAll(listOf("log-strip-color"), "Strips color codes from log file")
++		acceptsAll(listOf("b", "bukkit-settings"), "File for bukkit settings")
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(File("bukkit.yml"))
++			.describedAs("Yml file")
++		acceptsAll(listOf("C", "commands-settings"), "File for command settings")
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(File("commands.yml"))
++			.describedAs("Yml file")
++		acceptsAll(listOf("forceUpgrade"), "Whether to force a world upgrade")
++		acceptsAll(listOf("eraseCache"), "Whether to force cache erase during world upgrade")
++		acceptsAll(listOf("nogui"), "Disables the graphical console")
++		acceptsAll(listOf("nojline"), "Disables jline and emulates the vanilla console")
++		acceptsAll(listOf("noconsole"), "Disables the console")
++		acceptsAll(listOf("v", "version"), "Show the CraftBukkit Version")
++		acceptsAll(listOf("demo"), "Demo mode")
++		acceptsAll(
++			listOf("initSettings"),
++			"Only create configuration files and then exit"
+ 		)
+ 
+-		val registry = MappedRegistry(Registry.LEVEL_STEM_REGISTRY, Lifecycle.stable(), null)
+-		registry.register(LevelStem.OVERWORLD, LevelStem(Holder.direct(null), null), Lifecycle.stable())
+-
+-		val levelData = PrimaryLevelData(
+-			LevelSettings("World", GameType.SURVIVAL, false, Difficulty.EASY, false, GameRules(), DataPackConfig.DEFAULT),
+-			WorldGenSettings(0, false, false, registry),
+-			Lifecycle.stable()
++		acceptsAll(listOf("S", "spigot-settings"), "File for spigot settings")
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(File("spigot.yml"))
++			.describedAs("Yml file")
++		acceptsAll(listOf("paper-dir", "paper-settings-directory"), "Directory for Paper settings")
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(File(PaperConfigurations.CONFIG_DIR))
++			.describedAs("Config directory")
++		acceptsAll(listOf("paper", "paper-settings"), "File for Paper settings")
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(File("paper.yml"))
++			.describedAs("Yml file")
++		acceptsAll(
++			listOf("add-plugin", "add-extra-plugin-jar"),
++			"Specify paths to extra plugin jars to be loaded in addition to those in the plugins folder. This argument can be specified multiple times, once for each extra plugin jar path."
+ 		)
++			.withRequiredArg()
++			.ofType(File::class.java)
++			.defaultsTo(arrayOf())
++			.describedAs("Jar file")
++		acceptsAll(listOf("server-name"), "Name of the server")
++			.withRequiredArg()
++			.ofType(String::class.java)
++			.defaultsTo("Unknown Server")
++			.describedAs("Name")
++	}
+ 
+-		val server = MinecraftServer.spin { thread ->
++	private lateinit var dedicatedServer: DedicatedServer
+ 
+-				val server = DedicatedServer(
+-					optionParser.parse(),
+-					DataPackConfig.DEFAULT,
+-					null,
+-					thread,
+-					levelStorageSource,
+-					PackRepository(PackType.SERVER_DATA),
+-					WorldStem(
+-						MultiPackResourceManager(PackType.SERVER_DATA, emptyList()),
+-						ReloadableServerResources(Frozen, Commands.CommandSelection.ALL, 0),
+-						Frozen,
+-						levelData
+-					),
+-					DedicatedServerSettings(optionParser.parse()),
+-					DataFixer,
+-					Services.create(
+-						YggdrasilAuthenticationService(Proxy.NO_PROXY),
+-						File("usercache.json"),
+-						File.createTempFile("session", ".json"),
+-						optionParser.parse()
+-					),
+-				) { LoggerChunkProgressListener(10) }
++	@JvmStatic
++	@BeforeAll
++	fun startServer() {
+ 
+-			/*
+-				Bukkit.setServer(
+-					CraftServer(
+-						server,
+-						DedicatedPlayerList(server, Frozen, PlayerDataStorage(levelStorageSource, DataFixer))
+-					)
+-				)*/
++		val optionSet = optionParser.parse()
+ 
+-				return@spin server
+-			}
++		SharedConstants.tryDetectVersion()
++		CrashReport.preload()
+ 
+-		server.allLevels.forEach {
+-			println(it)
++		if (optionSet.has("jfrProfile")) {
++			JvmProfiler.INSTANCE.start(Environment.SERVER)
+ 		}
+ 
+-		SpigotConfig.config = YamlConfiguration()
++		Bootstrap.bootStrap()
++		Bootstrap.validate()
++		Util.startTimerHackThread()
++
++		val dedicatedserversettings = DedicatedServerSettings(optionSet) // CraftBukkit - CLI argument support
++		dedicatedserversettings.forceSave()
++		val bukkitConfiguration =
++			PaperConfigurations.loadLegacyConfigFile(optionSet.valueOf("bukkit-settings") as File)
++		val spigotConfiguration =
++			PaperConfigurations.loadLegacyConfigFile(optionSet.valueOf("spigot-settings") as File)
++		if (optionSet.has("initSettings")) { // CraftBukkit
++			val configFile = optionSet.valueOf("bukkit-settings") as File
++			val configuration = YamlConfiguration.loadConfiguration(configFile)
++			configuration.options().copyDefaults(true)
++			configuration.setDefaults(
++				YamlConfiguration.loadConfiguration(
++					InputStreamReader(
++						net.minecraft.server.Main::class.java.classLoader.getResourceAsStream("configurations/bukkit.yml")!!,
++						Charsets.UTF_8
++					)
++				)
++			)
++			configuration.save(configFile)
++			val commandFile = optionSet.valueOf("commands-settings") as File
++			val commandsConfiguration = YamlConfiguration.loadConfiguration(commandFile)
++			commandsConfiguration.options().copyDefaults(true)
++			commandsConfiguration.setDefaults(
++				YamlConfiguration.loadConfiguration(
++					InputStreamReader(
++						net.minecraft.server.Main::class.java.classLoader.getResourceAsStream("configurations/commands.yml")!!,
++						Charsets.UTF_8
++					)
++				)
++			)
++			commandsConfiguration.save(commandFile)
++			return
++		}
+ 
+-		Thread.sleep(10000)
+-		//server.server =
++		if (ServerEnvironment.isMissingAWTDependency()) {
++			println("You are using a headless JRE distribution.")
++			println("This distribution is missing certain graphic libraries that the Minecraft server needs to function.")
++			println("For instructions on how to install the non-headless JRE, see https://docs.papermc.io/misc/java-install")
++			return
++		}
+ 
+-		val serverLevel = ServerLevel(
+-			server,
+-			Executors.newSingleThreadExecutor(),
+-			levelStorageSource,
+-			levelData,
+-			ResourceKey.create(Registry.DIMENSION_REGISTRY, ResourceLocation("world")),
+-			LevelStem(Holder.direct(null), null),
+-			LoggerChunkProgressListener(10),
+-			false,
+-			0L,
+-			mutableListOf(),
+-			false,
+-			World.Environment.NORMAL,
+-			ChunkGenerator,
+-			BiomeProvider,
+-		)
++		SpigotConfig.disabledAdvancements = spigotConfiguration.getStringList("advancements.disabled")
+ 
+-		//serverLevel.tick { true }
+-	}
++		var userCacheFile = File(Services.USERID_CACHE_FILE)
+ 
+-	object WorldVersion : net.minecraft.WorldVersion {
+-		override fun getId(): String {
+-			TODO("Not yet implemented")
++		val file: File
++		if (optionSet.has("universe")) {
++			file = optionSet.valueOf("universe") as File // CraftBukkit
++			userCacheFile = File(file, Services.USERID_CACHE_FILE)
++		} else {
++			file = File(bukkitConfiguration.getString("settings.world-container", ".")!!)
+ 		}
+ 
+-		override fun getName(): String {
+-			return "meow"
++		val services = Services.create(PaperAuthenticationService(Proxy.NO_PROXY), file, userCacheFile, optionSet)
++		val worldName = Optional.ofNullable(optionSet.valueOf("world") as? String)
++			.orElse(dedicatedserversettings.properties.levelName)
++		val convertable = LevelStorageSource.createDefault(file.toPath())
++		val convertable_conversionsession = convertable.createAccess(worldName, LevelStem.OVERWORLD)
++		val worldinfo = convertable_conversionsession.summary
++		if (worldinfo != null) {
++			if (worldinfo.requiresManualConversion()) {
++				println("This world must be opened in an older version (like 1.6.4) to be safely converted")
++				return
++			}
++			if (!worldinfo.isCompatible) {
++				println("This world was created by an incompatible version.")
++				return
++			}
+ 		}
+-
+-		override fun getReleaseTarget(): String {
+-			TODO("Not yet implemented")
++		val flag: Boolean = optionSet.has("safeMode")
++		if (flag) {
++			println("Safe mode active, only vanilla datapack will be loaded")
+ 		}
++		val resourcepackrepository = PackRepository(
++			PackType.SERVER_DATA,
++			ServerPacksSource(),
++			FolderRepositorySource(
++				convertable_conversionsession.getLevelPath(LevelResource.DATAPACK_DIR).toFile(),
++				PackSource.WORLD
++			)
++		)
+ 
+-		override fun getWorldVersion(): Int = 0
+-
+-		override fun getProtocolVersion(): Int {
+-			TODO("Not yet implemented")
+-		}
++		val bukkitDataPackFolder =
++			File(convertable_conversionsession.getLevelPath(LevelResource.DATAPACK_DIR).toFile(), "bukkit")
++		bukkitDataPackFolder.mkdirs()
++
++		val mcMeta = File(bukkitDataPackFolder, "pack.mcmeta")
++		mcMeta.writeText(
++			"""
++			|{
++	        |    "pack": {
++	        |        "description": "Data pack for resources provided by Bukkit plugins",
++	        |        "pack_format": ${SharedConstants.getCurrentVersion().packVersion}
++	        |    }
++			|}""".trimMargin()
++		)
+ 
+-		override fun getBuildTime(): Date {
+-			TODO("Not yet implemented")
+-		}
++		val config = AtomicReference<DataPackConfig>()
++		val ops = AtomicReference<DynamicOps<Tag>>()
+ 
+-		override fun isStable(): Boolean {
+-			TODO("Not yet implemented")
++		val datapackconfiguration =
++			Objects.requireNonNullElse(convertable_conversionsession.dataPacks, DataPackConfig.DEFAULT)
++		val worldloader_b = WorldLoader.PackConfig(resourcepackrepository, datapackconfiguration, flag)
++		val worldloader_a = InitConfig(
++			worldloader_b,
++			Commands.CommandSelection.DEDICATED,
++			dedicatedserversettings.properties.functionPermissionLevel
++		)
++		val worldStem = Util.blockUntilDone { executor: Executor? ->
++			WorldStem.load(
++				worldloader_a,
++				{ iresourcemanager: ResourceManager?, datapackconfiguration1: DataPackConfig ->
++					val iregistrycustom_e = RegistryAccess.builtinCopy()
++					val dynamicops: DynamicOps<Tag> =
++						RegistryOps.createAndLoad(
++							NbtOps.INSTANCE,
++							iregistrycustom_e,
++							iresourcemanager
++						)
++					config.set(datapackconfiguration1)
++					ops.set(dynamicops)
++					Pair.of(
++						null,
++						iregistrycustom_e.freeze()
++					)
++				}, Util.backgroundExecutor(), executor
++			)
++		}.get()
++
++		Class.forName(VillagerTrades::class.java.name)
++
++		dedicatedServer = MinecraftServer.spin { thread ->
++
++			return@spin DedicatedServer(
++				optionSet,
++				config.get(),
++				ops.get(),
++				thread,
++				convertable_conversionsession,
++				resourcepackrepository,
++				worldStem,
++				dedicatedserversettings,
++				DataFixers.getDataFixer(),
++				services,
++				false
++			) { radius: Int ->
++				LoggerChunkProgressListener(radius)
++			}.apply {
++				if (optionSet.has("port")) {
++					val port = (optionSet.valueOf("port") as Int).toInt()
++					if (port > 0) {
++						this.port = port
++					}
++				}
++			}
+ 		}
+ 
+-		override fun getDataVersion(): DataVersion {
+-			TODO("Not yet implemented")
+-		}
++		File("world/session.lock").deleteOnExit()
++		File("world_nether/session.lock").deleteOnExit()
++		File("world_the_end/session.lock").deleteOnExit()
+ 	}
+ 
+-	object ChunkGenerator : org.bukkit.generator.ChunkGenerator()
++	@Test
++	fun testCatTick() {
+ 
+-	object DataFixer : com.mojang.datafixers.DataFixer {
+-		override fun <T : Any?> update(
+-			type: DSL.TypeReference?,
+-			input: Dynamic<T>?,
+-			version: Int,
+-			newVersion: Int,
+-		): Dynamic<T> {
+-			TODO("Not yet implemented")
+-		}
++		val levelWorld = dedicatedServer.allLevels.find { it.world.name == "world" }!!
+ 
+-		override fun getSchema(key: Int): Schema {
+-			TODO("Not yet implemented")
+-		}
++		Thread.sleep(10000)
+ 
+-	}
++		dedicatedServer.execute {
+ 
+-	object Frozen : RegistryAccess.Frozen {
+-		override fun <E : Any?> ownedRegistry(key: ResourceKey<out Registry<out E>>): Optional<Registry<E>> {
+-			return Optional.of(MappedRegistry(Registry.LEVEL_STEM_REGISTRY, Lifecycle.stable(), null) as MappedRegistry<E>)
+-		}
++			val cat = Cat(CAT, levelWorld)
++			levelWorld.addFreshEntity(cat)
+ 
+-		override fun ownedRegistries(): Stream<RegistryAccess.RegistryEntry<*>> {
+-			TODO("Not yet implemented")
++			repeat(10000) {
++				cat.tick()
++				println("Here: $cat")
++			}
+ 		}
+-	}
+ 
+-	object BiomeProvider : org.bukkit.generator.BiomeProvider() {
+-		override fun getBiome(worldInfo: WorldInfo, x: Int, y: Int, z: Int): Biome {
+-			TODO("Not yet implemented")
+-		}
+-		override fun getBiomes(worldInfo: WorldInfo): MutableList<Biome> {
+-			TODO("Not yet implemented")
+-		}
++		Thread.sleep(10000)
+ 	}
+-
+ }
+\ No newline at end of file

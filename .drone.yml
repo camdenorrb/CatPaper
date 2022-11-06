@@ -14,4 +14,4 @@ steps:
       - apt-get update
       - apt-get install git -y
       - ./gradlew applyPatches
-      - ./gradlew test
+      - ./gradlew check

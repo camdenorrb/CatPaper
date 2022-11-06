@@ -9,7 +9,7 @@ platform:
 steps:
 
   - name: test
-    image: gradle:latest
+    image: openjdk:20-slim
     commands:
-      - gradle applyPatches
-      - gradle test
+      - ./gradlew applyPatches
+      - ./gradlew test

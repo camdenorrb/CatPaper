@@ -729,10 +729,10 @@ index c83672427324bd068ed52916f700b68446a226f6..c37584940ce45d7420f5b44102c85192
  
      public StaticMethodHandleEventExecutor(@NotNull Class<? extends Event> eventClass, @NotNull Method m) {
 diff --git a/src/main/java/com/destroystokyo/paper/event/executor/asm/ASMEventExecutorGenerator.java b/src/main/java/com/destroystokyo/paper/event/executor/asm/ASMEventExecutorGenerator.java
-index b8d5c13980858dc27fb5383726b7ebcaf14adcb8..fe7c8654a134c636b8ececf314ffffbc3ffb6028 100644
+index 084c31af1a7ba32bb4c3dc8f16f67fd09ce0b6a4..1f912a6f640ba37b58531bf3213363914630fae9 100644
 --- a/src/main/java/com/destroystokyo/paper/event/executor/asm/ASMEventExecutorGenerator.java
 +++ b/src/main/java/com/destroystokyo/paper/event/executor/asm/ASMEventExecutorGenerator.java
-@@ -42,7 +42,7 @@ public class ASMEventExecutorGenerator {
+@@ -45,7 +45,7 @@ public class ASMEventExecutorGenerator {
          return writer.toByteArray();
      }
  
@@ -6713,13 +6713,13 @@ index 617459afaea20213e948b1010278ab0131e08338..79bc6ded4f0ead623ef966f361cbe722
  
      public ServerCommandEvent(@NotNull final CommandSender sender, @NotNull final String command) {
 diff --git a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
-index 5b8a7b897d9f9d8df3705eef36388f41be4531a6..3b4429126d03d5511ac07817f84fbcce2676502e 100644
+index 77173e1ca3ce972632608c620aa1a2fffed27e04..bb55cb0a8769803e5455f65633794d6ad03e61b8 100644
 --- a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
 +++ b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
-@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
- public class ServerListPingEvent extends ServerEvent implements Iterable<Player> {
+@@ -21,7 +21,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
      private static final int MAGIC_PLAYER_COUNT = Integer.MIN_VALUE;
      private static final HandlerList handlers = new HandlerList();
+     private final String hostname;
 -    private final InetAddress address;
 +    private final @NotNull InetAddress address;
      private final boolean shouldSendChatPreviews;
@@ -6837,7 +6837,7 @@ index 64f21f684912ed158d03040f442c32983ab49ea7..83679875fdc7dbc1dc79c0e29e2b8595
      public VehicleEnterEvent(@NotNull final Vehicle vehicle, @NotNull final Entity entered) {
          super(vehicle);
 diff --git a/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java b/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
-index 089c644caf10a4d55a5db4f7aa7d9b5c9764c17a..ce01c577dc81ba2024f217dc4ccacb8fe31357ed 100644
+index f7f8d6274d49895f0b7db92a84bc224d936022ba..d6c63f2226b514f7e00b4e2c981db73f0b574307 100644
 --- a/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
 +++ b/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
 @@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;

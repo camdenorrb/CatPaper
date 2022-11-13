@@ -23,10 +23,10 @@ index 57318617df5c7bf0afa0f2763376f034890e93f2..a48de84674d1a5dc1b81143b510a3854
                  name = name.replace("Entity", "");
                  name = name.replace("$", "_");
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 02eaa31927ab93168ffbc92954f376314f51f70a..fbd0457e83d12334e48b8dd363aaca5173431e80 100644
+index 8b2a66c637aa5b1f5ed12081a5fda6f39431df93..80ef961d45841d03f16945b89c9528495f3c0b14 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1909,8 +1909,8 @@ public class ServerPlayer extends Player {
+@@ -1911,8 +1911,8 @@ public class ServerPlayer extends Player {
      public String getIpAddress() {
          String s = this.connection.connection.getRemoteAddress().toString();
  

@@ -2,7 +2,7 @@ plugins {
 	java
 	`maven-publish`
 	id("com.github.johnrengelman.shadowCustom") version "7.1.3-SNAPSHOT" apply false
-	id("io.papermc.paperweight.patcher") version "1.3.8"
+	id("io.papermc.paperweight.patcher") version "1.3.9"
 
 }
 

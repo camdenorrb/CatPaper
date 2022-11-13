@@ -5,10 +5,10 @@ Subject: [PATCH] Update dependencies
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 896b9da6e17b7642dce629f48a1057cd7cbeb4d2..cfe371c3b06e5058d8667252776acd731283c995 100644
+index 64a2451e4c3639ace04dbb7e75f210e7922cacdc..cdfbff66fd92c04448e99298414be28a926ad722 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -8,6 +8,10 @@ plugins {
+@@ -6,6 +6,10 @@ plugins {
      id("com.github.johnrengelman.shadow")
  }
  
@@ -19,7 +19,7 @@ index 896b9da6e17b7642dce629f48a1057cd7cbeb4d2..cfe371c3b06e5058d8667252776acd73
  dependencies {
  
      // CatPaper start
-@@ -26,14 +30,14 @@ dependencies {
+@@ -24,14 +28,14 @@ dependencies {
            all its classes to check if they are plugins.
            Scanning takes about 1-2 seconds so adding this speeds up the server start.
       */
@@ -41,7 +41,7 @@ index 896b9da6e17b7642dce629f48a1057cd7cbeb4d2..cfe371c3b06e5058d8667252776acd73
      implementation("org.spongepowered:configurate-yaml:4.1.2") // Paper - config files
      implementation("commons-lang:commons-lang:2.6")
      implementation("net.fabricmc:mapping-io:0.3.0") // Paper - needed to read mappings for stacktrace deobfuscation
-@@ -42,19 +46,19 @@ dependencies {
+@@ -40,19 +44,19 @@ dependencies {
          isTransitive = false
      }
      // Paper end

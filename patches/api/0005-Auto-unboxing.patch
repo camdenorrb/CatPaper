@@ -38,19 +38,6 @@ index 140cc5c5ae6ac5d9776dfaab5307530a91ab823c..51d51a82cedc7f5d13ae5a1e19463740
      }
  
      @NotNull
-diff --git a/src/main/java/com/destroystokyo/paper/entity/villager/Reputation.java b/src/main/java/com/destroystokyo/paper/entity/villager/Reputation.java
-index 1cc9ef255df888cb7dd7f7f2c5014e818d1be613..01dcf6cd3faf1fd5b4a328c3da337b1e66b90167 100644
---- a/src/main/java/com/destroystokyo/paper/entity/villager/Reputation.java
-+++ b/src/main/java/com/destroystokyo/paper/entity/villager/Reputation.java
-@@ -26,7 +26,7 @@ public final class Reputation {
-         Preconditions.checkNotNull(reputation, "reputation cannot be null");
- 
-         for (Map.Entry<ReputationType, Integer> entry : reputation.entrySet()) {
--            setReputation(entry.getKey(), entry.getValue());
-+            setReputation(entry.getKey(), entry.getValue().intValue());
-         }
-     }
- 
 diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java
 index 492ced5040893c5f6090819592b20d2fade867f7..e5844a1a20014536a3f9857755a585481f17b11d 100644
 --- a/src/main/java/com/destroystokyo/paper/event/player/PlayerClientOptionsChangeEvent.java

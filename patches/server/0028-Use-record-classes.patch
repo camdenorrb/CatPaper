@@ -823,10 +823,10 @@ index a510390bf4b657e7d601c3b4d7e28a7bc01222de..83a4c081f6b5df0d37d3467ef6634643
          }
  
 diff --git a/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java b/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
-index 719f5679a73a3e12f1d04aebb6d73383ba1b615c..f0d78f533def53a2a12d2ccc7a2571a994e689ac 100644
+index baab01b22ec9a3f8143d701e91aa55a6dd3642cf..75dae137c693c4d1fb2bc23c90262ac4005a42f7 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
-@@ -274,35 +274,26 @@ public class GossipContainer {
+@@ -289,35 +289,26 @@ public class GossipContainer {
          // Paper end
      }
  
@@ -853,8 +853,8 @@ index 719f5679a73a3e12f1d04aebb6d73383ba1b615c..f0d78f533def53a2a12d2ccc7a2571a9
 -            return "GossipEntry{target=" + this.target + ", type=" + this.type + ", value=" + this.value + "}";
 -        }
 -
--        public <T> Dynamic<T> store(DynamicOps<T> dynamicOps) {
--            return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Target"), UUIDUtil.CODEC.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new), dynamicOps.createString("Type"), dynamicOps.createString(this.type.id), dynamicOps.createString("Value"), dynamicOps.createInt(this.value))));
+-        public <T> Dynamic<T> store(DynamicOps<T> ops) {
+-            return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("Target"), UUIDUtil.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new), ops.createString("Type"), ops.createString(this.type.id), ops.createString("Value"), ops.createInt(this.value))));
 -        }
 -
 -        public static DataResult<GossipContainer.GossipEntry> load(Dynamic<?> dynamic) {
@@ -875,8 +875,8 @@ index 719f5679a73a3e12f1d04aebb6d73383ba1b615c..f0d78f533def53a2a12d2ccc7a2571a9
 +			return "GossipEntry{target=" + this.target + ", type=" + this.type + ", value=" + this.value + "}";
 +		}
 +
-+		public <T> Dynamic<T> store(DynamicOps<T> dynamicOps) {
-+			return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Target"), UUIDUtil.CODEC.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new), dynamicOps.createString("Type"), dynamicOps.createString(this.type.id), dynamicOps.createString("Value"), dynamicOps.createInt(this.value))));
++		public <T> Dynamic<T> store(DynamicOps<T> ops) {
++			return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("Target"), UUIDUtil.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new), ops.createString("Type"), ops.createString(this.type.id), ops.createString("Value"), ops.createInt(this.value))));
 +		}
 +
 +		public static DataResult<GossipEntry> load(Dynamic<?> dynamic) {
@@ -988,7 +988,7 @@ index 550234b82d2b29acab77f0ff453a512412270910..07d3633231c91f8aad55f907d0335d1c
              } else {
                  throw new IllegalArgumentException("Unknown vibration destination " + vibration.getDestination());
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 972e1c5afb38f712509daf302812c814da2f6d27..3461d7197b5c17685619d218ee2dddd92aaa3e01 100644
+index d496480f972ab14d00c7da701792cca759086aa4..26942e5fd307ab782f3808879119faff27412cae 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -2121,7 +2121,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -1001,7 +1001,7 @@ index 972e1c5afb38f712509daf302812c814da2f6d27..3461d7197b5c17685619d218ee2dddd9
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
-index fcc1cb281ab55d37bf0f452e5b7d87ca5e7110cc..1ad0da95a02d47e7ff60737fa638b04018ef93da 100644
+index b2a159f6716228ac5907edcdf2acab018a406914..2677cdda84004bf16a997211e41fb61ba0b602f0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
 +++ b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
 @@ -8,17 +8,7 @@ import org.bukkit.craftbukkit.util.CraftNamespacedKey;
@@ -1024,13 +1024,13 @@ index fcc1cb281ab55d37bf0f452e5b7d87ca5e7110cc..1ad0da95a02d47e7ff60737fa638b040
      @Override
      public @NotNull NamespacedKey getKey() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancementDisplay.java b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancementDisplay.java
-index f559a700af2dd47af6b04733f84f092e79ea74c7..6766a2ca879ea04149e1dd6aa7decf9f8df0036c 100644
+index 49692deef7b1b9b7903e7d9ed8c68fe6a38bb4d4..07631507ce2f421ce089b8987369d384e9c3fea8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancementDisplay.java
 +++ b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancementDisplay.java
-@@ -8,60 +8,50 @@ import org.bukkit.inventory.ItemStack;
- import org.jetbrains.annotations.NotNull;
+@@ -9,60 +9,50 @@ import org.jetbrains.annotations.NotNull;
  
  
+ @Deprecated // Paper
 -public class CraftAdvancementDisplay implements org.bukkit.advancement.AdvancementDisplay {
 -
 -    private final DisplayInfo handle;

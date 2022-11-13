@@ -40,10 +40,10 @@ index aa6dbe801e0859541a325550717037ca8bf889e9..71814a6df07d410f467a36d04059c0e8
                  }
  
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index cfd32f66ab3a1972af44ae606823b894b132a03b..e033b84ce797ec5921ca0941bdf7744d5e6d0919 100644
+index 5f686ce44a6a77019329fe242e83b6c2c654bcb4..f0c409654089c6942ec7e80e0526398e28c095ea 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -310,7 +310,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -311,7 +311,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      }
  
      public void setListener(PacketListener listener) {
@@ -79,7 +79,7 @@ index 78c69e270661248ac3384f10fd2aac6777e0388d..94fc50feb168bf0af67c4c639e228cd2
  
      public String toString() {
 diff --git a/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java b/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
-index beb63538b3fc19b88e03027afe03a07ce3417b21..3ae1d8f429dfa9806d9e99cbaeef3059b0267e5b 100644
+index 9de10162f14a6f909354f6d0757aed307d5c9b16..63aea8e0af83868635e3e8422e5cdaa0ad9083c7 100644
 --- a/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
 +++ b/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
 @@ -43,7 +43,7 @@ public class SynchedEntityData {
@@ -105,10 +105,10 @@ index 0ece775ca7e63184f79fcdd1aa7ed5c16fc9bc9e..ee9e874be379150265d744b8e805fd58
                  ItemIdFix.ITEM_NAMES.put(409, "minecraft:prismarine_shard");
                  ItemIdFix.ITEM_NAMES.put(410, "minecraft:prismarine_crystals");
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 01bb98746d6718ac9aff7874ae65ccbc34fed92a..be05d3f37374179ae09f0110f3ca7e9e55e888cd 100644
+index 6c46a31bb446e4e0917026cf3d4a323588e219d1..131c97e3f23b28e2ba29d42f387e1e78af76f46e 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -189,7 +189,7 @@ public class Main {
+@@ -192,7 +192,7 @@ public class Main {
                  Main.LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
              }
  
@@ -117,7 +117,7 @@ index 01bb98746d6718ac9aff7874ae65ccbc34fed92a..be05d3f37374179ae09f0110f3ca7e9e
              // CraftBukkit start
              File bukkitDataPackFolder = new File(convertable_conversionsession.getLevelPath(LevelResource.DATAPACK_DIR).toFile(), "bukkit");
              if (!bukkitDataPackFolder.exists()) {
-@@ -340,7 +340,7 @@ public class Main {
+@@ -343,7 +343,7 @@ public class Main {
              if (i > 0) {
                  int j = worldupgrader.getConverted() + worldupgrader.getSkipped();
  
@@ -142,10 +142,10 @@ index 075b8f7dcd60efd7027c208ffc5e7b22840ebc1f..3832f00c73f86bccad2726e68d22a48e
  
                  ImageIO.write(bufferedimage, "PNG", bytearrayoutputstream);
 diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
-index ed5cbe5dce317b6cc439f157a8f67a03d4ee5aa4..44d88259a54864f902d20dc1dc2e31c95a763790 100644
+index dfbf640d723d280d531d2068cbe4d4fe0f1bb2b1..8006a6a4f102f1fb4bbb3dcb1a49d1d559b020d8 100644
 --- a/src/main/java/net/minecraft/server/level/ServerEntity.java
 +++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
-@@ -247,7 +247,7 @@ public class ServerEntity {
+@@ -248,7 +248,7 @@ public class ServerEntity {
  
      public void removePairing(ServerPlayer player) {
          this.entity.stopSeenByPlayer(player);
@@ -194,7 +194,7 @@ index 1629d74976fff9ec791343577c8dbe228d99d3c7..06633ce2506c100cec8020a2ef7f0181
                      this.sendFlushAndClose(channelhandlercontext, this.createReply(s));
                      break;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 56f14298971731918f8a002b6a07b8bbaebe9302..1b30f1ac3a0b29359829cf8a28e22c52c1a55f1e 100644
+index fae7b0aa41fa151dca33bb8a3f0695c4bfff7dde..86d88bc50913dfa9bc3aed2bd2ce6ef25fc5c72f 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -656,7 +656,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -233,7 +233,7 @@ index 56f14298971731918f8a002b6a07b8bbaebe9302..1b30f1ac3a0b29359829cf8a28e22c52
              }
          }
      }
-@@ -3087,7 +3087,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3088,7 +3088,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                  int i = packet.getSlotNum();
  
                  if (!this.player.containerMenu.isValidSlotIndex(i)) {
@@ -243,10 +243,10 @@ index 56f14298971731918f8a002b6a07b8bbaebe9302..1b30f1ac3a0b29359829cf8a28e22c52
                      boolean flag = packet.getStateId() != this.player.containerMenu.getStateId();
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index ea9b56fd6ae1d5577da5bd3e0c38abfeec8f3646..2b74dee0a0c04b5046e61cec1a75b85c0b250b6e 100644
+index fbd9807e3a9ad555999fa99e06211ecaf455a091..27de61bc9eb1b622ef3623c25adf9a54d9be81a6 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -269,8 +269,8 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+@@ -268,8 +268,8 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
  
      @Override
      public void handleHello(ServerboundHelloPacket packet) {
@@ -257,7 +257,7 @@ index ea9b56fd6ae1d5577da5bd3e0c38abfeec8f3646..2b74dee0a0c04b5046e61cec1a75b85c
          // Paper start - validate usernames
          if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation) {
              if (!this.iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation && !validateUsername(packet.name())) {
-@@ -330,7 +330,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
+@@ -329,7 +329,7 @@ public class ServerLoginPacketListenerImpl implements TickablePacketListener, Se
  
      @Override
      public void handleKey(ServerboundKeyPacket packet) {
@@ -280,7 +280,7 @@ index 1cc4a8f90eaec869f926b364ff457a45feeaf615..8e594797aeaeac8d7161fc7e50b32614
              } else {
                  return UUIDUtil.getOrCreatePlayerUUID(new GameProfile((UUID) null, name));
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 34b604c2b4a4a26e7d9d83f30571b00eb9ea18f4..49d9320dc3b0592d51df3ad1386c1ba3fe62a241 100644
+index fe85592bb05ebc61e9aa1ebf5f9145de419ae5fe..0a9eba8e8e3441b254eb1961d41b4bd8855c5610 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -397,7 +397,7 @@ public abstract class PlayerList {
@@ -642,7 +642,7 @@ index 803a9fba8f5830c7b0d6f2c5770f32c07e2ab4ca..8552766b3e1f4efb5d3a17d1b4c47cf7
          this.targetSelector.addGoal(3, this.attackPlayersGoal);
      }
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Zombie.java b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
-index b9ad5b4717629c72238cfce718923cb8bb79cbbc..a9a1ee5754420f0c9f0bdcea01587ca2f8341412 100644
+index ddc4e8ab5ceb38659610552afdfbe3a0fad7bc19..604b5c40bc498734d019beabaf3761890cc2fbae 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Zombie.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
 @@ -117,7 +117,7 @@ public class Zombie extends Monster {
@@ -703,10 +703,10 @@ index eaf84715681783cdc8395279271dca79657d7129..430a163036cc77fa37317b576503ad83
      public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<Villager, Holder<PoiType>>> POI_MEMORIES = ImmutableMap.of(MemoryModuleType.HOME, (entityvillager, holder) -> {
          return holder.is(PoiTypes.HOME);
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index a0ff9f297662b04f16382a62684c413eb2b2f25c..2ba9428b4cb3df61690e4c0ce7cab728a87b95ac 100644
+index d3e77906d0b66b9ad70b44766ee050a2cdb6a0b7..0650b091309788b8c68c741f3554015d39b80402 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -2037,7 +2037,7 @@ public abstract class Player extends LivingEntity {
+@@ -2046,7 +2046,7 @@ public abstract class Player extends LivingEntity {
  
      @Override
      public Iterable<ItemStack> getHandSlots() {
@@ -869,7 +869,7 @@ index 00cb9dafc711607f28529ea9afbcdb492b1b2595..6fa74d1031988ff3be99b57e3bae24c5
          int i = 0;
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index d53f1895a853d2e33d79df3c7eeb98cd3b5d87be..4d358e22a348a5b37f4dea1df3371e5153f476ab 100644
+index a7f7f245bf338a3bf105917a832d22f6a1023e77..f63e677da96409deac76918d98a92de5e1796862 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -1307,7 +1307,7 @@ public class LevelChunk extends ChunkAccess {
@@ -882,7 +882,7 @@ index d53f1895a853d2e33d79df3c7eeb98cd3b5d87be..4d358e22a348a5b37f4dea1df3371e51
  
                          gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
-index 840940469f968849ada464b960319ce2bd40349a..5febf5fa9f8ca661d5047c8ce1b66df3e73f1fc5 100644
+index 8de0ad3fde95afce74facfbb80f03a8387ec6ab9..c6260cd5a1934bb04ed8277ed04958b9889ec575 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
 @@ -154,7 +154,7 @@ public class ChunkSerializer {
@@ -897,14 +897,14 @@ index 840940469f968849ada464b960319ce2bd40349a..5febf5fa9f8ca661d5047c8ce1b66df3
 @@ -824,7 +824,7 @@ public class ChunkSerializer {
                          ChunkPos chunkcoordintpair1 = new ChunkPos(i);
  
-                         if (chunkcoordintpair1.getChessboardDistance(chunkcoordintpair) > 8) {
--                            ChunkSerializer.LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", new Object[]{minecraftkey, chunkcoordintpair1, chunkcoordintpair});
-+                            ChunkSerializer.LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", minecraftkey, chunkcoordintpair1, chunkcoordintpair);
+                         if (chunkcoordintpair1.getChessboardDistance(pos) > 8) {
+-                            ChunkSerializer.LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", new Object[]{minecraftkey, chunkcoordintpair1, pos});
++                            ChunkSerializer.LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", minecraftkey, chunkcoordintpair1, pos);
                              return false;
                          } else {
                              return true;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
-index d617acd8c66d0230fed254924f2d9027365ba117..afa4aa6f167191e4b883b2622989966a8890ad99 100644
+index 091fbf633397dcb5d99449d47c80ac6552d3e215..470ebc41fb334e3edf73066e41389ac6d4abdc3a 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 @@ -445,7 +445,7 @@ public class RegionFile implements AutoCloseable {
@@ -951,8 +951,8 @@ index d617acd8c66d0230fed254924f2d9027365ba117..afa4aa6f167191e4b883b2622989966a
                          if (this.canRecalcHeader && this.recalculateHeader()) {
                              return this.getChunkDataInputStream(pos);
 @@ -701,7 +701,7 @@ public class RegionFile implements AutoCloseable {
-     private DataInputStream createExternalChunkInputStream(ChunkPos chunkcoordintpair, byte b0) throws IOException {
-         Path path = this.getExternalChunkPath(chunkcoordintpair);
+     private DataInputStream createExternalChunkInputStream(ChunkPos pos, byte flags) throws IOException {
+         Path path = this.getExternalChunkPath(pos);
  
 -        if (!Files.isRegularFile(path, new LinkOption[0])) {
 +        if (!Files.isRegularFile(path)) {
@@ -976,7 +976,7 @@ index d617acd8c66d0230fed254924f2d9027365ba117..afa4aa6f167191e4b883b2622989966a
 +            RegionFile.LOGGER.warn("Saving oversized chunk {} ({} bytes} to external file {}", pos, Integer.valueOf(i1), path);
              j1 = 1;
              k1 = this.usedSectors.allocate(j1);
-             regionfile_b = this.writeToExternalFile(path, bytebuffer);
+             regionfile_b = this.writeToExternalFile(path, buf);
 diff --git a/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java b/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 index cddf192c01ec2669f5a871cfeb032c6cd62decb3..8101927b020c02a0a2986c7227ce2a1a93905d23 100644
 --- a/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java

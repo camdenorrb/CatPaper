@@ -10859,24 +10859,6 @@ index 0d30e0b21b9024df939a9d070bd4a99b217e7c12..aded99dc535d1e52883be665767a1f3e
          return types;
      }
  }
-diff --git a/src/main/java/com/destroystokyo/paper/entity/villager/ReputationConstructor.java b/src/main/java/com/destroystokyo/paper/entity/villager/ReputationConstructor.java
-index 0f10c333d88f2e1c56a6c7f22d421084adfd3789..3c26feec67b6441d3c9dc5b34888bf783108d4fd 100644
---- a/src/main/java/com/destroystokyo/paper/entity/villager/ReputationConstructor.java
-+++ b/src/main/java/com/destroystokyo/paper/entity/villager/ReputationConstructor.java
-@@ -1,9 +1,12 @@
- package com.destroystokyo.paper.entity.villager;
- // Must have own package due to package-level constructor.
- 
-+import org.jetbrains.annotations.NotNull;
-+
-+
- public final class ReputationConstructor {
-     // Abuse the package-level constructor.
--    public static Reputation construct(int[] values) {
-+    public static @NotNull Reputation construct(int[] values) {
-         return new Reputation(values);
-     }
- }
 diff --git a/src/main/java/com/destroystokyo/paper/gui/GraphColor.java b/src/main/java/com/destroystokyo/paper/gui/GraphColor.java
 index a4e641fdcccd3efcd1a2865dc6dc28d50671b995..7b86ef2d58e2534309ab4c33d1e26407bbef2ad3 100644
 --- a/src/main/java/com/destroystokyo/paper/gui/GraphColor.java
@@ -18575,7 +18557,7 @@ index 5ece75566cf0e43397ae00ac19ecb712b614c2e9..e7db2cd771924532dd5f11d5b1c01c36
      }
  
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 9ad7c417616e68b1d14a702aca38b2582feb896c..3b2c49de47bba8180908c26a6d28d5703071d568 100644
+index d1edafb3e44a4d17586e0e9c4fca30389b529074..e5148b24febab3f635f07195b501f852a9481963 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -105,6 +105,7 @@ import net.minecraft.world.level.storage.LevelStorageSource;
@@ -18739,7 +18721,7 @@ index 22ba53d9f8866327752b0c33b517adb02c50b684..21a82083a6ae4a3d3c19265cd6ee3742
      @Override
      protected void defineSynchedData() {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index f2908cf61ff28bef44fcf46b15cf585e942fd7ce..fe6d17dd1e7c429ba47ae74e6c8ee4d60ce4b41b 100644
+index 6fa47becd0f83ac4273ef3a10c314aa27b08184b..2b8dfa7c17ab881e055e2e021097aa8cf45166d4 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -2504,7 +2504,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -18760,7 +18742,7 @@ index f2908cf61ff28bef44fcf46b15cf585e942fd7ce..fe6d17dd1e7c429ba47ae74e6c8ee4d6
          if (!this.level.paperConfig().scoreboards.allowNonPlayerEntitiesOnScoreboards && !(this instanceof Player)) { return null; } // Paper
          return this.level.getScoreboard().getPlayersTeam(this.getScoreboardName());
      }
-@@ -3322,7 +3322,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3326,7 +3326,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -18769,7 +18751,7 @@ index f2908cf61ff28bef44fcf46b15cf585e942fd7ce..fe6d17dd1e7c429ba47ae74e6c8ee4d6
          // CraftBukkit start
          return this.teleportTo(destination, null);
      }
-@@ -3417,7 +3417,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3421,7 +3421,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -18778,7 +18760,7 @@ index f2908cf61ff28bef44fcf46b15cf585e942fd7ce..fe6d17dd1e7c429ba47ae74e6c8ee4d6
          // CraftBukkit start
          if (destination == null) {
              return null;
-@@ -3829,7 +3829,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3833,7 +3833,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -18787,7 +18769,7 @@ index f2908cf61ff28bef44fcf46b15cf585e942fd7ce..fe6d17dd1e7c429ba47ae74e6c8ee4d6
          return null;
      }
  
-@@ -4306,7 +4306,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4310,7 +4310,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -19193,10 +19175,10 @@ index c3085ad5410b41d9c7703b28ca835dbee3f49ee7..a580fed73924384db5e262fe62284e31
          RandomSource randomsource = world.getRandom();
  
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Zombie.java b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
-index 97b3082dc020043fa38d9e5e4591102f97519ed3..ec4434c700fc9f656bcb70c977962fbfb6ab6f72 100644
+index dc9402e343d3bc0b0d38e3a7834521a976f89c39..45737503da2f2bd94506d2b15c07c765f633802a 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Zombie.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
-@@ -382,17 +382,17 @@ public class Zombie extends Monster {
+@@ -381,17 +381,17 @@ public class Zombie extends Monster {
      }
  
      @Override
@@ -19217,7 +19199,7 @@ index 97b3082dc020043fa38d9e5e4591102f97519ed3..ec4434c700fc9f656bcb70c977962fbf
          return SoundEvents.ZOMBIE_DEATH;
      }
  
-@@ -509,7 +509,7 @@ public class Zombie extends Monster {
+@@ -508,7 +508,7 @@ public class Zombie extends Monster {
  
      @Nullable
      @Override
@@ -19252,7 +19234,7 @@ index 770a91fcc351a2d1de4762c0fd9bae2b49c363b5..ee4444d92c763fab6cbeb29fe87cc657
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 9b131f0a827413e9f5d6d0f7491c5481576cb8b1..5ee2a2b5ff8a3ff8de9a0eac772464d76c25bc9f 100644
+index 55bdf4f91be6750dcfd0589c566fbefde4512a1e..d4122ccb3f2cc04ba7c35f35ebdb11417da3ad0c 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -712,7 +712,7 @@ public abstract class Player extends LivingEntity {
@@ -19519,7 +19501,7 @@ index 4404fa3a083d7ef4578244c924fa4859b9b6edfd..260631dc0d3c227e557f7f01ad13bed9
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/NaturalSpawner.java b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
-index 272bdc088f440cf94850dff6e626331b4b5d6539..fcef8e937aae75947f9022b20308938680b48031 100644
+index 7c7408b9686c8ff945c30892d45914c60f6c5e4a..7d35e5a7220708b8537ec64c820bf3e4dfddb79b 100644
 --- a/src/main/java/net/minecraft/world/level/NaturalSpawner.java
 +++ b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
 @@ -47,6 +47,7 @@ import net.minecraft.world.level.material.FluidState;
@@ -19553,7 +19535,7 @@ index 7c92decbf0f4a10cc31f821a249749009d8b1485..e9ac42d6e94ffddb030bfbee25c74e60
                  if (removed != null) {
                      biomes.remove(removed);
 diff --git a/src/main/java/net/minecraft/world/level/block/BaseFireBlock.java b/src/main/java/net/minecraft/world/level/block/BaseFireBlock.java
-index a76c452dc5c2069a3071aec31bfb3e977867161e..76cf691d235f286a1fe0235092f320490210026e 100644
+index 2ca656b1323f38eac419563a8306a9d86eaca29f..720bf115e84f3e5de861561359aff2b025cb98c1 100644
 --- a/src/main/java/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/BaseFireBlock.java
 @@ -18,6 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
@@ -19790,7 +19772,7 @@ index 54e57791f6220325d05939decae46dc4d91d1906..1637e8b4ccd3154bf6fcbf9e928a376d
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 7350b73f4af4ae347532dc579ab151447c298e09..f2baf9267c0bf39531f9f2d704e7365ef39887c8 100644
+index 5e54cf312160e537d2fe6e6fedc618160359330e..12bf8a25668878e60fabc467c39de2fada24271d 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -548,7 +548,7 @@ public class LevelChunk extends ChunkAccess {
@@ -19812,7 +19794,7 @@ index 7350b73f4af4ae347532dc579ab151447c298e09..f2baf9267c0bf39531f9f2d704e7365e
          BlockEntity tileentity = level.capturedTileEntities.get(pos);
          if (tileentity == null) {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java b/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
-index 13b62e8e6569c154547bc0d5626488c5b0839f20..1587998d2569b65da0901292f9da940600eab0f5 100644
+index c24b4c6a560aab2df07783b3481981deb8571a50..1675fd4dbb2046b6dca806b3cd2c78221c88d940 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
 @@ -143,7 +143,7 @@ public class ProtoChunk extends ChunkAccess {
@@ -19852,7 +19834,7 @@ index 13b62e8e6569c154547bc0d5626488c5b0839f20..1587998d2569b65da0901292f9da9406
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
-index 6e9af1401918995e3c268eea7d4a74af94707242..65136b6d4661fad4f81a1517e434e059669a7bd4 100644
+index 5a425be023d77f0370d102dfb52427147849ac1a..cb9eabe97f30da8bb1ff9fec729eb5416603b877 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
 @@ -172,7 +172,7 @@ public class ChunkStorage implements AutoCloseable {
@@ -22872,7 +22854,7 @@ index 8dbb608e18e9826107f6ca1d93b7033bb1e3407c..f193401fbc4ce3c923571e63e7315b58
          Validate.notNull(entityType, "EntityType cannot be null");
          Validate.isTrue(newValue >= 0, "Value must be greater than or equal to 0");
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 81ab184cb5235913ef43ae4d7f1ac82bce927519..f04c8a05cead6fa9cca749bedf84f7492777bedd 100644
+index 55d83a9a691d11c9408d2c3260c3e77dfb51b97e..ce70319a56124292f714cbf8bb5132aa0e597e6e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -135,6 +135,9 @@ import org.bukkit.util.Consumer;
@@ -23429,7 +23411,7 @@ index 81ab184cb5235913ef43ae4d7f1ac82bce927519..f04c8a05cead6fa9cca749bedf84f749
      @Override
 -    public void setDifficulty(Difficulty difficulty) {
 +    public void setDifficulty(@NotNull Difficulty difficulty) {
-         this.getHandle().serverLevelData.setDifficulty(net.minecraft.world.Difficulty.byId(difficulty.getValue()));
+         this.getHandle().getServer().setDifficulty(this.getHandle(), net.minecraft.world.Difficulty.byId(difficulty.getValue()), true); // Paper - don't skip other difficulty-changing logic
      }
  
      @Override
@@ -23999,7 +23981,7 @@ index f30621be24c6c3a4f173436fce1ad1c13507c84f..38cebaf5dc66210fe94191483c972d53
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
-index 0a46eeefa7d704350321828166f0049d497e3e41..870c71deb23129c3585249cf301e003b9dc77be6 100644
+index 77fe2fbec4902317b9d2a959ff8cfd00fe18b60b..6039955122e1cda261a3ceb18371e7f30bb32231 100644
 --- a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
 +++ b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
 @@ -6,6 +6,8 @@ import net.minecraft.advancements.Advancement;
@@ -24026,7 +24008,7 @@ index 0a46eeefa7d704350321828166f0049d497e3e41..870c71deb23129c3585249cf301e003b
          return Collections.unmodifiableCollection(this.handle.getCriteria().keySet());
      }
  
-@@ -41,7 +43,7 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
+@@ -46,7 +48,7 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
      }
  
      @Override
@@ -24035,7 +24017,7 @@ index 0a46eeefa7d704350321828166f0049d497e3e41..870c71deb23129c3585249cf301e003b
          final var children = com.google.common.collect.ImmutableList.<org.bukkit.advancement.Advancement>builder();
          for (Advancement advancement : this.handle.getChildren()) {
              children.add(advancement.bukkit);
-@@ -50,7 +52,7 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
+@@ -55,7 +57,7 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
      }
  
      @Override
@@ -24045,7 +24027,7 @@ index 0a46eeefa7d704350321828166f0049d497e3e41..870c71deb23129c3585249cf301e003b
          while (advancement.getParent() != null) {
              advancement = advancement.getParent();
 diff --git a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancementDisplay.java b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancementDisplay.java
-index 4aa8cda2bf72627b153e636a408fb3971caf2309..f559a700af2dd47af6b04733f84f092e79ea74c7 100644
+index e29d7c6e1cef10a76c8630855fada11cee583d30..49692deef7b1b9b7903e7d9ed8c68fe6a38bb4d4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancementDisplay.java
 +++ b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancementDisplay.java
 @@ -5,6 +5,8 @@ import org.bukkit.advancement.AdvancementDisplayType;
@@ -24055,9 +24037,9 @@ index 4aa8cda2bf72627b153e636a408fb3971caf2309..f559a700af2dd47af6b04733f84f092e
 +import org.jetbrains.annotations.NotNull;
 +
  
+ @Deprecated // Paper
  public class CraftAdvancementDisplay implements org.bukkit.advancement.AdvancementDisplay {
- 
-@@ -19,17 +21,17 @@ public class CraftAdvancementDisplay implements org.bukkit.advancement.Advanceme
+@@ -20,17 +22,17 @@ public class CraftAdvancementDisplay implements org.bukkit.advancement.Advanceme
      }
  
      @Override
@@ -24078,7 +24060,7 @@ index 4aa8cda2bf72627b153e636a408fb3971caf2309..f559a700af2dd47af6b04733f84f092e
          return CraftItemStack.asBukkitCopy(this.handle.getIcon());
      }
  
-@@ -59,7 +61,7 @@ public class CraftAdvancementDisplay implements org.bukkit.advancement.Advanceme
+@@ -60,7 +62,7 @@ public class CraftAdvancementDisplay implements org.bukkit.advancement.Advanceme
      }
  
      @Override
@@ -39303,7 +39285,7 @@ index 634a5099fb6faea03615783f57e643ad0083fa30..4784fb926963a332a9088478b10bec77
              this.getHandle().setBoundOrigin(null);
          } else {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-index f0b910df1ee471b4d72d97c6197ab14f2854976e..9cd4bf6ba5b488b451cee18535ff812db2b9c608 100644
+index d1f5e1292246e0fb252d3d3409bbf37cc8166bbc..6ac7d64625ea8effc0f197db71b9b83f018d2534 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
 @@ -20,6 +20,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -42108,10 +42090,10 @@ index 81dfefbb1adda0d0b89b912b42d461bdc2250dcc..21f69d1a53d5f331fa9b77d757ceb291
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-index a2eeaad280569c9ab2c02d2885611db50462bf2b..5df093b45ed67d4b0706fb810742db1e95680004 100644
+index 567449faf1a5d805c44b5a2685904e919f20ade8..b32829f2e070b831ebcbcb998aea52eba19f2218 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-@@ -30,14 +30,16 @@ import org.bukkit.entity.HumanEntity;
+@@ -29,14 +29,16 @@ import org.bukkit.entity.HumanEntity;
  import org.bukkit.event.inventory.InventoryType;
  import org.bukkit.inventory.Inventory;
  import org.bukkit.inventory.InventoryView;
@@ -42130,7 +42112,7 @@ index a2eeaad280569c9ab2c02d2885611db50462bf2b..5df093b45ed67d4b0706fb810742db1e
          super(CraftContainer.getNotchInventoryType(view.getTopInventory()), id);
          this.view = view;
          // TODO: Do we need to check that it really is a CraftInventory?
-@@ -47,37 +49,37 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -46,37 +48,37 @@ public class CraftContainer extends AbstractContainerMenu {
          this.setupSlots(top, bottom, player);
      }
  
@@ -42175,7 +42157,7 @@ index a2eeaad280569c9ab2c02d2885611db50462bf2b..5df093b45ed67d4b0706fb810742db1e
                  return inventory instanceof CraftInventoryCustom custom ? custom.getTitle() : inventory.getType().getDefaultTitle(); // Paper
              }
          }, player, id);
-@@ -88,7 +90,7 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -87,7 +89,7 @@ public class CraftContainer extends AbstractContainerMenu {
          return this.view;
      }
  
@@ -42184,7 +42166,7 @@ index a2eeaad280569c9ab2c02d2885611db50462bf2b..5df093b45ed67d4b0706fb810742db1e
          switch (inventory.getType()) {
              case PLAYER:
              case CHEST:
-@@ -157,7 +159,7 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -156,7 +158,7 @@ public class CraftContainer extends AbstractContainerMenu {
          }
      }
  
@@ -42193,7 +42175,7 @@ index a2eeaad280569c9ab2c02d2885611db50462bf2b..5df093b45ed67d4b0706fb810742db1e
          int windowId = -1;
          switch (this.cachedType) {
              case CREATIVE:
-@@ -247,7 +249,7 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -244,7 +246,7 @@ public class CraftContainer extends AbstractContainerMenu {
          }
      }
  
@@ -42202,7 +42184,7 @@ index a2eeaad280569c9ab2c02d2885611db50462bf2b..5df093b45ed67d4b0706fb810742db1e
          // This code copied from ContainerWorkbench
          this.addSlot(new Slot(top, 0, 124, 35));
  
-@@ -272,7 +274,7 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -269,7 +271,7 @@ public class CraftContainer extends AbstractContainerMenu {
          // End copy from ContainerWorkbench
      }
  
@@ -42211,7 +42193,7 @@ index a2eeaad280569c9ab2c02d2885611db50462bf2b..5df093b45ed67d4b0706fb810742db1e
          // This code copied from ContainerAnvilAbstract
          this.addSlot(new Slot(top, 0, 27, 47));
          this.addSlot(new Slot(top, 1, 76, 47));
-@@ -294,7 +296,7 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -291,7 +293,7 @@ public class CraftContainer extends AbstractContainerMenu {
      }
  
      @Override
@@ -44404,7 +44386,7 @@ index abb9e88abc74135284b941e040d4058690a82b27..aeb120e26c7c5944a9cc015c880757e2
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBundle.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBundle.java
-index e14318383403f12e26dd7801a9dbdea854df185f..8b75aa1e6c2988b958cc616cb359bc16a190c958 100644
+index 59ae2f95b3b42eac62978d1cb520ed39cc6febad..ff046f9a2004ae484f112bd9ad41c9929a399d13 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBundle.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBundle.java
 @@ -13,13 +13,16 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
@@ -44434,7 +44416,7 @@ index e14318383403f12e26dd7801a9dbdea854df185f..8b75aa1e6c2988b958cc616cb359bc16
          super(tag);
  
          if (tag.contains(ITEMS.NBT, CraftMagicNumbers.NBT.TAG_LIST)) {
-@@ -53,7 +56,7 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
+@@ -56,7 +59,7 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
          }
      }
  
@@ -44443,7 +44425,7 @@ index e14318383403f12e26dd7801a9dbdea854df185f..8b75aa1e6c2988b958cc616cb359bc16
          super(map);
  
          Iterable<?> items = SerializableMeta.getObject(Iterable.class, map, ITEMS.BUKKIT, true);
-@@ -67,7 +70,7 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
+@@ -70,7 +73,7 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
      }
  
      @Override
@@ -44452,7 +44434,7 @@ index e14318383403f12e26dd7801a9dbdea854df185f..8b75aa1e6c2988b958cc616cb359bc16
          super.applyToItem(tag);
  
          if (this.hasItems()) {
-@@ -103,12 +106,12 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
+@@ -106,12 +109,12 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
      }
  
      @Override
@@ -44467,7 +44449,7 @@ index e14318383403f12e26dd7801a9dbdea854df185f..8b75aa1e6c2988b958cc616cb359bc16
          this.items = null;
  
          if (items == null) {
-@@ -121,7 +124,7 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
+@@ -124,7 +127,7 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
      }
  
      @Override
@@ -44476,7 +44458,7 @@ index e14318383403f12e26dd7801a9dbdea854df185f..8b75aa1e6c2988b958cc616cb359bc16
          Preconditions.checkArgument(item != null && !item.getType().isAir(), "item is null or air");
  
          if (this.items == null) {
-@@ -132,7 +135,7 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
+@@ -135,7 +138,7 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
      }
  
      @Override
@@ -44485,7 +44467,7 @@ index e14318383403f12e26dd7801a9dbdea854df185f..8b75aa1e6c2988b958cc616cb359bc16
          if (!super.equalsCommon(meta)) {
              return false;
          }
-@@ -162,12 +165,12 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
+@@ -165,12 +168,12 @@ public class CraftMetaBundle extends CraftMetaItem implements BundleMeta {
      }
  
      @Override
@@ -50233,7 +50215,7 @@ index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18a
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Commodore.java b/src/main/java/org/bukkit/craftbukkit/util/Commodore.java
-index 128113e64731be9c0a4008ffb0a1eae78e221c47..5d81d1d2ed5c5d2646326cb618fa9dec685baaef 100644
+index 1ea5be29f3f06042d7cc278ce82790e4e439a81f..be2d776c663ba182e8b4f7c39e872156d93eb7b4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Commodore.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Commodore.java
 @@ -19,6 +19,8 @@ import joptsimple.OptionSet;
@@ -50245,13 +50227,11 @@ index 128113e64731be9c0a4008ffb0a1eae78e221c47..5d81d1d2ed5c5d2646326cb618fa9dec
  import org.objectweb.asm.ClassReader;
  import org.objectweb.asm.ClassVisitor;
  import org.objectweb.asm.ClassWriter;
-@@ -55,8 +57,8 @@ public class Commodore
- 
+@@ -56,7 +58,7 @@ public class Commodore
      // Paper start - Plugin rewrites
+     private static final String CB_PACKAGE = org.bukkit.Bukkit.getServer().getClass().getPackageName().replace('.', '/');
      private static final Map<String, String> SEARCH_AND_REMOVE = initReplacementsMap();
--    private static final java.util.jar.Manifest manifest = io.papermc.paper.util.JarManifests.manifest(Commodore.class);
 -    private static Map<String, String> initReplacementsMap()
-+    private static final java.util.jar.@Nullable Manifest manifest = io.papermc.paper.util.JarManifests.manifest(Commodore.class);
 +    private static @NotNull Map<String, String> initReplacementsMap()
      {
          Map<String, String> getAndRemove = new HashMap<>();

@@ -5,10 +5,10 @@ Subject: [PATCH] Update to Junit 5
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index cfe371c3b06e5058d8667252776acd731283c995..2e1eb7e61aec70120f3e26b0de784193f83e5040 100644
+index cdfbff66fd92c04448e99298414be28a926ad722..360e6f89dd2ab81dae41bf33efd8e9681a50f4c1 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -55,7 +55,9 @@ dependencies {
+@@ -53,7 +53,9 @@ dependencies {
      runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.8.2")
  
      testImplementation("io.github.classgraph:classgraph:4.8.149") // Paper - mob goal test
@@ -19,7 +19,7 @@ index cfe371c3b06e5058d8667252776acd731283c995..2e1eb7e61aec70120f3e26b0de784193
      testImplementation("org.hamcrest:hamcrest-library:2.2")
  
      implementation("io.netty:netty-all:4.1.84.Final"); // Paper - Bump netty
-@@ -166,6 +168,7 @@ tasks.reobfJar {
+@@ -137,6 +139,7 @@ tasks.reobfJar {
  // Paper end - include reobf mappings in jar for stacktrace deobfuscation
  
  tasks.test {

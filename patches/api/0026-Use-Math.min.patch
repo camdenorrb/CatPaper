@@ -5,7 +5,7 @@ Subject: [PATCH] Use Math.min
 
 
 diff --git a/src/main/java/org/bukkit/util/ChatPaginator.java b/src/main/java/org/bukkit/util/ChatPaginator.java
-index b2d8566e2984c512b5589144b526eacaed46a940..d63c4b83a3970bd37bf004be014bbe2760730251 100644
+index 293f9c35a0f05f6fc145cbc750704dc481ebaee8..7a9560f736c94aa97abc125f4cb81f8308078dce 100644
 --- a/src/main/java/org/bukkit/util/ChatPaginator.java
 +++ b/src/main/java/org/bukkit/util/ChatPaginator.java
 @@ -46,10 +46,10 @@ public class ChatPaginator {

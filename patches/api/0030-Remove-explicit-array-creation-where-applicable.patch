@@ -5,7 +5,7 @@ Subject: [PATCH] Remove explicit array creation where applicable
 
 
 diff --git a/src/main/java/org/bukkit/command/defaults/HelpCommand.java b/src/main/java/org/bukkit/command/defaults/HelpCommand.java
-index a52f91ce657e8f24c388a803508857f5a6ea83f6..26d984f86fd679a20a82828fc743dd70525e7c31 100644
+index cd8544b881d6e0393bef3af8135323ebb2e4f4c0..7c5e83b5dc56d2f0a9aeff8934e13c43f3d02507 100644
 --- a/src/main/java/org/bukkit/command/defaults/HelpCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/HelpCommand.java
 @@ -27,7 +27,7 @@ public class HelpCommand extends BukkitCommand {

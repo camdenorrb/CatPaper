@@ -242,7 +242,7 @@ index 01b8afce9fca47e676677cc82569f2a5d6c321cc..4ad5cab8828c99f1cad70cff95bf879f
  
          public AxisDirection getOpposite() {
 diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
-index 64e03f7cfbfcaed848997479a5cef7f0b2a60877..248cafe0758f1f6c66ef3ab9ba6908b038223364 100644
+index 42afe116a9f0ab2d03d64edfc5b52e8871d996b7..688d79a902c4ff4aec1810b4873b750848dd3ffb 100644
 --- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 +++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 @@ -389,11 +389,11 @@ public final class PlayerChunkLoader {
@@ -259,7 +259,7 @@ index 64e03f7cfbfcaed848997479a5cef7f0b2a60877..248cafe0758f1f6c66ef3ab9ba6908b0
      }
  
      public void onChunkPlayerTickReady(final int chunkX, final int chunkZ) {
-@@ -1011,15 +1011,15 @@ public final class PlayerChunkLoader {
+@@ -1022,15 +1022,15 @@ public final class PlayerChunkLoader {
              final double p1z = posZ;
  
              // to the left of the looking direction
@@ -279,7 +279,7 @@ index 64e03f7cfbfcaed848997479a5cef7f0b2a60877..248cafe0758f1f6c66ef3ab9ba6908b0
                      + p1z; // offset vector
  
              // now that we have all of our points, we can recalculate the load queue
-@@ -1057,7 +1057,7 @@ public final class PlayerChunkLoader {
+@@ -1068,7 +1068,7 @@ public final class PlayerChunkLoader {
                              p1x, p1z, p2x, p2z, p3x, p3z,
  
                              // center of chunk
@@ -288,7 +288,7 @@ index 64e03f7cfbfcaed848997479a5cef7f0b2a60877..248cafe0758f1f6c66ef3ab9ba6908b0
                      );
  
                      final int manhattanDistance = Math.abs(dx) + Math.abs(dz);
-@@ -1074,7 +1074,7 @@ public final class PlayerChunkLoader {
+@@ -1085,7 +1085,7 @@ public final class PlayerChunkLoader {
                              // will be loaded if the player changes direction
                              priority = (double)manhattanDistance / 6.0;
                          } else {
@@ -5538,7 +5538,7 @@ index 2687c2543bbc3990490ee8064094164e68515f3d..78c408f2176d454a9278d1f97b176d27
  
          JsonObject jsonobject1 = new JsonObject();
 diff --git a/src/main/java/net/minecraft/util/SimpleBitStorage.java b/src/main/java/net/minecraft/util/SimpleBitStorage.java
-index 2930406058953a2f2a85a13e7dfb3024bff9eb17..ad993362dda654b81fd05b7257e963fc17f7402d 100644
+index 36e33923bf48e56c743ed043bcbc66bc32f0422f..292722b4c7f9b1057e076a5f0cd237d940936868 100644
 --- a/src/main/java/net/minecraft/util/SimpleBitStorage.java
 +++ b/src/main/java/net/minecraft/util/SimpleBitStorage.java
 @@ -50,7 +50,7 @@ public class SimpleBitStorage implements BitStorage {
@@ -8057,7 +8057,7 @@ index c9e6c2d0976bde92a94ae912e488ec30f250df55..0afb715778307873b0e25792d3fe8396
          if (pathentity == null) {
              return false;
 diff --git a/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java b/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
-index 75dae137c693c4d1fb2bc23c90262ac4005a42f7..0b84c596cf8537b6fcb9e55f304ae871a955b738 100644
+index baab01b22ec9a3f8143d701e91aa55a6dd3642cf..795badd1d8c914872b8214a84391ed7d93ba8b6d 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
 @@ -120,7 +120,7 @@ public class GossipContainer {
@@ -16705,7 +16705,7 @@ index 31911c09fe15753ae32fa39417bdc9e9de552a88..20bfb011f05e11926fa7f98845c4e403
  
                  if (compoundTag.contains("filtered_pages", 10)) {
 diff --git a/src/main/java/net/minecraft/world/item/crafting/Ingredient.java b/src/main/java/net/minecraft/world/item/crafting/Ingredient.java
-index 72b78296f36ba92b44d947545d6ba4e152ddaaf1..e99a1bf76b0276d7dd6bd05ed86ed241e42bdc07 100644
+index 895c0f1600139e340aa22a7c398978add56fa706..e096be4bed7929e0c60d8e3659ae67bde82a3a19 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/Ingredient.java
 @@ -40,8 +40,8 @@ public final class Ingredient implements Predicate<ItemStack> {
@@ -27312,7 +27312,7 @@ index b0c9fce9d4e06cac139e341d218d0b6aac1f1943..b978cdecc88c368d844f0662dc232ee8
  
      // CraftBukkit start
 diff --git a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
-index 8376b3966fca61b37fe9351c0410cda56a6819e2..27f420957c352db51e724fe277f6f1d2e992894e 100644
+index c3717d033a6110a55ed345fe2e83ce5ad17ae2e3..81fe56c701362f30ad236430213a8fc676ffe38a 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
 @@ -118,7 +118,7 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
@@ -29519,7 +29519,7 @@ index 09b2651fcf2394b8784c8f5ae69578cf76264848..c4b38314f607463343ec505927eb9b0b
  
          if (!(this.worlds.containsKey(name.toLowerCase(java.util.Locale.ENGLISH)))) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 26942e5fd307ab782f3808879119faff27412cae..bc39c3c3b1d5246e3f49b2979fdb9a5874eb8859 100644
+index d496480f972ab14d00c7da701792cca759086aa4..2d0b8a94f27babe1cac8a408275542244341490b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -1686,7 +1686,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -29711,7 +29711,7 @@ index d05e3e09d59fe88cb0b7b8d1af1de2e41722cdaa..9bac3b0735da1a2e47755bdedba6b941
      // Paper start
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index f5ca81f07139a5aa7b2242de606a2b653ba7a399..447e5067828e97cc5f0484bdfa9acde59af483ff 100644
+index b040539175d1de4afb5214e759a23cd57336841c..630c65f8a2fcabfb9ce6cdf52b0e222e2dc835fc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -526,7 +526,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

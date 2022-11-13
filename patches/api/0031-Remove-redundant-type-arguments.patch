@@ -183,7 +183,7 @@ index cf3428c2f0c3ef033ade9e07e240b094b39b5d26..53fcd44b978aaac1ecc78552c101b42e
              for (final Object entry : (Iterable<?>) value) {
                  builder.add(entry.toString().replace(' ', '_'));
 diff --git a/src/main/java/org/bukkit/plugin/SimpleServicesManager.java b/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
-index c96d881b024591fce465cfa6723aeea233b8c2b6..9a7117bc38b383103314a34b38741e00d6b532ab 100644
+index f3dd8490230b85be7e03f7c0f0c20b476e1574fd..2cc7ea23460575d573cba412c049e510338b5fed 100644
 --- a/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimpleServicesManager.java
 @@ -248,7 +248,7 @@ public class SimpleServicesManager implements ServicesManager {

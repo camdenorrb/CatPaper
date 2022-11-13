@@ -5,7 +5,7 @@ Subject: [PATCH] Remove redundant filter
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-index 6c8bbb0c0c748519182e478730b41702ccbc671d..01094f2237db2e75cc74de9bcab067e09d23189b 100644
+index cb24b62dd58c82a79a2f7a24cc3d39dfefc2d2f0..f5652bc8a7a8ac52cc4ede0dec07f20bb48cae54 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 @@ -362,14 +362,13 @@ public class PoiManager extends SectionStorage<PoiSection> {

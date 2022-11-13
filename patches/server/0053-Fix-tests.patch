@@ -5,7 +5,7 @@ Subject: [PATCH] Fix tests
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
-index 2677cdda84004bf16a997211e41fb61ba0b602f0..5728c7133731bc2046d3cf4d878029931bea2a3b 100644
+index b2a159f6716228ac5907edcdf2acab018a406914..6039955122e1cda261a3ceb18371e7f30bb32231 100644
 --- a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
 +++ b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
 @@ -4,6 +4,7 @@ import java.util.Collection;

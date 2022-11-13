@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 13 Nov 2022 07:36:11 -0600
+Subject: [PATCH] Fix tests
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
+index 2677cdda84004bf16a997211e41fb61ba0b602f0..5728c7133731bc2046d3cf4d878029931bea2a3b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
++++ b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
+@@ -4,6 +4,7 @@ import java.util.Collection;
+ import java.util.Collections;
+ import net.minecraft.advancements.Advancement;
+ import org.bukkit.NamespacedKey;
++import org.bukkit.advancement.AdvancementDisplay;
+ import org.bukkit.craftbukkit.util.CraftNamespacedKey;
+ import org.jetbrains.annotations.NotNull;
+ 

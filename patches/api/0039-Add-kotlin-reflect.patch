@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 13 Nov 2022 17:45:51 -0600
+Subject: [PATCH] Add kotlin reflect
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index a17980dc11e523aa34cba534d9a88d5080f3e257..abc348079eea9f58bac7fa8dc5418d2e9d39dbe9 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -30,6 +30,7 @@ dependencies {
+     api("org.yaml:snakeyaml:1.33")
+     api(kotlin("bom"))
+     api(kotlin("stdlib-jdk8"))
++    api(kotlin("reflect"))
+     // Paper start
+     api("com.googlecode.json-simple:json-simple:1.1.1") {
+         isTransitive = false // includes junit

@@ -1,0 +1,135 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Mon, 14 Nov 2022 18:46:18 -0600
+Subject: [PATCH] Breaking things
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+index 8d9f2cf2c6b5bab47251b18bdcf30cdcae35fff6..fe17ff192f72781fe36f68b2f5a536a7339c784e 100644
+--- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
++++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+@@ -416,11 +416,6 @@ public class ServerChunkCache extends ChunkSource {
+     @Override
+     public ChunkAccess getChunk(int x, int z, ChunkStatus leastStatus, boolean create) {
+         final int x1 = x; final int z1 = z; // Paper - conflict on variable change
+-        if (!io.papermc.paper.util.TickThread.isTickThread()) { // Paper - rewrite chunk system
+-            return CompletableFuture.supplyAsync(() -> {
+-                return this.getChunk(x, z, leastStatus, create);
+-            }, this.mainThreadProcessor).join();
+-        } else {
+             // Paper start - optimise for loaded chunks
+             LevelChunk ifLoaded = this.getChunkAtIfLoadedMainThread(x, z);
+             if (ifLoaded != null) {
+@@ -462,7 +457,6 @@ public class ServerChunkCache extends ChunkSource {
+             });
+             this.storeInCache(k, ichunkaccess, leastStatus);
+             return ichunkaccess;
+-        }
+     }
+ 
+     @Nullable
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index b7fa9c678821138eca0ca0f4f3cd4298332d653a..8bd05fe34f0e1325de45a31f37e663f2c55bd1b8 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -188,7 +188,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     //public final PersistentEntitySectionManager<Entity> entityManager; // Paper - rewrite chunk system
+     public boolean noSave;
+     private final SleepStatus sleepStatus;
+-    private int emptyTime;
++    //private int emptyTime;
+     private final PortalForcer portalForcer;
+     private final LevelTicks<Block> blockTicks;
+     private final LevelTicks<Fluid> fluidTicks;
+@@ -688,17 +688,9 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             timings.doSounds.stopTiming(); // Spigot
+             this.handlingTick = false;
+             gameprofilerfiller.pop();
+-            boolean flag = true || !this.players.isEmpty() || !this.getForcedChunks().isEmpty(); // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
+ 
+-            if (flag) {
+-                this.resetEmptyTime();
+-            }
+-
+-        if (flag || this.emptyTime++ < 300) {
+-            tickEntities(gameprofilerfiller);
+-        }
++        tickEntities(gameprofilerfiller);
+ 
+-        gameprofilerfiller.push("entityManagement");
+         //this.entityManager.tick(); // Paper - rewrite chunk system
+         gameprofilerfiller.popPush("gameEvents");
+ 
+@@ -731,14 +723,16 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+             ActivationRange.activateEntities(this); // Spigot
+             timings.entityTick.startTiming(); // Spigot
+-            entityTickList.forEach((entity) -> {
++
++
++            entityTickList.parallelStream().forEach((entity) -> {
+                 if (!entity.isRemoved()) {
+                     if (false && this.shouldDiscardEntity(entity)) { // CraftBukkit - We prevent spawning in general, so this butchering is not needed
+                         entity.discard();
+                     } else {
+-                        gameprofilerfiller.push("checkDespawn");
++                        //gameprofilerfiller.push("checkDespawn");
+                         entity.checkDespawn();
+-                        gameprofilerfiller.pop();
++                        //gameprofilerfiller.pop();
+                         if (true || this.chunkSource.chunkMap.getDistanceManager().inEntityTickingRange(entity.chunkPosition().toLong())) { // Paper - now always true if in the ticking list
+                             Entity entity1 = entity.getVehicle();
+ 
+@@ -750,9 +744,14 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                                 entity.stopRiding();
+                             }
+ 
+-                            gameprofilerfiller.push("tick");
+-                            this.guardEntityTick(this::tickNonPassenger, entity);
+-                            gameprofilerfiller.pop();
++                            //gameprofilerfiller.push("tick");
++
++                            System.out.println("Here1 " + entity.getType());
++                            entity.tick();
++                            System.out.println("Here2 " + entity.getType());
++                            entity.postTick();
++                            System.out.println("Here3 " + entity.getType());
++                            //gameprofilerfiller.pop();
+                         }
+                     }
+                 }
+@@ -762,7 +761,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             gameprofilerfiller.pop();
+             this.tickBlockEntities();
+ 
+-        }
++        gameprofilerfiller.push("entityManagement");
++    }
+ 
+ 
+ 
+@@ -1140,9 +1140,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         // CraftBukkit end
+     }
+ 
++    /*
+     public void resetEmptyTime() {
+         this.emptyTime = 0;
+     }
++    */
+ 
+     private void tickFluid(BlockPos pos, Fluid fluid) {
+         FluidState fluid1 = this.getFluidState(pos);
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 7ebd2713829554df02590226d3e8207612c362db..b0dd5f3b40679b10dc20e9083fe3dab34e44c825 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -3406,8 +3406,6 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+ 
+                 this.removeAfterChangingDimensions();
+                 this.level.getProfiler().pop();
+-                ((ServerLevel) this.level).resetEmptyTime();
+-                worldserver.resetEmptyTime();
+                 this.level.getProfiler().pop();
+                 return entity;
+             }

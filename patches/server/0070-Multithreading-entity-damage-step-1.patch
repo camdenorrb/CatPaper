@@ -1,0 +1,2468 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Mon, 14 Nov 2022 23:37:44 -0600
+Subject: [PATCH] Multithreading entity damage step 1
+
+
+diff --git a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+index 6975d2f7b5548acd0041f625c08450eca9eebd5a..5afaaa1d9fbbef34a79234cb50e3b23f50cf0516 100644
+--- a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
++++ b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+ import java.util.*;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.function.Predicate;
+ import java.util.stream.Collectors;
+ 
+@@ -37,7 +38,7 @@ public final class ChunkEntitySlices {
+     protected final @NotNull Map<Class<? extends Entity>, EntityCollectionBySection> entitiesByClass;
+ 
+     // ID -> Entity
+-    protected final Map<Integer, Entity> entities = new HashMap<>();
++    protected final Map<Integer, Entity> entities = new ConcurrentHashMap<>();
+ 
+     public ChunkHolder.FullChunkStatus status;
+ 
+diff --git a/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java b/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
+index 44961c070a25a9f73bdca3e820d0ac61730021be..0e188c979289fde407fe071d26ceb1ef3bc2297f 100644
+--- a/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
++++ b/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
+@@ -2,6 +2,9 @@ package net.minecraft.network.protocol.game;
+ 
+ import it.unimi.dsi.fastutil.shorts.ShortIterator;
+ import it.unimi.dsi.fastutil.shorts.ShortSet;
++
++import java.util.Iterator;
++import java.util.Set;
+ import java.util.function.BiConsumer;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.SectionPos;
+@@ -19,7 +22,7 @@ public class ClientboundSectionBlocksUpdatePacket implements Packet<ClientGamePa
+     private final BlockState[] states;
+     private final boolean suppressLightUpdates;
+ 
+-    public ClientboundSectionBlocksUpdatePacket(SectionPos sectionPos, ShortSet positions, LevelChunkSection section, boolean noLightingUpdates) {
++    public ClientboundSectionBlocksUpdatePacket(SectionPos sectionPos, Set<Short> positions, LevelChunkSection section, boolean noLightingUpdates) {
+         this.sectionPos = sectionPos;
+         this.suppressLightUpdates = noLightingUpdates;
+         int i = positions.size();
+@@ -28,7 +31,7 @@ public class ClientboundSectionBlocksUpdatePacket implements Packet<ClientGamePa
+         this.states = new BlockState[i];
+         int j = 0;
+ 
+-        for (ShortIterator shortiterator = positions.iterator(); shortiterator.hasNext(); ++j) {
++        for (Iterator<Short> shortiterator = positions.iterator(); shortiterator.hasNext(); ++j) {
+             short short0 = shortiterator.next().shortValue();
+ 
+             this.positions[j] = short0;
+diff --git a/src/main/java/net/minecraft/server/level/ChunkHolder.java b/src/main/java/net/minecraft/server/level/ChunkHolder.java
+index 904fcdeb7937d36208cc9a8d5eca9ef3a5b2cd9e..54dd0e4e67cc7dd5740a48288ef3f457ae2d2d7d 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkHolder.java
++++ b/src/main/java/net/minecraft/server/level/ChunkHolder.java
+@@ -4,11 +4,10 @@ import com.mojang.datafixers.util.Either;
+ import com.mojang.datafixers.util.Pair;
+ import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet;
+ import it.unimi.dsi.fastutil.shorts.ShortSet;
+-import java.util.ArrayList;
+-import java.util.BitSet;
+-import java.util.List;
+-import java.util.Optional;
++
++import java.util.*;
+ import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.CopyOnWriteArraySet;
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.atomic.AtomicReferenceArray;
+ import java.util.function.IntConsumer;
+@@ -58,7 +57,7 @@ public class ChunkHolder {
+     // Paper - rewrite chunk system
+     public final ChunkPos pos;
+     private boolean hasChangedSections;
+-    private final ShortSet[] changedBlocksPerSection;
++    private final CopyOnWriteArraySet<Short>[] changedBlocksPerSection;
+     private final BitSet blockChangedLightSectionFilter;
+     private final BitSet skyChangedLightSectionFilter;
+     private final LevelLightEngine lightEngine;
+@@ -140,7 +139,7 @@ public class ChunkHolder {
+         this.onLevelChange = null; // Paper - rewrite chunk system
+         this.playerProvider = playersWatchingChunkProvider;
+         // Paper - rewrite chunk system
+-        this.changedBlocksPerSection = new ShortSet[world.getSectionsCount()];
++        this.changedBlocksPerSection = new CopyOnWriteArraySet[world.getSectionsCount()];
+         this.chunkMap = (ChunkMap)playersWatchingChunkProvider; // Paper
+     }
+ 
+@@ -233,7 +232,7 @@ public class ChunkHolder {
+             if (i < 0 || i >= this.changedBlocksPerSection.length) return; // CraftBukkit - SPIGOT-6086, SPIGOT-6296
+             if (this.changedBlocksPerSection[i] == null) {
+                 this.hasChangedSections = true; this.addToBroadcastMap(); // Paper - optimise chunk tick iteration
+-                this.changedBlocksPerSection[i] = new ShortOpenHashSet();
++                this.changedBlocksPerSection[i] = new CopyOnWriteArraySet<>();
+             }
+ 
+             this.changedBlocksPerSection[i].add(SectionPos.sectionRelativePos(pos));
+@@ -301,14 +300,14 @@ public class ChunkHolder {
+             }
+ 
+             for (j = 0; j < this.changedBlocksPerSection.length; ++j) {
+-                ShortSet shortset = this.changedBlocksPerSection[j];
++                Set<Short> shortset = this.changedBlocksPerSection[j];
+ 
+                 if (shortset != null) {
+                     int k = this.levelHeightAccessor.getSectionYFromSectionIndex(j);
+                     SectionPos sectionposition = SectionPos.of(chunk.getPos(), k);
+ 
+                     if (shortset.size() == 1) {
+-                        BlockPos blockposition = sectionposition.relativeToBlockPos(shortset.iterator().nextShort());
++                        BlockPos blockposition = sectionposition.relativeToBlockPos(shortset.iterator().next());
+                         BlockState iblockdata = world.getBlockState(blockposition);
+ 
+                         this.broadcast(new ClientboundBlockUpdatePacket(blockposition, iblockdata), false);
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 1fa23db7ba60eabe2905486367cc089c3fa71122..e6dbd404b3f34ed16b6138bcdae98971f1fe0b01 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -1684,11 +1684,14 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+     @Override
+     public void sendBlockUpdated(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
++
++        /*
+         if (this.isUpdatingNavigations) {
+             String s = "recursive call to sendBlockUpdated";
+ 
+             Util.logAndPauseIfInIde("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
+         }
++        */
+ 
+         this.getChunkSource().blockChanged(pos);
+         if(this.paperConfig().misc.updatePathfindingOnBlockUpdate) { // Paper - option to disable pathfinding updates
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index f92c93578bd85511c664b09c80016f385e10e0dd..c808470f858e6f97549c63d21433a4a209bd45d2 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -145,6 +145,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.portal.PortalInfo;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.slf4j.Logger;
+ import net.minecraft.world.Container;
+ import net.minecraft.world.InteractionHand;
+@@ -1011,7 +1012,7 @@ public class ServerPlayer extends Player {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+@@ -1039,7 +1040,7 @@ public class ServerPlayer extends Player {
+                 // Paper start - cancellable death events
+                 //return super.hurt(source, amount);
+                 this.queueHealthUpdatePacket = true;
+-                boolean damaged = super.hurt(source, amount);
++                boolean damaged = super.hurt(source, block, amount);
+                 this.queueHealthUpdatePacket = false;
+                 if (this.queuedHealthUpdatePacket != null) {
+                     this.connection.send(this.queuedHealthUpdatePacket);
+diff --git a/src/main/java/net/minecraft/world/effect/MobEffect.java b/src/main/java/net/minecraft/world/effect/MobEffect.java
+index 140aaaad1cbf8ee439a89d423ce64b5fa1fa129e..5e02e108e59fa50468f94add845461382cde503d 100644
+--- a/src/main/java/net/minecraft/world/effect/MobEffect.java
++++ b/src/main/java/net/minecraft/world/effect/MobEffect.java
+@@ -65,10 +65,10 @@ public class MobEffect {
+             }
+         } else if (this == MobEffects.POISON) {
+             if (entity.getHealth() > 1.0F) {
+-                entity.hurt(CraftEventFactory.POISON, 1.0F);  // CraftBukkit - DamageSource.MAGIC -> CraftEventFactory.POISON
++                entity.hurt(CraftEventFactory.POISON, block, 1.0F);  // CraftBukkit - DamageSource.MAGIC -> CraftEventFactory.POISON
+             }
+         } else if (this == MobEffects.WITHER) {
+-            entity.hurt(DamageSource.WITHER, 1.0F);
++            entity.hurt(DamageSource.WITHER, block, 1.0F);
+         } else if (this == MobEffects.HUNGER && entity instanceof Player) {
+             ((Player) entity).causeFoodExhaustion(0.005F * (float) (amplifier + 1), org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.HUNGER_EFFECT); // CraftBukkit - EntityExhaustionEvent
+         } else if (this == MobEffects.SATURATION && entity instanceof Player) {
+@@ -88,7 +88,7 @@ public class MobEffect {
+             }
+         } else if ((this != MobEffects.HEAL || entity.isInvertedHealAndHarm()) && (this != MobEffects.HARM || !entity.isInvertedHealAndHarm())) {
+             if (this == MobEffects.HARM && !entity.isInvertedHealAndHarm() || this == MobEffects.HEAL && entity.isInvertedHealAndHarm()) {
+-                entity.hurt(DamageSource.MAGIC, (float) (6 << amplifier));
++                entity.hurt(DamageSource.MAGIC, block, (float) (6 << amplifier));
+             }
+         } else {
+             entity.heal((float) Math.max(4 << amplifier, 0), RegainReason.MAGIC); // CraftBukkit
+@@ -105,9 +105,9 @@ public class MobEffect {
+             } else {
+                 j = (int) (proximity * (double) (6 << amplifier) + 0.5D);
+                 if (source == null) {
+-                    target.hurt(DamageSource.MAGIC, (float) j);
++                    target.hurt(DamageSource.MAGIC, block, (float) j);
+                 } else {
+-                    target.hurt(DamageSource.indirectMagic(source, attacker), (float) j);
++                    target.hurt(DamageSource.indirectMagic(source, attacker), block, (float) j);
+                 }
+             }
+         } else {
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index b0dd5f3b40679b10dc20e9083fe3dab34e44c825..368847dd87ae62449960633c556edae0634761b2 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -45,7 +45,6 @@ import net.minecraft.nbt.FloatTag;
+ import net.minecraft.nbt.ListTag;
+ import net.minecraft.nbt.StringTag;
+ import net.minecraft.network.chat.ChatSender;
+-import net.minecraft.network.chat.ClickEvent;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.HoverEvent;
+ import net.minecraft.network.chat.MutableComponent;
+@@ -125,6 +124,7 @@ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import net.minecraft.world.scores.PlayerTeam;
+ import net.minecraft.world.scores.Team;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.slf4j.Logger;
+ import org.bukkit.Bukkit;
+ import org.bukkit.Location;
+@@ -821,7 +821,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+                 }
+             } else {
+                 if (this.remainingFireTicks % 20 == 0 && !this.isInLava()) {
+-                    this.hurt(DamageSource.ON_FIRE, 1.0F);
++                    this.hurt(DamageSource.ON_FIRE, null, null, 1.0F);
+                 }
+ 
+                 this.setRemainingFireTicks(this.remainingFireTicks - 1);
+@@ -902,11 +902,10 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+                 // This will be called every single tick the entity is in lava, so don't throw an event
+                 this.setSecondsOnFire(15, false);
+             }
+-            CraftEventFactory.blockDamage = (this.lastLavaContact) == null ? null : org.bukkit.craftbukkit.block.CraftBlock.at(level, lastLavaContact);
+-            if (this.hurt(DamageSource.LAVA, 4.0F)) {
++            final CraftBlock block = (this.lastLavaContact) == null ? null : org.bukkit.craftbukkit.block.CraftBlock.at(level, lastLavaContact);
++            if (this.hurt(DamageSource.LAVA, null, block, 4.0F)) {
+                 this.playSound(SoundEvents.GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+             }
+-            CraftEventFactory.blockDamage = null;
+             // CraftBukkit end - we also don't throw an event unless the object in lava is living, to save on some event calls
+ 
+         }
+@@ -1977,7 +1976,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         this.hurtMarked = true;
+     }
+ 
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+@@ -3157,11 +3156,8 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         if (this.fireImmune()) {
+             return;
+         }
+-        CraftEventFactory.entityDamage = lightning;
+-        if (!this.hurt(DamageSource.LIGHTNING_BOLT, 5.0F)) {
+-            CraftEventFactory.entityDamage = null;
+-            return;
+-        }
++        
++        this.hurt(DamageSource.LIGHTNING_BOLT, lightning, null, 5.0F);
+         // CraftBukkit end
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/ExperienceOrb.java b/src/main/java/net/minecraft/world/entity/ExperienceOrb.java
+index a44df483996ec38fd6f4d35e6f04b18b783935a7..98f5b28be11dddde4b96b98f0d5f3f7b76c9c51f 100644
+--- a/src/main/java/net/minecraft/world/entity/ExperienceOrb.java
++++ b/src/main/java/net/minecraft/world/entity/ExperienceOrb.java
+@@ -20,6 +20,7 @@ import net.minecraft.world.level.entity.EntityTypeTest;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
+ // CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+ import org.bukkit.event.entity.EntityTargetEvent;
+@@ -270,7 +271,7 @@ public class ExperienceOrb extends Entity {
+     protected void doWaterSplashEffect() {}
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (this.level.isClientSide) {
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 2444bc2d711cfdce05ff82bf1ceed837b870b455..11353995554565b7cc445331b437b61d645e3c3f 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -115,6 +115,8 @@ import net.minecraft.world.phys.EntityHitResult;
+ import net.minecraft.world.phys.HitResult;
+ import net.minecraft.world.phys.Vec3;
+ import net.minecraft.world.scores.PlayerTeam;
++import org.bukkit.block.Block;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.jetbrains.annotations.NotNull;
+ import org.slf4j.Logger;
+ 
+@@ -135,7 +137,6 @@ import org.bukkit.event.entity.EntityTeleportEvent;
+ import org.bukkit.event.player.PlayerItemConsumeEvent;
+ // CraftBukkit end
+ 
+-import co.aikar.timings.MinecraftTimings; // Paper
+ 
+ public abstract class LivingEntity extends Entity {
+ 
+@@ -311,7 +312,7 @@ public abstract class LivingEntity extends Entity {
+ 
+     @Override
+     public void kill() {
+-        this.hurt(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
++        this.hurt(DamageSource.OUT_OF_WORLD, null, null, Float.MAX_VALUE);
+     }
+ 
+     public boolean canAttackType(EntityType<?> type) {
+@@ -393,7 +394,7 @@ public abstract class LivingEntity extends Entity {
+             boolean flag = this instanceof net.minecraft.world.entity.player.Player;
+ 
+             if (this.isInWall()) {
+-                this.hurt(DamageSource.IN_WALL, 1.0F);
++                this.hurt(DamageSource.IN_WALL, null, null, 1.0F);
+             } else if (flag && !this.level.getWorldBorder().isWithinBounds(this.getBoundingBox())) {
+                 double d0 = this.level.getWorldBorder().getDistanceToBorder(this) + this.level.getWorldBorder().getDamageSafeZone();
+ 
+@@ -401,7 +402,7 @@ public abstract class LivingEntity extends Entity {
+                     double d1 = this.level.getWorldBorder().getDamagePerBlock();
+ 
+                     if (d1 > 0.0D) {
+-                        this.hurt(DamageSource.IN_WALL, (float) Math.max(1, Mth.floor(-d0 * d1)));
++                        this.hurt(DamageSource.IN_WALL, null, null, (float) Math.max(1, Mth.floor(-d0 * d1)));
+                     }
+                 }
+             }
+@@ -423,7 +424,7 @@ public abstract class LivingEntity extends Entity {
+                             this.level.addParticle(ParticleTypes.BUBBLE, this.getX() + d2, this.getY() + d3, this.getZ() + d4, vec3d.x, vec3d.y, vec3d.z);
+                         }
+ 
+-                        this.hurt(DamageSource.DROWN, 2.0F);
++                        this.hurt(DamageSource.DROWN, null, null, 2.0F);
+                     }
+                 }
+ 
+@@ -1307,7 +1308,7 @@ public abstract class LivingEntity extends Entity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (this.level.isClientSide) {
+@@ -1332,10 +1333,8 @@ public abstract class LivingEntity extends Entity {
+                 f2 = amount;
+                 amount = 0.0F;
+                 if (!source.isProjectile()) {
+-                    Entity entity = source.getDirectEntity();
+-
+-                    if (entity instanceof LivingEntity && entity.distanceToSqr(this) <= (200.0D * 200.0D)) { // Paper
+-                        this.blockUsingShield((LivingEntity) entity);
++                    if (damagerEntity instanceof LivingEntity && damagerEntity.distanceToSqr(this) <= (200.0D * 200.0D)) { // Paper
++                        this.blockUsingShield((LivingEntity) damagerEntity);
+                     }
+                 }
+ 
+@@ -1351,7 +1350,7 @@ public abstract class LivingEntity extends Entity {
+                 }
+ 
+                 // CraftBukkit start
+-                if (!this.damageEntity0(source, amount - this.lastHurt)) {
++                if (!this.damageEntity0(source, damagerEntity, damagerBlock, amount - this.lastHurt)) {
+                     return false;
+                 }
+                 // CraftBukkit end
+@@ -1359,7 +1358,7 @@ public abstract class LivingEntity extends Entity {
+                 flag1 = false;
+             } else {
+                 // CraftBukkit start
+-                if (!this.damageEntity0(source, amount)) {
++                if (!this.damageEntity0(source, damagerEntity, damagerBlock, amount)) {
+                     return false;
+                 }
+                 this.lastHurt = amount;
+@@ -1942,7 +1941,7 @@ public abstract class LivingEntity extends Entity {
+ 
+         if (i > 0) {
+             // CraftBukkit start
+-            if (!this.hurt(damageSource, (float) i)) {
++            if (!this.hurt(damageSource, null, null, (float) i)) {
+                 return true;
+             }
+             // CraftBukkit end
+@@ -2045,7 +2044,7 @@ public abstract class LivingEntity extends Entity {
+     }
+ 
+     // CraftBukkit start
+-    protected boolean damageEntity0(final DamageSource damagesource, float f) { // void -> boolean, add final
++    protected boolean damageEntity0(final DamageSource damagesource, @Nullable Entity damagerEntity, @Nullable Block damagerBlock, float f) { // void -> boolean, add final
+        if (!this.isInvulnerableTo(damagesource)) {
+             final boolean human = this instanceof net.minecraft.world.entity.player.Player;
+             float originalDamage = f;
+@@ -2112,10 +2111,11 @@ public abstract class LivingEntity extends Entity {
+             };
+             float absorptionModifier = absorption.apply(Double.valueOf(f)).floatValue();
+ 
+-            EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent(this, damagesource, originalDamage, hardHatModifier, blockingModifier, armorModifier, resistanceModifier, magicModifier, absorptionModifier, hardHat, blocking, armor, resistance, magic, absorption);
+-            if (damagesource.getEntity() instanceof net.minecraft.world.entity.player.Player) {
++           EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent(this, damagerEntity, damagerBlock, damagesource, originalDamage, hardHatModifier, blockingModifier, armorModifier, resistanceModifier, magicModifier, absorptionModifier, hardHat, blocking, armor, resistance, magic, absorption);
++
++            if (damagerEntity instanceof net.minecraft.world.entity.player.Player) {
+                 // Paper start - PlayerAttackEntityCooldownResetEvent
+-                if (damagesource.getEntity() instanceof ServerPlayer) {
++                if (damagerEntity instanceof ServerPlayer) {
+                     ServerPlayer player = (ServerPlayer) damagesource.getEntity();
+                     if (new com.destroystokyo.paper.event.player.PlayerAttackEntityCooldownResetEvent(player.getBukkitEntity(), this.getBukkitEntity(), player.getAttackStrengthScale(0F)).callEvent()) {
+                         player.resetAttackStrengthTicker();
+@@ -2325,7 +2325,7 @@ public abstract class LivingEntity extends Entity {
+                     this.playSound(soundeffect, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+                 }
+ 
+-                this.hurt(DamageSource.GENERIC, 0.0F);
++                this.hurt(DamageSource.GENERIC, null, null, 0.0F);
+                 this.lastDamageSource = damagesource;
+                 this.lastDamageStamp = this.level.getGameTime();
+                 break;
+@@ -2456,7 +2456,7 @@ public abstract class LivingEntity extends Entity {
+ 
+     @Override
+     protected void outOfWorld() {
+-        this.hurt(DamageSource.OUT_OF_WORLD, 4.0F);
++        this.hurt(DamageSource.OUT_OF_WORLD, null, null, 4.0F);
+     }
+ 
+     protected void updateSwingTime() {
+@@ -2803,7 +2803,7 @@ public abstract class LivingEntity extends Entity {
+ 
+                     if (f3 > 0.0F) {
+                         this.playSound(this.getFallDamageSound((int) f3), 1.0F, 1.0F);
+-                        this.hurt(DamageSource.FLY_INTO_WALL, f3);
++                        this.hurt(DamageSource.FLY_INTO_WALL, null, null, f3);
+                     }
+                 }
+ 
+@@ -3363,7 +3363,7 @@ public abstract class LivingEntity extends Entity {
+         this.tryAddFrost();
+         if (!this.level.isClientSide && this.tickCount % 40 == 0 && this.isFullyFrozen() && this.canFreeze()) {
+             i = flag1 ? 5 : 1;
+-            this.hurt(DamageSource.FREEZE, (float) i);
++            this.hurt(DamageSource.FREEZE, null, null, (float) i);
+         }
+ 
+         this.level.getProfiler().pop();
+@@ -3390,7 +3390,7 @@ public abstract class LivingEntity extends Entity {
+         }
+         // Paper end
+         if (!this.level.isClientSide && this.isSensitiveToWater() && this.isInWaterRainOrBubble()) {
+-            this.hurt(DamageSource.DROWN, 1.0F);
++            this.hurt(DamageSource.DROWN, null, null, 1.0F);
+         }
+ 
+     }
+@@ -3459,7 +3459,7 @@ public abstract class LivingEntity extends Entity {
+                 }
+ 
+                 if (j > i - 1) {
+-                    this.hurt(DamageSource.CRAMMING, 6.0F);
++                    this.hurt(DamageSource.CRAMMING, null, null, 6.0F);
+                 }
+             }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
+index 17d5a753b8e79338bb5a4233484e63a5d349511a..cb70164521ff9dafa903667fa5c0fae3791851f7 100644
+--- a/src/main/java/net/minecraft/world/entity/Mob.java
++++ b/src/main/java/net/minecraft/world/entity/Mob.java
+@@ -66,7 +66,6 @@ import net.minecraft.world.item.SpawnEggItem;
+ import net.minecraft.world.item.SwordItem;
+ import net.minecraft.world.item.enchantment.EnchantmentHelper;
+ import net.minecraft.world.level.GameRules;
+-import net.minecraft.world.level.ItemLike;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.level.LevelReader;
+@@ -848,7 +847,7 @@ public abstract class Mob extends LivingEntity {
+                 this.getJumpControl().tick();
+             }
+             if (this.isSensitiveToWater() && isInWaterRainOrBubble()) {
+-                hurt(DamageSource.DROWN, 1.0F);
++                hurt(DamageSource.DROWN, block, 1.0F);
+             }
+             return;
+         }
+@@ -1608,7 +1607,7 @@ public abstract class Mob extends LivingEntity {
+             // CraftBukkit end
+         }
+ 
+-        boolean flag = target.hurt(DamageSource.mobAttack(this), f);
++        boolean flag = target.hurt(DamageSource.mobAttack(this), block, f);
+ 
+         if (flag) {
+             if (f1 > 0.0F && target instanceof LivingEntity) {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java b/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
+index 5665b11084cd668d6414df07b183ff7f43e6aae6..7b4ea52e18b164e5d738d3098a8df411c4023ea0 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
+@@ -22,7 +22,6 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
+ import net.minecraft.world.entity.ai.memory.WalkTarget;
+ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+ import net.minecraft.world.entity.animal.goat.Goat;
+-import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.phys.Vec3;
+ 
+ public class RamTarget extends Behavior<Goat> {
+@@ -72,7 +71,7 @@ public class RamTarget extends Behavior<Goat> {
+         Brain<?> brain = goat.getBrain();
+         if (!list.isEmpty()) {
+             LivingEntity livingEntity = list.get(0);
+-            livingEntity.hurt(DamageSource.mobAttack(goat).setNoAggro(), (float)goat.getAttributeValue(Attributes.ATTACK_DAMAGE));
++            livingEntity.hurt(DamageSource.mobAttack(goat).setNoAggro(), block, (float)goat.getAttributeValue(Attributes.ATTACK_DAMAGE));
+             int i = goat.hasEffect(MobEffects.MOVEMENT_SPEED) ? goat.getEffect(MobEffects.MOVEMENT_SPEED).getAmplifier() + 1 : 0;
+             int j = goat.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) ? goat.getEffect(MobEffects.MOVEMENT_SLOWDOWN).getAmplifier() + 1 : 0;
+             float f = 0.25F * (float)(i - j);
+diff --git a/src/main/java/net/minecraft/world/entity/ambient/Bat.java b/src/main/java/net/minecraft/world/entity/ambient/Bat.java
+index 7d4662392b030999ad65ee0291d9839f2efcea42..32b752a2fb7b13ad7cec2222776de9d2924d4668 100644
+--- a/src/main/java/net/minecraft/world/entity/ambient/Bat.java
++++ b/src/main/java/net/minecraft/world/entity/ambient/Bat.java
+@@ -22,11 +22,11 @@ import net.minecraft.world.entity.Pose;
+ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+ import net.minecraft.world.entity.ai.attributes.Attributes;
+ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+-import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
+ 
+ public class Bat extends AmbientCreature {
+@@ -208,7 +208,7 @@ public class Bat extends AmbientCreature {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+@@ -220,7 +220,7 @@ public class Bat extends AmbientCreature {
+                 // CraftBukkit End - Call BatToggleSleepEvent
+             }
+ 
+-            return super.hurt(source, amount);
++            return super.hurt(source, block, amount);
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Bee.java b/src/main/java/net/minecraft/world/entity/animal/Bee.java
+index b1c49723571e5c45ef3863e65cc2436933b73cc5..3b5160842e71c8b68f5ef9f92d803b2e8a240e27 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Bee.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Bee.java
+@@ -5,7 +5,6 @@ import java.util.Comparator;
+ import java.util.EnumSet;
+ import java.util.Iterator;
+ import java.util.List;
+-import java.util.Objects;
+ import java.util.Optional;
+ import java.util.UUID;
+ import java.util.function.Predicate;
+@@ -90,6 +89,8 @@ import net.minecraft.world.level.material.Fluid;
+ import net.minecraft.world.level.pathfinder.BlockPathTypes;
+ import net.minecraft.world.level.pathfinder.Path;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+ 
+@@ -243,7 +244,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        boolean flag = target.hurt(DamageSource.sting(this), (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
++        boolean flag = target.hurt(DamageSource.sting(this), block, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+ 
+         if (flag) {
+             this.doEnchantDamageEffects(this, target);
+@@ -381,13 +382,13 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+         }
+ 
+         if (this.underWaterTicks > 20) {
+-            this.hurt(DamageSource.DROWN, 1.0F);
++            this.hurt(DamageSource.DROWN, block, 1.0F);
+         }
+ 
+         if (flag) {
+             ++this.timeSinceSting;
+             if (this.timeSinceSting % 5 == 0 && this.random.nextInt(Mth.clamp(1200 - this.timeSinceSting, 1, 1200)) == 0) {
+-                this.hurt(DamageSource.GENERIC, this.getHealth());
++                this.hurt(DamageSource.GENERIC, block, this.getHealth());
+             }
+         }
+ 
+@@ -659,12 +660,12 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+             // CraftBukkit start
+-            boolean result = super.hurt(source, amount);
++            boolean result = super.hurt(source, block, amount);
+ 
+             if (result && !this.level.isClientSide) {
+                 this.beePollinateGoal.stopPollinating();
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Cat.java b/src/main/java/net/minecraft/world/entity/animal/Cat.java
+index e0a269ffacc9d2ede4e0fdf47b1941667fa1ed45..0e44075308e3d1f1a8e61211dff4e85872b6f773 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Cat.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Cat.java
+@@ -2,7 +2,6 @@ package net.minecraft.world.entity.animal;
+ 
+ import java.util.Iterator;
+ import java.util.List;
+-import java.util.Objects;
+ import java.util.function.Predicate;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+@@ -252,7 +251,7 @@ public class Cat extends TamableAnimal {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        return target.hurt(DamageSource.mobAttack(this), this.getAttackDamage());
++        return target.hurt(DamageSource.mobAttack(this), block, this.getAttackDamage());
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Dolphin.java b/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
+index b6b2416f60fa7c18d84cfe98c08198b3867269ff..ea43beaf1084fe23d63ac8ab04fa91fcd8c05dac 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
+@@ -184,7 +184,7 @@ public class Dolphin extends WaterAnimal {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        boolean flag = target.hurt(DamageSource.mobAttack(this), (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
++        boolean flag = target.hurt(DamageSource.mobAttack(this), block, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+ 
+         if (flag) {
+             this.doEnchantDamageEffects(this, target);
+@@ -264,7 +264,7 @@ public class Dolphin extends WaterAnimal {
+             } else {
+                 this.setMoisntessLevel(this.getMoistnessLevel() - 1);
+                 if (this.getMoistnessLevel() <= 0) {
+-                    this.hurt(DamageSource.DRY_OUT, 1.0F);
++                    this.hurt(DamageSource.DRY_OUT, block, 1.0F);
+                 }
+ 
+                 if (this.onGround) {
+diff --git a/src/main/java/net/minecraft/world/entity/animal/IronGolem.java b/src/main/java/net/minecraft/world/entity/animal/IronGolem.java
+index 52d4a41485d532b190499ae7d4e42cf44e2ca0a8..b5876100deb5b53a7bb27454bfe88531f6f5ae37 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/IronGolem.java
++++ b/src/main/java/net/minecraft/world/entity/animal/IronGolem.java
+@@ -52,6 +52,8 @@ import net.minecraft.world.level.NaturalSpawner;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.material.Fluids;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class IronGolem extends AbstractGolem implements NeutralMob {
+ 
+@@ -194,7 +196,7 @@ public class IronGolem extends AbstractGolem implements NeutralMob {
+         this.level.broadcastEntityEvent(this, (byte) 4);
+         float f = this.getAttackDamage();
+         float f1 = (int) f > 0 ? f / 2.0F + (float) this.random.nextInt((int) f) : f;
+-        boolean flag = target.hurt(DamageSource.mobAttack(this), f1);
++        boolean flag = target.hurt(DamageSource.mobAttack(this), block, f1);
+ 
+         if (flag) {
+             double d0;
+@@ -219,9 +221,9 @@ public class IronGolem extends AbstractGolem implements NeutralMob {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         IronGolem.Crackiness entityirongolem_cracklevel = this.getCrackiness();
+-        boolean flag = super.hurt(source, amount);
++        boolean flag = super.hurt(source, block, amount);
+ 
+         if (flag && this.getCrackiness() != entityirongolem_cracklevel) {
+             this.playSound(SoundEvents.IRON_GOLEM_DAMAGE, 1.0F, 1.0F);
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Ocelot.java b/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
+index 0db51f286f15336badbb79f5c4463dda8ed101cf..31e7312e1a71de9b6b44c27226b36b34834c4560 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
+@@ -170,7 +170,7 @@ public class Ocelot extends Animal {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        return target.hurt(DamageSource.mobAttack(this), this.getAttackDamage());
++        return target.hurt(DamageSource.mobAttack(this), block, this.getAttackDamage());
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
+index b1d71aa6e6d2c1d3278f49b36a84f9c7e391821b..a18ba764021158c0c4a19f2d94dee94c978ddada 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
+@@ -55,13 +55,13 @@ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+ import net.minecraft.world.item.crafting.Ingredient;
+ import net.minecraft.world.level.GameRules;
+-import net.minecraft.world.level.ItemLike;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.ServerLevelAccessor;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.event.entity.EntityTargetEvent; // CraftBukkit
+ 
+ public class Panda extends Animal {
+@@ -544,12 +544,12 @@ public class Panda extends Animal {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (!this.level.isClientSide) {
+             this.sit(false);
+         }
+ 
+-        return super.hurt(source, amount);
++        return super.hurt(source, block, amount);
+     }
+ 
+     @Nullable
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Parrot.java b/src/main/java/net/minecraft/world/entity/animal/Parrot.java
+index 3805bea6ec2ea1da274e07bfc81d138b7083b962..00ebd1f847c873770738df15160d1b7cced1c54c 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Parrot.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Parrot.java
+@@ -65,6 +65,8 @@ import net.minecraft.world.level.block.LeavesBlock;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.pathfinder.BlockPathTypes;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class Parrot extends ShoulderRidingEntity implements FlyingAnimal {
+ 
+@@ -273,7 +275,7 @@ public class Parrot extends ShoulderRidingEntity implements FlyingAnimal {
+ 
+             this.addEffect(new MobEffectInstance(MobEffects.POISON, 900), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.FOOD); // CraftBukkit
+             if (player.isCreative() || !this.isInvulnerable()) {
+-                this.hurt(DamageSource.playerAttack(player), Float.MAX_VALUE);
++                this.hurt(DamageSource.playerAttack(player), block, Float.MAX_VALUE);
+             }
+ 
+             return InteractionResult.sidedSuccess(this.level.isClientSide);
+@@ -318,7 +320,7 @@ public class Parrot extends ShoulderRidingEntity implements FlyingAnimal {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        return target.hurt(DamageSource.mobAttack(this), 3.0F);
++        return target.hurt(DamageSource.mobAttack(this), block, 3.0F);
+     }
+ 
+     @Nullable
+@@ -394,7 +396,7 @@ public class Parrot extends ShoulderRidingEntity implements FlyingAnimal {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+@@ -402,7 +404,7 @@ public class Parrot extends ShoulderRidingEntity implements FlyingAnimal {
+                 // this.setOrderedToSit(false); // CraftBukkit - moved into EntityLiving.damageEntity(DamageSource, float)
+             }
+ 
+-            return super.hurt(source, amount);
++            return super.hurt(source, block, amount);
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Pufferfish.java b/src/main/java/net/minecraft/world/entity/animal/Pufferfish.java
+index 32422c39bfc7132bcf328b08c306e921936aaffe..acc8b4cd09bf49d32716dadad8be70b07e9042b1 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Pufferfish.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Pufferfish.java
+@@ -157,7 +157,7 @@ public class Pufferfish extends AbstractFish {
+     private void touch(Mob mob) {
+         int i = this.getPuffState();
+ 
+-        if (mob.hurt(DamageSource.mobAttack(this), (float) (1 + i))) {
++        if (mob.hurt(DamageSource.mobAttack(this), block, (float) (1 + i))) {
+             mob.addEffect(new MobEffectInstance(MobEffects.POISON, 60 * i, 0), this, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); // CraftBukkit
+             this.playSound(SoundEvents.PUFFER_FISH_STING, 1.0F, 1.0F);
+         }
+@@ -168,7 +168,7 @@ public class Pufferfish extends AbstractFish {
+     public void playerTouch(Player player) {
+         int i = this.getPuffState();
+ 
+-        if (player instanceof ServerPlayer && i > 0 && player.hurt(DamageSource.mobAttack(this), (float) (1 + i))) {
++        if (player instanceof ServerPlayer && i > 0 && player.hurt(DamageSource.mobAttack(this), block, (float) (1 + i))) {
+             if (!this.isSilent()) {
+                 ((ServerPlayer) player).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.PUFFER_FISH_STING, 0.0F));
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Rabbit.java b/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
+index 68ad42e5853470e28353536163da0be27527c349..486cab64b6064be4141ac9e4158db1b4f71e1987 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
+@@ -319,9 +319,9 @@ public class Rabbit extends Animal {
+     public boolean doHurtTarget(Entity target) {
+         if (this.getRabbitType() == 99) {
+             this.playSound(SoundEvents.RABBIT_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+-            return target.hurt(DamageSource.mobAttack(this), 8.0F);
++            return target.hurt(DamageSource.mobAttack(this), block, 8.0F);
+         } else {
+-            return target.hurt(DamageSource.mobAttack(this), 3.0F);
++            return target.hurt(DamageSource.mobAttack(this), block, 3.0F);
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/animal/SnowGolem.java b/src/main/java/net/minecraft/world/entity/animal/SnowGolem.java
+index cac118f1f11e374ab5147c7b646842b44b0fa507..ccb774f6aeafe6a3be8e29a8c2b5830efd9c64b7 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/SnowGolem.java
++++ b/src/main/java/net/minecraft/world/entity/animal/SnowGolem.java
+@@ -13,7 +13,6 @@ import net.minecraft.util.Mth;
+ import net.minecraft.world.InteractionHand;
+ import net.minecraft.world.InteractionResult;
+ import net.minecraft.world.damagesource.DamageSource;
+-import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityDimensions;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.LivingEntity;
+@@ -106,7 +105,7 @@ public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackM
+             Biome biomebase = this.level.getBiome(blockposition).value();
+ 
+             if (biomebase.shouldSnowGolemBurn(blockposition)) {
+-                this.hurt(CraftEventFactory.MELTING, 1.0F); // CraftBukkit - DamageSource.BURN -> CraftEventFactory.MELTING
++                this.hurt(CraftEventFactory.MELTING, block, 1.0F); // CraftBukkit - DamageSource.BURN -> CraftEventFactory.MELTING
+             }
+ 
+             if (!this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Squid.java b/src/main/java/net/minecraft/world/entity/animal/Squid.java
+index a0440542935bd39e6e6d087f1a57a318baccd477..5c9ca7c8b14bed06b48659fff4095d66c1563ac1 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Squid.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Squid.java
+@@ -26,6 +26,7 @@ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.material.FluidState;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.jetbrains.annotations.Nullable;
+ 
+ 
+@@ -170,8 +171,8 @@ public class Squid extends WaterAnimal {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
+-        if (super.hurt(source, amount) && this.getLastHurtByMob() != null) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++        if (super.hurt(source, block, amount) && this.getLastHurtByMob() != null) {
+             if (!this.level.isClientSide) {
+                 this.spawnInk();
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Turtle.java b/src/main/java/net/minecraft/world/entity/animal/Turtle.java
+index 73526ba0228633185f6f4628bf5b22e4497aea33..13d77b3dd93a4416dae706257c29a6feb8a6e2e4 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Turtle.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Turtle.java
+@@ -337,7 +337,7 @@ public class Turtle extends Animal {
+     @Override
+     public void thunderHit(ServerLevel world, LightningBolt lightning) {
+         org.bukkit.craftbukkit.event.CraftEventFactory.entityDamage = lightning; // CraftBukkit
+-        this.hurt(DamageSource.LIGHTNING_BOLT, Float.MAX_VALUE);
++        this.hurt(DamageSource.LIGHTNING_BOLT, block, Float.MAX_VALUE);
+         org.bukkit.craftbukkit.event.CraftEventFactory.entityDamage = null; // CraftBukkit
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/animal/WaterAnimal.java b/src/main/java/net/minecraft/world/entity/animal/WaterAnimal.java
+index 18389f46902bb9879ac6d734723e9a720724dc48..30c18bb74570be1cd978622e4e1ee9f502eea870 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/WaterAnimal.java
++++ b/src/main/java/net/minecraft/world/entity/animal/WaterAnimal.java
+@@ -51,7 +51,7 @@ public abstract class WaterAnimal extends PathfinderMob {
+             this.setAirSupply(air - 1);
+             if (this.getAirSupply() == -20) {
+                 this.setAirSupply(0);
+-                this.hurt(DamageSource.DROWN, 2.0F);
++                this.hurt(DamageSource.DROWN, block, 2.0F);
+             }
+         } else {
+             this.setAirSupply(300);
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Wolf.java b/src/main/java/net/minecraft/world/entity/animal/Wolf.java
+index 636566ac5ebf47913795fc74daeba83334a311f2..6a2a1cb302cf3e5cb88238450451d6224df47316 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Wolf.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Wolf.java
+@@ -69,6 +69,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.pathfinder.BlockPathTypes;
+ import net.minecraft.world.phys.Vec3;
+ // CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
+ // CraftBukkit end
+@@ -313,7 +314,7 @@ public class Wolf extends TamableAnimal implements NeutralMob {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+@@ -327,13 +328,13 @@ public class Wolf extends TamableAnimal implements NeutralMob {
+                 amount = (amount + 1.0F) / 2.0F;
+             }
+ 
+-            return super.hurt(source, amount);
++            return super.hurt(source, block, amount);
+         }
+     }
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        boolean flag = target.hurt(DamageSource.mobAttack(this), (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
++        boolean flag = target.hurt(DamageSource.mobAttack(this), block, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+ 
+         if (flag) {
+             this.doEnchantDamageEffects(this, target);
+diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
+index e9e73ec92655c3e4aa38526f5762e9d3aa4a6cf5..98a5f7e739b2e3ae5cbc3a4a4400e14efefb5a36 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
++++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
+@@ -68,6 +68,7 @@ import net.minecraft.world.level.gameevent.PositionSource;
+ import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.jetbrains.annotations.Nullable;
+ import org.slf4j.Logger;
+ 
+@@ -187,7 +188,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         Entity entity = source.getEntity();
+ 
+         if (entity instanceof Player) {
+@@ -199,7 +200,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
+             }
+         }
+ 
+-        return super.hurt(source, amount);
++        return super.hurt(source, block, amount);
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+index ff06e6075c3dd6bb6c40b256a3d7ffbe8dd6ef7d..77e2c02ae47eda9abea0d78fc9e443d8bdaf43c8 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
++++ b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+@@ -62,6 +62,7 @@ import net.minecraft.world.level.LevelReader;
+ import net.minecraft.world.level.ServerLevelAccessor;
+ import net.minecraft.world.level.pathfinder.BlockPathTypes;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.slf4j.Logger;
+ 
+ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+@@ -178,7 +179,7 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+             this.setAirSupply(air - 1);
+             if (this.getAirSupply() == -20) {
+                 this.setAirSupply(0);
+-                this.hurt(DamageSource.DRY_OUT, 2.0F);
++                this.hurt(DamageSource.DRY_OUT, block, 2.0F);
+             }
+         } else {
+             this.setAirSupply(this.getMaxAirSupply());
+@@ -310,7 +311,7 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        boolean flag = target.hurt(DamageSource.mobAttack(this), (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
++        boolean flag = target.hurt(DamageSource.mobAttack(this), block, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+ 
+         if (flag) {
+             this.doEnchantDamageEffects(this, target);
+@@ -321,14 +322,14 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         float f1 = this.getHealth();
+ 
+         if (!this.level.isClientSide && !this.isNoAi() && this.level.random.nextInt(3) == 0 && ((float) this.level.random.nextInt(3) < amount || f1 / this.getMaxHealth() < 0.5F) && amount < f1 && this.isInWater() && (source.getEntity() != null || source.getDirectEntity() != null) && !this.isPlayingDead()) {
+             this.brain.setMemory(MemoryModuleType.PLAY_DEAD_TICKS, Integer.valueOf(200));
+         }
+ 
+-        return super.hurt(source, amount);
++        return super.hurt(source, block, amount);
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
+index fa6f33f67b7b479141b55998543bb7eb430f95ba..6bbd3a6d56873e9540813e5244541f340eec8cc4 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
++++ b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
+@@ -270,14 +270,14 @@ public abstract class AbstractHorse extends Animal implements ContainerListener,
+         if (i <= 0) {
+             return false;
+         } else {
+-            this.hurt(damageSource, (float) i);
++            this.hurt(damageSource, block, (float) i);
+             if (this.isVehicle()) {
+                 Iterator iterator = this.getIndirectPassengers().iterator();
+ 
+                 while (iterator.hasNext()) {
+                     Entity entity = (Entity) iterator.next();
+ 
+-                    entity.hurt(damageSource, (float) i);
++                    entity.hurt(damageSource, block, (float) i);
+                 }
+             }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/animal/horse/Llama.java b/src/main/java/net/minecraft/world/entity/animal/horse/Llama.java
+index 016c8b3152ad1006476f23801ec61f4a87d094ef..7d5798e4f71a1b9f320af21b65b3f4994be029e2 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/horse/Llama.java
++++ b/src/main/java/net/minecraft/world/entity/animal/horse/Llama.java
+@@ -435,14 +435,14 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
+             return false;
+         } else {
+             if (fallDistance >= 6.0F) {
+-                this.hurt(damageSource, (float) i);
++                this.hurt(damageSource, block, (float) i);
+                 if (this.isVehicle()) {
+                     Iterator iterator = this.getIndirectPassengers().iterator();
+ 
+                     while (iterator.hasNext()) {
+                         Entity entity = (Entity) iterator.next();
+ 
+-                        entity.hurt(damageSource, (float) i);
++                        entity.hurt(damageSource, block, (float) i);
+                     }
+                 }
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EndCrystal.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EndCrystal.java
+index b417eb4f5508dec3804d5c046886b6332117be30..2c7fe6a50bef785ef2c1d613111ac53b68a0ddca 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EndCrystal.java
++++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EndCrystal.java
+@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.BaseFireBlock;
+ import net.minecraft.world.level.dimension.end.EndDragonFight;
+ // CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.event.entity.ExplosionPrimeEvent;
+ // CraftBukkit end
+@@ -111,7 +112,7 @@ public class EndCrystal extends Entity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (source.getEntity() instanceof EnderDragon) {
+diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+index 4a4efbdeae999c4ea2ded35259dd4af94b6282cc..5d83dc31cbfbc0eac29c913d653d67a8698f470d 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
++++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+@@ -451,7 +451,7 @@ public class EnderDragon extends Mob implements Enemy {
+ 
+                 entity.push(d2 / d4 * 4.0D, 0.20000000298023224D, d3 / d4 * 4.0D);
+                 if (!this.phaseManager.getCurrentPhase().isSitting() && ((LivingEntity) entity).getLastHurtByMobTimestamp() < entity.tickCount - 2) {
+-                    entity.hurt(DamageSource.mobAttack(this), 5.0F);
++                    entity.hurt(DamageSource.mobAttack(this), block, 5.0F);
+                     this.doEnchantDamageEffects(this, entity);
+                 }
+             }
+@@ -466,7 +466,7 @@ public class EnderDragon extends Mob implements Enemy {
+             Entity entity = (Entity) iterator.next();
+ 
+             if (entity instanceof LivingEntity) {
+-                entity.hurt(DamageSource.mobAttack(this), 10.0F);
++                entity.hurt(DamageSource.mobAttack(this), block, 10.0F);
+                 this.doEnchantDamageEffects(this, entity);
+             }
+         }
+@@ -606,12 +606,12 @@ public class EnderDragon extends Mob implements Enemy {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         return !this.level.isClientSide ? this.hurt(this.body, source, amount) : false;
+     }
+ 
+     protected boolean reallyHurt(DamageSource source, float amount) {
+-        return super.hurt(source, amount);
++        return super.hurt(source, block, amount);
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
+index a73ba369b2a8950c20b2de6405a52d9cdc136fd8..ae7994ffd0d6d17666d631533fdf90ba151fb56c 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
++++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
+@@ -37,7 +37,6 @@ import net.minecraft.world.entity.projectile.WitherSkull;
+ import net.minecraft.world.item.Items;
+ import net.minecraft.world.level.Explosion;
+ import net.minecraft.world.level.GameRules;
+-import net.minecraft.world.level.ItemLike;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.particles.ParticleTypes;
+@@ -47,7 +46,6 @@ import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
+ import net.minecraft.network.syncher.EntityDataAccessor;
+ import net.minecraft.network.syncher.EntityDataSerializers;
+ import net.minecraft.network.syncher.SynchedEntityData;
+-import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.level.ServerBossEvent;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+@@ -58,6 +56,7 @@ import net.minecraft.util.Mth;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.event.entity.EntityRegainHealthEvent;
+ import org.bukkit.event.entity.EntityTargetEvent;
+@@ -495,7 +494,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (source != DamageSource.DROWN && !(source.getEntity() instanceof WitherBoss)) {
+@@ -523,7 +522,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
+                         this.idleHeadUpdates[i] += 3;
+                     }
+ 
+-                    return super.hurt(source, amount);
++                    return super.hurt(source, block, amount);
+                 }
+             }
+         } else {
+diff --git a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
+index 6966f68f1f2c880082596de32a4f68d42480cac0..2969e1d03da01b7027d8b511af9685da546a5219 100644
+--- a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
++++ b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
+@@ -34,13 +34,13 @@ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LightLayer;
+-import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.material.PushReaction;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
+ // CraftBukkit start
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.inventory.EquipmentSlot;
+ import org.bukkit.craftbukkit.CraftEquipmentSlot;
+ import org.bukkit.craftbukkit.inventory.CraftItemStack;
+@@ -479,7 +479,7 @@ public class ArmorStand extends LivingEntity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (!this.level.isClientSide && !this.isRemoved()) {
+             if (DamageSource.OUT_OF_WORLD.equals(source)) {
+                 // CraftBukkit start
+diff --git a/src/main/java/net/minecraft/world/entity/decoration/HangingEntity.java b/src/main/java/net/minecraft/world/entity/decoration/HangingEntity.java
+index 84ef22e77af60014df5eda1116eabf6cf1e7cce8..4dae2f2d8b806a53e2616b304a49993d07d23adb 100644
+--- a/src/main/java/net/minecraft/world/entity/decoration/HangingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/decoration/HangingEntity.java
+@@ -18,6 +18,7 @@ import net.minecraft.world.entity.item.ItemEntity;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ import org.apache.commons.lang3.Validate;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.slf4j.Logger;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.DiodeBlock;
+@@ -185,7 +186,7 @@ public abstract class HangingEntity extends Entity {
+         if (attacker instanceof Player) {
+             Player entityhuman = (Player) attacker;
+ 
+-            return !this.level.mayInteract(entityhuman, this.pos) ? true : this.hurt(DamageSource.playerAttack(entityhuman), 0.0F);
++            return !this.level.mayInteract(entityhuman, this.pos) ? true : this.hurt(DamageSource.playerAttack(entityhuman), block, 0.0F);
+         } else {
+             return false;
+         }
+@@ -197,7 +198,7 @@ public abstract class HangingEntity extends Entity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+diff --git a/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java b/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
+index 3174542c1725447c33e2773d63633ffe4d766253..f72768140a2f9acb6b0a05a48dc09246893b7e61 100644
+--- a/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
++++ b/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
+@@ -37,6 +37,7 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
+ import org.apache.commons.lang3.Validate;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.slf4j.Logger;
+ 
+ public class ItemFrame extends HangingEntity {
+@@ -176,9 +177,9 @@ public class ItemFrame extends HangingEntity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.fixed) {
+-            return source != DamageSource.OUT_OF_WORLD && !source.isCreativePlayer() ? false : super.hurt(source, amount);
++            return source != DamageSource.OUT_OF_WORLD && !source.isCreativePlayer() ? false : super.hurt(source, block, amount);
+         } else if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (!source.isExplosion() && !this.getItem().isEmpty()) {
+@@ -201,7 +202,7 @@ public class ItemFrame extends HangingEntity {
+ 
+             return true;
+         } else {
+-            return super.hurt(source, amount);
++            return super.hurt(source, block, amount);
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
+index 4cfcf8f033835479078e52ecbe246f32d38b5875..2837d8a5b308168e886729374c7d4563e18817ab 100644
+--- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
+@@ -25,11 +25,9 @@ import net.minecraft.world.entity.EntitySelector;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.MoverType;
+ import net.minecraft.world.item.ItemStack;
+-import net.minecraft.world.item.context.BlockPlaceContext;
+ import net.minecraft.world.item.context.DirectionalPlaceContext;
+ import net.minecraft.world.level.ClipContext;
+ import net.minecraft.world.level.GameRules;
+-import net.minecraft.world.level.ItemLike;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.AnvilBlock;
+ import net.minecraft.world.level.block.Block;
+@@ -291,7 +289,7 @@ public class FallingBlockEntity extends Entity {
+ 
+                 this.level.getEntities(this, this.getBoundingBox(), predicate).forEach((entity) -> {
+                     CraftEventFactory.entityDamage = this; // CraftBukkit
+-                    entity.hurt(damagesource1, f2);
++                    entity.hurt(damagesource1, block, f2);
+                     CraftEventFactory.entityDamage = null; // CraftBukkit
+                 });
+                 boolean flag = this.blockState.is(BlockTags.ANVIL);
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index abb7dc09ab498ca39aa1f7c22dc14af83fb9a138..e924823e709636dc79629b1232b474fc9db81773 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -33,6 +33,7 @@ import net.minecraft.stats.Stats;
+ import net.minecraft.tags.FluidTags;
+ import net.minecraft.tags.ItemTags;
+ import net.minecraft.util.Mth;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.event.entity.EntityPickupItemEvent;
+ import org.bukkit.event.player.PlayerPickupItemEvent;
+ // CraftBukkit end
+@@ -324,7 +325,7 @@ public class ItemEntity extends Entity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (!this.getItem().isEmpty() && this.getItem().is(Items.NETHER_STAR) && source.isExplosion()) {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/EnderMan.java b/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
+index a0c6869488f1de1be1ea029c0d1073fc2ed4fc2c..26c7a8ae360eafd236bda0f0512d81ea6bafc78c 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
++++ b/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
+@@ -54,7 +54,6 @@ import net.minecraft.world.item.alchemy.PotionUtils;
+ import net.minecraft.world.item.alchemy.Potions;
+ import net.minecraft.world.level.ClipContext;
+ import net.minecraft.world.level.GameRules;
+-import net.minecraft.world.level.ItemLike;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+@@ -64,6 +63,8 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.BlockHitResult;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class EnderMan extends Monster implements NeutralMob {
+ 
+@@ -379,7 +380,7 @@ public class EnderMan extends Monster implements NeutralMob {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (source instanceof IndirectEntityDamageSource) {
+@@ -402,7 +403,7 @@ public class EnderMan extends Monster implements NeutralMob {
+ 
+             return flag;
+         } else {
+-            boolean flag1 = super.hurt(source, amount);
++            boolean flag1 = super.hurt(source, block, amount);
+ 
+             if (!this.level.isClientSide() && !(source.getEntity() instanceof LivingEntity) && this.random.nextInt(10) != 0 && this.tryEscape(source == DamageSource.DROWN ? com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.DROWN : com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.INDIRECT)) { // Paper - use to be critical hits as else, but mojang removed critical hits in 1.16.2 due to MC-185684
+                 this.teleport();
+@@ -418,7 +419,7 @@ public class EnderMan extends Monster implements NeutralMob {
+         List<MobEffectInstance> list = PotionUtils.getMobEffects(itemstack);
+         boolean flag = potionregistry == Potions.WATER && list.isEmpty();
+ 
+-        return flag ? super.hurt(source, amount) : false;
++        return flag ? super.hurt(source, block, amount) : false;
+     }
+ 
+     public boolean isCreepy() {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Ghast.java b/src/main/java/net/minecraft/world/entity/monster/Ghast.java
+index f20dba357bdefbcc535f075d8d9a745fcefac4c3..4a2f03412540f515d0cdad51845df8fe210786c5 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Ghast.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Ghast.java
+@@ -13,7 +13,6 @@ import net.minecraft.util.Mth;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.Difficulty;
+ import net.minecraft.world.damagesource.DamageSource;
+-import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityDimensions;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.FlyingMob;
+@@ -32,6 +31,8 @@ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class Ghast extends FlyingMob implements Enemy {
+ 
+@@ -87,12 +88,12 @@ public class Ghast extends FlyingMob implements Enemy {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (Ghast.isReflectedFireball(source)) {
+-            super.hurt(source, 1000.0F);
++            super.hurt(source, block, 1000.0F);
+             return true;
+         } else {
+-            return this.isInvulnerableTo(source) ? false : super.hurt(source, amount);
++            return this.isInvulnerableTo(source) ? false : super.hurt(source, block, amount);
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Ravager.java b/src/main/java/net/minecraft/world/entity/monster/Ravager.java
+index f697c43da2ec7e449d31f879c65f96cc27a877b6..84ad67e10803caf144ecb1d6df43d1c04f89a1ff 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Ravager.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Ravager.java
+@@ -253,7 +253,7 @@ public class Ravager extends Raider {
+             for (Iterator iterator = list.iterator(); iterator.hasNext(); this.strongKnockback(entityliving)) {
+                 entityliving = (LivingEntity) iterator.next();
+                 if (!(entityliving instanceof AbstractIllager)) {
+-                    entityliving.hurt(DamageSource.mobAttack(this), 6.0F);
++                    entityliving.hurt(DamageSource.mobAttack(this), block, 6.0F);
+                 }
+             }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Shulker.java b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
+index bf75d961be50ebffb9df364c3362ebcae78f7cfa..5fe3440169f76f75508f695cc4b6799e47ebd1cd 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Shulker.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
+@@ -57,6 +57,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
+ import org.bukkit.Location;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.event.entity.EntityTeleportEvent;
+ // CraftBukkit end
+ 
+@@ -444,7 +445,7 @@ public class Shulker extends AbstractGolem implements Enemy {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         Entity entity;
+ 
+         if (this.isClosed()) {
+@@ -454,7 +455,7 @@ public class Shulker extends AbstractGolem implements Enemy {
+             }
+         }
+ 
+-        if (!super.hurt(source, amount)) {
++        if (!super.hurt(source, block, amount)) {
+             return false;
+         } else {
+             if ((double) this.getHealth() < (double) this.getMaxHealth() * 0.5D && this.random.nextInt(4) == 0) {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
+index f8d0f42369fe8e745e72eaaadada6761c83ee2e8..6163fa3073a3e53ca7fc11702dd6e390169829dd 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Silverfish.java
+@@ -32,6 +32,8 @@ import net.minecraft.world.level.LevelReader;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.InfestedBlock;
+ import net.minecraft.world.level.block.state.BlockState;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class Silverfish extends Monster {
+ 
+@@ -94,7 +96,7 @@ public class Silverfish extends Monster {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+@@ -102,7 +104,7 @@ public class Silverfish extends Monster {
+                 this.friendsGoal.notifyHurt();
+             }
+ 
+-            return super.hurt(source, amount);
++            return super.hurt(source, block, amount);
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Slime.java b/src/main/java/net/minecraft/world/entity/monster/Slime.java
+index 47a04aec1fd4cf9f453796820bfc9d464e731c6e..661c7f91e08f5850765fe6fcda283be24782004a 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Slime.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Slime.java
+@@ -283,7 +283,7 @@ public class Slime extends Mob implements Enemy {
+         if (this.isAlive()) {
+             int i = this.getSize();
+ 
+-            if (this.distanceToSqr(target) < 0.6D * (double) i * 0.6D * (double) i && this.hasLineOfSight(target) && target.hurt(DamageSource.mobAttack(this), this.getAttackDamage())) {
++            if (this.distanceToSqr(target) < 0.6D * (double) i * 0.6D * (double) i && this.hasLineOfSight(target) && target.hurt(DamageSource.mobAttack(this), block, this.getAttackDamage())) {
+                 this.playSound(SoundEvents.SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+                 this.doEnchantDamageEffects(this, target);
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Vex.java b/src/main/java/net/minecraft/world/entity/monster/Vex.java
+index c25e6dfd8b7a42104e293caed9f8e370900b52c8..8390d18e443ccb44d944f70ea54633dfc734b4c4 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Vex.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Vex.java
+@@ -13,7 +13,6 @@ import net.minecraft.util.Mth;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.DifficultyInstance;
+ import net.minecraft.world.damagesource.DamageSource;
+-import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.EquipmentSlot;
+ import net.minecraft.world.entity.LivingEntity;
+@@ -78,7 +77,7 @@ public class Vex extends Monster {
+         this.setNoGravity(true);
+         if (this.hasLimitedLife && --this.limitedLifeTicks <= 0) {
+             this.limitedLifeTicks = 20;
+-            this.hurt(DamageSource.STARVE, 1.0F);
++            this.hurt(DamageSource.STARVE, block, 1.0F);
+         }
+ 
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Zombie.java b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
+index 9e0de1995c183aacdf604a93c08fb840804280c3..51cd6a6a52d8b2e9213dc1384d64284ffbd10a5a 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Zombie.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
+@@ -56,7 +56,6 @@ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.nbt.NbtOps;
+-import net.minecraft.nbt.Tag;
+ import net.minecraft.network.syncher.EntityDataAccessor;
+ import net.minecraft.network.syncher.EntityDataSerializers;
+ import net.minecraft.network.syncher.SynchedEntityData;
+@@ -67,6 +66,7 @@ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.tags.FluidTags;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.event.entity.CreatureSpawnEvent;
+ import org.bukkit.event.entity.EntityCombustByEntityEvent;
+ import org.bukkit.event.entity.EntityTargetEvent;
+@@ -313,8 +313,8 @@ public class Zombie extends Monster {
+     // Paper end
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
+-        if (!super.hurt(source, amount)) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++        if (!super.hurt(source, block, amount)) {
+             return false;
+         } else if (!(this.level instanceof ServerLevel)) {
+             return false;
+diff --git a/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java b/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
+index 1d751fe27c8c508d978f3801c188ee30022db026..c14d5eb4087e9d05eb950cc09c543f7ff65cfc38 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
++++ b/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
+@@ -45,6 +45,8 @@ import net.minecraft.world.level.LevelReader;
+ import net.minecraft.world.level.ServerLevelAccessor;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockState;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class Hoglin extends Animal implements Enemy, HoglinBase {
+     private static final EntityDataAccessor<Boolean> DATA_IMMUNE_TO_ZOMBIFICATION = SynchedEntityData.defineId(Hoglin.class, EntityDataSerializers.BOOLEAN);
+@@ -98,8 +100,8 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
+-        boolean bl = super.hurt(source, amount);
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++        boolean bl = super.hurt(source, block, amount);
+         if (this.level.isClientSide) {
+             return false;
+         } else {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java b/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
+index 3de35e1dfbb3dfa807a5723f9ae53841c468fba6..75e117e39e70e46bb0ebd43bb96df764e34dbc86 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
++++ b/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
+@@ -63,6 +63,7 @@ import java.util.stream.Collectors;
+ import java.util.HashSet;
+ import java.util.Set;
+ import net.minecraft.world.item.Item;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ // CraftBukkit end
+ 
+ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, InventoryCarrier {
+@@ -344,8 +345,8 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
+-        boolean flag = super.hurt(source, amount);
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++        boolean flag = super.hurt(source, block, amount);
+ 
+         if (this.level.isClientSide) {
+             return false;
+diff --git a/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java b/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java
+index 7f21bc1942fd2c7efc910e6cc4cd5482cf205319..4e9b804401c3d304a3f9b9908213ea8e49de5800 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java
++++ b/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java
+@@ -68,6 +68,7 @@ import net.minecraft.world.level.pathfinder.Node;
+ import net.minecraft.world.level.pathfinder.PathFinder;
+ import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.jetbrains.annotations.Contract;
+ import org.slf4j.Logger;
+ 
+@@ -548,8 +549,8 @@ public class Warden extends Monster implements VibrationListener.VibrationListen
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
+-        boolean flag = super.hurt(source, amount);
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++        boolean flag = super.hurt(source, block, amount);
+ 
+         if (!this.level.isClientSide && !this.isNoAi() && !this.isDiggingOrEmerging()) {
+             Entity entity = source.getEntity();
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index 1f4d82c79f66da51d8f751066d959f472df2899f..61417b5f1f678bd3c74c0697c812f9ed611c1eb0 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -115,6 +115,7 @@ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
+ import net.minecraft.world.scores.PlayerTeam;
+ import net.minecraft.world.scores.Scoreboard;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.slf4j.Logger;
+ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+@@ -950,7 +951,7 @@ public abstract class Player extends LivingEntity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable org.bukkit.block.Block damagerBlock, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (this.abilities.invulnerable && !source.isBypassInvul()) {
+@@ -979,7 +980,7 @@ public abstract class Player extends LivingEntity {
+                 }
+ 
+                 // CraftBukkit start - Don't filter out 0 damage
+-                boolean damaged = super.hurt(source, amount);
++                boolean damaged = super.hurt(source, damagerEntity, damagerBlock, amount);
+                 if (damaged) {
+                     this.removeEntitiesOnShoulder();
+                 }
+@@ -1070,9 +1071,9 @@ public abstract class Player extends LivingEntity {
+ 
+     // CraftBukkit start
+     @Override
+-    protected boolean damageEntity0(DamageSource damagesource, float f) { // void -> boolean
++    protected boolean damageEntity0(DamageSource damagesource, @Nullable Entity damagerEntity, @Nullable org.bukkit.block.Block damagerBlock, float f) { // void -> boolean
+         if (true) {
+-            return super.damageEntity0(damagesource, f);
++            return super.damageEntity0(damagesource, damagerEntity, damagerBlock, f);
+         }
+         // CraftBukkit end
+         if (!this.isInvulnerableTo(damagesource)) {
+@@ -1328,7 +1329,7 @@ public abstract class Player extends LivingEntity {
+                     }
+ 
+                     Vec3 vec3d = target.getDeltaMovement();
+-                    boolean flag5 = target.hurt(DamageSource.playerAttack(this).critical(flag2), f); // Paper - add critical damage API
++                    boolean flag5 = target.hurt(DamageSource.playerAttack(this).critical(flag2), this, null, f); // Paper - add critical damage API
+ 
+                     if (flag5) {
+                         if (i > 0) {
+@@ -1356,7 +1357,7 @@ public abstract class Player extends LivingEntity {
+ 
+                                 if (entityliving != this && entityliving != target && !this.isAlliedTo(entityliving) && (!(entityliving instanceof ArmorStand) || !((ArmorStand) entityliving).isMarker()) && this.distanceToSqr(entityliving) < 9.0D) {
+                                     // CraftBukkit start - Only apply knockback if the damage hits
+-                                    if (entityliving.hurt(DamageSource.playerAttack(this).sweep().critical(flag2), f4)) { // Paper - add critical damage API
++                                    if (entityliving.hurt(DamageSource.playerAttack(this).sweep().critical(flag2), this, null, f4)) { // Paper - add critical damage API
+                                     entityliving.knockback(0.4000000059604645D, Mth.sin(this.getYRot() * 0.017453292F), -Mth.cos(this.getYRot() * 0.017453292F), this); // Paper
+                                     }
+                                     // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+index 05f0d33309ebda9e4af9bda5c5af2f32a8a74fdc..06ae3d51a4c39d8d8a9775369da7f8b72a0bf61b 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+@@ -2,8 +2,7 @@ package net.minecraft.world.entity.projectile;
+ 
+ import com.google.common.collect.Lists;
+ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+-import java.util.Arrays;
+-import java.util.Collection;
++
+ import java.util.Iterator;
+ import java.util.List;
+ import javax.annotation.Nullable;
+@@ -409,7 +408,7 @@ public abstract class AbstractArrow extends Projectile {
+             // CraftBukkit end
+         }
+ 
+-        if (entity.hurt(damagesource, (float) i)) {
++        if (entity.hurt(damagesource, block, (float) i)) {
+             if (flag) {
+                 return;
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
+index 4ae276de36470479fcc60458a1d968246705c0c2..a2e7cf0215d71b12d050fd572f90a0095b94e902 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
+@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
+ import net.minecraft.world.phys.EntityHitResult;
+ import net.minecraft.world.phys.HitResult;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
+ 
+ public abstract class AbstractHurtingProjectile extends Projectile {
+@@ -176,7 +177,7 @@ public abstract class AbstractHurtingProjectile extends Projectile {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/DragonFireball.java b/src/main/java/net/minecraft/world/entity/projectile/DragonFireball.java
+index c72ab3c9f7cb20f22b051981fe1fc41965d2b2af..f8a49cc498b1d8ab5786ccdc40396d3771a9808e 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/DragonFireball.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/DragonFireball.java
+@@ -13,6 +13,8 @@ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.phys.EntityHitResult;
+ import net.minecraft.world.phys.HitResult;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class DragonFireball extends AbstractHurtingProjectile {
+     public static final float SPLASH_RANGE = 4.0F;
+@@ -68,7 +70,7 @@ public class DragonFireball extends AbstractHurtingProjectile {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         return false;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/EvokerFangs.java b/src/main/java/net/minecraft/world/entity/projectile/EvokerFangs.java
+index 74a8464d64e96eb2117488b7acc526e7a8385b23..cf3d988891d534b6f21a6e822ecc17bb6f191ca6 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/EvokerFangs.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/EvokerFangs.java
+@@ -131,14 +131,14 @@ public class EvokerFangs extends Entity {
+         if (target.isAlive() && !target.isInvulnerable() && target != entityliving1) {
+             if (entityliving1 == null) {
+                 org.bukkit.craftbukkit.event.CraftEventFactory.entityDamage = this; // CraftBukkit
+-                target.hurt(DamageSource.MAGIC, 6.0F);
++                target.hurt(DamageSource.MAGIC, block, 6.0F);
+                 org.bukkit.craftbukkit.event.CraftEventFactory.entityDamage = null; // CraftBukkit
+             } else {
+                 if (entityliving1.isAlliedTo(target)) {
+                     return;
+                 }
+ 
+-                target.hurt(DamageSource.indirectMagic(this, entityliving1), 6.0F);
++                target.hurt(DamageSource.indirectMagic(this, entityliving1), block, 6.0F);
+             }
+ 
+         }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/FireworkRocketEntity.java b/src/main/java/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
+index 5fd59b1a30a61bc1e799aafeb7ea34cb09581046..213b298aa7dac0c80c1b28b1f6df5f977c42da6c 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
+@@ -18,7 +18,6 @@ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.MoverType;
+-import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+ import net.minecraft.world.level.ClipContext;
+@@ -242,7 +241,7 @@ public class FireworkRocketEntity extends Projectile implements ItemSupplier {
+         if (f > 0.0F) {
+             if (this.attachedToEntity != null) {
+                 CraftEventFactory.entityDamage = this; // CraftBukkit
+-                this.attachedToEntity.hurt(DamageSource.fireworks(this, this.getOwner()), 5.0F + (float) (nbttaglist.size() * 2));
++                this.attachedToEntity.hurt(DamageSource.fireworks(this, this.getOwner()), block, 5.0F + (float) (nbttaglist.size() * 2));
+                 CraftEventFactory.entityDamage = null; // CraftBukkit
+             }
+ 
+@@ -271,7 +270,7 @@ public class FireworkRocketEntity extends Projectile implements ItemSupplier {
+                         float f1 = f * (float) Math.sqrt((5.0D - (double) this.distanceTo(entityliving)) / 5.0D);
+ 
+                         CraftEventFactory.entityDamage = this; // CraftBukkit
+-                        entityliving.hurt(DamageSource.fireworks(this, this.getOwner()), f1);
++                        entityliving.hurt(DamageSource.fireworks(this, this.getOwner()), block, f1);
+                         CraftEventFactory.entityDamage = null; // CraftBukkit
+                     }
+                 }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/LargeFireball.java b/src/main/java/net/minecraft/world/entity/projectile/LargeFireball.java
+index 5237b699e000b4fed99be39b0a7e2daab9c8bf42..e6e82e3618431b6bc95f8e5680217dc38c54d090 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/LargeFireball.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/LargeFireball.java
+@@ -54,7 +54,7 @@ public class LargeFireball extends Fireball {
+             Entity entity = entityHitResult.getEntity();
+             Entity entity1 = this.getOwner();
+ 
+-            entity.hurt(DamageSource.fireball(this, entity1), 6.0F);
++            entity.hurt(DamageSource.fireball(this, entity1), block, 6.0F);
+             if (entity1 instanceof LivingEntity) {
+                 this.doEnchantDamageEffects((LivingEntity) entity1, entity);
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/LlamaSpit.java b/src/main/java/net/minecraft/world/entity/projectile/LlamaSpit.java
+index 4132c1113f5437a776e5e3c1cb306904775aed88..46358e895adef234e3379dee7dcf24d1b4569a8e 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/LlamaSpit.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/LlamaSpit.java
+@@ -62,7 +62,7 @@ public class LlamaSpit extends Projectile {
+         Entity entity = this.getOwner();
+ 
+         if (entity instanceof LivingEntity) {
+-            entityHitResult.getEntity().hurt(DamageSource.indirectMobAttack(this, (LivingEntity) entity).setProjectile(), 1.0F);
++            entityHitResult.getEntity().hurt(DamageSource.indirectMobAttack(this, (LivingEntity) entity).setProjectile(), block, 1.0F);
+         }
+ 
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ShulkerBullet.java b/src/main/java/net/minecraft/world/entity/projectile/ShulkerBullet.java
+index e764197e4a4bd6256551b3b8fa289bc31068d8cf..97141e4c05cbfe6d82fb7eb01866d7266477b05f 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ShulkerBullet.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ShulkerBullet.java
+@@ -27,6 +27,8 @@ import net.minecraft.world.phys.BlockHitResult;
+ import net.minecraft.world.phys.EntityHitResult;
+ import net.minecraft.world.phys.HitResult;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class ShulkerBullet extends Projectile {
+ 
+@@ -299,7 +301,7 @@ public class ShulkerBullet extends Projectile {
+         Entity entity = entityHitResult.getEntity();
+         Entity entity1 = this.getOwner();
+         LivingEntity entityliving = entity1 instanceof LivingEntity ? (LivingEntity) entity1 : null;
+-        boolean flag = entity.hurt(DamageSource.indirectMobAttack(this, entityliving).setProjectile(), 4.0F);
++        boolean flag = entity.hurt(DamageSource.indirectMobAttack(this, entityliving).setProjectile(), block, 4.0F);
+ 
+         if (flag) {
+             this.doEnchantDamageEffects(entityliving, entity);
+@@ -329,7 +331,7 @@ public class ShulkerBullet extends Projectile {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         // CraftBukkit start
+         if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, amount, false)) {
+             return false;
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/SmallFireball.java b/src/main/java/net/minecraft/world/entity/projectile/SmallFireball.java
+index 815f1e659db4afde450f5e69d66750fa77bdef22..b04b039fd93be063e6dd7911639f87545f113714 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/SmallFireball.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/SmallFireball.java
+@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.BaseFireBlock;
+ import net.minecraft.world.phys.BlockHitResult;
+ import net.minecraft.world.phys.EntityHitResult;
+ import net.minecraft.world.phys.HitResult;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.event.entity.EntityCombustByEntityEvent; // CraftBukkit
+ 
+ public class SmallFireball extends Fireball {
+@@ -49,7 +50,7 @@ public class SmallFireball extends Fireball {
+                 entity.setSecondsOnFire(event.getDuration(), false);
+             }
+             // CraftBukkit end
+-            if (!entity.hurt(DamageSource.fireball(this, entity1), 5.0F)) {
++            if (!entity.hurt(DamageSource.fireball(this, entity1), block, 5.0F)) {
+                 entity.setRemainingFireTicks(i);
+             } else if (entity1 instanceof LivingEntity) {
+                 this.doEnchantDamageEffects((LivingEntity) entity1, entity);
+@@ -90,7 +91,7 @@ public class SmallFireball extends Fireball {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         return false;
+     }
+ }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
+index 77941e3981e49cf5662b3e3c86a9c419080b17c8..7b7c0b174f0ab837c2b1072ecfe82d2b2892deb0 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
+@@ -46,7 +46,7 @@ public class ThrownEgg extends ThrowableItemProjectile {
+     @Override
+     protected void onHitEntity(EntityHitResult entityHitResult) {
+         super.onHitEntity(entityHitResult);
+-        entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), 0.0F);
++        entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), block, 0.0F);
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownEnderpearl.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
+index 17ef2786aeb21bcdc0cb77abcbfd2a46346a5b8c..8f11881f2fdbf022a7af8f356fa2c72a88371c95 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
+@@ -41,7 +41,7 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
+     @Override
+     protected void onHitEntity(EntityHitResult entityHitResult) {
+         super.onHitEntity(entityHitResult);
+-        entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), 0.0F);
++        entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), block, 0.0F);
+     }
+ 
+     @Override
+@@ -83,7 +83,7 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
+                         entityplayer.connection.teleport(teleEvent.getTo());
+                         entity.resetFallDistance();
+                         CraftEventFactory.entityDamage = this;
+-                        entity.hurt(DamageSource.FALL, 5.0F);
++                        entity.hurt(DamageSource.FALL, block, 5.0F);
+                         CraftEventFactory.entityDamage = null;
+                     }
+                     // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownPotion.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownPotion.java
+index c5fcc1743098230b7fb36bf5ccef81041bcd2ab9..3575637349a40b588f46e5b9207a235647abca22 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ThrownPotion.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownPotion.java
+@@ -16,7 +16,6 @@ import net.minecraft.world.entity.AreaEffectCloud;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.animal.axolotl.Axolotl;
+-import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+@@ -163,7 +162,7 @@ public class ThrownPotion extends ThrowableItemProjectile implements ItemSupplie
+                 if (entityliving instanceof Axolotl axolotl && event.getIntensity(affectedEntity) > 0) {
+                     axolotl.rehydrate();
+                 } else {
+-                    entityliving.hurt(DamageSource.indirectMagic(this, this.getOwner()), 1.0F);
++                    entityliving.hurt(DamageSource.indirectMagic(this, this.getOwner()), block, 1.0F);
+                 }
+             }
+             // Paper end
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownTrident.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownTrident.java
+index 89b7d9456b1937de3ccd5aaa34c6c13e10e86092..3bd466b08aebe79a3d5c3b58d6c742b9b5991df3 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ThrownTrident.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownTrident.java
+@@ -142,7 +142,7 @@ public class ThrownTrident extends AbstractArrow {
+         this.dealtDamage = true;
+         SoundEvent soundeffect = SoundEvents.TRIDENT_HIT;
+ 
+-        if (entity.hurt(damagesource, f)) {
++        if (entity.hurt(damagesource, block, f)) {
+             if (entity.getType() == EntityType.ENDERMAN) {
+                 return;
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/WitherSkull.java b/src/main/java/net/minecraft/world/entity/projectile/WitherSkull.java
+index 1762ea33cc5c69635933fc9dfa7b2a9c93d2e234..dc5dd2196bf1e20b8403d0a728cb80c046dcb14a 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/WitherSkull.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/WitherSkull.java
+@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.material.FluidState;
+ import net.minecraft.world.phys.EntityHitResult;
+ import net.minecraft.world.phys.HitResult;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.event.entity.ExplosionPrimeEvent; // CraftBukkit
+ 
+ public class WitherSkull extends AbstractHurtingProjectile {
+@@ -60,7 +61,7 @@ public class WitherSkull extends AbstractHurtingProjectile {
+             if (entity1 instanceof LivingEntity) {
+                 LivingEntity entityliving = (LivingEntity) entity1;
+ 
+-                flag = entity.hurt(DamageSource.witherSkull(this, entityliving), 8.0F);
++                flag = entity.hurt(DamageSource.witherSkull(this, entityliving), block, 8.0F);
+                 if (flag) {
+                     if (entity.isAlive()) {
+                         this.doEnchantDamageEffects(entityliving, entity);
+@@ -69,7 +70,7 @@ public class WitherSkull extends AbstractHurtingProjectile {
+                     }
+                 }
+             } else {
+-                flag = entity.hurt(DamageSource.MAGIC, 5.0F);
++                flag = entity.hurt(DamageSource.MAGIC, block, 5.0F);
+             }
+ 
+             if (flag && entity instanceof LivingEntity) {
+@@ -115,7 +116,7 @@ public class WitherSkull extends AbstractHurtingProjectile {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         return false;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/raid/Raider.java b/src/main/java/net/minecraft/world/entity/raid/Raider.java
+index ffa0b6fe36f490f02d61a0c9bfc8f76b4cce5a0c..00e0f80116c130591d2f38defa178c6722577bda 100644
+--- a/src/main/java/net/minecraft/world/entity/raid/Raider.java
++++ b/src/main/java/net/minecraft/world/entity/raid/Raider.java
+@@ -42,6 +42,8 @@ import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.ServerLevelAccessor;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public abstract class Raider extends PatrollingMonster {
+ 
+@@ -291,12 +293,12 @@ public abstract class Raider extends PatrollingMonster {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.hasActiveRaid()) {
+             this.getCurrentRaid().updateBossbar();
+         }
+ 
+-        return super.hurt(source, amount);
++        return super.hurt(source, block, amount);
+     }
+ 
+     @Nullable
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+index 0133ffe5bf5245013cd440c5614983f11bbfce13..f8fe0606a69d1a2b9feb3607cc460d830100e6ed 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+@@ -49,6 +49,7 @@ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
+ // CraftBukkit start
+ import org.bukkit.Location;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.entity.Vehicle;
+ import org.bukkit.event.vehicle.VehicleDamageEvent;
+ import org.bukkit.event.vehicle.VehicleDestroyEvent;
+@@ -238,7 +239,7 @@ public abstract class AbstractMinecart extends Entity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (!this.level.isClientSide && !this.isRemoved()) {
+             if (this.isInvulnerableTo(source)) {
+                 return false;
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/Boat.java b/src/main/java/net/minecraft/world/entity/vehicle/Boat.java
+index 73c869db7e0808d09619d7ba866c08c0c81dc1eb..cad56e46f95d67a629cf6cd064a5e80d84adacdb 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/Boat.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/Boat.java
+@@ -37,7 +37,6 @@ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+ import net.minecraft.world.level.GameRules;
+-import net.minecraft.world.level.ItemLike;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+@@ -52,6 +51,7 @@ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ // CraftBukkit start
+ import org.bukkit.Location;
++import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.entity.Vehicle;
+ import org.bukkit.event.vehicle.VehicleDamageEvent;
+ import org.bukkit.event.vehicle.VehicleDestroyEvent;
+@@ -172,7 +172,7 @@ public class Boat extends Entity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (!this.level.isClientSide && !this.isRemoved()) {
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/MinecartTNT.java b/src/main/java/net/minecraft/world/entity/vehicle/MinecartTNT.java
+index 6fb127db8de6975e0f81583f1f593aab0c1467e3..12675934750cb78eaf8275c4d5f40debe3e817a7 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/MinecartTNT.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/MinecartTNT.java
+@@ -9,7 +9,6 @@ import net.minecraft.tags.BlockTags;
+ import net.minecraft.world.damagesource.DamageSource;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+-import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.entity.projectile.AbstractArrow;
+ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.Items;
+@@ -19,6 +18,8 @@ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.material.FluidState;
++import org.bukkit.craftbukkit.block.CraftBlock;
++
+ 
+ public class MinecartTNT extends AbstractMinecart {
+     private static final byte EVENT_PRIME = 10;
+@@ -68,7 +69,7 @@ public class MinecartTNT extends AbstractMinecart {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+         Entity entity = source.getDirectEntity();
+         if (entity instanceof AbstractArrow abstractArrow) {
+             if (abstractArrow.isOnFire()) {
+@@ -76,7 +77,7 @@ public class MinecartTNT extends AbstractMinecart {
+             }
+         }
+ 
+-        return super.hurt(source, amount);
++        return super.hurt(source, block, amount);
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/food/FoodData.java b/src/main/java/net/minecraft/world/food/FoodData.java
+index 347621de1b7ab881ea392c3d6f0354e8d86be793..53611e72c0129887b40cc49b94ec27f93c8d937b 100644
+--- a/src/main/java/net/minecraft/world/food/FoodData.java
++++ b/src/main/java/net/minecraft/world/food/FoodData.java
+@@ -101,7 +101,7 @@ public class FoodData {
+             ++this.tickTimer;
+             if (this.tickTimer >= this.starvationRate) { // CraftBukkit - add regen rate manipulation
+                 if (player.getHealth() > 10.0F || enumdifficulty == Difficulty.HARD || player.getHealth() > 1.0F && enumdifficulty == Difficulty.NORMAL) {
+-                    player.hurt(DamageSource.STARVE, 1.0F);
++                    player.hurt(DamageSource.STARVE, block, 1.0F);
+                 }
+ 
+                 this.tickTimer = 0;
+diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
+index baee34b3aca7aa000cd72a83a7ea514c3ec8ac05..70606d6bf91f24bc25605759a1ee965a2faa35b4 100644
+--- a/src/main/java/net/minecraft/world/level/Explosion.java
++++ b/src/main/java/net/minecraft/world/level/Explosion.java
+@@ -255,11 +255,11 @@ public class Explosion {
+                         if (entity instanceof EnderDragon) {
+                             for (EnderDragonPart entityComplexPart : ((EnderDragon) entity).subEntities) {
+                                 if (list.contains(entityComplexPart)) {
+-                                    entityComplexPart.hurt(this.getDamageSource(), (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f2 + 1.0D)));
++                                    entityComplexPart.hurt(this.getDamageSource(), block, (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f2 + 1.0D)));
+                                 }
+                             }
+                         } else {
+-                            entity.hurt(this.getDamageSource(), (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f2 + 1.0D)));
++                            entity.hurt(this.getDamageSource(), block, (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f2 + 1.0D)));
+                         }
+ 
+                         CraftEventFactory.entityDamage = null;
+diff --git a/src/main/java/net/minecraft/world/level/block/BaseFireBlock.java b/src/main/java/net/minecraft/world/level/block/BaseFireBlock.java
+index c8ae9f1d59ff022abe1f3ce621ac97fa3d5f19ce..65070cd458b9550889465bb17eec45eb4c7aa211 100644
+--- a/src/main/java/net/minecraft/world/level/block/BaseFireBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/BaseFireBlock.java
+@@ -142,7 +142,7 @@ public abstract class BaseFireBlock extends Block {
+             }
+         }
+ 
+-        entity.hurt(DamageSource.IN_FIRE, this.fireDamage);
++        entity.hurt(DamageSource.IN_FIRE, block, this.fireDamage);
+         super.entityInside(state, world, pos, entity);
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/CactusBlock.java b/src/main/java/net/minecraft/world/level/block/CactusBlock.java
+index 62dfb2c9e4370b97415b1bdae09195dc2e7665b1..10729c1ab1bfb541a2ed5fab6acae8595bd708aa 100644
+--- a/src/main/java/net/minecraft/world/level/block/CactusBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/CactusBlock.java
+@@ -22,6 +22,8 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
++import org.jetbrains.annotations.NotNull;
++
+ 
+ public class CactusBlock extends Block {
+ 
+@@ -118,9 +120,8 @@ public class CactusBlock extends Block {
+     @Override
+     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+         if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(world, pos)).callEvent()) { return; } // Paper
+-        CraftEventFactory.blockDamage = world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()); // CraftBukkit
+-        entity.hurt(DamageSource.CACTUS, 1.0F);
+-        CraftEventFactory.blockDamage = null; // CraftBukkit
++        final org.bukkit.block.Block block = world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()); // CraftBukkit
++        entity.hurt(DamageSource.CACTUS, null, block, 1.0F);
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/level/block/CampfireBlock.java b/src/main/java/net/minecraft/world/level/block/CampfireBlock.java
+index 1543e0a2e5508e1b4d0bc9d3de716ba349d61a34..8a4007a9918a1e5631ca46d64d0ad0b5c4963b79 100644
+--- a/src/main/java/net/minecraft/world/level/block/CampfireBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/CampfireBlock.java
+@@ -37,7 +37,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+ import net.minecraft.world.level.block.state.properties.BooleanProperty;
+ import net.minecraft.world.level.block.state.properties.DirectionProperty;
+ import net.minecraft.world.level.gameevent.GameEvent;
+-import net.minecraft.world.level.material.Fluid;
+ import net.minecraft.world.level.material.FluidState;
+ import net.minecraft.world.level.material.Fluids;
+ import net.minecraft.world.level.pathfinder.PathComputationType;
+@@ -96,7 +95,7 @@ public class CampfireBlock extends BaseEntityBlock implements SimpleWaterloggedB
+         if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(world, pos)).callEvent()) { return; } // Paper
+         if (state.getValue(CampfireBlock.LIT).booleanValue() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) entity)) {
+             org.bukkit.craftbukkit.event.CraftEventFactory.blockDamage = CraftBlock.at(world, pos); // CraftBukkit
+-            entity.hurt(DamageSource.IN_FIRE, (float) this.fireDamage);
++            entity.hurt(DamageSource.IN_FIRE, block, (float) this.fireDamage);
+             org.bukkit.craftbukkit.event.CraftEventFactory.blockDamage = null; // CraftBukkit
+         }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/MagmaBlock.java b/src/main/java/net/minecraft/world/level/block/MagmaBlock.java
+index 091d048ab69d71316d06929147fe7d4e771c7142..35266867e24b11d986323dc84ff304d282bc2ed4 100644
+--- a/src/main/java/net/minecraft/world/level/block/MagmaBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/MagmaBlock.java
+@@ -11,7 +11,6 @@ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.damagesource.DamageSource;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.LivingEntity;
+-import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.enchantment.EnchantmentHelper;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+@@ -30,7 +29,7 @@ public class MagmaBlock extends Block {
+     public void stepOn(Level world, BlockPos pos, BlockState state, Entity entity) {
+         if (!entity.isSteppingCarefully() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) entity)) {
+             org.bukkit.craftbukkit.event.CraftEventFactory.blockDamage = world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()); // CraftBukkit
+-            entity.hurt(DamageSource.HOT_FLOOR, 1.0F);
++            entity.hurt(DamageSource.HOT_FLOOR, block, 1.0F);
+             org.bukkit.craftbukkit.event.CraftEventFactory.blockDamage = null; // CraftBukkit
+         }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/SweetBerryBushBlock.java b/src/main/java/net/minecraft/world/level/block/SweetBerryBushBlock.java
+index 120acd68d0c1376b96916ee0732e5734a19c3df1..85355157b0684af0684e69d6df107a5fe4314ffe 100644
+--- a/src/main/java/net/minecraft/world/level/block/SweetBerryBushBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/SweetBerryBushBlock.java
+@@ -86,7 +86,7 @@ public class SweetBerryBushBlock extends BushBlock implements BonemealableBlock
+ 
+                 if (d0 >= 0.003000000026077032D || d1 >= 0.003000000026077032D) {
+                     CraftEventFactory.blockDamage = CraftBlock.at(world, pos); // CraftBukkit
+-                    entity.hurt(DamageSource.SWEET_BERRY_BUSH, 1.0F);
++                    entity.hurt(DamageSource.SWEET_BERRY_BUSH, block, 1.0F);
+                     CraftEventFactory.blockDamage = null; // CraftBukkit
+                 }
+             }
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/ConduitBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/ConduitBlockEntity.java
+index 7eac6bd8ec6945679db4c3a02c0be6dab3a07030..d99978a46ea54b37cf3285679c7cc256a70de4ab 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/ConduitBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/ConduitBlockEntity.java
+@@ -237,7 +237,7 @@ public class ConduitBlockEntity extends BlockEntity {
+         if (blockEntity.destroyTarget != null) {
+             // CraftBukkit start
+             CraftEventFactory.blockDamage = CraftBlock.at(world, pos);
+-            if (blockEntity.destroyTarget.hurt(DamageSource.MAGIC, 4.0F)) {
++            if (blockEntity.destroyTarget.hurt(DamageSource.MAGIC, block, 4.0F)) {
+                 world.playSound(null, blockEntity.destroyTarget.getX(), blockEntity.destroyTarget.getY(), blockEntity.destroyTarget.getZ(), SoundEvents.CONDUIT_ATTACK_TARGET, SoundSource.BLOCKS, 1.0F, 1.0F);
+             }
+             CraftEventFactory.blockDamage = null;
+diff --git a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+index 30d5f1fea593f84b0b3b4a53a32691e4e94bd3cd..44b94402773d6f5964fcfc83646b72bfc18d7b4b 100644
+--- a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
++++ b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+@@ -48,7 +48,7 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+         this.addAndRun(pos, new CollectingNeighborUpdater.MultiNeighborUpdate(pos.immutable(), sourceBlock, except));
+     }
+ 
+-    private void addAndRun(BlockPos pos, CollectingNeighborUpdater.NeighborUpdates entry) {
++    private synchronized void addAndRun(BlockPos pos, CollectingNeighborUpdater.NeighborUpdates entry) {
+         boolean bl = this.count > 0;
+         boolean bl2 = this.maxChainedNeighborUpdates >= 0 && this.count >= this.maxChainedNeighborUpdates;
+         ++this.count;
+@@ -69,6 +69,7 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+     }
+ 
+     private void runUpdates() {
++
+         try {
+             while(!this.stack.isEmpty() || !this.addedThisLayer.isEmpty()) {
+                 for(int i = this.addedThisLayer.size() - 1; i >= 0; --i) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+index a4300247ff77d8ad7e0bad4173b546417aa4d382..b43f8af1cd62ab812e0a213ef77cb6f79877c5ab 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+@@ -19,7 +19,6 @@ import net.minecraft.world.entity.MobType;
+ import net.minecraft.world.entity.ai.attributes.Attributes;
+ import net.minecraft.world.entity.boss.wither.WitherBoss;
+ import net.minecraft.world.entity.decoration.ArmorStand;
+-import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+ import net.minecraft.world.entity.projectile.Arrow;
+ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+ import net.minecraft.world.entity.projectile.FishingHook;
+@@ -365,7 +364,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+             reason = DamageSource.mobAttack(((CraftLivingEntity) source).getHandle());
+         }
+ 
+-        entity.hurt(reason, (float) amount);
++        entity.hurt(reason, block, (float) amount);
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index 19e37297e32028e21fb24d51a54292b1ff2d3c9b..cbfb066f6c5f3b57d4872660f96024d4a70c4fb3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -229,8 +229,8 @@ import org.jetbrains.annotations.NotNull;
+ public class CraftEventFactory {
+     public static final DamageSource MELTING = CraftDamageSource.copyOf(DamageSource.ON_FIRE);
+     public static final DamageSource POISON = CraftDamageSource.copyOf(DamageSource.MAGIC);
+-    public static org.bukkit.block.@org.jetbrains.annotations.Nullable Block blockDamage; // For use in EntityDamageByBlockEvent
+-    public static @org.jetbrains.annotations.Nullable Entity entityDamage; // For use in EntityDamageByEntityEvent
++    //public static org.bukkit.block.@org.jetbrains.annotations.Nullable Block blockDamage; // For use in EntityDamageByBlockEvent
++    //public static @org.jetbrains.annotations.Nullable Entity entityDamage; // For use in EntityDamageByEntityEvent
+ 
+     // helper methods
+     private static boolean canBuild(@NotNull ServerLevel world, @NotNull Player player, int x, int z) {
+@@ -962,27 +962,28 @@ public class CraftEventFactory {
+         return event;
+     }
+ 
+-    private static @NotNull EntityDamageEvent handleEntityDamageEvent(@NotNull Entity entity, @NotNull DamageSource source, @NotNull Map<DamageModifier, Double> modifiers, @NotNull Map<DamageModifier, Function<? super Double, Double>> modifierFunctions) {
+-        return CraftEventFactory.handleEntityDamageEvent(entity, source, modifiers, modifierFunctions, false);
++    private static @NotNull EntityDamageEvent handleEntityDamageEvent(@NotNull Entity entity, @Nullable Entity damager, @Nullable Block damagerBlock, @NotNull DamageSource source, @NotNull Map<DamageModifier, Double> modifiers, @NotNull Map<DamageModifier, Function<? super Double, Double>> modifierFunctions) {
++
++        return CraftEventFactory.handleEntityDamageEvent(entity, damager, damagerBlock, source, modifiers, modifierFunctions, false);
+     }
+ 
+-    private static @NotNull EntityDamageEvent handleEntityDamageEvent(@NotNull Entity entity, @NotNull DamageSource source, @NotNull Map<DamageModifier, Double> modifiers, @NotNull Map<DamageModifier, Function<? super Double, Double>> modifierFunctions, boolean cancelled) {
++    private static @NotNull EntityDamageEvent handleEntityDamageEvent(@NotNull Entity entity, @Nullable Entity damagerEntity, @Nullable Block damagerBlock, @NotNull DamageSource source, @NotNull Map<DamageModifier, Double> modifiers, @NotNull Map<DamageModifier, Function<? super Double, Double>> modifierFunctions, boolean cancelled) {
+         if (source.isExplosion()) {
+             DamageCause damageCause;
+-            Entity damager = CraftEventFactory.entityDamage;
+-            CraftEventFactory.entityDamage = null;
++            //Entity damager = CraftEventFactory.entityDamage;
++            //CraftEventFactory.entityDamage = null;
+             EntityDamageEvent event;
+-            if (damager == null) {
++            if (damagerEntity == null) {
+                 event = new EntityDamageByBlockEvent(null, entity.getBukkitEntity(), DamageCause.BLOCK_EXPLOSION, modifiers, modifierFunctions);
+             } else if (entity instanceof EnderDragon && /*PAIL FIXME ((EntityEnderDragon) entity).target == damager*/ false) {
+                 event = new EntityDamageEvent(entity.getBukkitEntity(), DamageCause.ENTITY_EXPLOSION, modifiers, modifierFunctions);
+             } else {
+-                if (damager instanceof org.bukkit.entity.TNTPrimed) {
++                if (damagerEntity instanceof org.bukkit.entity.TNTPrimed) {
+                     damageCause = DamageCause.BLOCK_EXPLOSION;
+                 } else {
+                     damageCause = DamageCause.ENTITY_EXPLOSION;
+                 }
+-                event = new EntityDamageByEntityEvent(damager.getBukkitEntity(), entity.getBukkitEntity(), damageCause, modifiers, modifierFunctions, source.isCritical()); // Paper - add critical damage API
++                event = new EntityDamageByEntityEvent(damagerEntity.getBukkitEntity(), entity.getBukkitEntity(), damageCause, modifiers, modifierFunctions, source.isCritical()); // Paper - add critical damage API
+             }
+             event.setCancelled(cancelled);
+ 
+@@ -995,14 +996,14 @@ public class CraftEventFactory {
+             }
+             return event;
+         } else if (source instanceof EntityDamageSource) {
+-            Entity damager = source.getEntity();
++            //Entity damager = source.getEntity();
+             DamageCause cause = (source.isSweep()) ? DamageCause.ENTITY_SWEEP_ATTACK : DamageCause.ENTITY_ATTACK;
+ 
+             if (source instanceof IndirectEntityDamageSource) {
+-                damager = ((IndirectEntityDamageSource) source).getProximateDamageSource();
+-                if (damager.getBukkitEntity() instanceof ThrownPotion) {
++                damagerEntity = ((IndirectEntityDamageSource) source).getProximateDamageSource();
++                if (damagerEntity.getBukkitEntity() instanceof ThrownPotion) {
+                     cause = DamageCause.MAGIC;
+-                } else if (damager.getBukkitEntity() instanceof Projectile) {
++                } else if (damagerEntity.getBukkitEntity() instanceof Projectile) {
+                     cause = DamageCause.PROJECTILE;
+                 }
+             } else if ("thorns".equals(source.msgId)) {
+@@ -1011,7 +1012,7 @@ public class CraftEventFactory {
+                 cause = DamageCause.SONIC_BOOM;
+             }
+ 
+-            return CraftEventFactory.callEntityDamageEvent(damager, entity, cause, modifiers, modifierFunctions, cancelled, source.isCritical()); // Paper - add critical damage API
++            return CraftEventFactory.callEntityDamageEvent(damagerEntity, entity, cause, modifiers, modifierFunctions, cancelled, source.isCritical()); // Paper - add critical damage API
+         } else if (source == DamageSource.OUT_OF_WORLD) {
+             EntityDamageEvent event = new EntityDamageByBlockEvent(null, entity.getBukkitEntity(), DamageCause.VOID, modifiers, modifierFunctions);
+             event.setCancelled(cancelled);
+@@ -1023,13 +1024,13 @@ public class CraftEventFactory {
+             }
+             return event;
+         } else if (source == DamageSource.LAVA) {
+-            EntityDamageEvent event = (new EntityDamageByBlockEvent(CraftEventFactory.blockDamage, entity.getBukkitEntity(), DamageCause.LAVA, modifiers, modifierFunctions));
++
++            EntityDamageEvent event = (new EntityDamageByBlockEvent(damagerBlock, entity.getBukkitEntity(), DamageCause.LAVA, modifiers, modifierFunctions));
+             event.setCancelled(cancelled);
+ 
+-            Block damager = CraftEventFactory.blockDamage;
+-            CraftEventFactory.blockDamage = null; // SPIGOT-6639: Clear blockDamage to allow other entity damage during event call
++            //Block damager = CraftEventFactory.blockDamage;
+             CraftEventFactory.callEvent(event);
+-            CraftEventFactory.blockDamage = damager; // SPIGOT-6639: Re-set blockDamage so that other entities which are also getting damaged have the right cause
++            //CraftEventFactory.blockDamage = damager; // SPIGOT-6639: Re-set blockDamage so that other entities which are also getting damaged have the right cause
+ 
+             if (!event.isCancelled()) {
+                 event.getEntity().setLastDamageCause(event);
+@@ -1037,9 +1038,9 @@ public class CraftEventFactory {
+                 entity.lastDamageCancelled = true; // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Keep track if the event was canceled
+             }
+             return event;
+-        } else if (CraftEventFactory.blockDamage != null) {
++        } else if (damagerBlock != null) {
+             DamageCause cause = null;
+-            Block damager = CraftEventFactory.blockDamage;
++            //Block damager = CraftEventFactory.blockDamage;
+             if (source == DamageSource.CACTUS || source == DamageSource.SWEET_BERRY_BUSH || source == DamageSource.STALAGMITE || source == DamageSource.FALLING_STALACTITE || source == DamageSource.ANVIL) {
+                 cause = DamageCause.CONTACT;
+             } else if (source == DamageSource.HOT_FLOOR) {
+@@ -1049,14 +1050,15 @@ public class CraftEventFactory {
+             } else if (source == DamageSource.IN_FIRE) {
+                 cause = DamageCause.FIRE;
+             } else {
+-                throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.msgId));
++                System.err.printf("Unhandled damage of %s by %s from %s%n\n", entity, damagerBlock, source.msgId);
++                return null; // Skip handling
++                //throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.msgId));
+             }
+-            EntityDamageEvent event = new EntityDamageByBlockEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions);
++            EntityDamageEvent event = new EntityDamageByBlockEvent(damagerBlock, entity.getBukkitEntity(), cause, modifiers, modifierFunctions);
+             event.setCancelled(cancelled);
+ 
+-            CraftEventFactory.blockDamage = null; // SPIGOT-6639: Clear blockDamage to allow other entity damage during event call
+             CraftEventFactory.callEvent(event);
+-            CraftEventFactory.blockDamage = damager; // SPIGOT-6639: Re-set blockDamage so that other entities which are also getting damaged have the right cause
++            //CraftEventFactory.blockDamage = damager; // SPIGOT-6639: Re-set blockDamage so that other entities which are also getting damaged have the right cause
+ 
+             if (!event.isCancelled()) {
+                 event.getEntity().setLastDamageCause(event);
+@@ -1064,13 +1066,11 @@ public class CraftEventFactory {
+                 entity.lastDamageCancelled = true; // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Keep track if the event was canceled
+             }
+             return event;
+-        } else if (CraftEventFactory.entityDamage != null) {
++        } else if (damagerEntity != null) {
+             DamageCause cause = null;
+-            CraftEntity damager = CraftEventFactory.entityDamage.getBukkitEntity();
+-            CraftEventFactory.entityDamage = null;
+             if (source == DamageSource.ANVIL || source == DamageSource.FALLING_BLOCK || source == DamageSource.FALLING_STALACTITE) {
+                 cause = DamageCause.FALLING_BLOCK;
+-            } else if (damager instanceof LightningStrike) {
++            } else if (damagerEntity instanceof LightningStrike) {
+                 cause = DamageCause.LIGHTNING;
+             } else if (source == DamageSource.FALL) {
+                 cause = DamageCause.FALL;
+@@ -1079,9 +1079,9 @@ public class CraftEventFactory {
+             } else if (source == DamageSource.MAGIC) {
+                 cause = DamageCause.MAGIC;
+             } else {
+-                throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager.getHandle(), source.msgId));
++                throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damagerEntity.getBukkitEntity().getHandle(), source.msgId));
+             }
+-            EntityDamageEvent event = new EntityDamageByEntityEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions, source.isCritical()); // Paper - add critical damage API
++            EntityDamageEvent event = new EntityDamageByEntityEvent(damagerEntity.getBukkitEntity(), entity.getBukkitEntity(), cause, modifiers, modifierFunctions, source.isCritical()); // Paper - add critical damage API
+             event.setCancelled(cancelled);
+             CraftEventFactory.callEvent(event);
+             if (!event.isCancelled()) {
+@@ -1165,7 +1165,7 @@ public class CraftEventFactory {
+ 
+     private static final Function<? super Double, Double> ZERO = Functions.constant(Double.valueOf(-0.0));
+ 
+-    public static @NotNull EntityDamageEvent handleLivingEntityDamageEvent(Entity damagee, @NotNull DamageSource source, double rawDamage, double hardHatModifier, double blockingModifier, double armorModifier, double resistanceModifier, double magicModifier, double absorptionModifier, Function<Double, Double> hardHat, Function<Double, Double> blocking, Function<Double, Double> armor, Function<Double, Double> resistance, Function<Double, Double> magic, Function<Double, Double> absorption) {
++    public static @NotNull EntityDamageEvent handleLivingEntityDamageEvent(Entity damagee, @Nullable Entity damagerEntity, @Nullable Block damagerBlock, @NotNull DamageSource source, double rawDamage, double hardHatModifier, double blockingModifier, double armorModifier, double resistanceModifier, double magicModifier, double absorptionModifier, Function<Double, Double> hardHat, Function<Double, Double> blocking, Function<Double, Double> armor, Function<Double, Double> resistance, Function<Double, Double> magic, Function<Double, Double> absorption) {
+         Map<DamageModifier, Double> modifiers = new EnumMap<DamageModifier, Double>(DamageModifier.class);
+         Map<DamageModifier, Function<? super Double, Double>> modifierFunctions = new EnumMap<DamageModifier, Function<? super Double, Double>>(DamageModifier.class);
+         modifiers.put(DamageModifier.BASE, Double.valueOf(rawDamage));
+@@ -1186,26 +1186,26 @@ public class CraftEventFactory {
+         modifierFunctions.put(DamageModifier.MAGIC, magic);
+         modifiers.put(DamageModifier.ABSORPTION, Double.valueOf(absorptionModifier));
+         modifierFunctions.put(DamageModifier.ABSORPTION, absorption);
+-        return CraftEventFactory.handleEntityDamageEvent(damagee, source, modifiers, modifierFunctions);
++        return CraftEventFactory.handleEntityDamageEvent(damagee, damagerEntity, damagerBlock, source, modifiers, modifierFunctions);
+     }
+ 
+     // Non-Living Entities such as EntityEnderCrystal and EntityFireball need to call this
+-    public static boolean handleNonLivingEntityDamageEvent(@NotNull Entity entity, @NotNull DamageSource source, double damage) {
+-        return CraftEventFactory.handleNonLivingEntityDamageEvent(entity, source, damage, true);
++    public static boolean handleNonLivingEntityDamageEvent(@NotNull Entity entity, @Nullable Entity damagerEntity, @Nullable Block damagerBlock, @NotNull DamageSource source, double damage) {
++        return CraftEventFactory.handleNonLivingEntityDamageEvent(entity, damagerEntity, damagerBlock, source, damage, true);
+     }
+ 
+-    public static boolean handleNonLivingEntityDamageEvent(@NotNull Entity entity, @NotNull DamageSource source, double damage, boolean cancelOnZeroDamage) {
+-        return CraftEventFactory.handleNonLivingEntityDamageEvent(entity, source, damage, cancelOnZeroDamage, false);
++    public static boolean handleNonLivingEntityDamageEvent(@NotNull Entity entity, @Nullable Entity damagerEntity, @Nullable Block damagerBlock, @NotNull DamageSource source, double damage, boolean cancelOnZeroDamage) {
++        return CraftEventFactory.handleNonLivingEntityDamageEvent(entity, damagerEntity, damagerBlock, source, damage, cancelOnZeroDamage, false);
+     }
+ 
+-    public static boolean handleNonLivingEntityDamageEvent(@NotNull Entity entity, @NotNull DamageSource source, double damage, boolean cancelOnZeroDamage, boolean cancelled) {
++    public static boolean handleNonLivingEntityDamageEvent(@NotNull Entity entity, @Nullable Entity damagerEntity, @Nullable Block damagerBlock, @NotNull DamageSource source, double damage, boolean cancelOnZeroDamage, boolean cancelled) {
+         final EnumMap<DamageModifier, Double> modifiers = new EnumMap<DamageModifier, Double>(DamageModifier.class);
+         final EnumMap<DamageModifier, Function<? super Double, Double>> functions = new EnumMap(DamageModifier.class);
+ 
+         modifiers.put(DamageModifier.BASE, Double.valueOf(damage));
+         functions.put(DamageModifier.BASE, ZERO);
+ 
+-        final EntityDamageEvent event = CraftEventFactory.handleEntityDamageEvent(entity, source, modifiers, functions, cancelled);
++        final EntityDamageEvent event = CraftEventFactory.handleEntityDamageEvent(entity, damagerEntity, damagerBlock, source, modifiers, functions, cancelled);
+ 
+         if (event == null) {
+             return false;

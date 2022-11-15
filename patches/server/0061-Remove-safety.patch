@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Mon, 14 Nov 2022 18:51:48 -0600
+Subject: [PATCH] Remove safety >:)
+
+
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/LegacyRandomSource.java b/src/main/java/net/minecraft/world/level/levelgen/LegacyRandomSource.java
+index daa03360dd7044f10b20f36023b305dc7e0bb7df..aa5e4f70619fe7ee0f0e6bb58dee842c946bd123 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/LegacyRandomSource.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/LegacyRandomSource.java
+@@ -30,22 +30,22 @@ public class LegacyRandomSource implements BitRandomSource {
+ 
+     @Override
+     public void setSeed(long seed) {
+-        if (!this.seed.compareAndSet(this.seed.get(), (seed ^ 25214903917L) & 281474976710655L)) {
+-            throw ThreadingDetector.makeThreadingException("LegacyRandomSource", (Thread)null);
+-        } else {
++        //if (!this.seed.compareAndSet(this.seed.get(), (seed ^ 25214903917L) & 281474976710655L)) {
++            //throw ThreadingDetector.makeThreadingException("LegacyRandomSource", (Thread)null);
++        //} else {
+             this.gaussianSource.reset();
+-        }
++        //}
+     }
+ 
+     @Override
+     public int next(int bits) {
+         long l = this.seed.get();
+         long m = l * 25214903917L + 11L & 281474976710655L;
+-        if (!this.seed.compareAndSet(l, m)) {
+-            throw ThreadingDetector.makeThreadingException("LegacyRandomSource", (Thread)null);
+-        } else {
++       // if (!this.seed.compareAndSet(l, m)) {
++            //throw ThreadingDetector.makeThreadingException("LegacyRandomSource", (Thread)null);
++        //} else {
+             return (int)(m >> 48 - bits);
+-        }
++        //}
+     }
+ 
+     @Override

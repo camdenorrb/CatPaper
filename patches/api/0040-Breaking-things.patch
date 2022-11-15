@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Mon, 14 Nov 2022 18:46:19 -0600
+Subject: [PATCH] Breaking things
+
+
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index ef14de5e40290e5a8cef7d31f0c852949ff37624..e3c3593cf6fcf64f22334084ca341eaf05cc3630 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -33,6 +33,7 @@ import org.bukkit.event.Event;
+ import org.bukkit.event.EventPriority;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.Listener;
++import org.bukkit.event.entity.EntityEvent;
+ import org.bukkit.permissions.Permissible;
+ import org.bukkit.permissions.Permission;
+ import org.bukkit.permissions.PermissionDefault;
+@@ -652,7 +653,9 @@ public final class SimplePluginManager implements PluginManager {
+         if (event.isAsynchronous() && server.isPrimaryThread()) {
+             throw new IllegalStateException(event.getEventName() + " may only be triggered asynchronously.");
+         } else if (!event.isAsynchronous() && !server.isPrimaryThread() && !server.isStopping() ) {
+-            throw new IllegalStateException(event.getEventName() + " may only be triggered synchronously.");
++            //if (!(event instanceof EntityEvent) && ) {
++                //throw new IllegalStateException(event.getEventName() + " may only be triggered synchronously.");
++            //}
+         }
+ 
+         HandlerList handlers = event.getHandlers();

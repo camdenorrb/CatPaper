@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Mon, 14 Nov 2022 21:10:55 -0600
+Subject: [PATCH] Use concurrent hashmap for chunk entity slices
+
+
+diff --git a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+index 0e9561e607b6d4e5cce88ffa7cfc6ed021e18144..667b6f372faffef154377fa93b6a90cf30e06e99 100644
+--- a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
++++ b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+ import java.util.*;
+-import java.util.concurrent.ConcurrentHashMap;
+ import java.util.function.Predicate;
+ import java.util.stream.Collectors;
+ 
+@@ -35,10 +34,10 @@ public final class ChunkEntitySlices {
+ 
+     protected final @NotNull EntityCollectionBySection allEntities;
+     protected final @NotNull EntityCollectionBySection hardCollidingEntities;
+-    protected final @NotNull Reference2ObjectOpenHashMap<Class<? extends Entity>, EntityCollectionBySection> entitiesByClass;
++    protected final @NotNull Map<Class<? extends Entity>, EntityCollectionBySection> entitiesByClass;
+ 
+     // ID -> Entity
+-    protected final Map<Integer, Entity> entities = new ConcurrentHashMap<>();
++    protected final Map<Integer, Entity> entities = new HashMap<>();
+ 
+     public ChunkHolder.FullChunkStatus status;
+ 
+@@ -64,7 +63,7 @@ public final class ChunkEntitySlices {
+ 
+         this.allEntities = new EntityCollectionBySection(this);
+         this.hardCollidingEntities = new EntityCollectionBySection(this);
+-        this.entitiesByClass = new Reference2ObjectOpenHashMap<>();
++        this.entitiesByClass = new HashMap<>();
+ 
+         this.status = status;
+     }
+@@ -185,10 +184,8 @@ public final class ChunkEntitySlices {
+             this.hardCollidingEntities.addEntity(entity, sectionIndex);
+         }
+ 
+-        for (final Iterator<Reference2ObjectMap.Entry<Class<? extends Entity>, EntityCollectionBySection>> iterator =
+-             this.entitiesByClass.reference2ObjectEntrySet().fastIterator(); iterator.hasNext();) {
+-            final Reference2ObjectMap.Entry<Class<? extends Entity>, EntityCollectionBySection> entry = iterator.next();
+-
++        // Loop through entitiesByClass entry set
++        for (final Map.Entry<Class<? extends Entity>, EntityCollectionBySection> entry : this.entitiesByClass.entrySet()) {
+             if (entry.getKey().isInstance(entity)) {
+                 entry.getValue().addEntity(entity, sectionIndex);
+             }
+@@ -210,10 +207,8 @@ public final class ChunkEntitySlices {
+             this.hardCollidingEntities.removeEntity(entity, sectionIndex);
+         }
+ 
+-        for (final Iterator<Reference2ObjectMap.Entry<Class<? extends Entity>, EntityCollectionBySection>> iterator =
+-             this.entitiesByClass.reference2ObjectEntrySet().fastIterator(); iterator.hasNext();) {
+-            final Reference2ObjectMap.Entry<Class<? extends Entity>, EntityCollectionBySection> entry = iterator.next();
+-
++        // Loop through entitiesByClass entry set
++        for (final Map.Entry<Class<? extends Entity>, EntityCollectionBySection> entry : this.entitiesByClass.entrySet()) {
+             if (entry.getKey().isInstance(entity)) {
+                 entry.getValue().removeEntity(entity, sectionIndex);
+             }

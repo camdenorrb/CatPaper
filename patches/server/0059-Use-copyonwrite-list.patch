@@ -1,0 +1,256 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Mon, 14 Nov 2022 14:57:52 -0600
+Subject: [PATCH] Use copyonwrite list
+
+
+diff --git a/src/main/java/io/papermc/paper/util/TickThread.java b/src/main/java/io/papermc/paper/util/TickThread.java
+index bdc5e7830e1321ecd879331ba1fa149719738d54..92f091ec5890f2d6125a4679ad241a0ffa76a0a1 100644
+--- a/src/main/java/io/papermc/paper/util/TickThread.java
++++ b/src/main/java/io/papermc/paper/util/TickThread.java
+@@ -45,17 +45,26 @@ public class TickThread extends Thread {
+     }
+ 
+     public static void ensureTickThread(final ServerLevel world, final int chunkX, final int chunkZ, final String reason) {
++
++        // Cat - Who cares >:)
++
++        /*
+         if (!isTickThreadFor(world, chunkX, chunkZ)) {
+             MinecraftServer.LOGGER.error("Thread " + Thread.currentThread().getName() + " failed main thread check: " + reason, new Throwable());
+             throw new IllegalStateException(reason);
+         }
++        */
+     }
+ 
+     public static void ensureTickThread(final Entity entity, final String reason) {
++        // Cat - Who cares >:)
++
++        /*
+         if (!isTickThreadFor(entity)) {
+             MinecraftServer.LOGGER.error("Thread " + Thread.currentThread().getName() + " failed main thread check: " + reason, new Throwable());
+             throw new IllegalStateException(reason);
+         }
++        */
+     }
+ 
+     public final int id; /* We don't override getId as the spec requires that it be unique (with respect to all other threads) */
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 3461a8a076601ebba0a826775e6e572384119c9f..b7fa9c678821138eca0ca0f4f3cd4298332d653a 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -120,12 +120,9 @@ import net.minecraft.world.level.chunk.storage.EntityStorage;
+ import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+ import net.minecraft.world.level.dimension.LevelStem;
+ import net.minecraft.world.level.dimension.end.EndDragonFight;
+-import net.minecraft.world.level.entity.EntityPersistentStorage;
+-import net.minecraft.world.level.entity.EntityTickList;
+ import net.minecraft.world.level.entity.EntityTypeTest;
+ import net.minecraft.world.level.entity.LevelCallback;
+ import net.minecraft.world.level.entity.LevelEntityGetter;
+-import net.minecraft.world.level.entity.PersistentEntitySectionManager;
+ import net.minecraft.world.level.gameevent.DynamicGameEventListener;
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.gameevent.GameEventListener;
+@@ -187,7 +184,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     public final ServerChunkCache chunkSource;
+     private final MinecraftServer server;
+     public final PrimaryLevelData serverLevelData; // CraftBukkit - type
+-    final EntityTickList entityTickList;
++    final CopyOnWriteArrayList<Entity> entityTickList;
+     //public final PersistentEntitySectionManager<Entity> entityManager; // Paper - rewrite chunk system
+     public boolean noSave;
+     private final SleepStatus sleepStatus;
+@@ -527,8 +524,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         this.convertable = convertable_conversionsession;
+         this.uuid = WorldUUID.getUUID(convertable_conversionsession.levelDirectory.path().toFile());
+         // CraftBukkit end
+-        this.players = Lists.newArrayList();
+-        this.entityTickList = new EntityTickList();
++        this.players = new ArrayList<>();
++        this.entityTickList = Lists.newCopyOnWriteArrayList();
+         this.blockTicks = new LevelTicks<>(this::isPositionTickingWithEntitiesLoaded, this.getProfilerSupplier());
+         this.fluidTicks = new LevelTicks<>(this::isPositionTickingWithEntitiesLoaded, this.getProfilerSupplier());
+         this.navigatingMobs = new ObjectOpenHashSet();
+@@ -620,11 +617,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         return this.structureManager;
+     }
+ 
+-    private final ExecutorService executor = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setNameFormat("Server Level - %1$d").build()); // Paper - rewrite chunk system
++    private final ExecutorService executor = Executors.newFixedThreadPool(8, new ThreadFactoryBuilder().setNameFormat("Server Level - %1$d").build()); // Paper - rewrite chunk system
+ 
+     public void tick(BooleanSupplier shouldKeepTicking) {
+ 
+-        final Future<?> future = executor.submit(() -> {
++       // final Future<?> future = executor.submit(() -> {
+             // Paper start - optimise checkDespawn
+             this.playersAffectingSpawning.clear();
+             for (ServerPlayer player : this.players) {
+@@ -697,66 +694,78 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                 this.resetEmptyTime();
+             }
+ 
+-            if (flag || this.emptyTime++ < 300) {
+-                gameprofilerfiller.push("entities");
+-                timings.tickEntities.startTiming(); // Spigot
+-                if (this.dragonFight != null) {
+-                    gameprofilerfiller.push("dragonFight");
+-                    this.dragonFight.tick();
+-                    gameprofilerfiller.pop();
+-                }
++        if (flag || this.emptyTime++ < 300) {
++            tickEntities(gameprofilerfiller);
++        }
+ 
+-                ActivationRange.activateEntities(this); // Spigot
+-                timings.entityTick.startTiming(); // Spigot
+-                this.entityTickList.forEach((entity) -> {
+-                    if (!entity.isRemoved()) {
+-                        if (false && this.shouldDiscardEntity(entity)) { // CraftBukkit - We prevent spawning in general, so this butchering is not needed
+-                            entity.discard();
+-                        } else {
+-                            gameprofilerfiller.push("checkDespawn");
+-                            entity.checkDespawn();
+-                            gameprofilerfiller.pop();
+-                            if (true || this.chunkSource.chunkMap.getDistanceManager().inEntityTickingRange(entity.chunkPosition().toLong())) { // Paper - now always true if in the ticking list
+-                                Entity entity1 = entity.getVehicle();
++        gameprofilerfiller.push("entityManagement");
++        //this.entityManager.tick(); // Paper - rewrite chunk system
++        gameprofilerfiller.popPush("gameEvents");
+ 
+-                                if (entity1 != null) {
+-                                    if (!entity1.isRemoved() && entity1.hasPassenger(entity)) {
+-                                        return;
+-                                    }
++        this.sendGameEvents();
++        gameprofilerfiller.pop();
++        //});
+ 
+-                                    entity.stopRiding();
++        /*
++        try {
++            future.get();
++            System.out.println("Done");
++        } catch (InterruptedException e) {
++            e.printStackTrace();
++        } catch (ExecutionException e) {
++            throw new RuntimeException(e);
++        }*/
++
++    }
++
++
++    public void tickEntities(final ProfilerFiller gameprofilerfiller) {
++
++            gameprofilerfiller.push("entities");
++            timings.tickEntities.startTiming(); // Spigot
++            if (this.dragonFight != null) {
++                gameprofilerfiller.push("dragonFight");
++                this.dragonFight.tick();
++                gameprofilerfiller.pop();
++            }
++
++            ActivationRange.activateEntities(this); // Spigot
++            timings.entityTick.startTiming(); // Spigot
++            entityTickList.forEach((entity) -> {
++                if (!entity.isRemoved()) {
++                    if (false && this.shouldDiscardEntity(entity)) { // CraftBukkit - We prevent spawning in general, so this butchering is not needed
++                        entity.discard();
++                    } else {
++                        gameprofilerfiller.push("checkDespawn");
++                        entity.checkDespawn();
++                        gameprofilerfiller.pop();
++                        if (true || this.chunkSource.chunkMap.getDistanceManager().inEntityTickingRange(entity.chunkPosition().toLong())) { // Paper - now always true if in the ticking list
++                            Entity entity1 = entity.getVehicle();
++
++                            if (entity1 != null) {
++                                if (!entity1.isRemoved() && entity1.hasPassenger(entity)) {
++                                    return;
+                                 }
+ 
+-                                gameprofilerfiller.push("tick");
+-                                this.guardEntityTick(this::tickNonPassenger, entity);
+-                                gameprofilerfiller.pop();
++                                entity.stopRiding();
+                             }
++
++                            gameprofilerfiller.push("tick");
++                            this.guardEntityTick(this::tickNonPassenger, entity);
++                            gameprofilerfiller.pop();
+                         }
+                     }
+-                });
+-                timings.entityTick.stopTiming(); // Spigot
+-                timings.tickEntities.stopTiming(); // Spigot
+-                gameprofilerfiller.pop();
+-                this.tickBlockEntities();
+-            }
+-
+-            gameprofilerfiller.push("entityManagement");
+-            //this.entityManager.tick(); // Paper - rewrite chunk system
+-            gameprofilerfiller.popPush("gameEvents");
+-            this.sendGameEvents();
++                }
++            });
++            timings.entityTick.stopTiming(); // Spigot
++            timings.tickEntities.stopTiming(); // Spigot
+             gameprofilerfiller.pop();
+-        });
+-
++            this.tickBlockEntities();
+ 
+-        try {
+-            future.get();
+-        } catch (InterruptedException e) {
+-            e.printStackTrace();
+-        } catch (ExecutionException e) {
+-            throw new RuntimeException(e);
+         }
+ 
+-    }
++
++
+ 
+     @Override
+     public boolean shouldTickBlocksAt(long chunkPos) {
+diff --git a/src/main/java/net/minecraft/world/level/entity/EntityTickList.java b/src/main/java/net/minecraft/world/level/entity/EntityTickList.java
+index e351d52fc659700c7959a59d85576826011e2e23..c2bedbc14fc928ac672274454a742aac5b6baf11 100644
+--- a/src/main/java/net/minecraft/world/level/entity/EntityTickList.java
++++ b/src/main/java/net/minecraft/world/level/entity/EntityTickList.java
+@@ -1,11 +1,15 @@
+ package net.minecraft.world.level.entity;
+ 
++/*
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Spliterator;
+ import java.util.function.Consumer;
+ 
+ import net.minecraft.world.entity.Entity;
+ 
+ public class EntityTickList {
+-    private final io.papermc.paper.util.maplist.IteratorSafeOrderedReferenceSet<Entity> entities = new io.papermc.paper.util.maplist.IteratorSafeOrderedReferenceSet<>(true); // Paper - rewrite this, always keep this updated - why would we EVER tick an entity that's not ticking?
++    private final List<Entity> entities = new ArrayList<>(); // Paper - rewrite this, always keep this updated - why would we EVER tick an entity that's not ticking?
+ 
+     private void ensureActiveIsNotIterated() {
+         // Paper - replace with better logic, do not delay removals
+@@ -33,7 +37,8 @@ public class EntityTickList {
+         // Paper start - replace with better logic, do not delay removals/additions
+         // To ensure nothing weird happens with dimension travelling, do not iterate over new entries...
+         // (by dfl iterator() is configured to not iterate over new entries)
+-        io.papermc.paper.util.maplist.IteratorSafeOrderedReferenceSet.Iterator<Entity> iterator = this.entities.iterator();
++        //io.papermc.paper.util.maplist.IteratorSafeOrderedReferenceSet.Iterator<Entity> iterator = this.entities.iterator();
++
+         try {
+             while (iterator.hasNext()) {
+                 action.accept(iterator.next());
+@@ -41,6 +46,8 @@ public class EntityTickList {
+         } finally {
+             iterator.finishedIterating();
+         }
++        Spliterator
+         // Paper end - replace with better logic, do not delay removals/additions
+     }
+ }
++*/
+\ No newline at end of file

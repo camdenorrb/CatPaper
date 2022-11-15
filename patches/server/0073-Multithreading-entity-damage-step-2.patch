@@ -1,0 +1,450 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 00:13:29 -0600
+Subject: [PATCH] Multithreading entity damage step 2
+
+
+diff --git a/src/main/java/net/minecraft/world/effect/MobEffect.java b/src/main/java/net/minecraft/world/effect/MobEffect.java
+index 5e02e108e59fa50468f94add845461382cde503d..11b195a4c4977e3edd0c5288997fd3ef8d354311 100644
+--- a/src/main/java/net/minecraft/world/effect/MobEffect.java
++++ b/src/main/java/net/minecraft/world/effect/MobEffect.java
+@@ -65,10 +65,10 @@ public class MobEffect {
+             }
+         } else if (this == MobEffects.POISON) {
+             if (entity.getHealth() > 1.0F) {
+-                entity.hurt(CraftEventFactory.POISON, block, 1.0F);  // CraftBukkit - DamageSource.MAGIC -> CraftEventFactory.POISON
++                entity.hurt(CraftEventFactory.POISON, null, null, 1.0F);  // CraftBukkit - DamageSource.MAGIC -> CraftEventFactory.POISON
+             }
+         } else if (this == MobEffects.WITHER) {
+-            entity.hurt(DamageSource.WITHER, block, 1.0F);
++            entity.hurt(DamageSource.WITHER, null, null, 1.0F);
+         } else if (this == MobEffects.HUNGER && entity instanceof Player) {
+             ((Player) entity).causeFoodExhaustion(0.005F * (float) (amplifier + 1), org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.HUNGER_EFFECT); // CraftBukkit - EntityExhaustionEvent
+         } else if (this == MobEffects.SATURATION && entity instanceof Player) {
+@@ -88,7 +88,7 @@ public class MobEffect {
+             }
+         } else if ((this != MobEffects.HEAL || entity.isInvertedHealAndHarm()) && (this != MobEffects.HARM || !entity.isInvertedHealAndHarm())) {
+             if (this == MobEffects.HARM && !entity.isInvertedHealAndHarm() || this == MobEffects.HEAL && entity.isInvertedHealAndHarm()) {
+-                entity.hurt(DamageSource.MAGIC, block, (float) (6 << amplifier));
++                entity.hurt(DamageSource.MAGIC, null, null, (float) (6 << amplifier));
+             }
+         } else {
+             entity.heal((float) Math.max(4 << amplifier, 0), RegainReason.MAGIC); // CraftBukkit
+@@ -105,9 +105,9 @@ public class MobEffect {
+             } else {
+                 j = (int) (proximity * (double) (6 << amplifier) + 0.5D);
+                 if (source == null) {
+-                    target.hurt(DamageSource.MAGIC, block, (float) j);
++                    target.hurt(DamageSource.MAGIC, null, null, (float) j);
+                 } else {
+-                    target.hurt(DamageSource.indirectMagic(source, attacker), block, (float) j);
++                    target.hurt(DamageSource.indirectMagic(source, attacker), attacker, null, (float) j);
+                 }
+             }
+         } else {
+diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
+index cb70164521ff9dafa903667fa5c0fae3791851f7..23beec7c16968e867c3b0b282afd1bdac1b63ac6 100644
+--- a/src/main/java/net/minecraft/world/entity/Mob.java
++++ b/src/main/java/net/minecraft/world/entity/Mob.java
+@@ -847,7 +847,7 @@ public abstract class Mob extends LivingEntity {
+                 this.getJumpControl().tick();
+             }
+             if (this.isSensitiveToWater() && isInWaterRainOrBubble()) {
+-                hurt(DamageSource.DROWN, block, 1.0F);
++                hurt(DamageSource.DROWN, null, null, 1.0F);
+             }
+             return;
+         }
+@@ -1607,7 +1607,7 @@ public abstract class Mob extends LivingEntity {
+             // CraftBukkit end
+         }
+ 
+-        boolean flag = target.hurt(DamageSource.mobAttack(this), block, f);
++        boolean flag = target.hurt(DamageSource.mobAttack(this), this, null, f);
+ 
+         if (flag) {
+             if (f1 > 0.0F && target instanceof LivingEntity) {
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Bee.java b/src/main/java/net/minecraft/world/entity/animal/Bee.java
+index 3b5160842e71c8b68f5ef9f92d803b2e8a240e27..332858ea72e197f5fea1fc537dc9b7fd69f9c539 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Bee.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Bee.java
+@@ -244,7 +244,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        boolean flag = target.hurt(DamageSource.sting(this), block, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
++        boolean flag = target.hurt(DamageSource.sting(this), this, null, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+ 
+         if (flag) {
+             this.doEnchantDamageEffects(this, target);
+@@ -382,13 +382,13 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+         }
+ 
+         if (this.underWaterTicks > 20) {
+-            this.hurt(DamageSource.DROWN, block, 1.0F);
++            this.hurt(DamageSource.DROWN, null, null, 1.0F);
+         }
+ 
+         if (flag) {
+             ++this.timeSinceSting;
+             if (this.timeSinceSting % 5 == 0 && this.random.nextInt(Mth.clamp(1200 - this.timeSinceSting, 1, 1200)) == 0) {
+-                this.hurt(DamageSource.GENERIC, block, this.getHealth());
++                this.hurt(DamageSource.GENERIC, null, null, this.getHealth());
+             }
+         }
+ 
+@@ -660,12 +660,12 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++    public boolean hurt(DamageSource source, @org.jetbrains.annotations.Nullable Entity damagerEntity, @org.jetbrains.annotations.Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+             // CraftBukkit start
+-            boolean result = super.hurt(source, block, amount);
++            boolean result = super.hurt(source, damagerEntity, damagerBlock, amount);
+ 
+             if (result && !this.level.isClientSide) {
+                 this.beePollinateGoal.stopPollinating();
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Cat.java b/src/main/java/net/minecraft/world/entity/animal/Cat.java
+index 0e44075308e3d1f1a8e61211dff4e85872b6f773..5aac3052d511b9c5c90a5145b9545d0eb8990e8b 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Cat.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Cat.java
+@@ -251,7 +251,7 @@ public class Cat extends TamableAnimal {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        return target.hurt(DamageSource.mobAttack(this), block, this.getAttackDamage());
++        return target.hurt(DamageSource.mobAttack(this), this, null, this.getAttackDamage());
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Dolphin.java b/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
+index ea43beaf1084fe23d63ac8ab04fa91fcd8c05dac..5b14b34fdbdc8c45424995ef6c7571fea0d570e5 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Dolphin.java
+@@ -184,7 +184,7 @@ public class Dolphin extends WaterAnimal {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        boolean flag = target.hurt(DamageSource.mobAttack(this), block, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
++        boolean flag = target.hurt(DamageSource.mobAttack(this), this, null, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+ 
+         if (flag) {
+             this.doEnchantDamageEffects(this, target);
+@@ -264,7 +264,7 @@ public class Dolphin extends WaterAnimal {
+             } else {
+                 this.setMoisntessLevel(this.getMoistnessLevel() - 1);
+                 if (this.getMoistnessLevel() <= 0) {
+-                    this.hurt(DamageSource.DRY_OUT, block, 1.0F);
++                    this.hurt(DamageSource.DRY_OUT, null, null, 1.0F);
+                 }
+ 
+                 if (this.onGround) {
+diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
+index 98a5f7e739b2e3ae5cbc3a4a4400e14efefb5a36..2fac88c1c42e18ec4f8881059c8bd290aa14a3db 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
++++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
+@@ -188,7 +188,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         Entity entity = source.getEntity();
+ 
+         if (entity instanceof Player) {
+@@ -200,7 +200,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
+             }
+         }
+ 
+-        return super.hurt(source, block, amount);
++        return super.hurt(source, damagerEntity, damagerBlock, amount);
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+index 77e2c02ae47eda9abea0d78fc9e443d8bdaf43c8..9324986c0c260beb1195877bc4e5d494536c5a76 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
++++ b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+@@ -179,7 +179,7 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+             this.setAirSupply(air - 1);
+             if (this.getAirSupply() == -20) {
+                 this.setAirSupply(0);
+-                this.hurt(DamageSource.DRY_OUT, block, 2.0F);
++                this.hurt(DamageSource.DRY_OUT, null, null, 2.0F);
+             }
+         } else {
+             this.setAirSupply(this.getMaxAirSupply());
+@@ -311,7 +311,7 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+ 
+     @Override
+     public boolean doHurtTarget(Entity target) {
+-        boolean flag = target.hurt(DamageSource.mobAttack(this), block, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
++        boolean flag = target.hurt(DamageSource.mobAttack(this), this, null, (float) ((int) this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+ 
+         if (flag) {
+             this.doEnchantDamageEffects(this, target);
+@@ -322,14 +322,14 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++    public boolean hurt(DamageSource source, @org.jetbrains.annotations.Nullable Entity damagerEntity, @org.jetbrains.annotations.Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         float f1 = this.getHealth();
+ 
+         if (!this.level.isClientSide && !this.isNoAi() && this.level.random.nextInt(3) == 0 && ((float) this.level.random.nextInt(3) < amount || f1 / this.getMaxHealth() < 0.5F) && amount < f1 && this.isInWater() && (source.getEntity() != null || source.getDirectEntity() != null) && !this.isPlayingDead()) {
+             this.brain.setMemory(MemoryModuleType.PLAY_DEAD_TICKS, Integer.valueOf(200));
+         }
+ 
+-        return super.hurt(source, block, amount);
++        return super.hurt(source, damagerEntity, damagerBlock, amount);
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
+index 6bbd3a6d56873e9540813e5244541f340eec8cc4..2f61a33efe86a778adbc855faa1d13e7bcb204fa 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
++++ b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
+@@ -270,14 +270,14 @@ public abstract class AbstractHorse extends Animal implements ContainerListener,
+         if (i <= 0) {
+             return false;
+         } else {
+-            this.hurt(damageSource, block, (float) i);
++            this.hurt(damageSource, null, null, (float) i);
+             if (this.isVehicle()) {
+                 Iterator iterator = this.getIndirectPassengers().iterator();
+ 
+                 while (iterator.hasNext()) {
+                     Entity entity = (Entity) iterator.next();
+ 
+-                    entity.hurt(damageSource, block, (float) i);
++                    entity.hurt(damageSource, null, null, (float) i);
+                 }
+             }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+index 5d83dc31cbfbc0eac29c913d653d67a8698f470d..e69bd19cd55c425686f6f748b9cbf8dde4d0a86d 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
++++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+@@ -451,7 +451,7 @@ public class EnderDragon extends Mob implements Enemy {
+ 
+                 entity.push(d2 / d4 * 4.0D, 0.20000000298023224D, d3 / d4 * 4.0D);
+                 if (!this.phaseManager.getCurrentPhase().isSitting() && ((LivingEntity) entity).getLastHurtByMobTimestamp() < entity.tickCount - 2) {
+-                    entity.hurt(DamageSource.mobAttack(this), block, 5.0F);
++                    entity.hurt(DamageSource.mobAttack(this), this, null, 5.0F);
+                     this.doEnchantDamageEffects(this, entity);
+                 }
+             }
+@@ -466,7 +466,7 @@ public class EnderDragon extends Mob implements Enemy {
+             Entity entity = (Entity) iterator.next();
+ 
+             if (entity instanceof LivingEntity) {
+-                entity.hurt(DamageSource.mobAttack(this), block, 10.0F);
++                entity.hurt(DamageSource.mobAttack(this), this, null, 10.0F);
+                 this.doEnchantDamageEffects(this, entity);
+             }
+         }
+@@ -570,7 +570,7 @@ public class EnderDragon extends Mob implements Enemy {
+         return flag;
+     }
+ 
+-    public boolean hurt(EnderDragonPart part, DamageSource source, float amount) {
++    public boolean hurt(EnderDragonPart part, @org.jetbrains.annotations.Nullable Entity damagerEntity, @org.jetbrains.annotations.Nullable final org.bukkit.block.Block damagerBlock, DamageSource source, float amount) {
+         if (this.phaseManager.getCurrentPhase().getPhase() == EnderDragonPhase.DYING) {
+             return false;
+         } else {
+@@ -585,7 +585,7 @@ public class EnderDragon extends Mob implements Enemy {
+                 if (source.getEntity() instanceof Player || source.isExplosion()) {
+                     float f1 = this.getHealth();
+ 
+-                    this.reallyHurt(source, amount);
++                    this.reallyHurt(source, damagerEntity, damagerBlock, amount);
+                     if (this.isDeadOrDying() && !this.phaseManager.getCurrentPhase().isSitting()) {
+                         this.setHealth(1.0F);
+                         this.phaseManager.setPhase(EnderDragonPhase.DYING);
+@@ -606,12 +606,12 @@ public class EnderDragon extends Mob implements Enemy {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
+-        return !this.level.isClientSide ? this.hurt(this.body, source, amount) : false;
++    public boolean hurt(DamageSource source, @org.jetbrains.annotations.Nullable Entity damagerEntity, @org.jetbrains.annotations.Nullable final org.bukkit.block.Block damagerBlock, float amount) {
++        return !this.level.isClientSide && this.hurt(this.body, damagerEntity, damagerBlock, source, amount);
+     }
+ 
+-    protected boolean reallyHurt(DamageSource source, float amount) {
+-        return super.hurt(source, block, amount);
++    protected boolean reallyHurt(DamageSource source, final @org.jetbrains.annotations.Nullable Entity damagerEntity, final org.bukkit.block.@org.jetbrains.annotations.Nullable Block damagerBlock, float amount) {
++        return super.hurt(source, damagerEntity, damagerBlock, amount);
+     }
+ 
+     @Override
+@@ -1038,7 +1038,7 @@ public class EnderDragon extends Mob implements Enemy {
+         }
+ 
+         if (crystal == this.nearestCrystal) {
+-            this.hurt(this.head, DamageSource.explosion(entityhuman), 10.0F);
++            this.hurt(this.head, entityhuman, null, DamageSource.explosion(entityhuman), 10.0F);
+         }
+ 
+         this.phaseManager.getCurrentPhase().onCrystalDestroyed(crystal, pos, source, entityhuman);
+diff --git a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
+index 2969e1d03da01b7027d8b511af9685da546a5219..9b872f47e523a5b31e7d79b93358ebefdbb71a66 100644
+--- a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
++++ b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
+@@ -479,11 +479,11 @@ public class ArmorStand extends LivingEntity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         if (!this.level.isClientSide && !this.isRemoved()) {
+             if (DamageSource.OUT_OF_WORLD.equals(source)) {
+                 // CraftBukkit start
+-                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, amount)) {
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagerEntity, damagerBlock, source, amount)) {
+                     return false;
+                 }
+                 // CraftBukkit end
+@@ -491,7 +491,7 @@ public class ArmorStand extends LivingEntity {
+                 return false;
+             } else if (!this.isInvulnerableTo(source) && (true || !this.invisible) && !this.isMarker()) { // CraftBukkit
+                 // CraftBukkit start
+-                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, amount, true, this.invisible)) {
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagerEntity, damagerBlock, source, amount, true, this.invisible)) {
+                     return false;
+                 }
+                 // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/world/entity/decoration/HangingEntity.java b/src/main/java/net/minecraft/world/entity/decoration/HangingEntity.java
+index eed34374177fb1f1e1839b92407ca6f864cdddba..ba7de57958011333c85d9b4652bcb284491f30fc 100644
+--- a/src/main/java/net/minecraft/world/entity/decoration/HangingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/decoration/HangingEntity.java
+@@ -186,7 +186,7 @@ public abstract class HangingEntity extends Entity {
+         if (attacker instanceof Player) {
+             Player entityhuman = (Player) attacker;
+ 
+-            return !this.level.mayInteract(entityhuman, this.pos) ? true : this.hurt(DamageSource.playerAttack(entityhuman), block, 0.0F);
++            return !this.level.mayInteract(entityhuman, this.pos) ? true : this.hurt(DamageSource.playerAttack(entityhuman), entityhuman, null, 0.0F);
+         } else {
+             return false;
+         }
+diff --git a/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java b/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
+index bcfcfb9884896dd403f5dc8d380b013f58722110..6ff861dde33c0bb30bb02a69252ad8a0c3996673 100644
+--- a/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
++++ b/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
+@@ -202,7 +202,7 @@ public class ItemFrame extends HangingEntity {
+ 
+             return true;
+         } else {
+-            return super.hurt(source, block, amount);
++            return super.hurt(source, damagerEntity, damagerBlock, amount);
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index e924823e709636dc79629b1232b474fc9db81773..e5b6f7a0f322171d2b3d9878356ca16bc02a468a 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -325,7 +325,7 @@ public class ItemEntity extends Entity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else if (!this.getItem().isEmpty() && this.getItem().is(Items.NETHER_STAR) && source.isExplosion()) {
+@@ -336,7 +336,7 @@ public class ItemEntity extends Entity {
+             return true;
+         } else {
+             // CraftBukkit start
+-            if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, amount)) {
++            if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagerEntity, damagerBlock, source, amount)) {
+                 return false;
+             }
+             // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+index 06ae3d51a4c39d8d8a9775369da7f8b72a0bf61b..2a77206f5fdd42cc86746c711260bbb8f1ae40af 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+@@ -408,7 +408,7 @@ public abstract class AbstractArrow extends Projectile {
+             // CraftBukkit end
+         }
+ 
+-        if (entity.hurt(damagesource, block, (float) i)) {
++        if (entity.hurt(damagesource, entity1 == null ? this : entity1, null, (float) i)) {
+             if (flag) {
+                 return;
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
+index a2e7cf0215d71b12d050fd572f90a0095b94e902..110358915553aa48c54506868d7b916d4b592bd9 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
+@@ -16,6 +16,8 @@ import net.minecraft.world.phys.HitResult;
+ import net.minecraft.world.phys.Vec3;
+ import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
++import org.jetbrains.annotations.Nullable;
++
+ 
+ public abstract class AbstractHurtingProjectile extends Projectile {
+ 
+@@ -177,7 +179,7 @@ public abstract class AbstractHurtingProjectile extends Projectile {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         if (this.isInvulnerableTo(source)) {
+             return false;
+         } else {
+@@ -187,7 +189,7 @@ public abstract class AbstractHurtingProjectile extends Projectile {
+             if (entity != null) {
+                 if (!this.level.isClientSide) {
+                     // CraftBukkit start
+-                    if (CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, amount, false)) {
++                    if (CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagerEntity, damagerBlock, source, amount, false)) {
+                         return false;
+                     }
+                     // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+index f8fe0606a69d1a2b9feb3607cc460d830100e6ed..c5df9ec903e177dd5b482642d57280c78ef16aba 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+@@ -239,7 +239,7 @@ public abstract class AbstractMinecart extends Entity {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, final CraftBlock block, float amount) {
++    public boolean hurt(DamageSource source, final @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         if (!this.level.isClientSide && !this.isRemoved()) {
+             if (this.isInvulnerableTo(source)) {
+                 return false;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+index b43f8af1cd62ab812e0a213ef77cb6f79877c5ab..0ee16a2d168f90530e8de42da1b359b3d03586b6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+@@ -358,13 +358,17 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+ 
+         DamageSource reason = DamageSource.GENERIC;
+ 
++        net.minecraft.world.entity.LivingEntity nmsEntity = null;
++
+         if (source instanceof HumanEntity) {
+-            reason = DamageSource.playerAttack(((CraftHumanEntity) source).getHandle());
++            nmsEntity = ((CraftHumanEntity) source).getHandle();
++            reason = DamageSource.playerAttack((net.minecraft.world.entity.player.Player) nmsEntity);
+         } else if (source instanceof LivingEntity) {
+-            reason = DamageSource.mobAttack(((CraftLivingEntity) source).getHandle());
++            nmsEntity = ((CraftLivingEntity) source).getHandle();
++            reason = DamageSource.mobAttack(nmsEntity);
+         }
+ 
+-        entity.hurt(reason, block, (float) amount);
++        entity.hurt(reason, nmsEntity, null, (float) amount);
+     }
+ 
+     @Override

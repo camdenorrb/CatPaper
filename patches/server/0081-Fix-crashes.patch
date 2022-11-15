@@ -1,0 +1,252 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 01:43:28 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Blaze.java b/src/main/java/net/minecraft/world/entity/monster/Blaze.java
+index 4595b734abb88df7da6dddf7b24c6c5ffcf6556a..7d68f61f58c16de2b324d70273c29a44302dfdac 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Blaze.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Blaze.java
+@@ -8,6 +8,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.world.damagesource.DamageSource;
++import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+@@ -25,6 +26,9 @@ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.pathfinder.BlockPathTypes;
+ import net.minecraft.world.phys.Vec3;
+ 
++import javax.annotation.Nullable;
++
++
+ public class Blaze extends Monster {
+     private float allowedHeightOffset = 0.5F;
+     private int nextHeightOffsetChangeTick;
+@@ -123,7 +127,7 @@ public class Blaze extends Monster {
+     }
+ 
+     @Override
+-    public boolean causeFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
++    public boolean causeFallDamage(float fallDistance, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float damageMultiplier, DamageSource damageSource) {
+         return false;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Guardian.java b/src/main/java/net/minecraft/world/entity/monster/Guardian.java
+index 2f43700c01a0f0a4749f56d3f6294cf648b10f51..be2d20f9898ea192678152ce840cf6350f252eed 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Guardian.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Guardian.java
+@@ -307,11 +307,11 @@ public class Guardian extends Monster {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
+         if (!this.isMoving() && !source.isMagic() && source.getDirectEntity() instanceof LivingEntity) {
+             LivingEntity livingEntity = (LivingEntity)source.getDirectEntity();
+             if (!source.isExplosion()) {
+-                livingEntity.hurt(DamageSource.thorns(this), 2.0F);
++                livingEntity.hurt(DamageSource.thorns(this), damagerEntity, damagerBlock, 2.0F);
+             }
+         }
+ 
+@@ -319,7 +319,7 @@ public class Guardian extends Monster {
+             this.randomStrollGoal.trigger();
+         }
+ 
+-        return super.hurt(source, amount);
++        return super.hurt(source, damagerEntity, damagerBlock, amount);
+     }
+ 
+     @Override
+@@ -413,8 +413,8 @@ public class Guardian extends Monster {
+                             f += 2.0F;
+                         }
+ 
+-                        livingEntity.hurt(DamageSource.indirectMagic(this.guardian, this.guardian), f);
+-                        livingEntity.hurt(DamageSource.mobAttack(this.guardian), (float)this.guardian.getAttributeValue(Attributes.ATTACK_DAMAGE));
++                        livingEntity.hurt(DamageSource.indirectMagic(this.guardian, this.guardian), this.guardian, null, f);
++                        livingEntity.hurt(DamageSource.mobAttack(this.guardian), this.guardian, null, (float)this.guardian.getAttributeValue(Attributes.ATTACK_DAMAGE));
+                         this.guardian.setTarget((LivingEntity)null);
+                     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/MagmaCube.java b/src/main/java/net/minecraft/world/entity/monster/MagmaCube.java
+index ea4fa9eba301e462c159cdb970079f6d87d25f4d..455a6168e667c7b5b28f50f2a7f95c3b078e0534 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/MagmaCube.java
++++ b/src/main/java/net/minecraft/world/entity/monster/MagmaCube.java
+@@ -10,6 +10,7 @@ import net.minecraft.tags.TagKey;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.Difficulty;
+ import net.minecraft.world.damagesource.DamageSource;
++import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.MobSpawnType;
+ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+@@ -20,13 +21,16 @@ import net.minecraft.world.level.LevelReader;
+ import net.minecraft.world.level.material.Fluid;
+ import net.minecraft.world.phys.Vec3;
+ 
++import javax.annotation.Nullable;
++
++
+ public class MagmaCube extends Slime {
+     public MagmaCube(EntityType<? extends MagmaCube> type, Level world) {
+         super(type, world);
+     }
+ 
+     public static AttributeSupplier.Builder createAttributes() {
+-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, (double)0.2F);
++        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.2F);
+     }
+ 
+     public static boolean checkMagmaCubeSpawnRules(EntityType<MagmaCube> type, LevelAccessor world, MobSpawnType spawnReason, BlockPos pos, RandomSource random) {
+@@ -41,7 +45,7 @@ public class MagmaCube extends Slime {
+     @Override
+     public void setSize(int size, boolean heal) {
+         super.setSize(size, heal);
+-        this.getAttribute(Attributes.ARMOR).setBaseValue((double)(size * 3));
++        this.getAttribute(Attributes.ARMOR).setBaseValue(size * 3);
+     }
+ 
+     @Override
+@@ -72,7 +76,7 @@ public class MagmaCube extends Slime {
+     @Override
+     protected void jumpFromGround() {
+         Vec3 vec3 = this.getDeltaMovement();
+-        this.setDeltaMovement(vec3.x, (double)(this.getJumpPower() + (float)this.getSize() * 0.1F), vec3.z);
++        this.setDeltaMovement(vec3.x, this.getJumpPower() + (float)this.getSize() * 0.1F, vec3.z);
+         this.hasImpulse = true;
+     }
+ 
+@@ -80,7 +84,7 @@ public class MagmaCube extends Slime {
+     protected void jumpInLiquid(TagKey<Fluid> fluid) {
+         if (fluid == FluidTags.LAVA) {
+             Vec3 vec3 = this.getDeltaMovement();
+-            this.setDeltaMovement(vec3.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3.z);
++            this.setDeltaMovement(vec3.x, 0.22F + (float)this.getSize() * 0.05F, vec3.z);
+             this.hasImpulse = true;
+         } else {
+             super.jumpInLiquid(fluid);
+@@ -89,7 +93,7 @@ public class MagmaCube extends Slime {
+     }
+ 
+     @Override
+-    public boolean causeFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
++    public boolean causeFallDamage(float fallDistance, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float damageMultiplier, DamageSource damageSource) {
+         return false;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
+index 056e4c2f7f632dadc0015710c032a0b718d46ff9..6b75ef1885d320f6150829c62317ec2399a18b1a 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
+@@ -23,20 +23,7 @@ import net.minecraft.world.entity.MobType;
+ import net.minecraft.world.entity.ai.Brain;
+ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+ import net.minecraft.world.entity.ai.attributes.Attributes;
+-import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
+-import net.minecraft.world.entity.ai.behavior.DoNothing;
+-import net.minecraft.world.entity.ai.behavior.LookAtTargetSink;
+-import net.minecraft.world.entity.ai.behavior.MeleeAttack;
+-import net.minecraft.world.entity.ai.behavior.MoveToTargetSink;
+-import net.minecraft.world.entity.ai.behavior.RandomStroll;
+-import net.minecraft.world.entity.ai.behavior.RunIf;
+-import net.minecraft.world.entity.ai.behavior.RunOne;
+-import net.minecraft.world.entity.ai.behavior.RunSometimes;
+-import net.minecraft.world.entity.ai.behavior.SetEntityLookTarget;
+-import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromAttackTargetIfTargetOutOfReach;
+-import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromLookTarget;
+-import net.minecraft.world.entity.ai.behavior.StartAttacking;
+-import net.minecraft.world.entity.ai.behavior.StopAttackingIfTargetInvalid;
++import net.minecraft.world.entity.ai.behavior.*;
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
+ import net.minecraft.world.entity.ai.sensing.Sensor;
+@@ -47,6 +34,9 @@ import net.minecraft.world.entity.schedule.Activity;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.state.BlockState;
+ 
++import javax.annotation.Nullable;
++
++
+ public class Zoglin extends Monster implements Enemy, HoglinBase {
+     private static final EntityDataAccessor<Boolean> DATA_BABY_ID = SynchedEntityData.defineId(Zoglin.class, EntityDataSerializers.BOOLEAN);
+     private static final int MAX_HEALTH = 40;
+@@ -90,11 +80,11 @@ public class Zoglin extends Monster implements Enemy, HoglinBase {
+     }
+ 
+     private static void initIdleActivity(Brain<Zoglin> brain) {
+-        brain.addActivity(Activity.IDLE, 10, ImmutableList.of(new StartAttacking<>(Zoglin::findNearestValidAttackTarget), new RunSometimes(new SetEntityLookTarget(8.0F), UniformInt.of(30, 60)), new RunOne(ImmutableList.of(Pair.of(new RandomStroll(0.4F), 2), Pair.of(new SetWalkTargetFromLookTarget(0.4F, 3), 2), Pair.of(new DoNothing(30, 60), 1)))));
++        brain.addActivity(Activity.IDLE, 10, ImmutableList.of(new StartAttacking<Zoglin>(Zoglin::findNearestValidAttackTarget), new RunSometimes<Zoglin>(new SetEntityLookTarget(8.0F), UniformInt.of(30, 60)), new RunOne<Zoglin>(ImmutableList.of(Pair.of(new RandomStroll(0.4F), 2), Pair.of(new SetWalkTargetFromLookTarget(0.4F, 3), 2), Pair.of(new DoNothing(30, 60), 1)))));
+     }
+ 
+     private static void initFightActivity(Brain<Zoglin> brain) {
+-        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.of(new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new RunIf<>(Zoglin::isAdult, new MeleeAttack(40)), new RunIf<>(Zoglin::isBaby, new MeleeAttack(15)), new StopAttackingIfTargetInvalid()), MemoryModuleType.ATTACK_TARGET);
++        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.of(new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new RunIf<Zoglin>(Zoglin::isAdult, new MeleeAttack(40)), new RunIf<Zoglin>(Zoglin::isBaby, new MeleeAttack(15)), new StopAttackingIfTargetInvalid<Zoglin>()), MemoryModuleType.ATTACK_TARGET);
+     }
+ 
+     private Optional<? extends LivingEntity> findNearestValidAttackTarget() {
+@@ -160,8 +150,8 @@ public class Zoglin extends Monster implements Enemy, HoglinBase {
+     }
+ 
+     @Override
+-    public boolean hurt(DamageSource source, float amount) {
+-        boolean bl = super.hurt(source, amount);
++    public boolean hurt(DamageSource source, @Nullable Entity damagerEntity, @Nullable final org.bukkit.block.Block damagerBlock, float amount) {
++        boolean bl = super.hurt(source, damagerEntity, damagerBlock, amount);
+         if (this.level.isClientSide) {
+             return false;
+         } else if (bl && source.getEntity() instanceof LivingEntity) {
+@@ -183,7 +173,7 @@ public class Zoglin extends Monster implements Enemy, HoglinBase {
+ 
+     @Override
+     public Brain<Zoglin> getBrain() {
+-        return super.getBrain();
++        return (Brain<Zoglin>) super.getBrain();
+     }
+ 
+     protected void updateActivity() {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/hoglin/HoglinAi.java b/src/main/java/net/minecraft/world/entity/monster/hoglin/HoglinAi.java
+index 0aab1b498a890599f05b50a2de0c3ab6ea395a4a..acc64c776b1ab0ce87736fcb00339715d8ad4cc9 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/hoglin/HoglinAi.java
++++ b/src/main/java/net/minecraft/world/entity/monster/hoglin/HoglinAi.java
+@@ -52,11 +52,11 @@ public class HoglinAi {
+     }
+ 
+     private static void initIdleActivity(Brain<Hoglin> brain) {
+-        brain.addActivity(Activity.IDLE, 10, (ImmutableList<? extends Behavior<? super Hoglin>>) ImmutableList.of(new BecomePassiveIfMemoryPresent(MemoryModuleType.NEAREST_REPELLENT, 200), new AnimalMakeLove(EntityType.HOGLIN, 0.6F), SetWalkTargetAwayFrom.pos(MemoryModuleType.NEAREST_REPELLENT, 1.0F, 8, true), new StartAttacking<Hoglin>(HoglinAi::findNearestValidAttackTarget), new RunIf<Hoglin>(Hoglin::isAdult, SetWalkTargetAwayFrom.entity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4F, 8, false)), new RunSometimes<LivingEntity>(new SetEntityLookTarget(8.0F), UniformInt.of(30, 60)), new BabyFollowAdult(ADULT_FOLLOW_RANGE, 0.6F), createIdleMovementBehaviors()));
++        brain.addActivity(Activity.IDLE, 10, ImmutableList.of(new BecomePassiveIfMemoryPresent(MemoryModuleType.NEAREST_REPELLENT, 200), new AnimalMakeLove(EntityType.HOGLIN, 0.6F), SetWalkTargetAwayFrom.pos(MemoryModuleType.NEAREST_REPELLENT, 1.0F, 8, true), new StartAttacking<Hoglin>(HoglinAi::findNearestValidAttackTarget), new RunIf<Hoglin>(Hoglin::isAdult, SetWalkTargetAwayFrom.entity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4F, 8, false)), new RunSometimes<Hoglin>(new SetEntityLookTarget(8.0F), UniformInt.of(30, 60)), new BabyFollowAdult<Hoglin>(ADULT_FOLLOW_RANGE, 0.6F), createIdleMovementBehaviors()));
+     }
+ 
+     private static void initFightActivity(Brain<Hoglin> brain) {
+-        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, (ImmutableList<? extends Behavior<? super Hoglin>>) ImmutableList.of(new BecomePassiveIfMemoryPresent(MemoryModuleType.NEAREST_REPELLENT, 200), new AnimalMakeLove(EntityType.HOGLIN, 0.6F), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new RunIf<>(Hoglin::isAdult, new MeleeAttack(40)), new RunIf<>(AgeableMob::isBaby, new MeleeAttack(15)), new StopAttackingIfTargetInvalid(), new EraseMemoryIf(HoglinAi::isBreeding, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
++        brain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 10, ImmutableList.of(new BecomePassiveIfMemoryPresent(MemoryModuleType.NEAREST_REPELLENT, 200), new AnimalMakeLove(EntityType.HOGLIN, 0.6F), new SetWalkTargetFromAttackTargetIfTargetOutOfReach(1.0F), new RunIf<Hoglin>(Hoglin::isAdult, new MeleeAttack(40)), new RunIf<Hoglin>(AgeableMob::isBaby, new MeleeAttack(15)), new StopAttackingIfTargetInvalid<Hoglin>(), new EraseMemoryIf<Hoglin>(HoglinAi::isBreeding, MemoryModuleType.ATTACK_TARGET)), MemoryModuleType.ATTACK_TARGET);
+     }
+ 
+     private static void initRetreatActivity(Brain<Hoglin> brain) {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/warden/WardenAi.java b/src/main/java/net/minecraft/world/entity/monster/warden/WardenAi.java
+index 173beadb1a672c667cccc53ea9cffbd77fe7ffd4..259d8332a1035f0b47110a10a05374a09c7dcccc 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/warden/WardenAi.java
++++ b/src/main/java/net/minecraft/world/entity/monster/warden/WardenAi.java
+@@ -96,15 +96,15 @@ public class WardenAi {
+     }
+ 
+     private static void initIdleActivity(Brain<Warden> brain) {
+-        brain.addActivity(Activity.IDLE, 10, (ImmutableList<? extends Behavior<? super Warden>>) ImmutableList.of(new SetRoarTarget<>(Warden::getEntityAngryAt), new TryToSniff(), new RunOne(ImmutableMap.of(MemoryModuleType.IS_SNIFFING, MemoryStatus.VALUE_ABSENT), ImmutableList.of(Pair.of(new RandomStroll(0.5F), 2), Pair.of(new DoNothing(30, 60), 1)))));
++        brain.addActivity(Activity.IDLE, 10, ImmutableList.of(new SetRoarTarget<Warden>(Warden::getEntityAngryAt), new TryToSniff(), new RunOne<Warden>(ImmutableMap.of(MemoryModuleType.IS_SNIFFING, MemoryStatus.VALUE_ABSENT), ImmutableList.of(Pair.of(new RandomStroll(0.5F), 2), Pair.of(new DoNothing(30, 60), 1)))));
+     }
+ 
+     private static void initInvestigateActivity(Brain<Warden> brain) {
+-        brain.addActivityAndRemoveMemoryWhenStopped(Activity.INVESTIGATE, 5, (ImmutableList<? extends Behavior<? super Warden>>) ImmutableList.of(new SetRoarTarget<>(Warden::getEntityAngryAt), new GoToTargetLocation(MemoryModuleType.DISTURBANCE_LOCATION, 2, 0.7F)), MemoryModuleType.DISTURBANCE_LOCATION);
++        brain.addActivityAndRemoveMemoryWhenStopped(Activity.INVESTIGATE, 5, ImmutableList.of(new SetRoarTarget<Warden>(Warden::getEntityAngryAt), new GoToTargetLocation<Warden>(MemoryModuleType.DISTURBANCE_LOCATION, 2, 0.7F)), MemoryModuleType.DISTURBANCE_LOCATION);
+     }
+ 
+     private static void initSniffingActivity(Brain<Warden> brain) {
+-        brain.addActivityAndRemoveMemoryWhenStopped(Activity.SNIFF, 5, (ImmutableList<? extends Behavior<? super Warden>>) ImmutableList.of(new SetRoarTarget<>(Warden::getEntityAngryAt), new Sniffing(SNIFFING_DURATION)), MemoryModuleType.IS_SNIFFING);
++        brain.addActivityAndRemoveMemoryWhenStopped(Activity.SNIFF, 5, ImmutableList.of(new SetRoarTarget<Warden>(Warden::getEntityAngryAt), new Sniffing<Warden>(SNIFFING_DURATION)), MemoryModuleType.IS_SNIFFING);
+     }
+ 
+     private static void initRoarActivity(Brain<Warden> brain) {

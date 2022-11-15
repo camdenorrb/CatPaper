@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 02:36:49 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
+index a725851060f13e734dbd2fbf8c83c9e1af57a8b7..6a61f782ba68fd79d464530888b568a2d7463694 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
+@@ -35,7 +35,7 @@ public class Snowball extends ThrowableItemProjectile {
+ 
+     private ParticleOptions getParticle() {
+         ItemStack itemStack = this.getItemRaw();
+-        return (ParticleOptions)(itemStack.isEmpty() ? ParticleTypes.ITEM_SNOWBALL : new ItemParticleOption(ParticleTypes.ITEM, itemStack));
++        return itemStack.isEmpty() ? ParticleTypes.ITEM_SNOWBALL : new ItemParticleOption(ParticleTypes.ITEM, itemStack);
+     }
+ 
+     @Override
+@@ -55,7 +55,7 @@ public class Snowball extends ThrowableItemProjectile {
+         super.onHitEntity(entityHitResult);
+         Entity entity = entityHitResult.getEntity();
+         int i = entity instanceof Blaze ? 3 : 0;
+-        entity.hurt(DamageSource.thrown(this, this.getOwner()), (float)i);
++        entity.hurt(DamageSource.thrown(this, this.getOwner()), this.getOwner(), null, (float)i);
+     }
+ 
+     @Override

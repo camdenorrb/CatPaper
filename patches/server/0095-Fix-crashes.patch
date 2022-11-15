@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 03:47:11 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 697490a39f9d8e8f5d012b79b6c7766db2fd24cf..471338dc1ea04f452437fe284fa7bb54fc3ec9fd 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -1904,6 +1904,10 @@ public abstract class LivingEntity extends Entity {
+             BlockPos blockposition = this.blockPosition();
+             BlockState iblockdata = this.getFeetBlockState();
+ 
++            if (iblockdata == null) {
++                return false;
++            }
++
+             if (iblockdata.is(BlockTags.CLIMBABLE)) {
+                 this.lastClimbablePos = Optional.of(blockposition);
+                 return true;

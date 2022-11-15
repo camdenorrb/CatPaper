@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 03:26:12 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
+index 75ce602e51c04ddc160c328e3fc34d5617febc91..87dfb27e69afa9738e4df2280109bee2d042e6c8 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
+@@ -38,8 +38,6 @@ public class NearestLivingEntitySensor<T extends LivingEntity> extends Sensor<T>
+ 
+         list.sort(Comparator.comparingDouble(new DistanceComparison(entityPosition, entityVectorByID)));
+ 
+-        list.sort(Comparator.comparingDouble(entity::distanceToSqr));
+-
+         Brain<?> brain = entity.getBrain();
+         brain.setMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES, list);
+         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, new NearestVisibleLivingEntities(entity, list));

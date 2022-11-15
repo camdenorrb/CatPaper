@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 03:56:34 -0600
+Subject: [PATCH] Update spawn mob
+
+
+diff --git a/src/main/java/io/papermc/paper/command/SpawnAllMobsCommand.java b/src/main/java/io/papermc/paper/command/SpawnAllMobsCommand.java
+index e4bb1a931bfa9ae5744ed60d86b6957a71fe667b..bd75e67637d69ca0949d5fab6349d76a2621d303 100644
+--- a/src/main/java/io/papermc/paper/command/SpawnAllMobsCommand.java
++++ b/src/main/java/io/papermc/paper/command/SpawnAllMobsCommand.java
+@@ -1,5 +1,6 @@
+ package io.papermc.paper.command;
+ 
++import org.bukkit.Bukkit;
+ import org.bukkit.Location;
+ import org.bukkit.command.Command;
+ import org.bukkit.command.CommandSender;
+@@ -31,17 +32,23 @@ public final class SpawnAllMobsCommand extends Command {
+ 	@Override
+ 	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+ 
+-		if (!testPermission(sender) || !(sender instanceof Player)) {
++		if (!testPermission(sender)) {
+ 			return true;
+ 		}
+ 
+-		final Player player = (Player) sender;
+-		final Location location = player.getLocation();
++		final Location location;
++
++		if (!(sender instanceof Player)) {
++			location = new Location(Bukkit.getWorld("world"), 0, 70, 0);
++		}
++		else {
++			location = ((Player) sender).getLocation();
++		}
+ 
+ 		// Spawn all mobs at player's location
+ 		for (final org.bukkit.entity.EntityType type : org.bukkit.entity.EntityType.values()) {
+ 			if (type.isSpawnable()) {
+-				player.getWorld().spawnEntity(location, type);
++				location.getWorld().spawnEntity(location, type);
+ 			}
+ 		}
+ 

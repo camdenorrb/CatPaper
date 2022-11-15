@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 03:52:15 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+index 8b19546da69737fe53676c988e5170aeb06648f2..206a986659da3249a58b54f70175114b9a15b792 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+@@ -91,10 +91,10 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+             --i;
+         }
+ 
+-        BlockPos blockPos2 = this.mob.blockPosition();
+-        BlockPathTypes blockPathTypes = this.getCachedBlockType(this.mob, blockPos2.getX(), i, blockPos2.getZ());
+-        if (this.mob.getPathfindingMalus(blockPathTypes) < 0.0F) {
+-            AABB aABB = this.mob.getBoundingBox();
++        BlockPos blockPos2 = mob.blockPosition();
++        BlockPathTypes blockPathTypes = this.getCachedBlockType(mob, blockPos2.getX(), i, blockPos2.getZ());
++        if (mob.getPathfindingMalus(blockPathTypes) < 0.0F) {
++            AABB aABB = mob.getBoundingBox();
+             if (this.hasPositiveMalus(mutableBlockPos.set(aABB.minX, i, aABB.minZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.minX, i, aABB.maxZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.maxX, i, aABB.minZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.maxX, i, aABB.maxZ))) {
+                 return this.getStartNode(mutableBlockPos);
+             }

@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 02:27:13 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/warden/SonicBoom.java b/src/main/java/net/minecraft/world/entity/ai/behavior/warden/SonicBoom.java
+index 02d635b4a950ca0a5e985d9db9d1a70a479be381..5a7d61de9906269d7fc6f6a356643ce92919b89f 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/warden/SonicBoom.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/warden/SonicBoom.java
+@@ -40,8 +40,8 @@ public class SonicBoom extends Behavior<Warden> {
+ 
+     @Override
+     protected void start(ServerLevel serverLevel, Warden warden, long l) {
+-        warden.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN, true, (long)DURATION);
+-        warden.getBrain().setMemoryWithExpiry(MemoryModuleType.SONIC_BOOM_SOUND_DELAY, Unit.INSTANCE, (long)TICKS_BEFORE_PLAYING_SOUND);
++        warden.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN, true, DURATION);
++        warden.getBrain().setMemoryWithExpiry(MemoryModuleType.SONIC_BOOM_SOUND_DELAY, Unit.INSTANCE, TICKS_BEFORE_PLAYING_SOUND);
+         serverLevel.broadcastEntityEvent(warden, (byte)62);
+         warden.playSound(SoundEvents.WARDEN_SONIC_CHARGE, 3.0F, 1.0F);
+     }
+@@ -52,21 +52,22 @@ public class SonicBoom extends Behavior<Warden> {
+             warden.getLookControl().setLookAt(target.position());
+         });
+         if (!warden.getBrain().hasMemoryValue(MemoryModuleType.SONIC_BOOM_SOUND_DELAY) && !warden.getBrain().hasMemoryValue(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN)) {
+-            warden.getBrain().setMemoryWithExpiry(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, (long)(DURATION - TICKS_BEFORE_PLAYING_SOUND));
++            warden.getBrain().setMemoryWithExpiry(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, DURATION - TICKS_BEFORE_PLAYING_SOUND);
+             warden.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).filter(warden::canTargetEntity).filter((target) -> {
+                 return warden.closerThan(target, 15.0D, 20.0D);
+             }).ifPresent((target) -> {
+-                Vec3 vec3 = warden.position().add(0.0D, (double)1.6F, 0.0D);
++                Vec3 vec3 = warden.position().add(0.0D, 1.6F, 0.0D);
+                 Vec3 vec32 = target.getEyePosition().subtract(vec3);
+                 Vec3 vec33 = vec32.normalize();
+ 
+-                for(int i = 1; i < Mth.floor(vec32.length()) + 7; ++i) {
+-                    Vec3 vec34 = vec3.add(vec33.scale((double)i));
++                final int floor = Mth.floor(vec32.length());
++                for(int i = 1; i < floor + 7; ++i) {
++                    Vec3 vec34 = vec3.add(vec33.scale(i));
+                     serverLevel.sendParticles(ParticleTypes.SONIC_BOOM, vec34.x, vec34.y, vec34.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                 }
+ 
+                 warden.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
+-                target.hurt(DamageSource.sonicBoom(warden), 10.0F);
++                target.hurt(DamageSource.sonicBoom(warden), warden, null, 10.0F);
+                 double d = 0.5D * (1.0D - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                 double e = 2.5D * (1.0D - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                 target.push(vec33.x() * e, vec33.y() * d, vec33.z() * e);
+@@ -80,6 +81,6 @@ public class SonicBoom extends Behavior<Warden> {
+     }
+ 
+     public static void setCooldown(LivingEntity warden, int cooldown) {
+-        warden.getBrain().setMemoryWithExpiry(MemoryModuleType.SONIC_BOOM_COOLDOWN, Unit.INSTANCE, (long)cooldown);
++        warden.getBrain().setMemoryWithExpiry(MemoryModuleType.SONIC_BOOM_COOLDOWN, Unit.INSTANCE, cooldown);
+     }
+ }

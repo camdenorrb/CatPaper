@@ -1,0 +1,77 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 02:08:13 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/level/gameevent/EuclideanGameEventDispatcher.java b/src/main/java/net/minecraft/world/level/gameevent/EuclideanGameEventDispatcher.java
+index 0190c148576b39dcbad8078f9121ef10c788ec98..6b23ccc83ac88c70b5665a8e9487b68a477dbee5 100644
+--- a/src/main/java/net/minecraft/world/level/gameevent/EuclideanGameEventDispatcher.java
++++ b/src/main/java/net/minecraft/world/level/gameevent/EuclideanGameEventDispatcher.java
+@@ -7,6 +7,8 @@ import java.util.List;
+ import java.util.Optional;
+ import java.util.Set;
+ import java.util.concurrent.CopyOnWriteArrayList;
++import java.util.concurrent.CopyOnWriteArraySet;
++import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.function.BiConsumer;
+ import net.minecraft.network.protocol.game.DebugPackets;
+ import net.minecraft.server.level.ServerLevel;
+@@ -14,8 +16,8 @@ import net.minecraft.world.phys.Vec3;
+ 
+ public class EuclideanGameEventDispatcher implements GameEventDispatcher {
+     private final List<GameEventListener> listeners = new CopyOnWriteArrayList<>();
+-    private final Set<GameEventListener> listenersToRemove = Sets.newHashSet();
+-    private final List<GameEventListener> listenersToAdd = Lists.newArrayList();
++    private final Set<GameEventListener> listenersToRemove = new CopyOnWriteArraySet<>();
++    private final List<GameEventListener> listenersToAdd = new CopyOnWriteArrayList<>();
+     private boolean processing;
+     private final ServerLevel level;
+ 
+@@ -55,32 +57,24 @@ public class EuclideanGameEventDispatcher implements GameEventDispatcher {
+         boolean bl = false;
+ 
+         try {
+-            Iterator<GameEventListener> iterator = this.listeners.iterator();
+-
+-            while(iterator.hasNext()) {
+-                GameEventListener gameEventListener = iterator.next();
+-                if (this.listenersToRemove.remove(gameEventListener)) {
+-                    iterator.remove();
+-                } else {
+-                    Optional<Vec3> optional = getPostableListenerPosition(this.level, pos, gameEventListener);
+-                    if (optional.isPresent()) {
+-                        onListenerAccept.accept(gameEventListener, optional.get());
+-                        bl = true;
+-                    }
++
++            listeners.removeAll(this.listenersToRemove);
++
++            for (final GameEventListener listener : this.listeners) {
++                final Optional<Vec3> optional = getPostableListenerPosition(this.level, pos, listener);
++                if (optional.isPresent()) {
++                    onListenerAccept.accept(listener, optional.get());
++                    bl = true;
+                 }
+             }
+-        } finally {
+-            this.processing = false;
+-        }
+ 
+-        if (!this.listenersToAdd.isEmpty()) {
+-            this.listeners.addAll(this.listenersToAdd);
+-            this.listenersToAdd.clear();
+-        }
++            listeners.addAll(this.listenersToAdd);
++
++            listenersToAdd.clear();
++            listenersToRemove.clear();
+ 
+-        if (!this.listenersToRemove.isEmpty()) {
+-            this.listeners.removeAll(this.listenersToRemove);
+-            this.listenersToRemove.clear();
++        } finally {
++            this.processing = false;
+         }
+ 
+         return bl;

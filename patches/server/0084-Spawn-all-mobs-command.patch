@@ -1,0 +1,74 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 02:12:27 -0600
+Subject: [PATCH] Spawn all mobs command
+
+
+diff --git a/src/main/java/io/papermc/paper/command/PaperCommands.java b/src/main/java/io/papermc/paper/command/PaperCommands.java
+index 6512480e790593671b152251d5a124e3c94a1580..b1e1a5bf037476449dea7687b0215ae7cfe0a731 100644
+--- a/src/main/java/io/papermc/paper/command/PaperCommands.java
++++ b/src/main/java/io/papermc/paper/command/PaperCommands.java
+@@ -19,6 +19,7 @@ public final class PaperCommands {
+         COMMANDS.put("paper", new PaperCommand("paper"));
+         COMMANDS.put("mspt", new MSPTCommand("mspt"));
+         COMMANDS.put("mem", new MemCommand("mem"));
++        COMMANDS.put("spawnAllMobs", new SpawnAllMobsCommand("spawnAllMobs"));
+     }
+ 
+     public static void registerCommands(final MinecraftServer server) {
+diff --git a/src/main/java/io/papermc/paper/command/SpawnAllMobsCommand.java b/src/main/java/io/papermc/paper/command/SpawnAllMobsCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e4bb1a931bfa9ae5744ed60d86b6957a71fe667b
+--- /dev/null
++++ b/src/main/java/io/papermc/paper/command/SpawnAllMobsCommand.java
+@@ -0,0 +1,50 @@
++package io.papermc.paper.command;
++
++import org.bukkit.Location;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.bukkit.entity.Player;
++import org.checkerframework.checker.nullness.qual.NonNull;
++import org.checkerframework.framework.qual.DefaultQualifier;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.Collections;
++import java.util.List;
++
++
++// This is a command to test the server with all entities, should be removed in production
++@DefaultQualifier(NonNull.class)
++public final class SpawnAllMobsCommand extends Command {
++
++	public SpawnAllMobsCommand(final String name) {
++		super(name);
++		this.description = "Spawns all mobs";
++		this.usageMessage = "/spawnAllMobs";
++		this.setPermission("bukkit.command.spawnAllMobs");
++	}
++
++	@Override
++	public @NotNull List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
++		return Collections.emptyList();
++	}
++
++	@Override
++	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
++
++		if (!testPermission(sender) || !(sender instanceof Player)) {
++			return true;
++		}
++
++		final Player player = (Player) sender;
++		final Location location = player.getLocation();
++
++		// Spawn all mobs at player's location
++		for (final org.bukkit.entity.EntityType type : org.bukkit.entity.EntityType.values()) {
++			if (type.isSpawnable()) {
++				player.getWorld().spawnEntity(location, type);
++			}
++		}
++
++		return true;
++	}
++}

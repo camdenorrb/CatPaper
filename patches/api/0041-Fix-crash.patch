@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 04:10:46 -0600
+Subject: [PATCH] Fix crash
+
+
+diff --git a/src/main/java/org/bukkit/event/entity/EntityDeathEvent.java b/src/main/java/org/bukkit/event/entity/EntityDeathEvent.java
+index 0d32a44f8f864684474845264dac7acb346d6f1e..bc30983f197bb336627d75002d317b471b8963c6 100644
+--- a/src/main/java/org/bukkit/event/entity/EntityDeathEvent.java
++++ b/src/main/java/org/bukkit/event/entity/EntityDeathEvent.java
+@@ -1,6 +1,8 @@
+ package org.bukkit.event.entity;
+ 
+ import java.util.List;
++import java.util.concurrent.CopyOnWriteArrayList;
++
+ import org.bukkit.entity.LivingEntity;
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.inventory.ItemStack;
+@@ -30,7 +32,7 @@ public class EntityDeathEvent extends EntityEvent implements org.bukkit.event.Ca
+ 
+     public EntityDeathEvent(@NotNull final LivingEntity what, @NotNull final List<ItemStack> drops, final int droppedExp) {
+         super(what);
+-        this.drops = drops;
++        this.drops = new CopyOnWriteArrayList<>(drops);
+         this.dropExp = droppedExp;
+     }
+ 

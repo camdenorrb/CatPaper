@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 04:18:51 -0600
+Subject: [PATCH] Fix crash
+
+
+diff --git a/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java b/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
+index 2fde6d5dbc6229554c42020c80962b163cdee5ba..3c64f6cf92253557a3d4e20e831e016e609286e9 100644
+--- a/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
++++ b/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
+@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.Queues;
+ import com.mojang.logging.LogUtils;
+ import java.util.List;
++import java.util.NoSuchElementException;
+ import java.util.Queue;
+ import java.util.concurrent.CompletableFuture;
+ import java.util.concurrent.Executor;
+@@ -123,7 +124,9 @@ public abstract class BlockableEventLoop<R extends Runnable> implements Profiler
+         } else if (this.blockingCount == 0 && !this.shouldRun(runnable)) {
+             return false;
+         } else {
+-            this.doRunTask(this.pendingRunnables.remove());
++            try {
++                this.doRunTask(this.pendingRunnables.remove());
++            } catch (NoSuchElementException ex) {}
+             return true;
+         }
+     }

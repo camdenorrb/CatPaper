@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 04:19:25 -0600
+Subject: [PATCH] Fix crash
+
+
+diff --git a/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java b/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
+index 3c64f6cf92253557a3d4e20e831e016e609286e9..a4ba7c0c369403c68b3fd30ef85c82ddcb68ba0f 100644
+--- a/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
++++ b/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
+@@ -126,7 +126,9 @@ public abstract class BlockableEventLoop<R extends Runnable> implements Profiler
+         } else {
+             try {
+                 this.doRunTask(this.pendingRunnables.remove());
+-            } catch (NoSuchElementException ex) {}
++            } catch (NoSuchElementException ex) {
++                return false;
++            }
+             return true;
+         }
+     }

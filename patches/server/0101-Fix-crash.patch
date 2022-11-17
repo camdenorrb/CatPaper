@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 04:12:27 -0600
+Subject: [PATCH] Fix crash
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
+index 1a25eb663f55483944d667b75d4ce6f4749a4fd8..2da1b4a9f51c5c1606e55bb09b3090ff5e321038 100644
+--- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
++++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
+@@ -620,7 +620,11 @@ public final class PlayerChunkLoader {
+         final long time = System.nanoTime();
+         boolean updatedCounters = false;
+         for (;;) {
++
+             final PlayerLoaderData data = this.chunkLoadQueue.pollFirst();
++            if (data == null) {
++                break;
++            }
+ 
+             data.lastChunkLoad = time;
+ 

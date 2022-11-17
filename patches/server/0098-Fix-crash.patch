@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 15 Nov 2022 04:05:01 -0600
+Subject: [PATCH] Fix crash
+
+
+diff --git a/src/main/java/net/minecraft/world/damagesource/CombatTracker.java b/src/main/java/net/minecraft/world/damagesource/CombatTracker.java
+index ba96589aab8be0a90144f73f7779769146c7a37e..e8c25e281cf7479c718fb749c92609b6b82e0a31 100644
+--- a/src/main/java/net/minecraft/world/damagesource/CombatTracker.java
++++ b/src/main/java/net/minecraft/world/damagesource/CombatTracker.java
+@@ -3,6 +3,7 @@ package net.minecraft.world.damagesource;
+ import com.google.common.collect.Lists;
+ import java.util.List;
+ import java.util.Optional;
++import java.util.concurrent.CopyOnWriteArrayList;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.network.chat.Component;
+@@ -17,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
+ public class CombatTracker {
+     public static final int RESET_DAMAGE_STATUS_TIME = 100;
+     public static final int RESET_COMBAT_STATUS_TIME = 300;
+-    private final List<CombatEntry> entries = Lists.newArrayList();
++    private final List<CombatEntry> entries = new CopyOnWriteArrayList<>();
+     private final LivingEntity mob;
+     private int lastDamageTime;
+     private int combatStartTime;

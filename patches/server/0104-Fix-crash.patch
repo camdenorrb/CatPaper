@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Thu, 17 Nov 2022 01:34:09 -0600
+Subject: [PATCH] Fix crash
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
+index 7b3df576a12d693b74d96a0dbbc94d425a851427..abc2b2c9fde8d32b19aab54d04fddcbb8cc345dc 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
++++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
+@@ -38,13 +38,8 @@ import org.jetbrains.annotations.Nullable;
+ import org.slf4j.Logger;
+ import java.io.IOException;
+ import java.text.DecimalFormat;
+-import java.util.ArrayDeque;
+-import java.util.ArrayList;
+-import java.util.Collection;
+-import java.util.Collections;
+-import java.util.Iterator;
+-import java.util.List;
+-import java.util.Objects;
++import java.util.*;
++import java.util.concurrent.ConcurrentSkipListSet;
+ import java.util.concurrent.TimeUnit;
+ import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.concurrent.atomic.AtomicReference;
+@@ -75,7 +70,7 @@ public final class ChunkHolderManager {
+     private long currentTick;
+ 
+     private final ArrayDeque<NewChunkHolder> pendingFullLoadUpdate = new ArrayDeque<>();
+-    private final ObjectRBTreeSet<NewChunkHolder> autoSaveQueue = new ObjectRBTreeSet<>((final @NotNull NewChunkHolder c1, final @NotNull NewChunkHolder c2) -> {
++    private final ConcurrentSkipListSet<NewChunkHolder> autoSaveQueue = new ConcurrentSkipListSet<>((final @NotNull NewChunkHolder c1, final @NotNull NewChunkHolder c2) -> {
+         if (c1 == c2) {
+             return 0;
+         }
+diff --git a/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java b/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
+index a4ba7c0c369403c68b3fd30ef85c82ddcb68ba0f..96a00dcce59d76c143a29c53a52ab0afd412a75d 100644
+--- a/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
++++ b/src/main/java/net/minecraft/util/thread/BlockableEventLoop.java
+@@ -112,8 +112,7 @@ public abstract class BlockableEventLoop<R extends Runnable> implements Profiler
+     }
+ 
+     public void runAllTasks() {
+-        while(this.pollTask()) {
+-        }
++        while(this.pollTask()) {}
+ 
+     }
+ 

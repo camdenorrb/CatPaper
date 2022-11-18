@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Thu, 17 Nov 2022 18:54:16 -0600
+Subject: [PATCH] Fix crash
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
+index 098dc04ba866e2d7b76111f631aa174bb6548dfc..e3b01a2b4e9004cb6f584c3b9cc321e505f908b8 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
++++ b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
+@@ -388,7 +388,7 @@ public final class EntityLookup implements LevelEntityGetter<Entity> {
+         final ChunkEntitySlices old = this.getChunk(entity.sectionX, entity.sectionZ);
+         final ChunkEntitySlices slices = this.getOrCreateChunk(newSectionX, newSectionZ);
+ 
+-        if (!old.removeEntity(entity, entity.sectionY)) {
++        if (old == null || !old.removeEntity(entity, entity.sectionY)) {
+             LOGGER.warn("Could not remove entity " + entity + " from its old chunk section (" + entity.sectionX + "," + entity.sectionY + "," + entity.sectionZ + ") since it was not contained in the section");
+         }
+ 
+diff --git a/src/main/java/net/minecraft/world/ticks/LevelTicks.java b/src/main/java/net/minecraft/world/ticks/LevelTicks.java
+index deba9f7621e345c20ecde3e5cf516409f1d02a8a..3f01d3e493b9aaf8813766bcc23bfc2f1423fbf4 100644
+--- a/src/main/java/net/minecraft/world/ticks/LevelTicks.java
++++ b/src/main/java/net/minecraft/world/ticks/LevelTicks.java
+@@ -1,19 +1,6 @@
+ package net.minecraft.world.ticks;
+ 
+-import it.unimi.dsi.fastutil.longs.Long2LongMap;
+-import it.unimi.dsi.fastutil.longs.Long2LongMaps;
+-import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+-import it.unimi.dsi.fastutil.objects.ObjectIterator;
+ import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+-
+-import java.util.*;
+-import java.util.concurrent.ConcurrentHashMap;
+-import java.util.function.BiConsumer;
+-import java.util.function.LongPredicate;
+-import java.util.function.Predicate;
+-import java.util.function.Supplier;
+ import net.minecraft.Util;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.SectionPos;
+@@ -22,6 +9,13 @@ import net.minecraft.util.profiling.ProfilerFiller;
+ import net.minecraft.world.level.ChunkPos;
+ import net.minecraft.world.level.levelgen.structure.BoundingBox;
+ 
++import java.util.*;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.function.BiConsumer;
++import java.util.function.LongPredicate;
++import java.util.function.Predicate;
++import java.util.function.Supplier;
++
+ public class LevelTicks<T> implements LevelTickAccess<T> {
+     private static final Comparator<LevelChunkTicks<?>> CONTAINER_DRAIN_ORDER = (a, b) -> {
+         return ScheduledTick.INTRA_TICK_DRAIN_ORDER.compare(a.peek(), b.peek());

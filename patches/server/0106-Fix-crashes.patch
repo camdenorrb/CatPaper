@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Thu, 17 Nov 2022 02:03:18 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/ticks/LevelTicks.java b/src/main/java/net/minecraft/world/ticks/LevelTicks.java
+index 7f1ac2cb29eb84833c0895442d611dfa0504527e..532816941e9f1e2c9583656c150118acd91abb32 100644
+--- a/src/main/java/net/minecraft/world/ticks/LevelTicks.java
++++ b/src/main/java/net/minecraft/world/ticks/LevelTicks.java
+@@ -15,6 +15,7 @@ import java.util.LongSummaryStatistics;
+ import java.util.PriorityQueue;
+ import java.util.Queue;
+ import java.util.Set;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.function.BiConsumer;
+ import java.util.function.LongPredicate;
+ import java.util.function.Predicate;
+@@ -33,7 +34,7 @@ public class LevelTicks<T> implements LevelTickAccess<T> {
+     };
+     private final LongPredicate tickCheck;
+     private final Supplier<ProfilerFiller> profiler;
+-    private final Long2ObjectMap<LevelChunkTicks<T>> allContainers = new Long2ObjectOpenHashMap<>();
++    private final ConcurrentHashMap<Long, LevelChunkTicks<T>> allContainers = new ConcurrentHashMap<>();
+     private final Long2LongMap nextTickForContainer = Util.make(new Long2LongOpenHashMap(), (map) -> {
+         map.defaultReturnValue(Long.MAX_VALUE);
+     });
+@@ -69,7 +70,7 @@ public class LevelTicks<T> implements LevelTickAccess<T> {
+         LevelChunkTicks<T> levelChunkTicks = this.allContainers.remove(l);
+         this.nextTickForContainer.remove(l);
+         if (levelChunkTicks != null) {
+-            levelChunkTicks.setOnTickAdded((BiConsumer<LevelChunkTicks<T>, ScheduledTick<T>>)null);
++            levelChunkTicks.setOnTickAdded(null);
+         }
+ 
+     }
+@@ -226,10 +227,10 @@ public class LevelTicks<T> implements LevelTickAccess<T> {
+     }
+ 
+     private void forContainersInArea(BoundingBox box, LevelTicks.PosAndContainerConsumer<T> visitor) {
+-        int i = SectionPos.posToSectionCoord((double)box.minX());
+-        int j = SectionPos.posToSectionCoord((double)box.minZ());
+-        int k = SectionPos.posToSectionCoord((double)box.maxX());
+-        int l = SectionPos.posToSectionCoord((double)box.maxZ());
++        int i = SectionPos.posToSectionCoord(box.minX());
++        int j = SectionPos.posToSectionCoord(box.minZ());
++        int k = SectionPos.posToSectionCoord(box.maxX());
++        int l = SectionPos.posToSectionCoord(box.maxZ());
+ 
+         for(int m = i; m <= k; ++m) {
+             for(int n = j; n <= l; ++n) {

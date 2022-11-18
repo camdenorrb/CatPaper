@@ -1,0 +1,204 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 18 Nov 2022 02:47:39 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 3126c1de57ca51b2f99d482e463bc368612ae3c8..48d8147d3d67250fea740c22a518798d418c11a3 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -1748,7 +1748,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+     @Override
+     public void updateNeighborsAt(BlockPos pos, Block sourceBlock) {
+-        if (captureBlockStates) { return; } // Paper - Cancel all physics during placement
++        if (captureBlockStates.get()) { return; } // Paper - Cancel all physics during placement
+         this.neighborUpdater.updateNeighborsAtExceptFromFacing(pos, sourceBlock, null);
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/player/Inventory.java b/src/main/java/net/minecraft/world/entity/player/Inventory.java
+index 8bfba53268a10e55bba2f68987c2b39cd3620c38..61ba949cee8c74771bc9f914f39b416d28f3b3e6 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Inventory.java
++++ b/src/main/java/net/minecraft/world/entity/player/Inventory.java
+@@ -673,7 +673,7 @@ public class Inventory implements Container, Nameable {
+ 
+     @Override
+     public boolean stillValid(Player player) {
+-        return this.player.isRemoved() ? false : player.distanceToSqr(this.player) <= 64.0D;
++        return !this.player.isRemoved() && player.distanceToSqr(this.player) <= 64.0D;
+     }
+ 
+     public boolean contains(ItemStack stack) {
+diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
+index 54d42d85e60abb845c1f1fedef924f1f8d7782d0..22ab32ddf0c2f21e5a4eeadf87985952f873de1d 100644
+--- a/src/main/java/net/minecraft/world/item/ItemStack.java
++++ b/src/main/java/net/minecraft/world/item/ItemStack.java
+@@ -338,7 +338,7 @@ public final class ItemStack {
+             ServerLevel world = (ServerLevel) itemactioncontext.getLevel();
+ 
+             if (!(this.getItem() instanceof BucketItem/* || this.getItem() instanceof SolidBucketItem*/)) { // if not bucket // Paper - capture block states for snow buckets
+-                world.captureBlockStates = true;
++                world.captureBlockStates.set(true);
+                 // special case bonemeal
+                 if (this.getItem() == Items.BONE_MEAL) {
+                     world.captureTreeGeneration = true;
+@@ -350,7 +350,7 @@ public final class ItemStack {
+             int newCount = this.getCount();
+             this.setCount(oldCount);
+             this.setTagClone(oldData);
+-            world.captureBlockStates = false;
++            world.captureBlockStates.set(false);
+             if (enuminteractionresult.consumesAction() && world.captureTreeGeneration && world.capturedBlockStates.size() > 0) {
+                 world.captureTreeGeneration = false;
+                 Location location = new Location(world.getWorld(), blockposition.getX(), blockposition.getY(), blockposition.getZ());
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index 415e19025a2fb260681210883ff594cf8f6c6cad..2f9dd29520ef034b5a7f270b066056cafd299c72 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -9,6 +9,8 @@ import com.google.common.collect.Lists;
+ import com.mojang.serialization.Codec;
+ import java.io.IOException;
+ import java.util.*;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.function.Consumer;
+ import java.util.function.Predicate;
+ import java.util.function.Supplier;
+@@ -148,10 +150,10 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     public static final boolean DEBUG_ENTITIES = Boolean.getBoolean("debug.entities"); // Paper
+ 
+     public boolean preventPoiUpdated = false; // CraftBukkit - SPIGOT-5710
+-    public boolean captureBlockStates = false;
++    public AtomicBoolean captureBlockStates = new AtomicBoolean(false);
+     public boolean captureTreeGeneration = false;
+-    public Map<BlockPos, org.bukkit.craftbukkit.block.CraftBlockState> capturedBlockStates = new java.util.LinkedHashMap<>(); // Paper
+-    public Map<BlockPos, BlockEntity> capturedTileEntities = new java.util.LinkedHashMap<>(); // Paper
++    public Map<BlockPos, org.bukkit.craftbukkit.block.CraftBlockState> capturedBlockStates = new ConcurrentHashMap<>(); // Paper
++    public Map<BlockPos, BlockEntity> capturedTileEntities = new ConcurrentHashMap<>(); // Paper
+     public List<ItemEntity> captureDrops;
+     public final it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<SpawnCategory> ticksPerSpawnCategory = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>();
+     // Paper start
+@@ -537,7 +539,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+ 
+             // CraftBukkit start - capture blockstates
+             boolean captured = false;
+-            if (this.captureBlockStates && !this.capturedBlockStates.containsKey(pos)) {
++            if (this.captureBlockStates.get() && !this.capturedBlockStates.containsKey(pos)) {
+                 CraftBlockState blockstate = (CraftBlockState) world.getBlockAt(pos.getX(), pos.getY(), pos.getZ()).getState(); // Paper - use CB getState to get a suitable snapshot
+                 blockstate.setFlag(flags); // Paper - set flag
+                 this.capturedBlockStates.put(pos.immutable(), blockstate);
+@@ -550,7 +552,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+ 
+             if (iblockdata1 == null) {
+                 // CraftBukkit start - remove blockstate if failed (or the same)
+-                if (this.captureBlockStates && captured) {
++                if (this.captureBlockStates.get() && captured) {
+                     this.capturedBlockStates.remove(pos);
+                 }
+                 // CraftBukkit end
+@@ -594,7 +596,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+                 */
+ 
+                 // CraftBukkit start
+-                if (!this.captureBlockStates) { // Don't notify clients or update physics while capturing blockstates
++                if (!this.captureBlockStates.get()) { // Don't notify clients or update physics while capturing blockstates
+                     // Modularize client and physic updates
+                     // Spigot start
+                     try {
+@@ -957,7 +959,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         }
+         // Paper end
+         // CraftBukkit end
+-        return this.isOutsideBuildHeight(blockposition) ? null : (!this.isClientSide && !io.papermc.paper.util.TickThread.isTickThread() ? null : this.getChunkAt(blockposition).getBlockEntity(blockposition, LevelChunk.EntityCreationType.IMMEDIATE)); // Paper - rewrite chunk system
++        return this.isOutsideBuildHeight(blockposition) ? null : (!this.isClientSide ? null : this.getChunkAt(blockposition).getBlockEntity(blockposition, LevelChunk.EntityCreationType.IMMEDIATE)); // Paper - rewrite chunk system
+     }
+ 
+     public void setBlockEntity(BlockEntity blockEntity) {
+@@ -965,7 +967,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+ 
+         if (!this.isOutsideBuildHeight(blockposition)) {
+             // CraftBukkit start
+-            if (this.captureBlockStates) {
++            if (this.captureBlockStates.get()) {
+                 this.capturedTileEntities.put(blockposition.immutable(), blockEntity);
+                 return;
+             }
+diff --git a/src/main/java/net/minecraft/world/level/block/WitherSkullBlock.java b/src/main/java/net/minecraft/world/level/block/WitherSkullBlock.java
+index 79c26c0e2995ec875276d5de715cd97d7002ebec..d8ae28a531e62fd833b080c6dc6d4587e4fba0bd 100644
+--- a/src/main/java/net/minecraft/world/level/block/WitherSkullBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/WitherSkullBlock.java
+@@ -54,7 +54,7 @@ public class WitherSkullBlock extends SkullBlock {
+     }
+ 
+     public static void checkSpawn(Level world, BlockPos pos, SkullBlockEntity blockEntity) {
+-        if (world.captureBlockStates) return; // CraftBukkit
++        if (world.captureBlockStates.get()) return; // CraftBukkit
+         if (!world.isClientSide) {
+             BlockState iblockdata = blockEntity.getBlockState();
+             boolean flag = iblockdata.is(Blocks.WITHER_SKELETON_SKULL) || iblockdata.is(Blocks.WITHER_SKELETON_WALL_SKULL);
+diff --git a/src/main/java/net/minecraft/world/level/chunk/ChunkAccess.java b/src/main/java/net/minecraft/world/level/chunk/ChunkAccess.java
+index 93cd122bcb454791fffe19b9057f0cde3e27448d..c8092950e3dc1dbe58bb997d38db9dadb776a81f 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/ChunkAccess.java
++++ b/src/main/java/net/minecraft/world/level/chunk/ChunkAccess.java
+@@ -13,6 +13,7 @@ import java.util.EnumSet;
+ import java.util.Map;
+ import java.util.Map.Entry;
+ import java.util.Set;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.function.Function;
+ import java.util.function.Supplier;
+ import java.util.stream.Stream;
+@@ -72,7 +73,7 @@ public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiom
+     public final Map<Heightmap.Types, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Types.class);
+     private final Map<Structure, StructureStart> structureStarts = Maps.newHashMap();
+     private final Map<Structure, LongSet> structuresRefences = Maps.newHashMap();
+-    protected final Map<BlockPos, CompoundTag> pendingBlockEntities = Maps.newHashMap();
++    protected final Map<BlockPos, CompoundTag> pendingBlockEntities = new ConcurrentHashMap<>();
+     public final Map<BlockPos, BlockEntity> blockEntities = Maps.newHashMap();
+     protected final LevelHeightAccessor levelHeightAccessor;
+     protected final LevelChunkSection[] sections;
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 6b7af62704d9620343b6d93694d7055dac4249d4..63f1e0496ebf9e4e2c5cc5867569fbbaaaa5512f 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -595,7 +595,7 @@ public class LevelChunk extends ChunkAccess {
+                     return null;
+                 } else {
+                     // CraftBukkit - Don't place while processing the BlockPlaceEvent, unless it's a BlockContainer. Prevents blocks such as TNT from activating when cancelled.
+-                    if (!this.level.isClientSide && doPlace && (!this.level.captureBlockStates || block instanceof net.minecraft.world.level.block.BaseEntityBlock)) {
++                    if (!this.level.isClientSide && doPlace && (!this.level.captureBlockStates.get() || block instanceof net.minecraft.world.level.block.BaseEntityBlock)) {
+                         iblockdata.onPlace(this.level, blockposition, iblockdata1, flag);
+                     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 2d0b8a94f27babe1cac8a408275542244341490b..2c15188ab282cbb9d19806c00a5aa320e25b129e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -793,9 +793,9 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+     @Override
+     public boolean generateTree(@NotNull Location loc, TreeType type, @NotNull BlockChangeDelegate delegate) {
+         world.captureTreeGeneration = true;
+-        world.captureBlockStates = true;
++        world.captureBlockStates.set(true);
+         boolean grownTree = this.generateTree(loc, type);
+-        world.captureBlockStates = false;
++        world.captureBlockStates.set(false);
+         world.captureTreeGeneration = false;
+         if (grownTree) { // Copy block data to delegate
+             for (BlockState blockstate : world.capturedBlockStates.values()) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
+index 9cdebe2d5f1a2b2f5c1f08899a8191923b7ce935..b8049ee74da9a1cf7b7cf189ddb4dba5e2ca9d07 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
+@@ -51,9 +51,7 @@ public final class CraftBlockStates {
+ 
+         @Override
+         public final B createBlockState(@org.jetbrains.annotations.Nullable World world, @NotNull BlockPos blockPosition, net.minecraft.world.level.block.state.BlockState blockData, @org.jetbrains.annotations.Nullable BlockEntity tileEntity) {
+-            if (world != null) {
+-                Preconditions.checkState(tileEntity != null, "Tile is null, asynchronous access? %s", CraftBlock.at(((CraftWorld) world).getHandle(), blockPosition));
+-            } else if (tileEntity == null) {
++            if (tileEntity == null) {
+                 tileEntity = this.createTileEntity(blockPosition, blockData);
+             }
+             return this.createBlockState(world, (T) tileEntity);

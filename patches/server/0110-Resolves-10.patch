@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Thu, 17 Nov 2022 17:17:49 -0600
+Subject: [PATCH] Resolves #10
+
+
+diff --git a/src/main/java/net/minecraft/world/ticks/LevelTicks.java b/src/main/java/net/minecraft/world/ticks/LevelTicks.java
+index 532816941e9f1e2c9583656c150118acd91abb32..deba9f7621e345c20ecde3e5cf516409f1d02a8a 100644
+--- a/src/main/java/net/minecraft/world/ticks/LevelTicks.java
++++ b/src/main/java/net/minecraft/world/ticks/LevelTicks.java
+@@ -7,14 +7,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.ObjectIterator;
+ import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+-import java.util.ArrayDeque;
+-import java.util.ArrayList;
+-import java.util.Comparator;
+-import java.util.List;
+-import java.util.LongSummaryStatistics;
+-import java.util.PriorityQueue;
+-import java.util.Queue;
+-import java.util.Set;
++
++import java.util.*;
+ import java.util.concurrent.ConcurrentHashMap;
+ import java.util.function.BiConsumer;
+ import java.util.function.LongPredicate;
+@@ -35,9 +29,10 @@ public class LevelTicks<T> implements LevelTickAccess<T> {
+     private final LongPredicate tickCheck;
+     private final Supplier<ProfilerFiller> profiler;
+     private final ConcurrentHashMap<Long, LevelChunkTicks<T>> allContainers = new ConcurrentHashMap<>();
+-    private final Long2LongMap nextTickForContainer = Util.make(new Long2LongOpenHashMap(), (map) -> {
++    private final Map<Long, Long> nextTickForContainer = new ConcurrentHashMap<Long, Long>();/*Util.make(new Long2LongOpenHashMap(), (map) -> {
+         map.defaultReturnValue(Long.MAX_VALUE);
+-    });
++    });*/
++
+     private final Queue<LevelChunkTicks<T>> containersToTick = new PriorityQueue<>(CONTAINER_DRAIN_ORDER);
+     private final Queue<ScheduledTick<T>> toRunThisTick = new ArrayDeque<>();
+     private final List<ScheduledTick<T>> alreadyRunThisTick = new ArrayList<>();
+@@ -106,12 +101,13 @@ public class LevelTicks<T> implements LevelTickAccess<T> {
+     }
+ 
+     private void sortContainersToTick(long time) {
+-        ObjectIterator<Long2LongMap.Entry> objectIterator = Long2LongMaps.fastIterator(this.nextTickForContainer);
++
++        final Iterator<Map.Entry<Long, Long>> objectIterator = this.nextTickForContainer.entrySet().iterator();
+ 
+         while(objectIterator.hasNext()) {
+-            Long2LongMap.Entry entry = objectIterator.next();
+-            long l = entry.getLongKey();
+-            long m = entry.getLongValue();
++            final Map.Entry<Long, Long> entry = objectIterator.next();
++            long l = entry.getKey();
++            long m = entry.getValue();
+             if (m <= time) {
+                 LevelChunkTicks<T> levelChunkTicks = this.allContainers.get(l);
+                 if (levelChunkTicks == null) {

@@ -1,0 +1,86 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Thu, 17 Nov 2022 19:11:28 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
+index e93d3bf28b1e436709c8923d8bd1f24c4dd8bf61..81f7fdc2c01939512fdcaffccef67d77ae7cc37c 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
++++ b/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
+@@ -25,6 +25,8 @@ import net.minecraft.world.level.pathfinder.PathFinder;
+ import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+ import net.minecraft.world.phys.HitResult;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.World;
++
+ 
+ public abstract class PathNavigation {
+     private static final int MAX_TIME_RECOMPUTE = 20;
+@@ -144,9 +146,17 @@ public abstract class PathNavigation {
+ 
+     @Nullable protected Path createPath(Set<BlockPos> positions, @Nullable Entity target, int range, boolean useHeadPos, int distance, float followRange) {
+         // Paper end
++
++        final Mob mob = this.mob;
++        final Level level = this.level;
++
++        if (mob == null || level == null) {
++            return null;
++        }
++
+         if (positions.isEmpty()) {
+             return null;
+-        } else if (this.mob.getY() < (double)this.level.getMinBuildHeight()) {
++        } else if (mob.getY() < (double)level.getMinBuildHeight()) {
+             return null;
+         } else if (!this.canUpdatePath()) {
+             return null;
+@@ -156,7 +166,7 @@ public abstract class PathNavigation {
+             // Paper start - Pathfind event
+             boolean copiedSet = false;
+             for (BlockPos possibleTarget : positions) {
+-                if (!this.mob.getCommandSenderWorld().getWorldBorder().isWithinBounds(possibleTarget) || !new com.destroystokyo.paper.event.entity.EntityPathfindEvent(this.mob.getBukkitEntity(), // Paper - don't path out of world border
++                if (!this.mob.getCommandSenderWorld().getWorldBorder().isWithinBounds(possibleTarget) || !new com.destroystokyo.paper.event.entity.EntityPathfindEvent(mob.getBukkitEntity(), // Paper - don't path out of world border
+                     io.papermc.paper.util.MCUtil.toLocation(this.mob.level, possibleTarget), target == null ? null : target.getBukkitEntity()).callEvent()) {
+                     if (!copiedSet) {
+                         copiedSet = true;
+@@ -170,12 +180,12 @@ public abstract class PathNavigation {
+                 }
+             }
+             // Paper end
+-            this.level.getProfiler().push("pathfind");
+-            BlockPos blockPos = useHeadPos ? this.mob.blockPosition().above() : this.mob.blockPosition();
++            level.getProfiler().push("pathfind");
++            BlockPos blockPos = useHeadPos ? mob.blockPosition().above() : mob.blockPosition();
+             int i = (int)(followRange + (float)range);
+-            PathNavigationRegion pathNavigationRegion = new PathNavigationRegion(this.level, blockPos.offset(-i, -i, -i), blockPos.offset(i, i, i));
+-            Path path = this.pathFinder.findPath(pathNavigationRegion, this.mob, positions, followRange, distance, this.maxVisitedNodesMultiplier);
+-            this.level.getProfiler().pop();
++            PathNavigationRegion pathNavigationRegion = new PathNavigationRegion(level, blockPos.offset(-i, -i, -i), blockPos.offset(i, i, i));
++            Path path = this.pathFinder.findPath(pathNavigationRegion, mob, positions, followRange, distance, this.maxVisitedNodesMultiplier);
++            level.getProfiler().pop();
+             if (path != null && path.getTarget() != null) {
+                 this.targetPos = path.getTarget();
+                 this.reachRange = distance;
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index cbfb066f6c5f3b57d4872660f96024d4a70c4fb3..e970ca49434ec0a78a83d2998dde883dd4c7fda0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -26,6 +26,7 @@ import net.minecraft.world.damagesource.EntityDamageSource;
+ import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+ import net.minecraft.world.effect.MobEffectInstance;
+ import net.minecraft.world.entity.Entity;
++import net.minecraft.world.entity.LightningBolt;
+ import net.minecraft.world.entity.Mob;
+ import net.minecraft.world.entity.animal.AbstractFish;
+ import net.minecraft.world.entity.animal.AbstractGolem;
+@@ -1070,7 +1071,7 @@ public class CraftEventFactory {
+             DamageCause cause = null;
+             if (source == DamageSource.ANVIL || source == DamageSource.FALLING_BLOCK || source == DamageSource.FALLING_STALACTITE) {
+                 cause = DamageCause.FALLING_BLOCK;
+-            } else if (damagerEntity instanceof LightningStrike) {
++            } else if (damagerEntity instanceof LightningStrike || damagerEntity instanceof LightningBolt) {
+                 cause = DamageCause.LIGHTNING;
+             } else if (source == DamageSource.FALL) {
+                 cause = DamageCause.FALL;

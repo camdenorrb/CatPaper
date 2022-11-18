@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 18 Nov 2022 03:59:02 -0600
+Subject: [PATCH] Fix chests
+
+
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index 2f9dd29520ef034b5a7f270b066056cafd299c72..7bdb058d94914555c4fd0a164df10fc55c5e4f91 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -959,7 +959,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         }
+         // Paper end
+         // CraftBukkit end
+-        return this.isOutsideBuildHeight(blockposition) ? null : (!this.isClientSide ? null : this.getChunkAt(blockposition).getBlockEntity(blockposition, LevelChunk.EntityCreationType.IMMEDIATE)); // Paper - rewrite chunk system
++        return this.isOutsideBuildHeight(blockposition) ? null : (this.isClientSide ? null : this.getChunkAt(blockposition).getBlockEntity(blockposition, LevelChunk.EntityCreationType.IMMEDIATE)); // Paper - rewrite chunk system
+     }
+ 
+     public void setBlockEntity(BlockEntity blockEntity) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/BlockStateListPopulator.java b/src/main/java/org/bukkit/craftbukkit/util/BlockStateListPopulator.java
+index faad2f39a62b58d46d3ef8fff352a18ad3dc1949..83ab1cfc7acbdcb4bad4eb6fc18207e865225dab 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/BlockStateListPopulator.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/BlockStateListPopulator.java
+@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.function.Predicate;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.server.level.ServerLevel;
+@@ -24,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
+ public class BlockStateListPopulator extends DummyGeneratorAccess {
+     private final LevelAccessor world;
+     private final Map<BlockPos, net.minecraft.world.level.block.state.BlockState> dataMap = new HashMap<>();
+-    private final Map<BlockPos, BlockEntity> entityMap = new HashMap<>();
++    private final Map<BlockPos, BlockEntity> entityMap = new ConcurrentHashMap<>();
+     private final LinkedHashMap<BlockPos, CraftBlockState> list;
+ 
+     public BlockStateListPopulator(LevelAccessor world) {

@@ -1,0 +1,85 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Thu, 17 Nov 2022 19:16:53 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
+index e3b01a2b4e9004cb6f584c3b9cc321e505f908b8..fedb515c5db4447cc3a8697c636146a8c20adfed 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
++++ b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
+@@ -173,7 +173,7 @@ public final class EntityLookup implements LevelEntityGetter<Entity> {
+                                    final boolean created, final boolean destroyed) {
+         TickThread.ensureTickThread(entity, "Entity status change must only happen on the main thread");
+ 
+-        if (entity.updatingSectionStatus) {
++        if (entity.updatingSectionStatus.get()) {
+             // recursive status update
+             LOGGER.error("Cannot recursively update entity chunk status for entity " + entity, new Throwable());
+             return;
+@@ -189,7 +189,7 @@ public final class EntityLookup implements LevelEntityGetter<Entity> {
+         try {
+             final Boolean ticketBlockBefore = this.world.chunkTaskScheduler.chunkHolderManager.blockTicketUpdates();
+             try {
+-                entity.updatingSectionStatus = true;
++                entity.updatingSectionStatus.set(true);
+                 try {
+                     if (created) {
+                         EntityLookup.this.worldCallback.onCreated(entity);
+@@ -232,7 +232,7 @@ public final class EntityLookup implements LevelEntityGetter<Entity> {
+                         EntityLookup.this.worldCallback.onDestroyed(entity);
+                     }
+                 } finally {
+-                    entity.updatingSectionStatus = false;
++                    entity.updatingSectionStatus.set(false);
+                 }
+             } finally {
+                 this.world.chunkTaskScheduler.chunkHolderManager.unblockTicketUpdates(ticketBlockBefore);
+@@ -290,7 +290,7 @@ public final class EntityLookup implements LevelEntityGetter<Entity> {
+             return false;
+         }
+ 
+-        if (entity.updatingSectionStatus) {
++        if (entity.updatingSectionStatus.get()) {
+             LOGGER.warn("Entity " + entity + " is currently prevented from being added/removed to world since it is processing section status updates", new Throwable());
+             return false;
+         }
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 3d6771f3716641f27f474f2ddcd2476c46993c1b..80a408f86ef6a25466c9f89b033488b5e2bf85d0 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -19,6 +19,7 @@ import java.util.Objects;
+ import java.util.Optional;
+ import java.util.Set;
+ import java.util.UUID;
++import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.concurrent.atomic.AtomicInteger;
+ import java.util.function.BiConsumer;
+ import java.util.function.Predicate;
+@@ -476,7 +477,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     public int sectionY = Integer.MIN_VALUE;
+     public int sectionZ = Integer.MIN_VALUE;
+ 
+-    public boolean updatingSectionStatus = false;
++    public AtomicBoolean updatingSectionStatus = new AtomicBoolean(false);
+     // Paper end
+     // Paper start - optimise entity tracking
+     final org.spigotmc.TrackingRange.TrackingRangeType trackingRangeType = org.spigotmc.TrackingRange.getTrackingRangeType(this);
+@@ -4241,7 +4242,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         // Paper end - block invalid positions
+         // Paper end
+         // Paper start - rewrite chunk system
+-        if (this.updatingSectionStatus) {
++        if (this.updatingSectionStatus.get()) {
+             LOGGER.error("Refusing to update position for entity " + this + " to position " + new Vec3(x, y, z) + " since it is processing a section status update", new Throwable());
+             return;
+         }
+@@ -4361,7 +4362,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     public final void setRemoved(Entity.RemovalReason reason) {
+         // Paper start - rewrite chunk system
+         io.papermc.paper.util.TickThread.ensureTickThread(this, "Cannot remove entity off-main");
+-        if (this.updatingSectionStatus) {
++        if (this.updatingSectionStatus.get()) {
+             LOGGER.warn("Entity " + this + " is currently prevented from being added/removed to world since it is processing section status updates", new Throwable());
+             return;
+         }

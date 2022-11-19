@@ -1,0 +1,118 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 19 Nov 2022 05:35:11 -0600
+Subject: [PATCH] Testing
+
+
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+index d23481453717f715124156b5d83f6448f720d049..46b5f8923dae20c1afd511f74f352dd7f5042801 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+@@ -19,11 +19,9 @@ import net.minecraft.world.level.PathNavigationRegion;
+ 
+ public class PathFinder {
+     private static final float FUDGING = 1.5F;
+-    private final Node[] neighbors = new Node[32];
+     private final int maxVisitedNodes;
+     public final NodeEvaluator nodeEvaluator;
+     private static final boolean DEBUG = false;
+-    private final BinaryHeap openSet = new BinaryHeap();
+ 
+     public PathFinder(NodeEvaluator pathNodeMaker, int range) {
+         this.nodeEvaluator = pathNodeMaker;
+@@ -31,48 +29,56 @@ public class PathFinder {
+     }
+ 
+     @Nullable
+-    public Path findPath(PathNavigationRegion world, Mob mob, Set<BlockPos> positions, float followRange, int distance, float rangeMultiplier) {
+-        this.openSet.clear();
+-        this.nodeEvaluator.prepare(world, mob);
+-        Node node = this.nodeEvaluator.getStart();
++    public synchronized Path findPath(PathNavigationRegion world, Mob mob, Set<BlockPos> positions, float followRange, int distance, float rangeMultiplier) {
++        final BinaryHeap openSet = new BinaryHeap();
++        final NodeEvaluator nodeEvaluator = new WalkNodeEvaluator();
++        nodeEvaluator.setCanPassDoors(true);
++        nodeEvaluator.prepare(world, mob);
++        Node node = nodeEvaluator.getStart();
+         if (node == null) {
+             return null;
+         } else {
+             // Paper start - remove streams - and optimize collection
+             List<Map.Entry<Target, BlockPos>> map = Lists.newArrayList();
+             for (BlockPos pos : positions) {
+-                map.add(new java.util.AbstractMap.SimpleEntry<>(this.nodeEvaluator.getGoal(pos.getX(), pos.getY(), pos.getZ()), pos));
++                map.add(new java.util.AbstractMap.SimpleEntry<>(nodeEvaluator.getGoal(pos.getX(), pos.getY(), pos.getZ()), pos));
+             }
+             // Paper end
+-            Path path = this.findPath(world.getProfiler(), node, map, followRange, distance, rangeMultiplier);
+-            this.nodeEvaluator.done();
++            Path path = this.findPath(world.getProfiler(), new BinaryHeap(), nodeEvaluator, node, map, followRange, distance, rangeMultiplier);
++            nodeEvaluator.done();
+             return path;
+         }
+     }
+ 
+     @Nullable
+-    // Paper start - optimize collection
+     private Path findPath(ProfilerFiller profiler, Node startNode, List<Map.Entry<Target, BlockPos>> positions, float followRange, int distance, float rangeMultiplier) {
++        final NodeEvaluator nodeEvaluator = new WalkNodeEvaluator();
++        nodeEvaluator.setCanPassDoors(true);
++        return findPath(profiler, new BinaryHeap(), nodeEvaluator, startNode, positions, followRange, distance, rangeMultiplier);
++    }
++
++    @Nullable
++    // Paper start - optimize collection
++    private synchronized Path findPath(ProfilerFiller profiler, BinaryHeap openSet, NodeEvaluator nodeEvaluator, Node startNode, List<Map.Entry<Target, BlockPos>> positions, float followRange, int distance, float rangeMultiplier) {
+         profiler.push("find_path");
+         profiler.markForCharting(MetricCategory.PATH_FINDING);
+         // Set<Target> set = positions.keySet();
+         startNode.g = 0.0F;
+         startNode.h = this.getBestH(startNode, positions); // Paper - optimize collection
+         startNode.f = startNode.h;
+-        this.openSet.clear();
+-        this.openSet.insert(startNode);
++        openSet.insert(startNode);
+         // Set<Node> set2 = ImmutableSet.of(); // Paper - unused - diff on change
+         int i = 0;
+         List<Map.Entry<Target, BlockPos>> entryList = Lists.newArrayListWithExpectedSize(positions.size()); // Paper - optimize collection
+         int j = (int)((float)this.maxVisitedNodes * rangeMultiplier);
+ 
+-        while(!this.openSet.isEmpty()) {
++        while(!openSet.isEmpty()) {
+             ++i;
+             if (i >= j) {
+                 break;
+             }
+ 
+-            Node node = this.openSet.pop();
++            Node node = openSet.pop();
+             node.closed = true;
+ 
+             // Paper start - optimize collection
+@@ -91,10 +97,11 @@ public class PathFinder {
+             }
+ 
+             if (!(node.distanceTo(startNode) >= followRange)) {
+-                int k = this.nodeEvaluator.getNeighbors(this.neighbors, node);
++                final Node[] neighbors = new Node[32];
++                int k = nodeEvaluator.getNeighbors(neighbors, node);
+ 
+                 for(int l = 0; l < k; ++l) {
+-                    Node node2 = this.neighbors[l];
++                    Node node2 = neighbors[l];
+                     float f = this.distance(node, node2);
+                     node2.walkedDistance = node.walkedDistance + f;
+                     float g = node.g + f + node2.costMalus;
+@@ -103,10 +110,10 @@ public class PathFinder {
+                         node2.g = g;
+                         node2.h = this.getBestH(node2, positions) * 1.5F; // Paper - list instead of set
+                         if (node2.inOpenSet()) {
+-                            this.openSet.changeCost(node2, node2.g + node2.h);
++                            openSet.changeCost(node2, node2.g + node2.h);
+                         } else {
+                             node2.f = node2.g + node2.h;
+-                            this.openSet.insert(node2);
++                            openSet.insert(node2);
+                         }
+                     }
+                 }

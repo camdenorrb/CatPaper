@@ -1,0 +1,152 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 19 Nov 2022 08:40:34 -0600
+Subject: [PATCH] Add NMS
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+index e69bd19cd55c425686f6f748b9cbf8dde4d0a86d..c1a5469763d9b29db587d8f14bd92a93f775d35c 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
++++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+@@ -806,7 +806,7 @@ public class EnderDragon extends Mob implements Enemy {
+             pathpoint1.f = 0.0F;
+             pathpoint1.h = 0.0F;
+             pathpoint1.cameFrom = null;
+-            pathpoint1.heapIdx = -1;
++            pathpoint1.heapIdx.set(-1);
+         }
+ 
+         Node pathpoint2 = this.nodes[from];
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/BinaryHeap.java b/src/main/java/net/minecraft/world/level/pathfinder/BinaryHeap.java
+index 27b9cefc172b391824ead382a712b8b9b1ddfe45..28ff3549a87db7ee3dd535659de84b22349beae7 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/BinaryHeap.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/BinaryHeap.java
+@@ -5,7 +5,7 @@ public class BinaryHeap {
+     private int size;
+ 
+     public Node insert(Node node) {
+-        if (node.heapIdx >= 0) {
++        if (node.heapIdx.get() >= 0) {
+             throw new IllegalStateException("OW KNOWS!");
+         } else {
+             if (this.size == this.heap.length) {
+@@ -15,7 +15,7 @@ public class BinaryHeap {
+             }
+ 
+             this.heap[this.size] = node;
+-            node.heapIdx = this.size;
++            node.heapIdx.set(this.size);
+             this.upHeap(this.size++);
+             return node;
+         }
+@@ -37,31 +37,32 @@ public class BinaryHeap {
+             this.downHeap(0);
+         }
+ 
+-        node.heapIdx = -1;
++        node.heapIdx.set(-1);
+         return node;
+     }
+ 
+     public void remove(Node node) {
+-        this.heap[node.heapIdx] = this.heap[--this.size];
++        int i = node.heapIdx.get();
++        this.heap[i] = this.heap[--this.size];
+         this.heap[this.size] = null;
+-        if (this.size > node.heapIdx) {
+-            if (this.heap[node.heapIdx].f < node.f) {
+-                this.upHeap(node.heapIdx);
++        if (this.size > i) {
++            if (this.heap[i].f < node.f) {
++                this.upHeap(i);
+             } else {
+-                this.downHeap(node.heapIdx);
++                this.downHeap(i);
+             }
+         }
+ 
+-        node.heapIdx = -1;
++        node.heapIdx.set(-1);
+     }
+ 
+     public void changeCost(Node node, float weight) {
+         float f = node.f;
+         node.f = weight;
+         if (weight < f) {
+-            this.upHeap(node.heapIdx);
++            this.upHeap(node.heapIdx.get());
+         } else {
+-            this.downHeap(node.heapIdx);
++            this.downHeap(node.heapIdx.get());
+         }
+ 
+     }
+@@ -82,11 +83,11 @@ public class BinaryHeap {
+             }
+ 
+             this.heap[index] = node2;
+-            node2.heapIdx = index;
++            node2.heapIdx.set(index);
+         }
+ 
+         this.heap[index] = node;
+-        node.heapIdx = index;
++        node.heapIdx.set(index);
+     }
+ 
+     private void downHeap(int index) {
+@@ -118,7 +119,7 @@ public class BinaryHeap {
+                 }
+ 
+                 this.heap[index] = node2;
+-                node2.heapIdx = index;
++                node2.heapIdx.set(index);
+                 index = i;
+             } else {
+                 if (!(h < f)) {
+@@ -126,13 +127,13 @@ public class BinaryHeap {
+                 }
+ 
+                 this.heap[index] = node3;
+-                node3.heapIdx = index;
++                node3.heapIdx.set(index);
+                 index = j;
+             }
+         }
+ 
+         this.heap[index] = node;
+-        node.heapIdx = index;
++        node.heapIdx.set(index);
+     }
+ 
+     public boolean isEmpty() {
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/Node.java b/src/main/java/net/minecraft/world/level/pathfinder/Node.java
+index 23e62ed31b1c4ad00da1bfc66d0099100d9d3c53..6c4b1a739e3b2fbeb7af86779c32e342b1730562 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/Node.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/Node.java
+@@ -6,12 +6,15 @@ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.util.Mth;
+ import net.minecraft.world.phys.Vec3;
+ 
++import java.util.concurrent.atomic.AtomicInteger;
++
++
+ public class Node {
+     public final int x;
+     public final int y;
+     public final int z;
+     private final int hash;
+-    public int heapIdx = -1;
++    public AtomicInteger heapIdx = new AtomicInteger(-1);
+     public float g;
+     public float h;
+     public float f;
+@@ -118,7 +121,7 @@ public class Node {
+     }
+ 
+     public boolean inOpenSet() {
+-        return this.heapIdx >= 0;
++        return this.heapIdx.get() >= 0;
+     }
+ 
+     @Override

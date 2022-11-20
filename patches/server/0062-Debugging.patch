@@ -1,0 +1,255 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 19 Nov 2022 19:02:09 -0600
+Subject: [PATCH] Debugging
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/ai/control/LookControl.java b/src/main/java/net/minecraft/world/entity/ai/control/LookControl.java
+index 44a397a3dc46d1789e8548fb2a184f0053ac12da..b94e77548360fb29c7d7d868a30facaaffb368d5 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/control/LookControl.java
++++ b/src/main/java/net/minecraft/world/entity/ai/control/LookControl.java
+@@ -13,12 +13,12 @@ import net.minecraft.world.phys.Vec3;
+ 
+ public class LookControl implements Control {
+     protected final Mob mob;
+-    protected AtomicDouble yMaxRotSpeed;
+-    protected AtomicDouble xMaxRotAngle;
+-    protected AtomicInteger lookAtCooldown;
+-    protected AtomicDouble wantedX;
+-    protected AtomicDouble wantedY;
+-    protected AtomicDouble wantedZ;
++    protected AtomicDouble yMaxRotSpeed = new AtomicDouble(0.0D);
++    protected AtomicDouble xMaxRotAngle = new AtomicDouble(0.0D);
++    protected AtomicInteger lookAtCooldown = new AtomicInteger(0);
++    protected AtomicDouble wantedX = new AtomicDouble(0.0D);
++    protected AtomicDouble wantedY = new AtomicDouble(0.0D);
++    protected AtomicDouble wantedZ = new AtomicDouble(0.0D);
+ 
+     public LookControl(Mob entity) {
+         this.mob = entity;
+diff --git a/src/main/java/net/minecraft/world/entity/ai/control/SmoothSwimmingLookControl.java b/src/main/java/net/minecraft/world/entity/ai/control/SmoothSwimmingLookControl.java
+index 4da0a3f346e29a7a443a9cacb186f6f38dd475b6..7c08ddd32376a10cf994f4aeab7f47110f8ce47b 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/control/SmoothSwimmingLookControl.java
++++ b/src/main/java/net/minecraft/world/entity/ai/control/SmoothSwimmingLookControl.java
+@@ -15,7 +15,7 @@ public class SmoothSwimmingLookControl extends LookControl {
+ 
+     @Override
+     public void tick() {
+-        if (this.lookAtCooldown.get() > 0) {
++        if (this.lookAtCooldown != null && this.lookAtCooldown.get() > 0) {
+             this.lookAtCooldown.decrementAndGet();
+             this.getYRotD().ifPresent((yaw) -> {
+                 this.mob.yHeadRot = this.rotateTowards(this.mob.yHeadRot, yaw + 20.0F, (float) this.yMaxRotSpeed.get());
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+index 383c2712c498358b24468e33e12b7edfc0e49e0f..a59d6febc06978725a162363bf8c5f51b2d4474a 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+@@ -101,6 +101,8 @@ public class PathFinder {
+             if (!(node.distanceTo(startNode) >= followRange)) {
+                 int k = nodeEvaluator.getNeighbors(neighbors, node);
+ 
++                System.out.println("Neighbors: " + k);
++
+                 for(int l = 0; l < k; ++l) {
+                     Node node2 = neighbors[l];
+                     float f = this.distance(node, node2);
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+index 7254b6b696d7bfa9850d17e83bcec6d4ac694de0..08b5315b8328aba1b5f2ae70b5f606c3d5fdcdd5 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+@@ -13,7 +13,6 @@ import net.minecraft.tags.FluidTags;
+ import net.minecraft.util.Mth;
+ import net.minecraft.world.entity.Mob;
+ import net.minecraft.world.level.BlockGetter;
+-import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.PathNavigationRegion;
+ import net.minecraft.world.level.block.BaseRailBlock;
+ import net.minecraft.world.level.block.Block;
+@@ -44,13 +43,7 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+ 
+     @Override
+     public void done() {
+-
+-        final Mob mob = this.mob;
+-        if (mob == null) {
+-            return;
+-        }
+-
+-        mob.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
++        this.mob.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
+         this.pathTypesByPosCache.clear();
+         this.collisionCache.clear();
+         super.done();
+@@ -59,19 +52,11 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+     @Nullable
+     @Override
+     public @org.jetbrains.annotations.Nullable Node getStart() {
+-
+-        final PathNavigationRegion level = this.level;
+-        final Mob mob = this.mob;
+-
+-        if (level == null || mob == null) {
+-            return null;
+-        }
+-
+         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+-        int i = mob.getBlockY();
+-        BlockState blockState = this.level.getBlockState(mutableBlockPos.set(mob.getX(), i, mob.getZ()));
+-        if (!mob.canStandOnFluid(blockState.getFluidState())) {
+-            if (this.canFloat() && mob.isInWater()) {
++        int i = this.mob.getBlockY();
++        BlockState blockState = this.level.getBlockState(mutableBlockPos.set(this.mob.getX(), i, this.mob.getZ()));
++        if (!this.mob.canStandOnFluid(blockState.getFluidState())) {
++            if (this.canFloat() && this.mob.isInWater()) {
+                 while(true) {
+                     if (!blockState.is(Blocks.WATER) && blockState.getFluidState() != Fluids.WATER.getSource(false)) {
+                         --i;
+@@ -79,30 +64,30 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+                     }
+ 
+                     ++i;
+-                    blockState = this.level.getBlockState(mutableBlockPos.set(mob.getX(), i, mob.getZ()));
++                    blockState = this.level.getBlockState(mutableBlockPos.set(this.mob.getX(), i, this.mob.getZ()));
+                 }
+-            } else if (mob.isOnGround()) {
+-                i = Mth.floor(mob.getY() + 0.5D);
++            } else if (this.mob.isOnGround()) {
++                i = Mth.floor(this.mob.getY() + 0.5D);
+             } else {
+                 BlockPos blockPos;
+-                for(blockPos = mob.blockPosition(); (level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).isPathfindable(level, blockPos, PathComputationType.LAND)) && blockPos.getY() > mob.level.getMinBuildHeight(); blockPos = blockPos.below()) {
++                for(blockPos = this.mob.blockPosition(); (this.level.getBlockState(blockPos).isAir() || this.level.getBlockState(blockPos).isPathfindable(this.level, blockPos, PathComputationType.LAND)) && blockPos.getY() > this.mob.level.getMinBuildHeight(); blockPos = blockPos.below()) {
+                 }
+ 
+                 i = blockPos.above().getY();
+             }
+         } else {
+-            while(mob.canStandOnFluid(blockState.getFluidState())) {
++            while(this.mob.canStandOnFluid(blockState.getFluidState())) {
+                 ++i;
+-                blockState = level.getBlockState(mutableBlockPos.set(mob.getX(), i, mob.getZ()));
++                blockState = this.level.getBlockState(mutableBlockPos.set(this.mob.getX(), i, this.mob.getZ()));
+             }
+ 
+             --i;
+         }
+ 
+-        BlockPos blockPos2 = mob.blockPosition();
+-        BlockPathTypes blockPathTypes = this.getCachedBlockType(mob, blockPos2.getX(), i, blockPos2.getZ());
+-        if (mob.getPathfindingMalus(blockPathTypes) < 0.0F) {
+-            AABB aABB = mob.getBoundingBox();
++        BlockPos blockPos2 = this.mob.blockPosition();
++        BlockPathTypes blockPathTypes = this.getCachedBlockType(this.mob, blockPos2.getX(), i, blockPos2.getZ());
++        if (this.mob.getPathfindingMalus(blockPathTypes) < 0.0F) {
++            AABB aABB = this.mob.getBoundingBox();
+             if (this.hasPositiveMalus(mutableBlockPos.set(aABB.minX, i, aABB.minZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.minX, i, aABB.maxZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.maxX, i, aABB.minZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.maxX, i, aABB.maxZ))) {
+                 return this.getStartNode(mutableBlockPos);
+             }
+@@ -235,11 +220,6 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+     }
+ 
+     public static double getFloorLevel(BlockGetter world, BlockPos pos) {
+-
+-        if (world == null) {
+-            return 0;
+-        }
+-
+         BlockPos blockPos = pos.below();
+         VoxelShape voxelShape = world.getBlockState(blockPos).getCollisionShape(world, blockPos);
+         return (double)blockPos.getY() + (voxelShape.isEmpty() ? 0.0D : voxelShape.max(Direction.Axis.Y));
+@@ -257,19 +237,9 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+         if (d - prevFeetY > 1.125D) {
+             return null;
+         } else {
+-
+-            final Mob mob = this.mob;
+-            if (mob == null) {
+-                return null;
+-            }
+-
+-            BlockPathTypes blockPathTypes = this.getCachedBlockType(mob, x, y, z);
+-            if (blockPathTypes == null) {
+-                return null;
+-            }
+-
+-            float f = mob.getPathfindingMalus(blockPathTypes);
+-            double e = (double)mob.getBbWidth() / 2.0D;
++            BlockPathTypes blockPathTypes = this.getCachedBlockType(this.mob, x, y, z);
++            float f = this.mob.getPathfindingMalus(blockPathTypes);
++            double e = (double)this.mob.getBbWidth() / 2.0D;
+             if (f >= 0.0F) {
+                 node = this.getNodeAndUpdateCostToMax(x, y, z, blockPathTypes, f);
+             }
+@@ -281,10 +251,10 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+             if (blockPathTypes != BlockPathTypes.WALKABLE && (!this.isAmphibious() || blockPathTypes != BlockPathTypes.WATER)) {
+                 if ((node == null || node.costMalus < 0.0F) && maxYStep > 0 && blockPathTypes != BlockPathTypes.FENCE && blockPathTypes != BlockPathTypes.UNPASSABLE_RAIL && blockPathTypes != BlockPathTypes.TRAPDOOR && blockPathTypes != BlockPathTypes.POWDER_SNOW) {
+                     node = this.findAcceptedNode(x, y + 1, z, maxYStep - 1, prevFeetY, direction, nodeType);
+-                    if (node != null && (node.type == BlockPathTypes.OPEN || node.type == BlockPathTypes.WALKABLE) && mob.getBbWidth() < 1.0F) {
++                    if (node != null && (node.type == BlockPathTypes.OPEN || node.type == BlockPathTypes.WALKABLE) && this.mob.getBbWidth() < 1.0F) {
+                         double g = (double)(x - direction.getStepX()) + 0.5D;
+                         double h = (double)(z - direction.getStepZ()) + 0.5D;
+-                        AABB aABB = new AABB(g - e, getFloorLevel(this.level, mutableBlockPos.set(g, y + 1, h)) + 0.001D, h - e, g + e, (double)mob.getBbHeight() + getFloorLevel(this.level, mutableBlockPos.set(node.x, node.y, (double)node.z)) - 0.002D, h + e);
++                        AABB aABB = new AABB(g - e, getFloorLevel(this.level, mutableBlockPos.set(g, y + 1, h)) + 0.001D, h - e, g + e, (double)this.mob.getBbHeight() + getFloorLevel(this.level, mutableBlockPos.set(node.x, node.y, (double)node.z)) - 0.002D, h + e);
+                         if (this.hasCollisions(aABB)) {
+                             node = null;
+                         }
+@@ -292,22 +262,18 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+                 }
+ 
+                 if (!this.isAmphibious() && blockPathTypes == BlockPathTypes.WATER && !this.canFloat()) {
+-                    if (this.getCachedBlockType(mob, x, y - 1, z) != BlockPathTypes.WATER) {
++                    if (this.getCachedBlockType(this.mob, x, y - 1, z) != BlockPathTypes.WATER) {
+                         return node;
+                     }
+ 
+-                    while(y > mob.level.getMinBuildHeight()) {
++                    while(y > this.mob.level.getMinBuildHeight()) {
+                         --y;
+-                        blockPathTypes = this.getCachedBlockType(mob, x, y, z);
+-                        if (blockPathTypes == null) {
+-                            return null;
+-                        }
++                        blockPathTypes = this.getCachedBlockType(this.mob, x, y, z);
+                         if (blockPathTypes != BlockPathTypes.WATER) {
+                             return node;
+                         }
+ 
+-
+-                        node = this.getNodeAndUpdateCostToMax(x, y, z, blockPathTypes, mob.getPathfindingMalus(blockPathTypes));
++                        node = this.getNodeAndUpdateCostToMax(x, y, z, blockPathTypes, this.mob.getPathfindingMalus(blockPathTypes));
+                     }
+                 }
+ 
+@@ -317,16 +283,16 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+ 
+                     while(blockPathTypes == BlockPathTypes.OPEN) {
+                         --y;
+-                        if (y < mob.level.getMinBuildHeight()) {
++                        if (y < this.mob.level.getMinBuildHeight()) {
+                             return this.getBlockedNode(x, j, z);
+                         }
+ 
+-                        if (i++ >= mob.getMaxFallDistance()) {
++                        if (i++ >= this.mob.getMaxFallDistance()) {
+                             return this.getBlockedNode(x, y, z);
+                         }
+ 
+-                        blockPathTypes = this.getCachedBlockType(mob, x, y, z);
+-                        f = mob.getPathfindingMalus(blockPathTypes);
++                        blockPathTypes = this.getCachedBlockType(this.mob, x, y, z);
++                        f = this.mob.getPathfindingMalus(blockPathTypes);
+                         if (blockPathTypes != BlockPathTypes.OPEN && f >= 0.0F) {
+                             node = this.getNodeAndUpdateCostToMax(x, y, z, blockPathTypes, f);
+                             break;
+@@ -384,11 +350,6 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+ 
+     @Override
+     public BlockPathTypes getBlockPathType(BlockGetter world, int x, int y, int z, Mob mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors) {
+-
+-        if (mob == null) {
+-            return BlockPathTypes.BLOCKED;
+-        }
+-
+         EnumSet<BlockPathTypes> enumSet = EnumSet.noneOf(BlockPathTypes.class);
+         BlockPathTypes blockPathTypes = BlockPathTypes.BLOCKED;
+         BlockPos blockPos = mob.blockPosition();

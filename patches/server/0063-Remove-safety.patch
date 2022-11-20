@@ -1,0 +1,245 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 19 Nov 2022 19:30:44 -0600
+Subject: [PATCH] Remove safety
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index f6bda3743e562436077897441cd99b88ee562e46..890c059eba681fef794de6911ac7b7b78d6ce725 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -117,7 +117,6 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     // Paper - rewrite chunk system
+     public final ServerLevel level;
+     private final ThreadedLevelLightEngine lightEngine;
+-    public final BlockableEventLoop<Runnable> mainThreadExecutor; // Paper - public
+     public ChunkGenerator generator;
+     private final RandomState randomState;
+     public final Supplier<DimensionDataStorage> overworldDataStorage;
+@@ -275,7 +274,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     }
+     // Paper end
+ 
+-    public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop<Runnable> mainThreadExecutor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
++    public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
+         super(session.getDimensionPath(world.dimension()).resolve("region"), dataFixer, dsync);
+         // Paper - rewrite chunk system
+         this.tickingGenerated = new AtomicInteger();
+@@ -302,10 +301,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+             this.randomState = RandomState.create(NoiseGeneratorSettings.dummy(), world.registryAccess().registryOrThrow(Registry.NOISE_REGISTRY), world.getSeed());
+         }
+ 
+-        this.mainThreadExecutor = mainThreadExecutor;
+         // Paper - rewrite chunk system
+ 
+-        Objects.requireNonNull(mainThreadExecutor);
+         // Paper - rewrite chunk system
+ 
+         this.progressListener = worldGenerationProgressListener;
+@@ -314,7 +311,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+ 
+         // Paper - rewrite chunk system
+         this.lightEngine = new ThreadedLevelLightEngine(chunkProvider, this, this.level.dimensionType().hasSkyLight(), null, null); // Paper - rewrite chunk system
+-        this.distanceManager = new ChunkMap.ChunkDistanceManager(executor, mainThreadExecutor);
++        this.distanceManager = new ChunkMap.ChunkDistanceManager(executor, null);
+         this.overworldDataStorage = persistentStateManagerFactory;
+         this.poiManager = new PoiManager(path.resolve("poi"), dataFixer, dsync, world.registryAccess(), world);
+         this.setViewDistance(viewDistance);
+@@ -675,11 +672,11 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     }
+ 
+     protected void releaseLightTicket(ChunkPos pos) {
+-        this.mainThreadExecutor.tell(Util.name(() -> {
++        Util.name(() -> {
+             this.distanceManager.removeTicket(TicketType.LIGHT, pos, 33 + ChunkStatus.getDistance(ChunkStatus.LIGHT), pos);
+         }, () -> {
+             return "release light ticket " + pos;
+-        }));
++        });
+     }
+ 
+     public static ChunkStatus getDependencyStatus(ChunkStatus centerChunkTargetStatus, int distance) { // Paper -> public, static
+diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+index 770610b6395cd02491ac5240d98347f005c6fac5..92e6f745e1b30a028685d304bc9a4aeddabb6493 100644
+--- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
++++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+@@ -54,7 +54,6 @@ public class ServerChunkCache extends ChunkSource {
+     final ServerLevel level;
+     public final Thread mainThread;
+     final ThreadedLevelLightEngine lightEngine;
+-    public final ServerChunkCache.MainThreadExecutor mainThreadProcessor;
+     public final ChunkMap chunkMap;
+     private final DimensionDataStorage dataStorage;
+     private long lastInhabitedUpdate;
+@@ -286,13 +285,12 @@ public class ServerChunkCache extends ChunkSource {
+ 
+     public ServerChunkCache(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, int simulationDistance, boolean dsync, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory) {
+         this.level = world;
+-        this.mainThreadProcessor = new ServerChunkCache.MainThreadExecutor(world);
+         this.mainThread = Thread.currentThread();
+         File file = session.getDimensionPath(world.dimension()).resolve("data").toFile();
+ 
+         file.mkdirs();
+         this.dataStorage = new DimensionDataStorage(file, dataFixer);
+-        this.chunkMap = new ChunkMap(world, session, dataFixer, structureTemplateManager, workerExecutor, this.mainThreadProcessor, this, chunkGenerator, worldGenerationProgressListener, chunkStatusChangeListener, persistentStateManagerFactory, viewDistance, dsync);
++        this.chunkMap = new ChunkMap(world, session, dataFixer, structureTemplateManager, workerExecutor, this, chunkGenerator, worldGenerationProgressListener, chunkStatusChangeListener, persistentStateManagerFactory, viewDistance, dsync);
+         this.lightEngine = this.chunkMap.getLightEngine();
+         this.distanceManager = this.chunkMap.getDistanceManager();
+         this.distanceManager.updateSimulationDistance(simulationDistance);
+@@ -407,7 +405,7 @@ public class ServerChunkCache extends ChunkSource {
+ 
+             gameprofilerfiller.incrementCounter("getChunkCacheMiss");
+             CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = this.getChunkFuture(x, z, leastStatus, create); // Paper
+-            ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
++            //ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
+ 
+             Objects.requireNonNull(completablefuture);
+             if (!completablefuture.isDone()) { // Paper
+@@ -416,7 +414,7 @@ public class ServerChunkCache extends ChunkSource {
+                 // Paper end
+                 com.destroystokyo.paper.io.SyncLoadFinder.logSyncLoad(this.level, x1, z1); // Paper - sync load info
+                 this.level.timings.syncChunkLoad.startTiming(); // Paper
+-            chunkproviderserver_b.managedBlock(completablefuture::isDone);
++            //chunkproviderserver_b.managedBlock(completablefuture::isDone);
+                 io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.popChunkWait(); // Paper - async chunk debug  // Paper - rewrite chunk system
+                 this.level.timings.syncChunkLoad.stopTiming(); // Paper
+             } // Paper
+@@ -455,14 +453,14 @@ public class ServerChunkCache extends ChunkSource {
+ 
+         if (flag1) {
+             completablefuture = this.getChunkFutureMainThread(chunkX, chunkZ, leastStatus, create);
+-            ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
++            //ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
+ 
+             Objects.requireNonNull(completablefuture);
+-            chunkproviderserver_b.managedBlock(completablefuture::isDone);
++            //chunkproviderserver_b.managedBlock(completablefuture::isDone);
+         } else {
+             completablefuture = CompletableFuture.supplyAsync(() -> {
+                 return this.getChunkFutureMainThread(chunkX, chunkZ, leastStatus, create);
+-            }, this.mainThreadProcessor).thenCompose((completablefuture1) -> {
++            }).thenCompose((completablefuture1) -> {
+                 return completablefuture1;
+             });
+         }
+@@ -542,9 +540,11 @@ public class ServerChunkCache extends ChunkSource {
+         return this.level;
+     }
+ 
++    /*
+     public boolean pollTask() {
+         return this.mainThreadProcessor.pollTask();
+     }
++    */
+ 
+     public boolean runDistanceManagerUpdates() {
+         return this.level.chunkTaskScheduler.chunkHolderManager.processTicketUpdates(); // Paper - rewrite chunk system
+@@ -814,7 +814,8 @@ public class ServerChunkCache extends ChunkSource {
+ 
+     @VisibleForTesting
+     public int getPendingTasksCount() {
+-        return this.mainThreadProcessor.getPendingTasksCount();
++        return 0;
++        //return this.mainThreadProcessor.getPendingTasksCount();
+     }
+ 
+     public ChunkGenerator getGenerator() {
+@@ -843,14 +844,12 @@ public class ServerChunkCache extends ChunkSource {
+ 
+     @Override
+     public void onLightUpdate(LightLayer type, SectionPos pos) {
+-        this.mainThreadProcessor.execute(() -> {
+-            ChunkHolder playerchunk = this.getVisibleChunkIfPresent(pos.chunk().toLong());
+ 
+-            if (playerchunk != null) {
+-                playerchunk.sectionLightChanged(type, pos.y());
+-            }
++        ChunkHolder playerchunk = this.getVisibleChunkIfPresent(pos.chunk().toLong());
+ 
+-        });
++        if (playerchunk != null) {
++            playerchunk.sectionLightChanged(type, pos.y());
++        }
+     }
+ 
+     public <T> void addRegionTicket(TicketType<T> ticketType, ChunkPos pos, int radius, T argument) {
+@@ -929,6 +928,7 @@ public class ServerChunkCache extends ChunkSource {
+         this.distanceManager.removeTicketsOnClosing();
+     }
+ 
++    /*
+     public final class MainThreadExecutor extends BlockableEventLoop<Runnable> {
+ 
+         MainThreadExecutor(Level world) {
+@@ -971,7 +971,7 @@ public class ServerChunkCache extends ChunkSource {
+             return super.pollTask() | ServerChunkCache.this.level.chunkTaskScheduler.executeMainThreadTask(); // Paper - rewrite chunk system
+         }
+     }
+-
++    */
+     private static record ChunkAndHolder(LevelChunk chunk, ChunkHolder holder) {
+ 
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/target/NonTameRandomTargetGoal.java b/src/main/java/net/minecraft/world/entity/ai/goal/target/NonTameRandomTargetGoal.java
+index 25b2d35acc8a2c73271f0251cc636e046673ab7d..56294d7f7d81fab3a93c8278cde357062ec5c250 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/goal/target/NonTameRandomTargetGoal.java
++++ b/src/main/java/net/minecraft/world/entity/ai/goal/target/NonTameRandomTargetGoal.java
+@@ -20,6 +20,6 @@ public class NonTameRandomTargetGoal<T extends LivingEntity> extends NearestAtta
+ 
+     @Override
+     public boolean canContinueToUse() {
+-        return this.targetConditions != null ? this.targetConditions.test(this.mob, this.target) : super.canContinueToUse();
++        return this.targetConditions != null ? this.targetConditions.test(this.mob, this.target.get()) : super.canContinueToUse();
+     }
+ }
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+index a59d6febc06978725a162363bf8c5f51b2d4474a..98a0bb41eac5e4c4621dc98b8fdacfcaf0567bcc 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+@@ -99,9 +99,10 @@ public class PathFinder {
+             }
+ 
+             if (!(node.distanceTo(startNode) >= followRange)) {
++                // TODO: Issue is that getNeighbors returns 0
+                 int k = nodeEvaluator.getNeighbors(neighbors, node);
+ 
+-                System.out.println("Neighbors: " + k);
++                //System.out.println("Neighbors: " + k);
+ 
+                 for(int l = 0; l < k; ++l) {
+                     Node node2 = neighbors[l];
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+index 08b5315b8328aba1b5f2ae70b5f606c3d5fdcdd5..71c3d182193b52c983a353211bbec79677bda377 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+@@ -5,6 +5,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+ import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+ import java.util.EnumSet;
++import java.util.Map;
++import java.util.concurrent.ConcurrentHashMap;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+@@ -32,17 +34,19 @@ import net.minecraft.world.phys.shapes.VoxelShape;
+ public class WalkNodeEvaluator extends NodeEvaluator {
+     public static final double SPACE_BETWEEN_WALL_POSTS = 0.5D;
+     protected float oldWaterCost;
+-    private final Long2ObjectMap<BlockPathTypes> pathTypesByPosCache = new Long2ObjectOpenHashMap<>();
+-    private final Object2BooleanMap<AABB> collisionCache = new Object2BooleanOpenHashMap<>();
++    private final Map<Long, BlockPathTypes> pathTypesByPosCache = new ConcurrentHashMap<>();
++    private final Map<AABB, Boolean> collisionCache = new ConcurrentHashMap<>();
+ 
+     @Override
+     public void prepare(PathNavigationRegion cachedWorld, Mob entity) {
++        System.out.println("Prepare");
+         super.prepare(cachedWorld, entity);
+         this.oldWaterCost = entity.getPathfindingMalus(BlockPathTypes.WATER);
+     }
+ 
+     @Override
+     public void done() {
++        System.out.println("Done");
+         this.mob.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
+         this.pathTypesByPosCache.clear();
+         this.collisionCache.clear();

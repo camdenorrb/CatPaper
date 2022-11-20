@@ -1,0 +1,459 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 20 Nov 2022 02:18:02 -0600
+Subject: [PATCH] Done for now
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 890c059eba681fef794de6911ac7b7b78d6ce725..f6bda3743e562436077897441cd99b88ee562e46 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -117,6 +117,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     // Paper - rewrite chunk system
+     public final ServerLevel level;
+     private final ThreadedLevelLightEngine lightEngine;
++    public final BlockableEventLoop<Runnable> mainThreadExecutor; // Paper - public
+     public ChunkGenerator generator;
+     private final RandomState randomState;
+     public final Supplier<DimensionDataStorage> overworldDataStorage;
+@@ -274,7 +275,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     }
+     // Paper end
+ 
+-    public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
++    public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop<Runnable> mainThreadExecutor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
+         super(session.getDimensionPath(world.dimension()).resolve("region"), dataFixer, dsync);
+         // Paper - rewrite chunk system
+         this.tickingGenerated = new AtomicInteger();
+@@ -301,8 +302,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+             this.randomState = RandomState.create(NoiseGeneratorSettings.dummy(), world.registryAccess().registryOrThrow(Registry.NOISE_REGISTRY), world.getSeed());
+         }
+ 
++        this.mainThreadExecutor = mainThreadExecutor;
+         // Paper - rewrite chunk system
+ 
++        Objects.requireNonNull(mainThreadExecutor);
+         // Paper - rewrite chunk system
+ 
+         this.progressListener = worldGenerationProgressListener;
+@@ -311,7 +314,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+ 
+         // Paper - rewrite chunk system
+         this.lightEngine = new ThreadedLevelLightEngine(chunkProvider, this, this.level.dimensionType().hasSkyLight(), null, null); // Paper - rewrite chunk system
+-        this.distanceManager = new ChunkMap.ChunkDistanceManager(executor, null);
++        this.distanceManager = new ChunkMap.ChunkDistanceManager(executor, mainThreadExecutor);
+         this.overworldDataStorage = persistentStateManagerFactory;
+         this.poiManager = new PoiManager(path.resolve("poi"), dataFixer, dsync, world.registryAccess(), world);
+         this.setViewDistance(viewDistance);
+@@ -672,11 +675,11 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     }
+ 
+     protected void releaseLightTicket(ChunkPos pos) {
+-        Util.name(() -> {
++        this.mainThreadExecutor.tell(Util.name(() -> {
+             this.distanceManager.removeTicket(TicketType.LIGHT, pos, 33 + ChunkStatus.getDistance(ChunkStatus.LIGHT), pos);
+         }, () -> {
+             return "release light ticket " + pos;
+-        });
++        }));
+     }
+ 
+     public static ChunkStatus getDependencyStatus(ChunkStatus centerChunkTargetStatus, int distance) { // Paper -> public, static
+diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+index 92e6f745e1b30a028685d304bc9a4aeddabb6493..770610b6395cd02491ac5240d98347f005c6fac5 100644
+--- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
++++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+@@ -54,6 +54,7 @@ public class ServerChunkCache extends ChunkSource {
+     final ServerLevel level;
+     public final Thread mainThread;
+     final ThreadedLevelLightEngine lightEngine;
++    public final ServerChunkCache.MainThreadExecutor mainThreadProcessor;
+     public final ChunkMap chunkMap;
+     private final DimensionDataStorage dataStorage;
+     private long lastInhabitedUpdate;
+@@ -285,12 +286,13 @@ public class ServerChunkCache extends ChunkSource {
+ 
+     public ServerChunkCache(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, int simulationDistance, boolean dsync, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory) {
+         this.level = world;
++        this.mainThreadProcessor = new ServerChunkCache.MainThreadExecutor(world);
+         this.mainThread = Thread.currentThread();
+         File file = session.getDimensionPath(world.dimension()).resolve("data").toFile();
+ 
+         file.mkdirs();
+         this.dataStorage = new DimensionDataStorage(file, dataFixer);
+-        this.chunkMap = new ChunkMap(world, session, dataFixer, structureTemplateManager, workerExecutor, this, chunkGenerator, worldGenerationProgressListener, chunkStatusChangeListener, persistentStateManagerFactory, viewDistance, dsync);
++        this.chunkMap = new ChunkMap(world, session, dataFixer, structureTemplateManager, workerExecutor, this.mainThreadProcessor, this, chunkGenerator, worldGenerationProgressListener, chunkStatusChangeListener, persistentStateManagerFactory, viewDistance, dsync);
+         this.lightEngine = this.chunkMap.getLightEngine();
+         this.distanceManager = this.chunkMap.getDistanceManager();
+         this.distanceManager.updateSimulationDistance(simulationDistance);
+@@ -405,7 +407,7 @@ public class ServerChunkCache extends ChunkSource {
+ 
+             gameprofilerfiller.incrementCounter("getChunkCacheMiss");
+             CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = this.getChunkFuture(x, z, leastStatus, create); // Paper
+-            //ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
++            ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
+ 
+             Objects.requireNonNull(completablefuture);
+             if (!completablefuture.isDone()) { // Paper
+@@ -414,7 +416,7 @@ public class ServerChunkCache extends ChunkSource {
+                 // Paper end
+                 com.destroystokyo.paper.io.SyncLoadFinder.logSyncLoad(this.level, x1, z1); // Paper - sync load info
+                 this.level.timings.syncChunkLoad.startTiming(); // Paper
+-            //chunkproviderserver_b.managedBlock(completablefuture::isDone);
++            chunkproviderserver_b.managedBlock(completablefuture::isDone);
+                 io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.popChunkWait(); // Paper - async chunk debug  // Paper - rewrite chunk system
+                 this.level.timings.syncChunkLoad.stopTiming(); // Paper
+             } // Paper
+@@ -453,14 +455,14 @@ public class ServerChunkCache extends ChunkSource {
+ 
+         if (flag1) {
+             completablefuture = this.getChunkFutureMainThread(chunkX, chunkZ, leastStatus, create);
+-            //ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
++            ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
+ 
+             Objects.requireNonNull(completablefuture);
+-            //chunkproviderserver_b.managedBlock(completablefuture::isDone);
++            chunkproviderserver_b.managedBlock(completablefuture::isDone);
+         } else {
+             completablefuture = CompletableFuture.supplyAsync(() -> {
+                 return this.getChunkFutureMainThread(chunkX, chunkZ, leastStatus, create);
+-            }).thenCompose((completablefuture1) -> {
++            }, this.mainThreadProcessor).thenCompose((completablefuture1) -> {
+                 return completablefuture1;
+             });
+         }
+@@ -540,11 +542,9 @@ public class ServerChunkCache extends ChunkSource {
+         return this.level;
+     }
+ 
+-    /*
+     public boolean pollTask() {
+         return this.mainThreadProcessor.pollTask();
+     }
+-    */
+ 
+     public boolean runDistanceManagerUpdates() {
+         return this.level.chunkTaskScheduler.chunkHolderManager.processTicketUpdates(); // Paper - rewrite chunk system
+@@ -814,8 +814,7 @@ public class ServerChunkCache extends ChunkSource {
+ 
+     @VisibleForTesting
+     public int getPendingTasksCount() {
+-        return 0;
+-        //return this.mainThreadProcessor.getPendingTasksCount();
++        return this.mainThreadProcessor.getPendingTasksCount();
+     }
+ 
+     public ChunkGenerator getGenerator() {
+@@ -844,12 +843,14 @@ public class ServerChunkCache extends ChunkSource {
+ 
+     @Override
+     public void onLightUpdate(LightLayer type, SectionPos pos) {
++        this.mainThreadProcessor.execute(() -> {
++            ChunkHolder playerchunk = this.getVisibleChunkIfPresent(pos.chunk().toLong());
+ 
+-        ChunkHolder playerchunk = this.getVisibleChunkIfPresent(pos.chunk().toLong());
++            if (playerchunk != null) {
++                playerchunk.sectionLightChanged(type, pos.y());
++            }
+ 
+-        if (playerchunk != null) {
+-            playerchunk.sectionLightChanged(type, pos.y());
+-        }
++        });
+     }
+ 
+     public <T> void addRegionTicket(TicketType<T> ticketType, ChunkPos pos, int radius, T argument) {
+@@ -928,7 +929,6 @@ public class ServerChunkCache extends ChunkSource {
+         this.distanceManager.removeTicketsOnClosing();
+     }
+ 
+-    /*
+     public final class MainThreadExecutor extends BlockableEventLoop<Runnable> {
+ 
+         MainThreadExecutor(Level world) {
+@@ -971,7 +971,7 @@ public class ServerChunkCache extends ChunkSource {
+             return super.pollTask() | ServerChunkCache.this.level.chunkTaskScheduler.executeMainThreadTask(); // Paper - rewrite chunk system
+         }
+     }
+-    */
++
+     private static record ChunkAndHolder(LevelChunk chunk, ChunkHolder holder) {
+ 
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/MeleeAttackGoal.java b/src/main/java/net/minecraft/world/entity/ai/goal/MeleeAttackGoal.java
+index 3c874838b5e87b37efb84d1035d182e3b72210c4..6e8b9081bad167ba5a5085266c14d0d2e6b8bb3d 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/goal/MeleeAttackGoal.java
++++ b/src/main/java/net/minecraft/world/entity/ai/goal/MeleeAttackGoal.java
+@@ -71,7 +71,6 @@ public class MeleeAttackGoal extends Goal {
+ 
+     @Override
+     public void start() {
+-        System.out.println("Started");
+         this.mob.getNavigation().moveTo(this.path, this.speedModifier);
+         this.mob.setAggressive(true);
+         this.ticksUntilNextPathRecalculation = 0;
+@@ -80,8 +79,6 @@ public class MeleeAttackGoal extends Goal {
+ 
+     @Override
+     public void stop() {
+-        System.out.println("Stopped");
+-
+         LivingEntity livingEntity = this.mob.getTarget();
+         if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
+             this.mob.setTarget((LivingEntity)null);
+diff --git a/src/main/java/net/minecraft/world/level/PathNavigationRegion.java b/src/main/java/net/minecraft/world/level/PathNavigationRegion.java
+index 3ae8e088d537edd4067c68d9555b019596868fe6..8b25e27b0e3b6dfb8e2eac5a5abbc66636b612da 100644
+--- a/src/main/java/net/minecraft/world/level/PathNavigationRegion.java
++++ b/src/main/java/net/minecraft/world/level/PathNavigationRegion.java
+@@ -79,6 +79,7 @@ public class PathNavigationRegion implements BlockGetter, CollisionGetter {
+     }
+ 
+     // Paper start - if loaded util
++    /*
+     private @Nullable ChunkAccess getChunkIfLoaded(int x, int z) {
+         // Based on getChunk(int, int)
+         int xx = x - this.centerX;
+@@ -89,16 +90,22 @@ public class PathNavigationRegion implements BlockGetter, CollisionGetter {
+         }
+         return null;
+     }
++    */
+     @Override
+     public final FluidState getFluidIfLoaded(BlockPos blockposition) {
++        return getFluidState(blockposition);
++        /*
+         ChunkAccess chunk = getChunkIfLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4);
+-        return chunk == null ? null : chunk.getFluidState(blockposition);
++        return chunk == null ? null : chunk.getFluidState(blockposition);*/
+     }
+ 
+     @Override
+     public final BlockState getBlockStateIfLoaded(BlockPos blockposition) {
++        return getBlockState(blockposition);
++        /*
+         ChunkAccess chunk = getChunkIfLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4);
+         return chunk == null ? null : chunk.getBlockState(blockposition);
++        */
+     }
+     // Paper end
+ 
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+index 98a0bb41eac5e4c4621dc98b8fdacfcaf0567bcc..492ec2c2a429d29d16865db4bc89bd659c52a01d 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+@@ -30,9 +30,6 @@ public class PathFinder {
+ 
+     @Nullable
+     public synchronized Path findPath(PathNavigationRegion world, Mob mob, Set<BlockPos> positions, float followRange, int distance, float rangeMultiplier) {
+-        final BinaryHeap openSet = new BinaryHeap();
+-        final NodeEvaluator nodeEvaluator = new WalkNodeEvaluator();
+-        nodeEvaluator.setCanPassDoors(true);
+         nodeEvaluator.prepare(world, mob);
+         Node node = nodeEvaluator.getStart();
+         if (node == null) {
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+index 71c3d182193b52c983a353211bbec79677bda377..a628fce6cdf0eebf008f3844f3e3c4c43ce6e698 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+@@ -1,9 +1,5 @@
+ package net.minecraft.world.level.pathfinder;
+ 
+-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+ import java.util.EnumSet;
+ import java.util.Map;
+ import java.util.concurrent.ConcurrentHashMap;
+@@ -57,10 +53,16 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+     @Override
+     public @org.jetbrains.annotations.Nullable Node getStart() {
+         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+-        int i = this.mob.getBlockY();
+-        BlockState blockState = this.level.getBlockState(mutableBlockPos.set(this.mob.getX(), i, this.mob.getZ()));
+-        if (!this.mob.canStandOnFluid(blockState.getFluidState())) {
+-            if (this.canFloat() && this.mob.isInWater()) {
++
++        final Mob mob = this.mob;
++        if (mob == null) {
++            return null;
++        }
++
++        int i = mob.getBlockY();
++        BlockState blockState = this.level.getBlockState(mutableBlockPos.set(mob.getX(), i, mob.getZ()));
++        if (!mob.canStandOnFluid(blockState.getFluidState())) {
++            if (this.canFloat() && mob.isInWater()) {
+                 while(true) {
+                     if (!blockState.is(Blocks.WATER) && blockState.getFluidState() != Fluids.WATER.getSource(false)) {
+                         --i;
+@@ -68,30 +70,30 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+                     }
+ 
+                     ++i;
+-                    blockState = this.level.getBlockState(mutableBlockPos.set(this.mob.getX(), i, this.mob.getZ()));
++                    blockState = this.level.getBlockState(mutableBlockPos.set(mob.getX(), i, mob.getZ()));
+                 }
+-            } else if (this.mob.isOnGround()) {
+-                i = Mth.floor(this.mob.getY() + 0.5D);
++            } else if (mob.isOnGround()) {
++                i = Mth.floor(mob.getY() + 0.5D);
+             } else {
+                 BlockPos blockPos;
+-                for(blockPos = this.mob.blockPosition(); (this.level.getBlockState(blockPos).isAir() || this.level.getBlockState(blockPos).isPathfindable(this.level, blockPos, PathComputationType.LAND)) && blockPos.getY() > this.mob.level.getMinBuildHeight(); blockPos = blockPos.below()) {
++                for(blockPos = mob.blockPosition(); (this.level.getBlockState(blockPos).isAir() || this.level.getBlockState(blockPos).isPathfindable(this.level, blockPos, PathComputationType.LAND)) && blockPos.getY() > mob.level.getMinBuildHeight(); blockPos = blockPos.below()) {
+                 }
+ 
+                 i = blockPos.above().getY();
+             }
+         } else {
+-            while(this.mob.canStandOnFluid(blockState.getFluidState())) {
++            while(mob.canStandOnFluid(blockState.getFluidState())) {
+                 ++i;
+-                blockState = this.level.getBlockState(mutableBlockPos.set(this.mob.getX(), i, this.mob.getZ()));
++                blockState = this.level.getBlockState(mutableBlockPos.set(mob.getX(), i, mob.getZ()));
+             }
+ 
+             --i;
+         }
+ 
+-        BlockPos blockPos2 = this.mob.blockPosition();
+-        BlockPathTypes blockPathTypes = this.getCachedBlockType(this.mob, blockPos2.getX(), i, blockPos2.getZ());
+-        if (this.mob.getPathfindingMalus(blockPathTypes) < 0.0F) {
+-            AABB aABB = this.mob.getBoundingBox();
++        BlockPos blockPos2 = mob.blockPosition();
++        BlockPathTypes blockPathTypes = this.getCachedBlockType(mob, blockPos2.getX(), i, blockPos2.getZ());
++        if (mob.getPathfindingMalus(blockPathTypes) < 0.0F) {
++            AABB aABB = mob.getBoundingBox();
+             if (this.hasPositiveMalus(mutableBlockPos.set(aABB.minX, i, aABB.minZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.minX, i, aABB.maxZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.maxX, i, aABB.minZ)) || this.hasPositiveMalus(mutableBlockPos.set(aABB.maxX, i, aABB.maxZ))) {
+                 return this.getStartNode(mutableBlockPos);
+             }
+@@ -173,6 +175,8 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+             successors[i++] = node9;
+         }
+ 
++        //System.out.println(i);
++
+         return i;
+     }
+ 
+@@ -367,6 +371,7 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+ 
+             for(BlockPathTypes blockPathTypes3 : enumSet) {
+                 if (mob.getPathfindingMalus(blockPathTypes3) < 0.0F) {
++                    System.out.println("returning " + blockPathTypes3);
+                     return blockPathTypes3;
+                 }
+ 
+@@ -375,7 +380,18 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+                 }
+             }
+ 
+-            return blockPathTypes == BlockPathTypes.OPEN && mob.getPathfindingMalus(blockPathTypes2) == 0.0F && sizeX <= 1 ? BlockPathTypes.OPEN : blockPathTypes2;
++            return BlockPathTypes.WALKABLE;
++            /*
++            final BlockPathTypes ret = blockPathTypes == BlockPathTypes.OPEN && mob.getPathfindingMalus(blockPathTypes2) == 0.0F && sizeX <= 1 ? BlockPathTypes.OPEN : blockPathTypes2;
++            // Log all values in this function
++            System.out.println("blockPathTypes2 = " + blockPathTypes2);
++            System.out.println("blockPathTypes = " + blockPathTypes);
++            System.out.println("enumSet = " + enumSet);
++            System.out.println("sizeX = " + sizeX);
++            System.out.println("ret = " + ret);
++            System.out.println();
++
++            return ret;*/
+         }
+     }
+ 
+@@ -387,6 +403,7 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+                     int m = j + y;
+                     int n = k + z;
+                     BlockPathTypes blockPathTypes = this.getBlockPathType(world, l, m, n);
++                    //System.out.println("blockPathTypes = " + blockPathTypes);
+                     blockPathTypes = this.evaluateBlockPathType(world, canOpenDoors, canEnterOpenDoors, pos, blockPathTypes);
+                     if (i == 0 && j == 0 && k == 0) {
+                         type = blockPathTypes;
+@@ -402,18 +419,22 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+ 
+     protected BlockPathTypes evaluateBlockPathType(BlockGetter world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, BlockPathTypes type) {
+         if (type == BlockPathTypes.DOOR_WOOD_CLOSED && canOpenDoors && canEnterOpenDoors) {
++            System.out.println("Here1");
+             type = BlockPathTypes.WALKABLE_DOOR;
+         }
+ 
+         if (type == BlockPathTypes.DOOR_OPEN && !canEnterOpenDoors) {
++            System.out.println("Here2");
+             type = BlockPathTypes.BLOCKED;
+         }
+ 
+         if (type == BlockPathTypes.RAIL && !(world.getBlockState(pos).getBlock() instanceof BaseRailBlock) && !(world.getBlockState(pos.below()).getBlock() instanceof BaseRailBlock)) {
++            System.out.println("Here3");
+             type = BlockPathTypes.UNPASSABLE_RAIL;
+         }
+ 
+         if (type == BlockPathTypes.LEAVES) {
++            System.out.println("Here4");
+             type = BlockPathTypes.BLOCKED;
+         }
+ 
+@@ -425,9 +446,18 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+     }
+ 
+     protected BlockPathTypes getCachedBlockType(Mob entity, int x, int y, int z) {
+-        return this.pathTypesByPosCache.computeIfAbsent(BlockPos.asLong(x, y, z), (l) -> {
++        //return BlockPathTypes.WALKABLE;
++        final long blockPos = BlockPos.asLong(x, y, z);
++        //System.out.println("Here0.1 " + blockPos);
++        /*
++        final BlockPathTypes thing = this.pathTypesByPosCache.computeIfAbsent(blockPos, (l) -> {
++            //System.out.println("Here0.2 " + entity);
+             return this.getBlockPathType(this.level, x, y, z, entity, this.entityWidth, this.entityHeight, this.entityDepth, this.canOpenDoors(), this.canPassDoors());
+-        });
++        });*/
++
++        //System.out.println("Here0.3 " + thing);
++        return this.getBlockPathType(this.level, x, y, z, entity, this.entityWidth, this.entityHeight, this.entityDepth, this.canOpenDoors(), this.canPassDoors());
++        //return thing;
+     }
+ 
+     @Override
+@@ -440,6 +470,9 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+         int j = pos.getY();
+         int k = pos.getZ();
+         BlockPathTypes blockPathTypes = getBlockPathTypeRaw(world, pos);
++
++        //System.out.println("blockPathTypes = " + blockPathTypes);
++
+         if (blockPathTypes == BlockPathTypes.OPEN && j >= world.getMinBuildHeight() + 1) {
+             BlockPathTypes blockPathTypes2 = getBlockPathTypeRaw(world, pos.set(i, j - 1, k));
+             blockPathTypes = blockPathTypes2 != BlockPathTypes.WALKABLE && blockPathTypes2 != BlockPathTypes.OPEN && blockPathTypes2 != BlockPathTypes.WATER && blockPathTypes2 != BlockPathTypes.LAVA ? BlockPathTypes.WALKABLE : BlockPathTypes.OPEN;
+@@ -482,7 +515,7 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+                     if (l != 0 || n != 0) {
+                         pos.set(i + l, j + m, k + n);
+                         // Paper start
+-                        BlockState blockState = world.getBlockStateIfLoaded(pos);
++                        BlockState blockState = world.getBlockState(pos);
+                         if (blockState == null) {
+                             return BlockPathTypes.BLOCKED;
+                         } else {
+@@ -512,8 +545,11 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+     }
+ 
+     protected static BlockPathTypes getBlockPathTypeRaw(BlockGetter world, BlockPos pos) {
+-        BlockState blockState = world.getBlockStateIfLoaded(pos); // Paper
+-        if (blockState == null) return BlockPathTypes.BLOCKED; // Paper
++        BlockState blockState = world.getBlockState(pos); // Paper
++        if (blockState == null) {
++            System.out.println("blockState == null");
++            return BlockPathTypes.BLOCKED; // Paper
++        }
+         Block block = blockState.getBlock();
+         Material material = blockState.getMaterial();
+         if (blockState.isAir()) {
+@@ -547,6 +583,7 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+                     return BlockPathTypes.LEAVES;
+                 } else if (!blockState.is(BlockTags.FENCES) && !blockState.is(BlockTags.WALLS) && (!(block instanceof FenceGateBlock) || blockState.<Boolean>getValue(FenceGateBlock.OPEN).booleanValue())) {
+                     if (!blockState.isPathfindable(world, pos, PathComputationType.LAND)) {
++                        System.out.println("blockState.isPathfindable(world, pos, PathComputationType.LAND) == false");
+                         return BlockPathTypes.BLOCKED;
+                     } else {
+                         return fluidState.is(FluidTags.WATER) ? BlockPathTypes.WATER : BlockPathTypes.OPEN;

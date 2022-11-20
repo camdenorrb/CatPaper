@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 19 Nov 2022 08:35:51 -0600
+Subject: [PATCH] Debugging
+
+
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+index 46b5f8923dae20c1afd511f74f352dd7f5042801..383c2712c498358b24468e33e12b7edfc0e49e0f 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+@@ -72,6 +72,8 @@ public class PathFinder {
+         List<Map.Entry<Target, BlockPos>> entryList = Lists.newArrayListWithExpectedSize(positions.size()); // Paper - optimize collection
+         int j = (int)((float)this.maxVisitedNodes * rangeMultiplier);
+ 
++        final Node[] neighbors = new Node[32];
++
+         while(!openSet.isEmpty()) {
+             ++i;
+             if (i >= j) {
+@@ -97,7 +99,6 @@ public class PathFinder {
+             }
+ 
+             if (!(node.distanceTo(startNode) >= followRange)) {
+-                final Node[] neighbors = new Node[32];
+                 int k = nodeEvaluator.getNeighbors(neighbors, node);
+ 
+                 for(int l = 0; l < k; ++l) {
+@@ -105,6 +106,8 @@ public class PathFinder {
+                     float f = this.distance(node, node2);
+                     node2.walkedDistance = node.walkedDistance + f;
+                     float g = node.g + f + node2.costMalus;
++
++                    // TODO: Figure out what in this condition could be messing up nodes, most likely inOpenSet
+                     if (node2.walkedDistance < followRange && (!node2.inOpenSet() || g < node2.g)) {
+                         node2.cameFrom = node;
+                         node2.g = g;
+@@ -155,9 +158,13 @@ public class PathFinder {
+ 
+     private Path reconstructPath(Node endNode, BlockPos target, boolean reachesTarget) {
+         List<Node> list = Lists.newArrayList();
++
+         Node node = endNode;
++
++        // Sets the last node
+         list.add(0, endNode);
+ 
++        // Sets the path nodes
+         while(node.cameFrom != null) {
+             node = node.cameFrom;
+             list.add(0, node);

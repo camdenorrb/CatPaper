@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 20 Nov 2022 08:20:51 -0600
+Subject: [PATCH] Attempt 1
+
+
+diff --git a/src/main/java/io/papermc/paper/util/CollisionUtil.java b/src/main/java/io/papermc/paper/util/CollisionUtil.java
+index f06dffbdcb6b24b7345eade0e5a71dfc0e95ce6e..527bbbc716125467d2672de7f5a15021f62ef7a7 100644
+--- a/src/main/java/io/papermc/paper/util/CollisionUtil.java
++++ b/src/main/java/io/papermc/paper/util/CollisionUtil.java
+@@ -233,8 +233,8 @@ public final class CollisionUtil {
+     }
+ 
+     public static double performCollisionsY(final @NotNull AABB currentBoundingBox, double value, final @NotNull List<AABB> potentialCollisions) {
+-        for (int i = 0, len = potentialCollisions.size(); i < len; ++i) {
+-            final AABB target = potentialCollisions.get(i);
++
++        for (final AABB target : potentialCollisions) {
+             value = collideY(target, currentBoundingBox, value);
+         }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/UnsafeList.java b/src/main/java/org/bukkit/craftbukkit/util/UnsafeList.java
+index 338e23c36e18bd4c8a0fcb4cb210f14059c54ca2..cb0ee372d5806a7ace2fe24e9ab366bac96a3fdb 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/UnsafeList.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/UnsafeList.java
+@@ -20,7 +20,7 @@ public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAcc
+     private static final long serialVersionUID = 8683452581112892191L;
+ 
+     private transient Object[] data;
+-    private int size;
++    private volatile int size;
+     private int initialCapacity;
+ 
+     private Iterator @NotNull [] iterPool = new Iterator[1];
+@@ -276,7 +276,7 @@ public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAcc
+ 
+         @Override
+         public boolean hasNext() {
+-            this.valid = this.index != UnsafeList.this.size;
++            this.valid = this.index < UnsafeList.this.size;
+             return this.valid;
+         }
+ 

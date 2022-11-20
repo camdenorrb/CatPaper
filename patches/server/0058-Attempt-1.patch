@@ -1,0 +1,438 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 20 Nov 2022 09:23:38 -0600
+Subject: [PATCH] Attempt 1
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
+index 3ef398885526c9133c2205dd8b143703b1e09672..e3d8241004e163dbbb1e6f8a8cf81f1db3a60613 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
++++ b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
+@@ -234,12 +234,14 @@ public final class EntityLookup implements LevelEntityGetter<Entity> {
+             return;
+         }
+ 
+-        final boolean entityStatusUpdateBefore = slices == null ? false : slices.startPreventingStatusUpdates();
++        final boolean entityStatusUpdateBefore = slices != null && slices.startPreventingStatusUpdates();
+ 
++        /*
+         if (entityStatusUpdateBefore) {
+             LOGGER.error("Cannot update chunk status for entity " + entity + " since entity chunk (" + slices.chunkX + "," + slices.chunkZ + ") is receiving update", new Throwable());
+             return;
+         }
++        */
+ 
+         try {
+             final Boolean ticketBlockBefore = this.world.chunkTaskScheduler.chunkHolderManager.blockTicketUpdates();
+diff --git a/src/main/java/io/papermc/paper/util/TickThread.java b/src/main/java/io/papermc/paper/util/TickThread.java
+index b52a04cc6167d50ac573698069780033a2c2f20b..3220685dfa057ff7c543f6e7bbd4b5eeb1e85ff0 100644
+--- a/src/main/java/io/papermc/paper/util/TickThread.java
++++ b/src/main/java/io/papermc/paper/util/TickThread.java
+@@ -75,14 +75,17 @@ public class TickThread extends Thread {
+     }
+ 
+     public static boolean isTickThread() {
+-        return Thread.currentThread() instanceof TickThread;
++        final Thread thread = Thread.currentThread();
++        return thread instanceof TickThread || thread.getName().startsWith("fork-tick-thread-");
+     }
+ 
+     public static boolean isTickThreadFor(final ServerLevel world, final int chunkX, final int chunkZ) {
+-        return Thread.currentThread() instanceof TickThread;
++        final Thread thread = Thread.currentThread();
++        return thread instanceof TickThread || thread.getName().startsWith("fork-tick-thread-");
+     }
+ 
+     public static boolean isTickThreadFor(final Entity entity) {
+-        return Thread.currentThread() instanceof TickThread;
++        final Thread thread = Thread.currentThread();
++        return thread instanceof TickThread || thread.getName().startsWith("fork-tick-thread-");
+     }
+ }
+diff --git a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+index 2e30756758e5f3d38bca12ce0d7a436bba3ac843..6bb7252fb7f975bd9c9543c4bf397214a73f0504 100644
+--- a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
++++ b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+@@ -20,10 +20,9 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+-import java.util.ArrayList;
+-import java.util.Arrays;
+-import java.util.Iterator;
+-import java.util.List;
++import java.util.*;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.concurrent.CopyOnWriteArrayList;
+ import java.util.function.Predicate;
+ 
+ public final class ChunkEntitySlices {
+@@ -36,7 +35,7 @@ public final class ChunkEntitySlices {
+ 
+     protected final @NotNull EntityCollectionBySection allEntities;
+     protected final @NotNull EntityCollectionBySection hardCollidingEntities;
+-    protected final @NotNull Reference2ObjectOpenHashMap<Class<? extends Entity>, EntityCollectionBySection> entitiesByClass;
++    protected final @NotNull Map<Class<? extends Entity>, EntityCollectionBySection> entitiesByClass;
+     protected final EntityList entities = new EntityList();
+ 
+     public ChunkHolder.FullChunkStatus status;
+@@ -63,7 +62,7 @@ public final class ChunkEntitySlices {
+ 
+         this.allEntities = new EntityCollectionBySection(this);
+         this.hardCollidingEntities = new EntityCollectionBySection(this);
+-        this.entitiesByClass = new Reference2ObjectOpenHashMap<>();
++        this.entitiesByClass = new ConcurrentHashMap<>();
+ 
+         this.status = status;
+     }
+@@ -208,12 +207,9 @@ public final class ChunkEntitySlices {
+             this.hardCollidingEntities.addEntity(entity, sectionIndex);
+         }
+ 
+-        for (final Iterator<Reference2ObjectMap.Entry<Class<? extends Entity>, EntityCollectionBySection>> iterator =
+-             this.entitiesByClass.reference2ObjectEntrySet().fastIterator(); iterator.hasNext();) {
+-            final Reference2ObjectMap.Entry<Class<? extends Entity>, EntityCollectionBySection> entry = iterator.next();
+-
+-            if (entry.getKey().isInstance(entity)) {
+-                entry.getValue().addEntity(entity, sectionIndex);
++        for (final Map.Entry<Class<? extends Entity>, EntityCollectionBySection> classEntityCollectionBySectionEntry : entitiesByClass.entrySet()) {
++            if (classEntityCollectionBySectionEntry.getKey().isInstance(entity)) {
++                classEntityCollectionBySectionEntry.getValue().addEntity(entity, sectionIndex);
+             }
+         }
+ 
+@@ -233,12 +229,9 @@ public final class ChunkEntitySlices {
+             this.hardCollidingEntities.removeEntity(entity, sectionIndex);
+         }
+ 
+-        for (final Iterator<Reference2ObjectMap.Entry<Class<? extends Entity>, EntityCollectionBySection>> iterator =
+-             this.entitiesByClass.reference2ObjectEntrySet().fastIterator(); iterator.hasNext();) {
+-            final Reference2ObjectMap.Entry<Class<? extends Entity>, EntityCollectionBySection> entry = iterator.next();
+-
+-            if (entry.getKey().isInstance(entity)) {
+-                entry.getValue().removeEntity(entity, sectionIndex);
++        for (final Map.Entry<Class<? extends Entity>, EntityCollectionBySection> classEntityCollectionBySectionEntry : entitiesByClass.entrySet()) {
++            if (classEntityCollectionBySectionEntry.getKey().isInstance(entity)) {
++                classEntityCollectionBySectionEntry.getValue().removeEntity(entity, sectionIndex);
+             }
+         }
+ 
+@@ -266,15 +259,13 @@ public final class ChunkEntitySlices {
+         final EntityCollectionBySection ret = new EntityCollectionBySection(this);
+ 
+         for (int sectionIndex = 0; sectionIndex < this.allEntities.entitiesBySection.length; ++sectionIndex) {
+-            final BasicEntityList<Entity> sectionEntities = this.allEntities.entitiesBySection[sectionIndex];
++            final List<Entity> sectionEntities = this.allEntities.entitiesBySection[sectionIndex];
+             if (sectionEntities == null) {
+                 continue;
+             }
+ 
+-            final Entity[] storage = sectionEntities.storage;
+-
+-            for (int i = 0, len = Math.min(storage.length, sectionEntities.size()); i < len; ++i) {
+-                final Entity entity = storage[i];
++            for (int i = 0, len = sectionEntities.size(); i < len; ++i) {
++                final Entity entity = sectionEntities.get(i);
+ 
+                 if (clazz.isInstance(entity)) {
+                     ret.addEntity(entity, sectionIndex);
+@@ -296,6 +287,7 @@ public final class ChunkEntitySlices {
+         }
+     }
+ 
++    /*
+     protected static final class BasicEntityList<E extends Entity> {
+ 
+         protected static final Entity[] EMPTY = new Entity[0];
+@@ -371,12 +363,12 @@ public final class ChunkEntitySlices {
+             return this.indexOf(entity) != -1;
+         }
+     }
+-
++    */
+     protected static final class EntityCollectionBySection {
+ 
+         protected final ChunkEntitySlices manager;
+         protected final long @NotNull [] nonEmptyBitset;
+-        protected final BasicEntityList<Entity> @NotNull [] entitiesBySection;
++        protected final List<Entity> @NotNull [] entitiesBySection;
+         protected int count;
+ 
+         public EntityCollectionBySection(final @NotNull ChunkEntitySlices manager) {
+@@ -385,18 +377,18 @@ public final class ChunkEntitySlices {
+             final int sectionCount = manager.maxSection - manager.minSection + 1;
+ 
+             this.nonEmptyBitset = new long[(sectionCount + (Long.SIZE - 1)) >>> 6]; // (sectionCount + (Long.SIZE - 1)) / Long.SIZE
+-            this.entitiesBySection = new BasicEntityList[sectionCount];
++            this.entitiesBySection = new CopyOnWriteArrayList[sectionCount];
+         }
+ 
+         public void addEntity(final Entity entity, final int sectionIndex) {
+-            BasicEntityList<Entity> list = this.entitiesBySection[sectionIndex];
++            List<Entity> list = this.entitiesBySection[sectionIndex];
+ 
+-            if (list != null && list.has(entity)) {
++            if (list != null && list.contains(entity)) {
+                 return;
+             }
+ 
+             if (list == null) {
+-                this.entitiesBySection[sectionIndex] = list = new BasicEntityList<>();
++                this.entitiesBySection[sectionIndex] = list = new CopyOnWriteArrayList<>();
+                 this.nonEmptyBitset[sectionIndex >>> 6] |= (1L << (sectionIndex & (Long.SIZE - 1)));
+             }
+ 
+@@ -405,7 +397,7 @@ public final class ChunkEntitySlices {
+         }
+ 
+         public void removeEntity(final Entity entity, final int sectionIndex) {
+-            final BasicEntityList<Entity> list = this.entitiesBySection[sectionIndex];
++            final List<Entity> list = this.entitiesBySection[sectionIndex];
+ 
+             if (list == null || !list.remove(entity)) {
+                 return;
+@@ -430,19 +422,16 @@ public final class ChunkEntitySlices {
+             final int min = Mth.clamp(Mth.floor(box.minY - 2.0) >> 4, minSection, maxSection);
+             final int max = Mth.clamp(Mth.floor(box.maxY + 2.0) >> 4, minSection, maxSection);
+ 
+-            final BasicEntityList<Entity>[] entitiesBySection = this.entitiesBySection;
++            final List<Entity>[] entitiesBySection = this.entitiesBySection;
+ 
+             for (int section = min; section <= max; ++section) {
+-                final BasicEntityList<Entity> list = entitiesBySection[section - minSection];
++                final List<Entity> list = entitiesBySection[section - minSection];
+ 
+                 if (list == null) {
+                     continue;
+                 }
+ 
+-                final Entity[] storage = list.storage;
+-
+-                for (int i = 0, len = Math.min(storage.length, list.size()); i < len; ++i) {
+-                    final Entity entity = storage[i];
++                for (final Entity entity : list) {
+ 
+                     if (entity == null || entity == except || !entity.getBoundingBox().intersects(box)) {
+                         continue;
+@@ -469,19 +458,16 @@ public final class ChunkEntitySlices {
+             final int min = Mth.clamp(Mth.floor(box.minY - 2.0) >> 4, minSection, maxSection);
+             final int max = Mth.clamp(Mth.floor(box.maxY + 2.0) >> 4, minSection, maxSection);
+ 
+-            final BasicEntityList<Entity>[] entitiesBySection = this.entitiesBySection;
++            final List<Entity>[] entitiesBySection = this.entitiesBySection;
+ 
+             for (int section = min; section <= max; ++section) {
+-                final BasicEntityList<Entity> list = entitiesBySection[section - minSection];
++                final List<Entity> list = entitiesBySection[section - minSection];
+ 
+                 if (list == null) {
+                     continue;
+                 }
+ 
+-                final Entity[] storage = list.storage;
+-
+-                for (int i = 0, len = Math.min(storage.length, list.size()); i < len; ++i) {
+-                    final Entity entity = storage[i];
++                for (final Entity entity : list) {
+ 
+                     if (entity == null || entity == except || !entity.getBoundingBox().intersects(box)) {
+                         continue;
+@@ -520,19 +506,16 @@ public final class ChunkEntitySlices {
+             final int min = Mth.clamp(Mth.floor(box.minY - 2.0) >> 4, minSection, maxSection);
+             final int max = Mth.clamp(Mth.floor(box.maxY + 2.0) >> 4, minSection, maxSection);
+ 
+-            final BasicEntityList<Entity>[] entitiesBySection = this.entitiesBySection;
++            final List<Entity>[] entitiesBySection = this.entitiesBySection;
+ 
+             for (int section = min; section <= max; ++section) {
+-                final BasicEntityList<Entity> list = entitiesBySection[section - minSection];
++                final List<Entity> list = entitiesBySection[section - minSection];
+ 
+                 if (list == null) {
+                     continue;
+                 }
+ 
+-                final Entity[] storage = list.storage;
+-
+-                for (int i = 0, len = Math.min(storage.length, list.size()); i < len; ++i) {
+-                    final Entity entity = storage[i];
++                for (final Entity entity : list) {
+ 
+                     if (entity == null || entity == except || !entity.getBoundingBox().intersects(box)) {
+                         continue;
+@@ -571,19 +554,16 @@ public final class ChunkEntitySlices {
+             final int min = Mth.clamp(Mth.floor(box.minY - 2.0) >> 4, minSection, maxSection);
+             final int max = Mth.clamp(Mth.floor(box.maxY + 2.0) >> 4, minSection, maxSection);
+ 
+-            final BasicEntityList<Entity>[] entitiesBySection = this.entitiesBySection;
++            final List<Entity>[] entitiesBySection = this.entitiesBySection;
+ 
+             for (int section = min; section <= max; ++section) {
+-                final BasicEntityList<Entity> list = entitiesBySection[section - minSection];
++                final List<Entity> list = entitiesBySection[section - minSection];
+ 
+                 if (list == null) {
+                     continue;
+                 }
+ 
+-                final Entity[] storage = list.storage;
+-
+-                for (int i = 0, len = Math.min(storage.length, list.size()); i < len; ++i) {
+-                    final Entity entity = storage[i];
++                for (final Entity entity : list) {
+ 
+                     if (entity == null || (type != null && entity.getType() != type) || !entity.getBoundingBox().intersects(box)) {
+                         continue;
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 2d5f013a8bb5d9441060f3b57511e89efe43c367..371a664549362d5ca095a87181abb9990ddd8e95 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -31,8 +31,9 @@ import java.util.Objects;
+ import java.util.Optional;
+ import java.util.Set;
+ import java.util.UUID;
+-import java.util.concurrent.Executor;
++import java.util.concurrent.*;
+ import java.util.function.BooleanSupplier;
++import java.util.function.Consumer;
+ import java.util.function.Function;
+ import java.util.function.Predicate;
+ import java.util.stream.Collectors;
+@@ -171,6 +172,8 @@ import org.bukkit.event.world.TimeSkipEvent;
+ // CraftBukkit end
+ import it.unimi.dsi.fastutil.ints.IntArrayList; // Paper
+ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet; // Paper
++import org.spigotmc.ActivationRange;
++
+ 
+ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+@@ -190,7 +193,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     public final ServerChunkCache chunkSource;
+     private final MinecraftServer server;
+     public final PrimaryLevelData serverLevelData; // CraftBukkit - type
+-    final EntityTickList entityTickList;
++    final List<Entity> entityTickList;
+     //public final PersistentEntitySectionManager<Entity> entityManager; // Paper - rewrite chunk system
+     public boolean noSave;
+     private final SleepStatus sleepStatus;
+@@ -531,10 +534,10 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         this.uuid = WorldUUID.getUUID(convertable_conversionsession.levelDirectory.path().toFile());
+         // CraftBukkit end
+         this.players = Lists.newArrayList();
+-        this.entityTickList = new EntityTickList();
++        this.entityTickList = new CopyOnWriteArrayList<>();
+         this.blockTicks = new LevelTicks<>(this::isPositionTickingWithEntitiesLoaded, this.getProfilerSupplier());
+         this.fluidTicks = new LevelTicks<>(this::isPositionTickingWithEntitiesLoaded, this.getProfilerSupplier());
+-        this.navigatingMobs = new ObjectOpenHashSet();
++        this.navigatingMobs = new CopyOnWriteArraySet<>();
+         this.blockEvents = new ObjectLinkedOpenHashSet();
+         this.blockEventsToReschedule = new ArrayList(64);
+         this.gameEventMessages = new ArrayList();
+@@ -623,6 +626,14 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         return this.structureManager;
+     }
+ 
++    static final ForkJoinPool.ForkJoinWorkerThreadFactory factory = pool -> {
++        final ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
++        worker.setName("fork-tick-thread-" + worker.threadId());
++        return worker;
++    };
++
++    static final ForkJoinPool tickPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors() - 1, factory, (t, e) -> e.printStackTrace(), true);
++
+     public void tick(BooleanSupplier shouldKeepTicking) {
+         // Paper start - optimise checkDespawn
+         this.playersAffectingSpawning.clear();
+@@ -705,38 +716,43 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                 gameprofilerfiller.pop();
+             }
+ 
+-            org.spigotmc.ActivationRange.activateEntities(this); // Spigot
+-            timings.entityTick.startTiming(); // Spigot
+-            this.entityTickList.forEach((entity) -> {
+-                if (!entity.isRemoved()) {
+-                    if (false && this.shouldDiscardEntity(entity)) { // CraftBukkit - We prevent spawning in general, so this butchering is not needed
+-                        entity.discard();
+-                    } else {
+-                        gameprofilerfiller.push("checkDespawn");
+-                        entity.checkDespawn();
+-                        gameprofilerfiller.pop();
+-                        if (true || this.chunkSource.chunkMap.getDistanceManager().inEntityTickingRange(entity.chunkPosition().toLong())) { // Paper - now always true if in the ticking list
+-                            Entity entity1 = entity.getVehicle();
+-
+-                            if (entity1 != null) {
+-                                if (!entity1.isRemoved() && entity1.hasPassenger(entity)) {
+-                                    return;
+-                                }
+ 
+-                                entity.stopRiding();
+-                            }
++            final ServerLevel self = this;
++            ForkJoinTask<?> task = tickPool.submit(() -> {
++
++                ActivationRange.activateEntities(self); // Spigot
++                timings.entityTick.startTiming(); // Spigot
++
++                entityTickList.parallelStream().forEach((entity) -> {
++                    if (!entity.isRemoved()) {
+ 
+-                            gameprofilerfiller.push("tick");
+-                            this.guardEntityTick(this::tickNonPassenger, entity);
++                            gameprofilerfiller.push("checkDespawn");
++                            entity.checkDespawn();
+                             gameprofilerfiller.pop();
++                                Entity entity1 = entity.getVehicle();
++
++                                if (entity1 != null) {
++                                    if (!entity1.isRemoved() && entity1.hasPassenger(entity)) {
++                                        return;
++                                    }
++
++                                    entity.stopRiding();
++                                }
++
++                                gameprofilerfiller.push("tick");
++                                guardEntityTick((it) -> tickNonPassenger(it), entity);
++                                gameprofilerfiller.pop();
+                         }
+-                    }
+-                }
++
++                });
++                timings.entityTick.stopTiming(); // Spigot
++                timings.tickEntities.stopTiming(); // Spigot
++                gameprofilerfiller.pop();
++                tickBlockEntities();
+             });
+-            timings.entityTick.stopTiming(); // Spigot
+-            timings.tickEntities.stopTiming(); // Spigot
+-            gameprofilerfiller.pop();
+-            this.tickBlockEntities();
++
++            task.join();
++
+         }
+ 
+         gameprofilerfiller.push("entityManagement");
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 7ebd2713829554df02590226d3e8207612c362db..158efbe7596d3b157f54b1c5897b760dfc03df50 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -19,6 +19,7 @@ import java.util.Objects;
+ import java.util.Optional;
+ import java.util.Set;
+ import java.util.UUID;
++import java.util.concurrent.CopyOnWriteArrayList;
+ import java.util.concurrent.atomic.AtomicInteger;
+ import java.util.function.BiConsumer;
+ import java.util.function.Predicate;
+@@ -1356,7 +1357,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+             return movement;
+         }
+ 
+-        final List<AABB> potentialCollisions = io.papermc.paper.util.CachedLists.getTempCollisionList();
++        final List<AABB> potentialCollisions = new CopyOnWriteArrayList<>();// io.papermc.paper.util.CachedLists.getTempCollisionList();
+         try {
+             final double stepHeight = this.maxUpStep;
+             final AABB collisionBox;

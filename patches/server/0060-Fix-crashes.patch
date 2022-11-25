@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 25 Nov 2022 01:27:16 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ThreadedLevelLightEngine.java b/src/main/java/net/minecraft/server/level/ThreadedLevelLightEngine.java
+index 59f3ef65042d7634a86c9788a6c8594cbdffcc23..564e5333b1a6068b8094fc22e248ffb338ae167f 100644
+--- a/src/main/java/net/minecraft/server/level/ThreadedLevelLightEngine.java
++++ b/src/main/java/net/minecraft/server/level/ThreadedLevelLightEngine.java
+@@ -5,7 +5,10 @@ import com.mojang.logging.LogUtils;
+ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+ import it.unimi.dsi.fastutil.objects.ObjectList;
+ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
++
++import java.util.Map;
+ import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.function.IntSupplier;
+ import javax.annotation.Nullable;
+@@ -110,7 +113,7 @@ public class ThreadedLevelLightEngine extends LevelLightEngine implements AutoCl
+         return totalChunks;
+     }
+ 
+-    private final Long2IntOpenHashMap chunksBeingWorkedOn = new Long2IntOpenHashMap();
++    private final Map<Long, Integer> chunksBeingWorkedOn = new ConcurrentHashMap<>();
+ 
+     private void queueTaskForSection(final int chunkX, final int chunkY, final int chunkZ, final Supplier<CompletableFuture<Void>> runnable) {
+         final ServerLevel world = (ServerLevel)this.theLightEngine.getWorld();
+@@ -146,7 +149,8 @@ public class ThreadedLevelLightEngine extends LevelLightEngine implements AutoCl
+             return;
+         }
+ 
+-        final int references = this.chunksBeingWorkedOn.addTo(key, 1);
++        final int references = this.chunksBeingWorkedOn.getOrDefault(key, 0);
++        this.chunksBeingWorkedOn.put(key, references + 1);
+         if (references == 0) {
+             final ChunkPos pos = new ChunkPos(chunkX, chunkZ);
+             world.getChunkSource().addRegionTicket(ca.spottedleaf.starlight.common.light.StarLightInterface.CHUNK_WORK_TICKET, pos, 0, pos);
+diff --git a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+index 26fb438e19f86bc08bce7c192d83145f5db4a5db..82e85cbf2ebbd1ca15290c167031caf5d5c02bcf 100644
+--- a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
++++ b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+@@ -19,7 +19,7 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+     private final int maxChainedNeighborUpdates;
+     private final ConcurrentLinkedDeque<CollectingNeighborUpdater.NeighborUpdates> stack = new ConcurrentLinkedDeque<>();
+     private final List<CollectingNeighborUpdater.NeighborUpdates> addedThisLayer = new CopyOnWriteArrayList<>();
+-    private int count = 0;
++    private volatile int count = 0;
+ 
+     public CollectingNeighborUpdater(Level world, int maxChainDepth) {
+         this.level = world;
+@@ -131,7 +131,14 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+ 
+         @Override
+         public boolean runNext(Level world) {
+-            BlockPos blockPos = this.sourcePos.relative(NeighborUpdater.UPDATE_ORDER[this.idx++]);
++
++            final BlockPos blockPos;
++            try {
++                blockPos = this.sourcePos.relative(NeighborUpdater.UPDATE_ORDER[this.idx++]);
++            } catch (final IndexOutOfBoundsException e) {
++                return false;
++            }
++
+             BlockState blockState = world.getBlockState(blockPos);
+             // Paper start
+             try {

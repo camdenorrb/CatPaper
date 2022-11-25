@@ -1,0 +1,5 @@
+Blocks sometimes are hidden when placing into a new chunk
+Redstone not acting normal
+TNT not exploding
+
+After bugs are ironed out, remove copyonwritearraylist and replace with more efficient alternatives where possible

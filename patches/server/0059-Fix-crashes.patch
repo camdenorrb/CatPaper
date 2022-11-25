@@ -1,0 +1,128 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 25 Nov 2022 00:52:48 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 2585e379b3c941afe40b543796b43da702e132a2..38d290c40effc02ff08d025a66e640475f1bf9e9 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -202,7 +202,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     private final LevelTicks<Block> blockTicks;
+     private final LevelTicks<Fluid> fluidTicks;
+     final Set<Mob> navigatingMobs;
+-    volatile boolean isUpdatingNavigations;
++    //volatile boolean isUpdatingNavigations;
+     protected final Raids raids;
+     private final ObjectLinkedOpenHashSet<BlockEventData> blockEvents;
+     private final List<BlockEventData> blockEventsToReschedule;
+@@ -1681,12 +1681,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+     @Override
+     public void sendBlockUpdated(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
++        /*
+         if (this.isUpdatingNavigations) {
+-            //String s = "recursive call to sendBlockUpdated";
+-
+-            //Util.logAndPauseIfInIde("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
++            String s = "recursive call to sendBlockUpdated";
++            Util.logAndPauseIfInIde("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
+         }
+-
++        */
+         this.getChunkSource().blockChanged(pos);
+         if(this.paperConfig().misc.updatePathfindingOnBlockUpdate) { // Paper - option to disable pathfinding updates
+         VoxelShape voxelshape = oldState.getCollisionShape(this, pos);
+@@ -1717,7 +1717,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             }
+ 
+             try {
+-                this.isUpdatingNavigations = true;
++                //this.isUpdatingNavigations = true;
+                 iterator = list.iterator();
+ 
+                 while (iterator.hasNext()) {
+@@ -1726,7 +1726,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                     navigationabstract1.recomputePath();
+                 }
+             } finally {
+-                this.isUpdatingNavigations = false;
++                //this.isUpdatingNavigations = false;
+             }
+ 
+         }
+@@ -2570,11 +2570,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             if (entity instanceof Mob) {
+                 Mob entityinsentient = (Mob) entity;
+ 
++                /*
+                 if (false && ServerLevel.this.isUpdatingNavigations) { // Paper
+                     String s = "onTrackingStart called during navigation iteration";
+ 
+                     Util.logAndPauseIfInIde("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
+-                }
++                }*/
+ 
+                 ServerLevel.this.navigatingMobs.add(entityinsentient);
+             }
+@@ -2655,11 +2656,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             if (entity instanceof Mob) {
+                 Mob entityinsentient = (Mob) entity;
+ 
++                /*
+                 if (false && ServerLevel.this.isUpdatingNavigations) { // Paper
+                     String s = "onTrackingStart called during navigation iteration";
+ 
+                     Util.logAndPauseIfInIde("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
+-                }
++                }*/
+ 
+                 ServerLevel.this.navigatingMobs.remove(entityinsentient);
+             }
+diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
+index 7d005e879fb0201b5802001380994f1f9f7c9019..860ba8f0a530ed48cc022c4947aed41671b0b087 100644
+--- a/src/main/java/net/minecraft/world/item/ItemStack.java
++++ b/src/main/java/net/minecraft/world/item/ItemStack.java
+@@ -139,7 +139,7 @@ public final class ItemStack {
+     private Item item;
+     @Nullable
+     public CompoundTag tag;
+-    private boolean emptyCacheFlag;
++    private volatile boolean emptyCacheFlag;
+     @Nullable
+     private Entity entityRepresentation;
+     @Nullable
+diff --git a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+index 6fa7e1e895ed61baa0d81106a094453a2c66aac4..26fb438e19f86bc08bce7c192d83145f5db4a5db 100644
+--- a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
++++ b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+@@ -1,10 +1,8 @@
+ package net.minecraft.world.level.redstone;
+ 
+ import com.mojang.logging.LogUtils;
+-import java.util.ArrayDeque;
+-import java.util.ArrayList;
+-import java.util.List;
+-import java.util.NoSuchElementException;
++
++import java.util.*;
+ import java.util.concurrent.ConcurrentLinkedDeque;
+ import java.util.concurrent.CopyOnWriteArrayList;
+ import javax.annotation.Nullable;
+@@ -72,8 +70,13 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+         try {
+             while(!this.stack.isEmpty() || !this.addedThisLayer.isEmpty()) {
+ 
+-                for (final NeighborUpdates neighborUpdates : addedThisLayer) {
+-                    this.stack.push(neighborUpdates);
++                for (int i = this.addedThisLayer.size() - 1; i >= 0; --i) {
++                    try {
++                        this.stack.push(this.addedThisLayer.get(i));
++                    }
++                    catch (IndexOutOfBoundsException ex) {
++                        // NOOP, used for multithreaded purposes
++                    }
+                 }
+ 
+                 this.addedThisLayer.clear();

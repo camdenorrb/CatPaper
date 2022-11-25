@@ -1,0 +1,88 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 25 Nov 2022 06:11:02 -0600
+Subject: [PATCH] Optimize
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 38d290c40effc02ff08d025a66e640475f1bf9e9..a462660a5295f266290232b913229ccd57a414fd 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -21,16 +21,7 @@ import java.io.IOException;
+ import java.io.Writer;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+-import java.util.ArrayList;
+-import java.util.Collections;
+-import java.util.Comparator;
+-import java.util.Iterator;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.Objects;
+-import java.util.Optional;
+-import java.util.Set;
+-import java.util.UUID;
++import java.util.*;
+ import java.util.concurrent.*;
+ import java.util.function.BooleanSupplier;
+ import java.util.function.Consumer;
+@@ -206,7 +197,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     protected final Raids raids;
+     private final ObjectLinkedOpenHashSet<BlockEventData> blockEvents;
+     private final List<BlockEventData> blockEventsToReschedule;
+-    private List<GameEvent.Message> gameEventMessages;
++    private Set<GameEvent.Message> gameEventMessages;
+     private boolean handlingTick;
+     private final List<CustomSpawner> customSpawners;
+     @Nullable
+@@ -540,7 +531,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         this.navigatingMobs = new CopyOnWriteArraySet<>();
+         this.blockEvents = new ObjectLinkedOpenHashSet();
+         this.blockEventsToReschedule = new ArrayList(64);
+-        this.gameEventMessages = new CopyOnWriteArrayList<>();
++        this.gameEventMessages = new ConcurrentSkipListSet<>();
+         this.dragonParts = new Int2ObjectOpenHashMap();
+         this.tickTime = flag1;
+         this.server = minecraftserver;
+@@ -1630,7 +1621,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         int i1 = SectionPos.blockToSectionCoord(blockposition.getX() + i);
+         int j1 = SectionPos.blockToSectionCoord(blockposition.getY() + i);
+         int k1 = SectionPos.blockToSectionCoord(blockposition.getZ() + i);
+-        List<GameEvent.Message> list = new ArrayList();
++        Set<GameEvent.Message> list = new TreeSet<>();
+         boolean flag = false;
+ 
+         for (int l1 = j; l1 <= i1; ++l1) {
+@@ -1659,24 +1650,17 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+     private void sendGameEvents() {
+         if (!this.gameEventMessages.isEmpty()) {
+-            List<GameEvent.Message> list = this.gameEventMessages;
+-
+-            this.gameEventMessages = new CopyOnWriteArrayList();
+-            this.handleGameEventMessagesInQueue(list);
++            final Set<GameEvent.Message> set = this.gameEventMessages;
++            this.gameEventMessages = new ConcurrentSkipListSet<>();
++            this.handleGameEventMessagesInQueue(set);
+         }
+     }
+ 
+-    private void handleGameEventMessagesInQueue(List<GameEvent.Message> events) {
+-        Collections.sort(events);
+-        Iterator iterator = events.iterator();
+-
+-        while (iterator.hasNext()) {
+-            GameEvent.Message gameevent_b = (GameEvent.Message) iterator.next();
+-            GameEventListener gameeventlistener = gameevent_b.recipient();
+-
+-            gameeventlistener.handleGameEvent(this, gameevent_b);
+-        }
+-
++    private void handleGameEventMessagesInQueue(Set<GameEvent.Message> events) {
++        events.parallelStream().forEach((message) -> {
++            GameEventListener gameeventlistener = message.recipient();
++            gameeventlistener.handleGameEvent(this, message);
++        });
+     }
+ 
+     @Override

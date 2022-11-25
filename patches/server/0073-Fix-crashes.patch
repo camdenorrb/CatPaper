@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 25 Nov 2022 13:47:56 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+index 6f241f0b06f50c9ab45b596b9a6211418b427916..0171b1c857275d7cfd2422a3babd40cd83af9939 100644
+--- a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
++++ b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+@@ -96,16 +96,14 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+         @Override
+         public boolean runNext(Level world) {
+ 
+-            final Direction direction;
++            final BlockPos blockPos;
+             try {
+-                direction = NeighborUpdater.UPDATE_ORDER[this.idx];
+-            } catch (ArrayIndexOutOfBoundsException e) {
++                blockPos = this.sourcePos.relative(NeighborUpdater.UPDATE_ORDER[this.idx++]);
++            } catch (final IndexOutOfBoundsException e) {
+                 return false;
+             }
+ 
+-            final BlockPos blockPos = this.sourcePos.relative(direction);
+-            final BlockState blockState = world.getBlockState(blockPos);
+-
++            BlockState blockState = world.getBlockState(blockPos);
+             // Paper start
+             try {
+                 boolean cancelled = false;
+@@ -126,8 +124,16 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+             } catch (StackOverflowError ex) {
+                 world.lastPhysicsProblem = new BlockPos(blockPos);
+             }
++
++            Direction direction;
++            try {
++                direction = NeighborUpdater.UPDATE_ORDER[this.idx];
++            } catch (final IndexOutOfBoundsException e) {
++                direction = null;
++            }
++
+             // Paper end
+-            if (this.idx < NeighborUpdater.UPDATE_ORDER.length && direction == this.skipDirection) {
++            if (this.idx < NeighborUpdater.UPDATE_ORDER.length && direction != null && direction == this.skipDirection) {
+                 ++this.idx;
+             }
+ 

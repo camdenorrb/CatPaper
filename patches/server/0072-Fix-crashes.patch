@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 25 Nov 2022 13:41:32 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+index 5d1b14f30690b192fa408fd76ab15077d0084c59..6f241f0b06f50c9ab45b596b9a6211418b427916 100644
+--- a/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
++++ b/src/main/java/net/minecraft/world/level/redstone/CollectingNeighborUpdater.java
+@@ -96,14 +96,16 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+         @Override
+         public boolean runNext(Level world) {
+ 
+-            final BlockPos blockPos;
++            final Direction direction;
+             try {
+-                blockPos = this.sourcePos.relative(NeighborUpdater.UPDATE_ORDER[this.idx++]);
+-            } catch (final IndexOutOfBoundsException e) {
++                direction = NeighborUpdater.UPDATE_ORDER[this.idx];
++            } catch (ArrayIndexOutOfBoundsException e) {
+                 return false;
+             }
+ 
+-            BlockState blockState = world.getBlockState(blockPos);
++            final BlockPos blockPos = this.sourcePos.relative(direction);
++            final BlockState blockState = world.getBlockState(blockPos);
++
+             // Paper start
+             try {
+                 boolean cancelled = false;
+@@ -125,7 +127,7 @@ public class CollectingNeighborUpdater implements NeighborUpdater {
+                 world.lastPhysicsProblem = new BlockPos(blockPos);
+             }
+             // Paper end
+-            if (this.idx < NeighborUpdater.UPDATE_ORDER.length && NeighborUpdater.UPDATE_ORDER[this.idx] == this.skipDirection) {
++            if (this.idx < NeighborUpdater.UPDATE_ORDER.length && direction == this.skipDirection) {
+                 ++this.idx;
+             }
+ 

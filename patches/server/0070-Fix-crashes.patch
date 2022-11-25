@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 25 Nov 2022 13:27:40 -0600
+Subject: [PATCH] Fix crashes
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkHolder.java b/src/main/java/net/minecraft/server/level/ChunkHolder.java
+index 904fcdeb7937d36208cc9a8d5eca9ef3a5b2cd9e..90463633db297cf97ba1c394592f6b62d495c855 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkHolder.java
++++ b/src/main/java/net/minecraft/server/level/ChunkHolder.java
+@@ -2,6 +2,7 @@ package net.minecraft.server.level;
+ 
+ import com.mojang.datafixers.util.Either;
+ import com.mojang.datafixers.util.Pair;
++import it.unimi.dsi.fastutil.objects.ObjectSets;
+ import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet;
+ import it.unimi.dsi.fastutil.shorts.ShortSet;
+ import java.util.ArrayList;
+@@ -301,29 +302,31 @@ public class ChunkHolder {
+             }
+ 
+             for (j = 0; j < this.changedBlocksPerSection.length; ++j) {
+-                ShortSet shortset = this.changedBlocksPerSection[j];
++                final ShortSet changedBlocks = this.changedBlocksPerSection[j];
++
++                if (changedBlocks != null) {
++
++                    final ShortSet changedBlocksCopy = new ShortOpenHashSet(changedBlocks);
++                    this.changedBlocksPerSection[j] = null;
+ 
+-                if (shortset != null) {
+                     int k = this.levelHeightAccessor.getSectionYFromSectionIndex(j);
+                     SectionPos sectionposition = SectionPos.of(chunk.getPos(), k);
+ 
+-                    if (shortset.size() == 1) {
+-                        BlockPos blockposition = sectionposition.relativeToBlockPos(shortset.iterator().nextShort());
++                    if (changedBlocksCopy.size() == 1) {
++                        BlockPos blockposition = sectionposition.relativeToBlockPos(changedBlocksCopy.iterator().nextShort());
+                         BlockState iblockdata = world.getBlockState(blockposition);
+ 
+                         this.broadcast(new ClientboundBlockUpdatePacket(blockposition, iblockdata), false);
+                         this.broadcastBlockEntityIfNeeded(world, blockposition, iblockdata);
+                     } else {
+                         LevelChunkSection chunksection = chunk.getSection(j);
+-                        ClientboundSectionBlocksUpdatePacket packetplayoutmultiblockchange = new ClientboundSectionBlocksUpdatePacket(sectionposition, shortset, chunksection, this.resendLight);
++                        ClientboundSectionBlocksUpdatePacket packetplayoutmultiblockchange = new ClientboundSectionBlocksUpdatePacket(sectionposition, changedBlocksCopy, chunksection, this.resendLight);
+ 
+                         this.broadcast(packetplayoutmultiblockchange, false);
+                         packetplayoutmultiblockchange.runUpdates((blockposition1, iblockdata1) -> {
+                             this.broadcastBlockEntityIfNeeded(world, blockposition1, iblockdata1);
+                         });
+                     }
+-
+-                    this.changedBlocksPerSection[j] = null;
+                 }
+             }
+ 

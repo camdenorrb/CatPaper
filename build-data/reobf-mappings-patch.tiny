@@ -2,6 +2,6 @@
 
 tiny	2	0	mojang+yarn	spigot
 
-c	net/minecraft/server/level/ChunkMap	net/minecraft/server/level/PlayerChunkMap
-	f	Ljava/util/Map;	entityMap	K
+#c	net/minecraft/server/level/ChunkMap	net/minecraft/server/level/PlayerChunkMap
+#	f	Ljava/util/Map;	entityMap	K
 

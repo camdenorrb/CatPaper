@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 26 Nov 2022 09:48:04 -0600
+Subject: [PATCH] Switch from CopyOnWriteArrayLists
+
+
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+index 9e790186eca2bcfadec0577f22350f73110b7311..a4dcb8a4404ed60d9be4168746a5b39bc174fdb8 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+@@ -1,6 +1,8 @@
+ package org.bukkit.plugin.java;
+ 
+ import com.google.common.base.Preconditions;
++import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
++import it.unimi.dsi.fastutil.objects.ReferenceLists;
+ import org.bukkit.Server;
+ import org.bukkit.Warning;
+ import org.bukkit.Warning.WarningState;
+@@ -22,7 +24,6 @@ import java.io.IOException;
+ import java.io.InputStream;
+ import java.lang.reflect.Method;
+ import java.util.*;
+-import java.util.concurrent.CopyOnWriteArrayList;
+ import java.util.jar.JarEntry;
+ import java.util.jar.JarFile;
+ import java.util.logging.Level;
+@@ -37,7 +38,7 @@ public final class JavaPluginLoader implements PluginLoader {
+     private final Pattern[] fileFilters = new Pattern[]{Pattern.compile("\\.jar$")};
+     private final Map<String, java.util.concurrent.locks.ReentrantReadWriteLock> classLoadLock = new java.util.HashMap<String, java.util.concurrent.locks.ReentrantReadWriteLock>(); // Paper
+     private final Map<String, Integer> classLoadLockCount = new java.util.HashMap<String, Integer>(); // Paper
+-    private final List<PluginClassLoader> loaders = new CopyOnWriteArrayList<PluginClassLoader>();
++    private final List<PluginClassLoader> loaders = ReferenceLists.synchronize(new ReferenceArrayList<>());
+     private final @Nullable LibraryLoader libraryLoader;
+ 
+     /**

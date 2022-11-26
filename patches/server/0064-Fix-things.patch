@@ -1,0 +1,116 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 26 Nov 2022 10:25:38 -0600
+Subject: [PATCH] Fix things
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 3693c30381f7b22d1e2f8cef859ad87cb3336850..4cb48fa87239bfebe8b5b325953bdccae036d423 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -20,7 +20,7 @@ dependencies {
+     implementation("io.papermc.paper:paper-mojangapi:1.19.2-R0.1-SNAPSHOT") {
+         exclude("io.papermc.paper", "paper-api")
+     }
+-    implementation("dev.twelveoclock:fastutil-concurrent:1.0.3") {
++    implementation("dev.twelveoclock:fastutil-concurrent:1.0.4") {
+         isChanging = true
+     }
+     // CatPaper end
+diff --git a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+index 402315ed6c2b337aa9779714fc6aa5a25cedd595..c4907c46a95caae969cb97dd15cb40e6fd0bd880 100644
+--- a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
++++ b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+@@ -442,13 +442,21 @@ public final class ChunkEntitySlices {
+             final List<Entity>[] entitiesBySection = this.entitiesBySection;
+ 
+             for (int section = min; section <= max; ++section) {
++
+                 final List<Entity> list = entitiesBySection[section - minSection];
+ 
+                 if (list == null) {
+                     continue;
+                 }
+ 
+-                for (final Entity entity : list) {
++                for (int i = 0; i < list.size(); i++) {
++
++                    final Entity entity;
++                    try {
++                        entity = list.get(i);
++                    } catch (final IndexOutOfBoundsException e) {
++                        continue;
++                    }
+ 
+                     if (entity == null || entity == except || !entity.getBoundingBox().intersects(box)) {
+                         continue;
+@@ -459,7 +467,7 @@ public final class ChunkEntitySlices {
+                     } // else: continue to test the ender dragon parts
+ 
+                     if (entity instanceof EnderDragon) {
+-                        for (final EnderDragonPart part : ((EnderDragon)entity).subEntities) {
++                        for (final EnderDragonPart part : ((EnderDragon) entity).subEntities) {
+                             if (part == except || !part.getBoundingBox().intersects(box)) {
+                                 continue;
+                             }
+@@ -496,7 +504,14 @@ public final class ChunkEntitySlices {
+                     continue;
+                 }
+ 
+-                for (final Entity entity : list) {
++                for (int i = 0; i < list.size(); i++) {
++
++                    final Entity entity;
++                    try {
++                        entity = list.get(i);
++                    } catch (final IndexOutOfBoundsException e) {
++                        continue;
++                    }
+ 
+                     if (entity == null || entity == except || !entity.getBoundingBox().intersects(box)) {
+                         continue;
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 421276e237592461e20adc27fea620125a21cf2d..ebff9c47a530327e849a742f0036f3ea7c74728c 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -675,26 +675,25 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                 timings.entityTick.startTiming(); // Spigot
+ 
+                 entityTickList.parallelStream().forEach((entity) -> {
+-                    if (!entity.isRemoved()) {
++                    if (entity != null && !entity.isRemoved()) {
+ 
+-                            gameprofilerfiller.push("checkDespawn");
+-                            entity.checkDespawn();
+-                            gameprofilerfiller.pop();
+-                                final Entity entity1 = entity.getVehicle();
++                        gameprofilerfiller.push("checkDespawn");
++                        entity.checkDespawn();
++                        gameprofilerfiller.pop();
++                        final Entity entity1 = entity.getVehicle();
+ 
+-                                if (entity1 != null) {
+-                                    if (!entity1.isRemoved() && entity1.hasPassenger(entity)) {
+-                                        return;
+-                                    }
+-
+-                                    entity.stopRiding();
+-                                }
++                        if (entity1 != null) {
++                            if (!entity1.isRemoved() && entity1.hasPassenger(entity)) {
++                                return;
++                            }
+ 
+-                                gameprofilerfiller.push("tick");
+-                                guardEntityTick((it) -> tickNonPassenger(it), entity);
+-                                gameprofilerfiller.pop();
++                            entity.stopRiding();
+                         }
+ 
++                        gameprofilerfiller.push("tick");
++                        guardEntityTick((it) -> tickNonPassenger(it), entity);
++                        gameprofilerfiller.pop();
++                    }
+                 });
+                 timings.entityTick.stopTiming(); // Spigot
+                 timings.tickEntities.stopTiming(); // Spigot

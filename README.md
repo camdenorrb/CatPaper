@@ -10,6 +10,7 @@ Goals:
 - [x] Intellij performance inspections
 - [x] Remove Timings, instead use [Spark](https://spark.lucko.me/)
 - [x] Entity tracking performance improvements
+- [ ] Virtual threads
 - [ ] Add linters
 - [ ] Compiling plugins into jar on boot
 - [ ] Proguard optimizations

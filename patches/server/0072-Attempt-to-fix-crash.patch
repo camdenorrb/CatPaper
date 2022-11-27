@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 27 Nov 2022 10:03:32 -0600
+Subject: [PATCH] Attempt to fix crash
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
+index 1b2366df45760b2c47b0b5c330dfd72617707d30..947a893649715dc414680147bee437e0a55757c5 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
++++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
+@@ -1182,17 +1182,16 @@ public final class NewChunkHolder {
+         int failures = 0;
+         for (long curr = (long)CHUNK_STATUS_HANDLE.getVolatile((NewChunkHolder)this);;) {
+             final ChunkHolder.FullChunkStatus currPending = getPendingChunkStatus(curr);
+-            if (loaded && currPending != ChunkHolder.FullChunkStatus.INACCESSIBLE) {
+-                throw new IllegalStateException("Expected " + ChunkHolder.FullChunkStatus.INACCESSIBLE + " for pending, but got " + currPending);
+-            }
+ 
+-            final long update = (curr & ~PENDING_STATUS_MASK) | ((long)toStatus.ordinal() << 32);
+-            if (curr == (curr = (long)CHUNK_STATUS_HANDLE.compareAndExchange((NewChunkHolder)this, curr, update))) {
+-                if ((int)(update) != (int)(update >>> 32)) {
+-                    changedFullStatus.add(this);
+-                    return true;
++            if (!loaded || currPending == ChunkHolder.FullChunkStatus.INACCESSIBLE) {
++                final long update = (curr & ~PENDING_STATUS_MASK) | ((long) toStatus.ordinal() << 32);
++                if (curr == (curr = (long) CHUNK_STATUS_HANDLE.compareAndExchange((NewChunkHolder) this, curr, update))) {
++                    if ((int) (update) != (int) (update >>> 32)) {
++                        changedFullStatus.add(this);
++                        return true;
++                    }
++                    return false;
+                 }
+-                return false;
+             }
+ 
+             ++failures;

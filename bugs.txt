@@ -7,3 +7,141 @@ Perhaps fastutil synchronized collections or concurrent if applicable
 
 
 Crash from `java.lang.Throwable: java.lang.IllegalStateException: Expected INACCESSIBLE for pending, but got BORDER`
+
+Crash: (Fixed?)
+java.lang.Throwable: java.lang.IllegalStateException: Expected INACCESSIBLE for pending, but got BORDER
+	at io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.unrecoverableChunkSystemFailure(ChunkTaskScheduler.java:218) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete(ChunkProgressionTask.java:79) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkFullTask.run(ChunkFullTask.java:69) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at ca.spottedleaf.concurrentutil.executor.standard.PrioritisedThreadedTaskQueue$PrioritisedTask.executeInternal(PrioritisedThreadedTaskQueue.java:354) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at ca.spottedleaf.concurrentutil.executor.standard.PrioritisedThreadedTaskQueue.executeTask(PrioritisedThreadedTaskQueue.java:121) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.executeMainThreadTask(ChunkTaskScheduler.java:252) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.server.level.ServerChunkCache$MainThreadExecutor.pollTask(ServerChunkCache.java:968) ~[?:?]
+	at net.minecraft.server.level.ServerChunkCache.pollTask(ServerChunkCache.java:543) ~[?:?]
+	at net.minecraft.server.MinecraftServer.tickMidTickTasks(MinecraftServer.java:2651) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.server.MinecraftServer.executeMidTickTasks(MinecraftServer.java:2674) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.world.level.Level.guardEntityTick(Level.java:877) ~[?:?]
+	at net.minecraft.server.level.ServerLevel.lambda$tick$9(ServerLevel.java:694) ~[?:?]
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183) ~[?:?]
+	at it.unimi.dsi.fastutil.objects.ObjectSpliterators$ArraySpliterator.forEachRemaining(ObjectSpliterators.java:261) ~[fastutil-8.5.9.jar:?]
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509) ~[?:?]
+	at java.util.stream.ForEachOps$ForEachTask.compute(ForEachOps.java:290) ~[?:?]
+	at java.util.concurrent.CountedCompleter.exec(CountedCompleter.java:754) ~[?:?]
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387) ~[?:?]
+	at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1311) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1841) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1806) ~[?:?]
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177) ~[?:?]
+Caused by: java.lang.IllegalStateException: Expected INACCESSIBLE for pending, but got BORDER
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.queueBorderFullStatus(NewChunkHolder.java:1189) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.onChunkGenComplete(NewChunkHolder.java:1599) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.lambda$setGenerationTask$4(NewChunkHolder.java:1697) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete0(ChunkProgressionTask.java:97) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete(ChunkProgressionTask.java:77) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	... 20 more
+[01:36:59 ERROR]: Encountered an unexpected exception
+java.lang.RuntimeException: Chunk system crash propagated from unrecoverableChunkSystemFailure
+	at io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.unrecoverableChunkSystemFailure(ChunkTaskScheduler.java:247) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete(ChunkProgressionTask.java:79) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkFullTask.run(ChunkFullTask.java:69) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at ca.spottedleaf.concurrentutil.executor.standard.PrioritisedThreadedTaskQueue$PrioritisedTask.executeInternal(PrioritisedThreadedTaskQueue.java:354) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at ca.spottedleaf.concurrentutil.executor.standard.PrioritisedThreadedTaskQueue.executeTask(PrioritisedThreadedTaskQueue.java:121) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.executeMainThreadTask(ChunkTaskScheduler.java:252) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.server.level.ServerChunkCache$MainThreadExecutor.pollTask(ServerChunkCache.java:968) ~[?:?]
+	at net.minecraft.server.level.ServerChunkCache.pollTask(ServerChunkCache.java:543) ~[?:?]
+	at net.minecraft.server.MinecraftServer.tickMidTickTasks(MinecraftServer.java:2651) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.server.MinecraftServer.executeMidTickTasks(MinecraftServer.java:2674) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.world.level.Level.guardEntityTick(Level.java:877) ~[?:?]
+	at net.minecraft.server.level.ServerLevel.lambda$tick$9(ServerLevel.java:694) ~[?:?]
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183) ~[?:?]
+	at it.unimi.dsi.fastutil.objects.ObjectSpliterators$ArraySpliterator.forEachRemaining(ObjectSpliterators.java:261) ~[fastutil-8.5.9.jar:?]
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509) ~[?:?]
+	at java.util.stream.ForEachOps$ForEachTask.compute(ForEachOps.java:290) ~[?:?]
+	at java.util.concurrent.CountedCompleter.exec(CountedCompleter.java:754) ~[?:?]
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387) ~[?:?]
+	at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1311) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1841) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1806) ~[?:?]
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177) ~[?:?]
+Caused by: net.minecraft.ReportedException: Chunk system error
+	at io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.unrecoverableChunkSystemFailure(ChunkTaskScheduler.java:224) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	... 21 more
+Caused by: java.lang.IllegalStateException: Expected INACCESSIBLE for pending, but got BORDER
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.queueBorderFullStatus(NewChunkHolder.java:1189) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.onChunkGenComplete(NewChunkHolder.java:1599) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.lambda$setGenerationTask$4(NewChunkHolder.java:1697) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete0(ChunkProgressionTask.java:97) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete(ChunkProgressionTask.java:77) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	... 20 more
+[01:36:59 ERROR]: 	Cause of unexpected exception was
+net.minecraft.ReportedException: Chunk system error
+	at io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.unrecoverableChunkSystemFailure(ChunkTaskScheduler.java:224) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete(ChunkProgressionTask.java:79) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkFullTask.run(ChunkFullTask.java:69) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at ca.spottedleaf.concurrentutil.executor.standard.PrioritisedThreadedTaskQueue$PrioritisedTask.executeInternal(PrioritisedThreadedTaskQueue.java:354) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at ca.spottedleaf.concurrentutil.executor.standard.PrioritisedThreadedTaskQueue.executeTask(PrioritisedThreadedTaskQueue.java:121) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.executeMainThreadTask(ChunkTaskScheduler.java:252) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.server.level.ServerChunkCache$MainThreadExecutor.pollTask(ServerChunkCache.java:968) ~[?:?]
+	at net.minecraft.server.level.ServerChunkCache.pollTask(ServerChunkCache.java:543) ~[?:?]
+	at net.minecraft.server.MinecraftServer.tickMidTickTasks(MinecraftServer.java:2651) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.server.MinecraftServer.executeMidTickTasks(MinecraftServer.java:2674) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at net.minecraft.world.level.Level.guardEntityTick(Level.java:877) ~[?:?]
+	at net.minecraft.server.level.ServerLevel.lambda$tick$9(ServerLevel.java:694) ~[?:?]
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183) ~[?:?]
+	at it.unimi.dsi.fastutil.objects.ObjectSpliterators$ArraySpliterator.forEachRemaining(ObjectSpliterators.java:261) ~[fastutil-8.5.9.jar:?]
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509) ~[?:?]
+	at java.util.stream.ForEachOps$ForEachTask.compute(ForEachOps.java:290) ~[?:?]
+	at java.util.concurrent.CountedCompleter.exec(CountedCompleter.java:754) ~[?:?]
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387) ~[?:?]
+	at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1311) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1841) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1806) ~[?:?]
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177) ~[?:?]
+Caused by: java.lang.IllegalStateException: Expected INACCESSIBLE for pending, but got BORDER
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.queueBorderFullStatus(NewChunkHolder.java:1189) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.onChunkGenComplete(NewChunkHolder.java:1599) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.NewChunkHolder.lambda$setGenerationTask$4(NewChunkHolder.java:1697) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete0(ChunkProgressionTask.java:97) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	at io.papermc.paper.chunk.system.scheduling.ChunkProgressionTask.complete(ChunkProgressionTask.java:77) ~[catpaper-1.19.2.jar:git-CatPaper-"9dd4bbd"]
+	... 20 more
+[01:36:59 ERROR]: This crash report has been saved to: /home/brennan/CatsTakeOver/./crash-reports/crash-2022-11-27_01.36.59-server.txt
+[01:36:59 INFO]: Stopping server
+[01:36:59 INFO]: Saving players
+[01:36:59 INFO]: Saving worlds
+[01:36:59 INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+
+
+Error:
+java.lang.IllegalStateException: Unhandled damage of EntityZombie['Zombie'/1646, uuid='6e33aff9-0804-4d13-a695-1836819708f3', l='ServerLevel[world]', x=734.54, y=109.00, z=-818.74, cpos=[
+45, -52], tl=1733, v=true] by CraftBlock{pos=BlockPosition{x=746, y=15, z=-769},type=MAGMA_BLOCK,data=Block{minecraft:magma_block},fluid=net.minecraft.world.level.material.FluidTypeEmpty@
+199c52c} from onFire
+        at org.bukkit.craftbukkit.v1_19_R1.event.CraftEventFactory.handleEntityDamageEvent(CraftEventFactory.java:928) ~[catpaper-1.19.2.jar:git-CatPaper-"dc881dd"]
+        at org.bukkit.craftbukkit.v1_19_R1.event.CraftEventFactory.handleEntityDamageEvent(CraftEventFactory.java:842) ~[catpaper-1.19.2.jar:git-CatPaper-"dc881dd"]
+        at org.bukkit.craftbukkit.v1_19_R1.event.CraftEventFactory.handleLivingEntityDamageEvent(CraftEventFactory.java:1065) ~[catpaper-1.19.2.jar:git-CatPaper-"dc881dd"]
+        at net.minecraft.world.entity.LivingEntity.damageEntity0(LivingEntity.java:2074) ~[?:?]
+        at net.minecraft.world.entity.LivingEntity.hurt(LivingEntity.java:1321) ~[?:?]
+        at net.minecraft.world.entity.monster.Zombie.hurt(Zombie.java:295) ~[?:?]
+        at net.minecraft.world.entity.Entity.baseTick(Entity.java:782) ~[catpaper-1.19.2.jar:git-CatPaper-"dc881dd"]
+        at net.minecraft.world.entity.LivingEntity.baseTick(LivingEntity.java:345) ~[?:?]
+        at net.minecraft.world.entity.Mob.baseTick(Mob.java:304) ~[?:?]
+        at net.minecraft.world.entity.Entity.tick(Entity.java:735) ~[catpaper-1.19.2.jar:git-CatPaper-"dc881dd"]
+        at net.minecraft.world.entity.LivingEntity.tick(LivingEntity.java:2886) ~[?:?]
+        at net.minecraft.world.entity.Mob.tick(Mob.java:377) ~[?:?]
+        at net.minecraft.world.entity.monster.Zombie.tick(Zombie.java:216) ~[?:?]
+        at net.minecraft.server.level.ServerLevel.tickNonPassenger(ServerLevel.java:1137) ~[?:?]
+        at net.minecraft.server.level.ServerLevel.lambda$tick$8(ServerLevel.java:683) ~[?:?]
+        at net.minecraft.world.level.Level.guardEntityTick(Level.java:869) ~[?:?]
+        at net.minecraft.server.level.ServerLevel.lambda$tick$9(ServerLevel.java:683) ~[?:?]
+        at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183) ~[?:?]
+        at it.unimi.dsi.fastutil.objects.ObjectSpliterators$ArraySpliterator.forEachRemaining(ObjectSpliterators.java:261) ~[fastutil-8.5.9.jar:?]
+        at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509) ~[?:?]
+        at java.util.stream.ForEachOps$ForEachTask.compute(ForEachOps.java:290) ~[?:?]
+        at java.util.concurrent.CountedCompleter.exec(CountedCompleter.java:754) ~[?:?]
+        at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387) ~[?:?]
+        at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1311) ~[?:?]
+        at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1841) ~[?:?]
+        at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1806) ~[?:?]
+        at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177) ~[?:?]
+
+
+     Do /spawnallmobs a ton and fix all those errors

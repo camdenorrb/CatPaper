@@ -1,0 +1,154 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 27 Nov 2022 10:38:15 -0600
+Subject: [PATCH] Fix error
+
+
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/SwimNodeEvaluator.java b/src/main/java/net/minecraft/world/level/pathfinder/SwimNodeEvaluator.java
+index c92580632b35dac829922cb138fd945493953cf3..87ccf21607fb06efdd5334452261581b6390b035 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/SwimNodeEvaluator.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/SwimNodeEvaluator.java
+@@ -1,10 +1,8 @@
+ package net.minecraft.world.level.pathfinder;
+ 
+ import com.google.common.collect.Maps;
++import dev.twelveoclock.fastutil.map.impl.ConcurrentLong2ObjectOpenHashMap;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+-import java.util.Map;
+-import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.tags.FluidTags;
+@@ -15,16 +13,19 @@ import net.minecraft.world.level.PathNavigationRegion;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.material.FluidState;
+ 
++import javax.annotation.Nullable;
++import java.util.Map;
++
+ public class SwimNodeEvaluator extends NodeEvaluator {
+     private final boolean allowBreaching;
+-    private final Long2ObjectMap<BlockPathTypes> pathTypesByPosCache = new Long2ObjectOpenHashMap<>();
++    private final Long2ObjectMap<BlockPathTypes> pathTypesByPosCache = new ConcurrentLong2ObjectOpenHashMap<>();
+ 
+-    public SwimNodeEvaluator(boolean canJumpOutOfWater) {
++    public SwimNodeEvaluator(final boolean canJumpOutOfWater) {
+         this.allowBreaching = canJumpOutOfWater;
+     }
+ 
+     @Override
+-    public void prepare(PathNavigationRegion cachedWorld, Mob entity) {
++    public void prepare(final PathNavigationRegion cachedWorld, final Mob entity) {
+         super.prepare(cachedWorld, entity);
+         this.pathTypesByPosCache.clear();
+     }
+@@ -43,26 +44,26 @@ public class SwimNodeEvaluator extends NodeEvaluator {
+ 
+     @Nullable
+     @Override
+-    public Target getGoal(double x, double y, double z) {
++    public Target getGoal(final double x, final double y, final double z) {
+         return this.getTargetFromNode(super.getNode(Mth.floor(x), Mth.floor(y), Mth.floor(z)));
+     }
+ 
+     @Override
+-    public int getNeighbors(Node[] successors, Node node) {
++    public int getNeighbors(final Node[] successors, final Node node) {
+         int i = 0;
+-        Map<Direction, Node> map = Maps.newEnumMap(Direction.class);
++        final Map<Direction, Node> map = Maps.newEnumMap(Direction.class);
+ 
+-        for(Direction direction : Direction.values()) {
+-            Node node2 = this.getNode(node.x + direction.getStepX(), node.y + direction.getStepY(), node.z + direction.getStepZ());
++        for (final Direction direction : Direction.values()) {
++            final Node node2 = this.getNode(node.x + direction.getStepX(), node.y + direction.getStepY(), node.z + direction.getStepZ());
+             map.put(direction, node2);
+             if (this.isNodeValid(node2)) {
+                 successors[i++] = node2;
+             }
+         }
+ 
+-        for(Direction direction2 : Direction.Plane.HORIZONTAL) {
+-            Direction direction3 = direction2.getClockWise();
+-            Node node3 = this.getNode(node.x + direction2.getStepX() + direction3.getStepX(), node.y, node.z + direction2.getStepZ() + direction3.getStepZ());
++        for (final Direction direction2 : Direction.Plane.HORIZONTAL) {
++            final Direction direction3 = direction2.getClockWise();
++            final Node node3 = this.getNode(node.x + direction2.getStepX() + direction3.getStepX(), node.y, node.z + direction2.getStepZ() + direction3.getStepZ());
+             if (this.isDiagonalNodeValid(node3, map.get(direction2), map.get(direction3))) {
+                 successors[i++] = node3;
+             }
+@@ -71,21 +72,21 @@ public class SwimNodeEvaluator extends NodeEvaluator {
+         return i;
+     }
+ 
+-    protected boolean isNodeValid(@Nullable Node node) {
++    protected boolean isNodeValid(@Nullable final Node node) {
+         return node != null && !node.closed;
+     }
+ 
+-    protected boolean isDiagonalNodeValid(@Nullable Node node, @Nullable Node node2, @Nullable Node node3) {
++    protected boolean isDiagonalNodeValid(@Nullable final Node node, @Nullable final Node node2, @Nullable final Node node3) {
+         return this.isNodeValid(node) && node2 != null && node2.costMalus >= 0.0F && node3 != null && node3.costMalus >= 0.0F;
+     }
+ 
+     @Nullable
+     @Override
+-    protected Node getNode(int x, int y, int z) {
++    protected Node getNode(final int x, final int y, final int z) {
+         Node node = null;
+-        BlockPathTypes blockPathTypes = this.getCachedBlockType(x, y, z);
++        final BlockPathTypes blockPathTypes = this.getCachedBlockType(x, y, z);
+         if (this.allowBreaching && blockPathTypes == BlockPathTypes.BREACH || blockPathTypes == BlockPathTypes.WATER) {
+-            float f = this.mob.getPathfindingMalus(blockPathTypes);
++            final float f = this.mob.getPathfindingMalus(blockPathTypes);
+             if (f >= 0.0F) {
+                 node = super.getNode(x, y, z);
+                 if (node != null) {
+@@ -101,26 +102,24 @@ public class SwimNodeEvaluator extends NodeEvaluator {
+         return node;
+     }
+ 
+-    protected BlockPathTypes getCachedBlockType(int x, int y, int z) {
+-        return this.pathTypesByPosCache.computeIfAbsent(BlockPos.asLong(x, y, z), (l) -> {
+-            return this.getBlockPathType(this.level, x, y, z);
+-        });
++    protected BlockPathTypes getCachedBlockType(final int x, final int y, final int z) {
++        return this.pathTypesByPosCache.computeIfAbsent(BlockPos.asLong(x, y, z), (l) -> this.getBlockPathType(this.level, x, y, z));
+     }
+ 
+     @Override
+-    public BlockPathTypes getBlockPathType(BlockGetter world, int x, int y, int z) {
++    public BlockPathTypes getBlockPathType(final BlockGetter world, final int x, final int y, final int z) {
+         return this.getBlockPathType(world, x, y, z, this.mob, this.entityWidth, this.entityHeight, this.entityDepth, this.canOpenDoors(), this.canPassDoors());
+     }
+ 
+     @Override
+-    public BlockPathTypes getBlockPathType(BlockGetter world, int x, int y, int z, Mob mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors) {
+-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+-
+-        for(int i = x; i < x + sizeX; ++i) {
+-            for(int j = y; j < y + sizeY; ++j) {
+-                for(int k = z; k < z + sizeZ; ++k) {
+-                    FluidState fluidState = world.getFluidState(mutableBlockPos.set(i, j, k));
+-                    BlockState blockState = world.getBlockState(mutableBlockPos.set(i, j, k));
++    public BlockPathTypes getBlockPathType(final BlockGetter world, final int x, final int y, final int z, final Mob mob, final int sizeX, final int sizeY, final int sizeZ, final boolean canOpenDoors, final boolean canEnterOpenDoors) {
++        final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
++
++        for (int i = x; i < x + sizeX; ++i) {
++            for (int j = y; j < y + sizeY; ++j) {
++                for (int k = z; k < z + sizeZ; ++k) {
++                    final FluidState fluidState = world.getFluidState(mutableBlockPos.set(i, j, k));
++                    final BlockState blockState = world.getBlockState(mutableBlockPos.set(i, j, k));
+                     if (fluidState.isEmpty() && blockState.isPathfindable(world, mutableBlockPos.below(), PathComputationType.WATER) && blockState.isAir()) {
+                         return BlockPathTypes.BREACH;
+                     }
+@@ -132,7 +131,7 @@ public class SwimNodeEvaluator extends NodeEvaluator {
+             }
+         }
+ 
+-        BlockState blockState2 = world.getBlockState(mutableBlockPos);
++        final BlockState blockState2 = world.getBlockState(mutableBlockPos);
+         return blockState2.isPathfindable(world, mutableBlockPos, PathComputationType.WATER) ? BlockPathTypes.WATER : BlockPathTypes.BLOCKED;
+     }
+ }

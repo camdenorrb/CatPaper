@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 27 Nov 2022 05:00:00 -0600
+Subject: [PATCH] Remove timings
+
+
+diff --git a/src/main/java/org/bukkit/UnsafeValues.java b/src/main/java/org/bukkit/UnsafeValues.java
+index b04ad1dfcaa9c676c8ab133528e0d53f865ad35a..8c803785d1ce4c057bc3b01ac62456a8aed52899 100644
+--- a/src/main/java/org/bukkit/UnsafeValues.java
++++ b/src/main/java/org/bukkit/UnsafeValues.java
+@@ -34,7 +34,6 @@ public interface UnsafeValues {
+     @Deprecated(forRemoval = true) net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer legacyComponentSerializer();
+     // Paper end
+ 
+-    void reportTimings(); // Paper
+     Material toLegacy(Material material);
+ 
+     Material fromLegacy(Material material);
+@@ -91,13 +90,6 @@ public interface UnsafeValues {
+ 
+     CreativeCategory getCreativeCategory(Material material);
+ 
+-    // Paper start
+-    /**
+-     * Server name to report to timings v2
+-     * @return name
+-     */
+-    String getTimingsServerName();
+-
+     /**
+      * Called once by the version command on first use, then cached.
+      */

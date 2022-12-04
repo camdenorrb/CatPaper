@@ -1,0 +1,105 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 27 Nov 2022 16:25:49 -0600
+Subject: [PATCH] Testing
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 9cbdcb34970795b661db33db1c14af27b61f4b53..f7c5bd7e32cf4e4adc4b95dbd62f1bf6898b5a0b 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -20,7 +20,7 @@ dependencies {
+     implementation("io.papermc.paper:paper-mojangapi:1.19.2-R0.1-SNAPSHOT") {
+         exclude("io.papermc.paper", "paper-api")
+     }
+-    implementation("dev.twelveoclock:fastutil-concurrent:1.0.6") {
++    implementation("dev.twelveoclock:fastutil-concurrent:1.0.13") {
+         isChanging = true
+     }
+     // CatPaper end
+diff --git a/src/main/java/io/papermc/paper/util/maplist/IteratorSafeOrderedReferenceSet.java b/src/main/java/io/papermc/paper/util/maplist/IteratorSafeOrderedReferenceSet.java
+index ff12817f7adb572ec4837f5b958c57a259a2121e..f77c1070e22427a556ad1da14ef4bca4365b6e07 100644
+--- a/src/main/java/io/papermc/paper/util/maplist/IteratorSafeOrderedReferenceSet.java
++++ b/src/main/java/io/papermc/paper/util/maplist/IteratorSafeOrderedReferenceSet.java
+@@ -1,4 +1,5 @@
+ package io.papermc.paper.util.maplist;
++/*
+ 
+ import it.unimi.dsi.fastutil.objects.Reference2IntLinkedOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+@@ -16,7 +17,9 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     protected final @NotNull Reference2IntLinkedOpenHashMap<E> indexMap;
+     protected int firstInvalidIndex = -1;
+ 
+-    /* list impl */
++    */
++/* list impl *//*
++
+     protected E[] listElements;
+     protected int listSize;
+ 
+@@ -47,7 +50,8 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+         this.threadRestricted = threadRestricted;
+     }
+ 
+-    /*
++    */
++/*
+     public void check() {
+         int iterated = 0;
+         ReferenceOpenHashSet<E> check = new ReferenceOpenHashSet<>();
+@@ -87,7 +91,8 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+             throw new IllegalStateException("Size is mismatched! (iterator is wrong) Got " + iterated + ", expected " + this.size());
+         }
+     }
+-    */
++    *//*
++
+ 
+     protected final boolean allowSafeIteration() {
+         return !this.threadRestricted || Bukkit.isPrimaryThread();
+@@ -336,3 +341,4 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+         }
+     }
+ }
++*/
+diff --git a/src/main/java/net/minecraft/world/level/entity/EntityTickList.java b/src/main/java/net/minecraft/world/level/entity/EntityTickList.java
+index 1c2baed2fc3aade736bddac32e79a2b38e10d345..e70f138a28869e8e7ea21ab2162eeb411ff383ff 100644
+--- a/src/main/java/net/minecraft/world/level/entity/EntityTickList.java
++++ b/src/main/java/net/minecraft/world/level/entity/EntityTickList.java
+@@ -1,11 +1,14 @@
+ package net.minecraft.world.level.entity;
+ 
++import dev.twelveoclock.fastutil.set.impl.ConcurrentObjectOpenHashSet;
++import it.unimi.dsi.fastutil.objects.ObjectIterator;
++import net.minecraft.world.entity.Entity;
++
+ import java.util.function.Consumer;
+ 
+-import net.minecraft.world.entity.Entity;
+ 
+ public class EntityTickList {
+-    private final io.papermc.paper.util.maplist.IteratorSafeOrderedReferenceSet<Entity> entities = new io.papermc.paper.util.maplist.IteratorSafeOrderedReferenceSet<>(true); // Paper - rewrite this, always keep this updated - why would we EVER tick an entity that's not ticking?
++    private final ConcurrentObjectOpenHashSet<Entity> entities = new ConcurrentObjectOpenHashSet<>(); // Paper - rewrite this, always keep this updated - why would we EVER tick an entity that's not ticking?
+ 
+     private void ensureActiveIsNotIterated() {
+         // Paper - replace with better logic, do not delay removals
+@@ -33,14 +36,11 @@ public class EntityTickList {
+         // Paper start - replace with better logic, do not delay removals/additions
+         // To ensure nothing weird happens with dimension travelling, do not iterate over new entries...
+         // (by dfl iterator() is configured to not iterate over new entries)
+-        final io.papermc.paper.util.maplist.IteratorSafeOrderedReferenceSet.Iterator<Entity> iterator = this.entities.iterator();
+-        try {
+-            while (iterator.hasNext()) {
+-                action.accept(iterator.next());
+-            }
+-        } finally {
+-            iterator.finishedIterating();
++        final ObjectIterator<Entity> iterator = this.entities.iterator();
++        while (iterator.hasNext()) {
++            action.accept(iterator.next());
+         }
++
+         // Paper end - replace with better logic, do not delay removals/additions
+     }
+ }

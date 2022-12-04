@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 27 Nov 2022 13:54:08 -0600
+Subject: [PATCH] Use concurrent set
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
+index b0360ea143816c02737006e79314bc156212be6f..8312010aafd314dc5e0f144242ab877ffa88e453 100644
+--- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
++++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
+@@ -8,7 +8,6 @@ import io.papermc.paper.util.CoordinateUtils;
+ import io.papermc.paper.util.IntervalledCounter;
+ import io.papermc.paper.util.MCUtil;
+ import io.papermc.paper.util.TickThread;
+-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+ import it.unimi.dsi.fastutil.longs.LongSet;
+ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
+@@ -315,7 +314,7 @@ public final class PlayerChunkLoader {
+                 });
+     }
+ 
+-    protected final LongOpenHashSet isTargetedForPlayerLoad = new LongOpenHashSet();
++    protected final LongSet isTargetedForPlayerLoad = new ConcurrentLongOpenHashSet();
+     protected final LongSet chunkTicketTracker = new ConcurrentLongOpenHashSet();
+ 
+     public boolean isChunkNearPlayers(final int chunkX, final int chunkZ) {

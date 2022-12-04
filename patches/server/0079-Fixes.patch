@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 4 Dec 2022 12:34:27 -0600
+Subject: [PATCH] Fixes
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 5bfb40909bf7e1fa609da994af73a387dd4aa604..ec5f40debe3a8a8b8042e28feb2a1f6fd9064753 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -50,25 +50,29 @@ dependencies {
+     implementation("org.spongepowered:configurate-yaml:4.1.2") // Paper - config files
+     implementation("commons-lang:commons-lang:2.6")
+     implementation("net.fabricmc:mapping-io:0.3.0") // Paper - needed to read mappings for stacktrace deobfuscation
+-	// Paper start - Use Velocity cipher
+-	implementation("com.velocitypowered:velocity-native:3.1.2-SNAPSHOT") {
+-		isTransitive = false
+-	}
+-	// Paper end
+-	runtimeOnly("org.xerial:sqlite-jdbc:3.40.0.0")
+-	runtimeOnly("mysql:mysql-connector-java:8.0.30")
+-	runtimeOnly("com.lmax:disruptor:3.4.4") // Paper
+-
+-	runtimeOnly("org.apache.maven:maven-resolver-provider:3.8.5")
+-	runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.2")
+-	runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.2")
+-
+-	testImplementation("io.github.classgraph:classgraph:4.8.151") // Paper - mob goal test
+-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
+-	testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
+-	testImplementation("org.hamcrest:hamcrest-library:2.2")
+-	testImplementation("org.mockito:mockito-core:4.8.0")
++    // Paper start - Use Velocity cipher
++    implementation("com.velocitypowered:velocity-native:3.1.2-SNAPSHOT") {
++        isTransitive = false
++    }
++    // Paper end
++    runtimeOnly("org.xerial:sqlite-jdbc:3.40.0.0")
++    runtimeOnly("mysql:mysql-connector-java:8.0.30")
++    runtimeOnly("com.lmax:disruptor:3.4.4") // Paper
++
++    runtimeOnly("org.apache.maven:maven-resolver-provider:3.8.6") {
++        exclude("org.apache.maven.resolver", "maven-resolver-impl")
++    }
++
++    runtimeOnly("org.apache.maven.resolver:maven-resolver-impl:1.9.2")
++    runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.2")
++    runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.2")
++
++    testImplementation("io.github.classgraph:classgraph:4.8.151") // Paper - mob goal test
++    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
++    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
++    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
++    testImplementation("org.hamcrest:hamcrest-library:2.2")
++    testImplementation("org.mockito:mockito-core:4.8.0")
+ 
+ 	implementation("io.netty:netty-all:4.1.85.Final") // Paper - Bump netty
+ }

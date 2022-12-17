@@ -48,10 +48,10 @@ index 3ec1e6be4d5f39bdfcabbf941f2c3f1e4d3d8340..e0b476fd853f93e59a0e6e0919e06d8a
      };
  
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index d09aeded23cc47cd2deaaba69a85bb42f8c07f65..b04b98ae08a7b48a6c3d7234f2eaf35d02e52152 100644
+index 3452e36367e1905940bcba6ba3d69eea340ced90..d75203780e33b485155bc94e4994af2dcc54d6e0 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
-@@ -949,7 +949,7 @@ public abstract class Mob extends LivingEntity {
+@@ -974,7 +974,7 @@ public abstract class Mob extends LivingEntity {
          } else {
              int i = (int) (this.getHealth() - this.getMaxHealth() * 0.33F);
  

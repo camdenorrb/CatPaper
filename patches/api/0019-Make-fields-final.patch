@@ -169,7 +169,7 @@ index 3585457b21aca2a2f1779868a0fa91f8011ad3c9..9585be7d2009904e3633604e45ae0ebc
      public PufferFishStateChangeEvent(@NotNull PufferFish entity, int newPuffState) {
          super(entity);
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index e6e2e680ab68f281a7cac3ad62e5e95f4b23d0e0..ded6aa4dfe8457c4f5b26e07134d6905bf1119b2 100644
+index 06aadc6e86b16e85488cc8ea6a4caa1929831cf7..6cac68a60ee0b39937d6987579f2bab9b8f512de 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
 @@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
@@ -303,7 +303,7 @@ index 5911944fe22d0f040a2b022e7aeb1acd4336763f..2af7e7b9718be2ffad10104fec0604f6
      public PluginNameConversationPrefix(@NotNull Plugin plugin) {
          this(plugin, " > ", ChatColor.LIGHT_PURPLE);
 diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
-index fe60c6e7c474bf21c98e331f13e214e10e9e3107..55695dbcb1923dcac7352ae08f17c783b36369cc 100644
+index 91e4e856ed129b2eb5bc9c6d9491c3712375fd8e..1d01fec9c8f022b39a3b768d728bf17b9a5e77ea 100644
 --- a/src/main/java/org/bukkit/event/HandlerList.java
 +++ b/src/main/java/org/bukkit/event/HandlerList.java
 @@ -33,7 +33,7 @@ public class HandlerList {
@@ -313,8 +313,8 @@ index fe60c6e7c474bf21c98e331f13e214e10e9e3107..55695dbcb1923dcac7352ae08f17c783
 -    private static @NotNull ArrayList<HandlerList> allLists = new ArrayList<HandlerList>();
 +    private static final @NotNull ArrayList<HandlerList> allLists = new ArrayList<HandlerList>();
  
+     // Paper start
      /**
-      * Bake all handler lists. Best used just after all normal event
 diff --git a/src/main/java/org/bukkit/event/block/BlockPistonRetractEvent.java b/src/main/java/org/bukkit/event/block/BlockPistonRetractEvent.java
 index 340fa397e68c024df380a28db21545a0c83d9fa6..4832d1f003a94d35b54e52bce9cde21bedc5c4b5 100644
 --- a/src/main/java/org/bukkit/event/block/BlockPistonRetractEvent.java
@@ -370,7 +370,7 @@ index 0a87e2934901eb1bcaec72ed8141cd4828a4efce..ae6ff96f9edf65d590b6fc012b0e83c2
  
      public EntityPortalExitEvent(@NotNull final Entity entity, @NotNull final Location from, @NotNull final Location to, @NotNull final Vector before, @NotNull final Vector after) {
 diff --git a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
-index 0bd157bd2aeca1d760285c6293c39fb385cd53f1..84d5f2253921a6206af78e8a0336b2be9b17e975 100644
+index 7c6365cae6a541bddff141810d770945947569ba..9328fd8f080d9927be3a83c893d826f2e3165e8e 100644
 --- a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 @@ -71,7 +71,7 @@ public class PlayerDeathEvent extends EntityDeathEvent {
@@ -485,10 +485,10 @@ index 768b5fddf684afe57c253abbc04cf96dc222b286..ee3cbe6e0aed67958c77a418c5157f26
  
      @Deprecated // Paper - Add pre-reduction damage
 diff --git a/src/main/java/org/bukkit/inventory/CookingRecipe.java b/src/main/java/org/bukkit/inventory/CookingRecipe.java
-index b38b70d0abcaa4098d90fd04b2d22d347b08a3e2..993675b57b0a6acc58cd5f2176f8227b84f80b7c 100644
+index 01cfc2e350bcd41d5890a46483ca3c3310498590..1ea8ef6debb15fea9184ce325385d641360dea13 100644
 --- a/src/main/java/org/bukkit/inventory/CookingRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/CookingRecipe.java
-@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
+@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
   */
  public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe, Keyed {
      private final @NotNull NamespacedKey key;
@@ -511,7 +511,7 @@ index a8895555a3a2507ccadd3545eba9d0235f9974b3..5ed1fee2590a4dd4004fb072c4e5d6e9
      private int uses;
      private int maxUses;
 diff --git a/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java b/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
-index 1b3b6fd742f4a2df6f40dba9be02d3a0fe26a17d..2a69c1a997a498973c8d71978c7d910bc9faabae 100644
+index 2a6fd719fa8bc18a5491fc561ebd66dbdcfd10f9..53b6b6b2f5eec2b596f3a8bc476a5666a85cada0 100644
 --- a/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
 @@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
@@ -621,10 +621,10 @@ index f451719370ad49cc50f2860e25023f7096fd210b..e92458d4f3c9abe9dc55c693f03216f8
      public RegisteredServiceProvider(@NotNull Class<T> service, @NotNull T provider, @NotNull ServicePriority priority, @NotNull Plugin plugin) {
          this.service = service;
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index d6b45f96841ce956fb8092228ddc14147c88fc17..2e5649a7f6f0aa893edb5b422682f3ec02f31e87 100644
+index 42b0e4310f30ac57a7fb7aa2677ecede7da39b7a..77793d0248616a46958ffb8f432f353721fafa79 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -55,7 +55,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -57,7 +57,7 @@ public final class SimplePluginManager implements PluginManager {
      private final Map<Boolean, Set<Permission>> defaultPerms = new LinkedHashMap<Boolean, Set<Permission>>();
      private final Map<String, Map<Permissible, Boolean>> permSubs = new HashMap<String, Map<Permissible, Boolean>>();
      private final Map<Boolean, Map<Permissible, Boolean>> defSubs = new HashMap<Boolean, Map<Permissible, Boolean>>();

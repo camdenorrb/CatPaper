@@ -5,7 +5,7 @@ Subject: [PATCH] Update kotlin
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 566e607ef55dc7dd6bd6081ebf87e99d6d2af442..a17980dc11e523aa34cba534d9a88d5080f3e257 100644
+index e8a36207094baf63fdfc7a327e18e9118b8c8991..df0b69aec6c4b299c59761a608462a86c859e49a 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -1,7 +1,7 @@

@@ -5,7 +5,7 @@ Subject: [PATCH] Switch from CopyOnWriteArrayLists
 
 
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 9e790186eca2bcfadec0577f22350f73110b7311..a4dcb8a4404ed60d9be4168746a5b39bc174fdb8 100644
+index aafc6fd9129e2719ab28b62edbef305163d336c8..8f82ae2b412da606898b1c1fc66340a83f8ffc54 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 @@ -1,6 +1,8 @@
@@ -25,7 +25,7 @@ index 9e790186eca2bcfadec0577f22350f73110b7311..a4dcb8a4404ed60d9be4168746a5b39b
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
  import java.util.logging.Level;
-@@ -37,7 +38,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -38,7 +39,7 @@ public final class JavaPluginLoader implements PluginLoader {
      private final Pattern[] fileFilters = new Pattern[]{Pattern.compile("\\.jar$")};
      private final Map<String, java.util.concurrent.locks.ReentrantReadWriteLock> classLoadLock = new java.util.HashMap<String, java.util.concurrent.locks.ReentrantReadWriteLock>(); // Paper
      private final Map<String, Integer> classLoadLockCount = new java.util.HashMap<String, Integer>(); // Paper

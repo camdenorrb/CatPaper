@@ -297,10 +297,10 @@ index 122884098f08c9aa5e144876746b5ce4e8f1a4b6..f03199c2d21b692550b74574edd1300f
      }
  }
 diff --git a/src/main/java/org/bukkit/Effect.java b/src/main/java/org/bukkit/Effect.java
-index 6616bd900d7f85972dcf2ddc21378ffea78315bc..23fc945f0344fa1588acf6117f9d1fc5e8906609 100644
+index de83d4d60917f6bb44bff23e74c153111f36e525..f5b4b1b41e67b3fab00198e3e10f508d87d92111 100644
 --- a/src/main/java/org/bukkit/Effect.java
 +++ b/src/main/java/org/bukkit/Effect.java
-@@ -455,13 +455,13 @@ public enum Effect {
+@@ -485,13 +485,13 @@ public enum Effect {
      @Deprecated
      @Nullable
      public static Effect getById(int id) {
@@ -370,10 +370,10 @@ index f8ae143acbf586d5279b44f7311ca97f3ae4ead2..0ad046fa4ce3b89d13f9964aa9e8aca7
      }
  }
 diff --git a/src/main/java/org/bukkit/Instrument.java b/src/main/java/org/bukkit/Instrument.java
-index 92194803bcdfbcfdb99567835906ce9219eabd04..ca79912f6258b14b5b640c277f39da3faa748aa2 100644
+index ec36b0a685bbaf80ae563ad169a94a62298edd88..79f9c3e427a7016190de65eabe20083681d2b7f6 100644
 --- a/src/main/java/org/bukkit/Instrument.java
 +++ b/src/main/java/org/bukkit/Instrument.java
-@@ -102,12 +102,12 @@ public enum Instrument {
+@@ -139,12 +139,12 @@ public enum Instrument {
      @Deprecated
      @Nullable
      public static Instrument getByType(final byte type) {
@@ -389,10 +389,10 @@ index 92194803bcdfbcfdb99567835906ce9219eabd04..ca79912f6258b14b5b640c277f39da3f
      }
  }
 diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
-index 70e95a38c9eb7f3229a4f0f4a83111ba6c70c472..220336daf1c277611d9fab47fc93056867de3b8a 100644
+index 985216eab87d1769abd034bd4585081531474613..9bf2737454ef96afaa4988c09bc8d4edaa4574a7 100644
 --- a/src/main/java/org/bukkit/Location.java
 +++ b/src/main/java/org/bukkit/Location.java
-@@ -1112,12 +1112,12 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1112,12 +1112,12 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
              data.put("world", getWorld().getName());
          }
  
@@ -411,10 +411,10 @@ index 70e95a38c9eb7f3229a4f0f4a83111ba6c70c472..220336daf1c277611d9fab47fc930568
          return data;
      }
 diff --git a/src/main/java/org/bukkit/Material.java b/src/main/java/org/bukkit/Material.java
-index c3996241e7b8e23fff757434328602205d555acf..2155d172fd5264857da4c390a745c31d0dd910ba 100644
+index 8d2d37bf65f1f076bac93d2eef7f3e53b2226052..b940edce5becab4754d0d8e1a2895a8a6e7090bb 100644
 --- a/src/main/java/org/bukkit/Material.java
 +++ b/src/main/java/org/bukkit/Material.java
-@@ -4294,7 +4294,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -4497,7 +4497,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
      public MaterialData getNewData(final byte raw) {
          Preconditions.checkArgument(legacy, "Cannot get new data of Modern Material");
          try {
@@ -711,7 +711,7 @@ index cc4778f78398987d3b089432416f4a40bc4f5183..944934f0c98f4a8f19e11de8acced232
          }
  
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 33a6b7a27dc91552799c07a7aad9b3df31ad13f7..b7dfbbfadeebf771ad26bfee5db4a59f36f9c233 100644
+index cdbc7329cf5f67d66e31eb31e83b9e7997040f72..008ef0402b23402ecf3cc3f93b8d29cb5e61ed11 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -250,7 +250,7 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
@@ -724,10 +724,10 @@ index 33a6b7a27dc91552799c07a7aad9b3df31ad13f7..b7dfbbfadeebf771ad26bfee5db4a59f
              return null;
          });
 diff --git a/src/main/java/org/bukkit/entity/EntityType.java b/src/main/java/org/bukkit/entity/EntityType.java
-index b75c16cb8397d91c6dcf850e27a496ee0eb9de77..fdd4d060613f2a7c153ac2fe7713b200e1351af2 100644
+index ba1ff1679d06da7fc8b8d633ce0da27d1777bba3..882d699f781160765db4a5eb3a71ab3732c07f9a 100644
 --- a/src/main/java/org/bukkit/entity/EntityType.java
 +++ b/src/main/java/org/bukkit/entity/EntityType.java
-@@ -307,7 +307,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
+@@ -309,7 +309,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
                  NAME_MAP.put(type.name.toLowerCase(java.util.Locale.ENGLISH), type);
              }
              if (type.typeId > 0) {
@@ -736,7 +736,7 @@ index b75c16cb8397d91c6dcf850e27a496ee0eb9de77..fdd4d060613f2a7c153ac2fe7713b200
              }
          }
  
-@@ -406,7 +406,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
+@@ -408,7 +408,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
          if (id > Short.MAX_VALUE) {
              return null;
          }
@@ -788,7 +788,7 @@ index bd97bf58ca778c01e25a2fae692098bfc6fae7e6..c8b9348499d712c0415a7d5cc58ca0e0
  
              // Don't allow value to cross zero, assume zero values should be negative
 diff --git a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
-index 8c530f05d5f1c1ce251490813111cdfcab32b1be..c19fb029246bcbd9ceec9510b4e526b9cad6404c 100644
+index c952744cc65e3bf0e7a09ad5456b351bfb5ef286..b74507154a908d28a89d636135c74475d8e465c5 100644
 --- a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
 @@ -74,7 +74,7 @@ public class PotionSplashEvent extends ProjectileHitEvent implements Cancellable
@@ -814,7 +814,7 @@ index deef4e50872d02f572bf0db4d95ea727b3a029b8..beb05575bc540ed4b921c9179a507ddd
          this.containerSlots = b.build();
      }
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index 56ba0a004f55a61841c64219823ada8378361272..2dd0e244c11a094e1befe4c02b0164f71d94abcd 100644
+index 9648e9683580a5f07314bd4d2a386b52300a71fa..556722989c797c7ccf5aee304a69f6201debf4b0 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
 @@ -461,11 +461,11 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
@@ -832,10 +832,10 @@ index 56ba0a004f55a61841c64219823ada8378361272..2dd0e244c11a094e1befe4c02b0164f7
  
          ItemMeta meta = getItemMeta();
 diff --git a/src/main/java/org/bukkit/inventory/ShapedRecipe.java b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
-index ddabcc344ebe5c6d114b0b576f211e68d8528b36..21d3d7e97db1f4a0c835b1695fb884add6518f80 100644
+index 080dec4c7560ab570e3048a2e2a49cbcb6304a54..4eb31d5198adbd62644a53a32d5bf10ed001e802 100644
 --- a/src/main/java/org/bukkit/inventory/ShapedRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
-@@ -127,22 +127,22 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -129,22 +129,22 @@ public class ShapedRecipe implements Recipe, Keyed {
      @Deprecated
      @NotNull
      public ShapedRecipe setIngredient(char key, @NotNull Material ingredient, int raw) {
@@ -951,10 +951,10 @@ index 6d1e29c2a53e50910c8cac3b765bf9437a1ca6e3..35e9eda170eddaffafba159304087f74
      }
  
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42924d6e31 100644
+index 74db935644302c0a87fb93d48e2b0ad5c64b99de..0c7e6ccf221bb94a79e83239f509261ea76654a7 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -61,8 +61,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -63,8 +63,8 @@ public final class SimplePluginManager implements PluginManager {
          server = instance;
          this.commandMap = commandMap;
  
@@ -965,7 +965,7 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
      }
  
      /**
-@@ -638,8 +638,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -640,8 +640,8 @@ public final class SimplePluginManager implements PluginManager {
              HandlerList.unregisterAll();
              fileAssociations.clear();
              permissions.clear();
@@ -976,7 +976,7 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
          }
      }
      private void fireEvent(@NotNull Event event) { callEvent(event); } // Paper - support old method incase plugin uses reflection
-@@ -799,7 +799,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -801,7 +801,7 @@ public final class SimplePluginManager implements PluginManager {
      @Override
      @NotNull
      public Set<Permission> getDefaultPermissions(boolean op) {
@@ -985,7 +985,7 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
      }
  
      @Override
-@@ -815,8 +815,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -817,8 +817,8 @@ public final class SimplePluginManager implements PluginManager {
      @Override
      public void recalculatePermissionDefaults(@NotNull Permission perm) {
          if (perm != null && permissions.containsKey(perm.getName().toLowerCase(java.util.Locale.ENGLISH))) {
@@ -996,7 +996,7 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
  
              calculatePermissionDefault(perm, true);
          }
-@@ -824,13 +824,13 @@ public final class SimplePluginManager implements PluginManager {
+@@ -826,13 +826,13 @@ public final class SimplePluginManager implements PluginManager {
  
      private void calculatePermissionDefault(@NotNull Permission perm, boolean dirty) {
          if ((perm.getDefault() == PermissionDefault.OP) || (perm.getDefault() == PermissionDefault.TRUE)) {
@@ -1012,7 +1012,7 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
              if (dirty) {
                  dirtyPermissibles(false);
              }
-@@ -861,7 +861,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -863,7 +863,7 @@ public final class SimplePluginManager implements PluginManager {
              permSubs.put(name, map);
          }
  
@@ -1021,7 +1021,7 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
      }
  
      @Override
-@@ -893,25 +893,25 @@ public final class SimplePluginManager implements PluginManager {
+@@ -895,25 +895,25 @@ public final class SimplePluginManager implements PluginManager {
  
      @Override
      public void subscribeToDefaultPerms(boolean op, @NotNull Permissible permissible) {
@@ -1052,7 +1052,7 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
              }
          }
      }
-@@ -919,7 +919,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -921,7 +921,7 @@ public final class SimplePluginManager implements PluginManager {
      @Override
      @NotNull
      public Set<Permissible> getDefaultPermSubscriptions(boolean op) {
@@ -1061,7 +1061,7 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
  
          if (map == null) {
              return ImmutableSet.of();
-@@ -969,8 +969,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -971,8 +971,8 @@ public final class SimplePluginManager implements PluginManager {
      // Paper start
      public void clearPermissions() {
          permissions.clear();
@@ -1073,10 +1073,10 @@ index db4a3a8c093e8783260d11976062219b23b70536..e916436b710b9ab1044e3f71b311ee42
      // Paper end
  
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 7b9470a434dd2bed01eec2317f7582ddfd08326a..40b2a4692779fae04de7f2b7e735cdef34f880a9 100644
+index 2cd69fe535a3ae67557e3cab12f159032b9b3d10..8d64d4e31d6fef6248114933a482585ecea7c388 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -219,7 +219,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -220,7 +220,7 @@ public final class JavaPluginLoader implements PluginLoader {
          java.util.concurrent.locks.ReentrantReadWriteLock lock;
          synchronized (classLoadLock) {
              lock = classLoadLock.computeIfAbsent(name, (x) -> new java.util.concurrent.locks.ReentrantReadWriteLock());
@@ -1085,7 +1085,7 @@ index 7b9470a434dd2bed01eec2317f7582ddfd08326a..40b2a4692779fae04de7f2b7e735cdef
          }
          lock.writeLock().lock();try {
              // Paper start - prioritize self
-@@ -244,7 +244,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -245,7 +245,7 @@ public final class JavaPluginLoader implements PluginLoader {
                      classLoadLock.remove(name);
                      classLoadLockCount.remove(name);
                  } else {

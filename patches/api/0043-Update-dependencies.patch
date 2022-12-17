@@ -5,15 +5,12 @@ Subject: [PATCH] Update dependencies
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index abc348079eea9f58bac7fa8dc5418d2e9d39dbe9..a896058357453cc825ee6ae72c8b99676f5cf9d9 100644
+index 2218e59c409846d7ded33ee38ddfde7d89cafb87..a896058357453cc825ee6ae72c8b99676f5cf9d9 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -9,14 +9,14 @@ java {
-     withJavadocJar()
- }
+@@ -11,12 +11,12 @@ java {
  
--val adventureVersion = "4.11.0"
-+val adventureVersion = "4.12.0"
+ val adventureVersion = "4.12.0"
  val apiAndDocs: Configuration by configurations.creating {
 -    attributes {
 -        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))

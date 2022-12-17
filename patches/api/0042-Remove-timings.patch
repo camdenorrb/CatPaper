@@ -171,10 +171,10 @@ index 9b45ce887b9172f30302b83fe24b99b76b16dac3..00000000000000000000000000000000
 -}
 diff --git a/src/main/java/co/aikar/timings/TimedEventExecutor.java b/src/main/java/co/aikar/timings/TimedEventExecutor.java
 deleted file mode 100644
-index 305bf82969e71d6d959d9e4e7d3a307de383d018..0000000000000000000000000000000000000000
+index 16269f35c66e2e8ce19695578370dd7121ff1cfc..0000000000000000000000000000000000000000
 --- a/src/main/java/co/aikar/timings/TimedEventExecutor.java
 +++ /dev/null
-@@ -1,83 +0,0 @@
+@@ -1,89 +0,0 @@
 -/*
 - * This file is licensed under the MIT License (MIT).
 - *
@@ -256,6 +256,12 @@ index 305bf82969e71d6d959d9e4e7d3a307de383d018..00000000000000000000000000000000
 -        try (final Timing ignored = timings.startTiming()){
 -            executor.execute(listener, event);
 -        }
+-    }
+-
+-    @Override
+-    @NotNull
+-    public String toString() {
+-        return "TimedEventExecutor['" + this.executor.toString() + "']";
 -    }
 -}
 diff --git a/src/main/java/co/aikar/timings/Timing.java b/src/main/java/co/aikar/timings/Timing.java
@@ -2027,18 +2033,18 @@ index 3f3ac219889e348af23dd96efd2a08385d789748..00000000000000000000000000000000
 -    }
 -}
 diff --git a/src/main/java/org/bukkit/UnsafeValues.java b/src/main/java/org/bukkit/UnsafeValues.java
-index b04ad1dfcaa9c676c8ab133528e0d53f865ad35a..8c803785d1ce4c057bc3b01ac62456a8aed52899 100644
+index eab60f2aa59947135555f769829910ae2f5b1568..3d5057bcaad1a890c921521f885945b23f62a19d 100644
 --- a/src/main/java/org/bukkit/UnsafeValues.java
 +++ b/src/main/java/org/bukkit/UnsafeValues.java
-@@ -34,7 +34,6 @@ public interface UnsafeValues {
-     @Deprecated(forRemoval = true) net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer legacyComponentSerializer();
+@@ -35,7 +35,6 @@ public interface UnsafeValues {
+     net.kyori.adventure.text.Component resolveWithContext(net.kyori.adventure.text.Component component, org.bukkit.command.CommandSender context, org.bukkit.entity.Entity scoreboardSubject, boolean bypassPermissions) throws java.io.IOException;
      // Paper end
  
 -    void reportTimings(); // Paper
      Material toLegacy(Material material);
  
      Material fromLegacy(Material material);
-@@ -91,13 +90,6 @@ public interface UnsafeValues {
+@@ -92,13 +91,6 @@ public interface UnsafeValues {
  
      CreativeCategory getCreativeCategory(Material material);
  
@@ -2161,10 +2167,10 @@ index 20e496b7cb585276cfff36d535a83d680193a066..9e68df4d643371172c7cd4f44e4bfb80
              server.getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerCommandException(ex, target, sender, args))); // Paper
              //target.timings.stopTiming(); // Spigot // Paper
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index a8dcdd9d15cac61b70fc4a8b3adfda18eac6cc80..a035d4354800e20c994fa42463ba0717a1036b58 100644
+index 078d1f1e46d77bed14e1cfaf1d3b656b7d4e78bf..6dc1270aef5142976936f76d68b0308be3384e08 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -719,7 +719,6 @@ public final class SimplePluginManager implements PluginManager {
+@@ -721,7 +721,6 @@ public final class SimplePluginManager implements PluginManager {
              throw new IllegalPluginAccessException("Plugin attempted to register " + event + " while not enabled");
          }
  
@@ -2172,7 +2178,7 @@ index a8dcdd9d15cac61b70fc4a8b3adfda18eac6cc80..a035d4354800e20c994fa42463ba0717
          if (false) { // Spigot - RL handles useTimings check now // Paper
              getEventListeners(event).register(new TimedRegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
          } else {
-@@ -940,7 +939,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -942,7 +941,8 @@ public final class SimplePluginManager implements PluginManager {
  
      @Override
      public boolean useTimings() {
@@ -2182,7 +2188,7 @@ index a8dcdd9d15cac61b70fc4a8b3adfda18eac6cc80..a035d4354800e20c994fa42463ba0717
      }
  
      /**
-@@ -949,7 +949,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -951,7 +951,7 @@ public final class SimplePluginManager implements PluginManager {
       * @param use True if per event timing code should be used
       */
      public void useTimings(final boolean use) {
@@ -2192,10 +2198,10 @@ index a8dcdd9d15cac61b70fc4a8b3adfda18eac6cc80..a035d4354800e20c994fa42463ba0717
  
      // Paper start
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index a4dcb8a4404ed60d9be4168746a5b39bc174fdb8..175ebaec89ba43a324967e7d9241ec3e6d208a2e 100644
+index 8f82ae2b412da606898b1c1fc66340a83f8ffc54..f0b4395f527ee71ee65676898dd75b4d8c130a51 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -301,23 +301,24 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -302,23 +302,24 @@ public final class JavaPluginLoader implements PluginLoader {
                      plugin.getLogger().log(
                              Level.WARNING,
                              String.format(

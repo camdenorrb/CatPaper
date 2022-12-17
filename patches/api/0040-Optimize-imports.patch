@@ -61,7 +61,7 @@ index 7444656f4d339089c90bc04848ddd5adac4a8158..12cace3337ea8e66805ea238290b8b5f
      public PluginsCommand(@NotNull final String name) {
          super(name);
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index 645772b73588bd090f28b4e7ca017ec86aa2ba52..a8dcdd9d15cac61b70fc4a8b3adfda18eac6cc80 100644
+index 627b645521bafa81f76d738e583aae472c9d8f2e..078d1f1e46d77bed14e1cfaf1d3b656b7d4e78bf 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 @@ -5,25 +5,6 @@ import com.google.common.collect.ImmutableSet;
@@ -111,7 +111,7 @@ index 645772b73588bd090f28b4e7ca017ec86aa2ba52..a8dcdd9d15cac61b70fc4a8b3adfda18
   * Handles all plugin management from the Server
   */
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 483d7203e1d44dd1d96d310ea7e1897aaeae4714..9e790186eca2bcfadec0577f22350f73110b7311 100644
+index e59dd098b8d8d13848f3d1f33391c4234dde7ddc..aafc6fd9129e2719ab28b62edbef305163d336c8 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 @@ -1,51 +1,33 @@

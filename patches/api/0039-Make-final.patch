@@ -41,7 +41,7 @@ index 6beb702449fde74f7df0182ca3d8ac3139024513..45567114a96b26f0756784aeb4bad510
          TIMINGS_TICK.processTick(violated);
          processTick(violated);
 diff --git a/src/main/java/co/aikar/timings/TimedEventExecutor.java b/src/main/java/co/aikar/timings/TimedEventExecutor.java
-index 224a657e986c8a298f21f3e73faa1afde4ac4ac0..305bf82969e71d6d959d9e4e7d3a307de383d018 100644
+index 0dea21f8cbd26a2fdf47f911cb9bdeaa8febf5b6..16269f35c66e2e8ce19695578370dd7121ff1cfc 100644
 --- a/src/main/java/co/aikar/timings/TimedEventExecutor.java
 +++ b/src/main/java/co/aikar/timings/TimedEventExecutor.java
 @@ -47,9 +47,9 @@ public class TimedEventExecutor implements EventExecutor {
@@ -1325,7 +1325,7 @@ index a02a02aa0c87e0f0ed9e509e4dcab01565b3d92a..e9d6f9c8cf00c59dc820fdd47dfd8c71
      }
  }
 diff --git a/src/main/java/com/destroystokyo/paper/MaterialTags.java b/src/main/java/com/destroystokyo/paper/MaterialTags.java
-index 5d6e4bc110a9668cea584494ade24894fd1fbfb2..b8c5372d83ff201cebf5edf8f9606c6c34c0f5bf 100644
+index 05bdc4dd765ccb4dcca2b98356e3f93eed8cc4e7..0c7e36eebdcee4e5b8ccc0d9281b82ae36caf002 100644
 --- a/src/main/java/com/destroystokyo/paper/MaterialTags.java
 +++ b/src/main/java/com/destroystokyo/paper/MaterialTags.java
 @@ -39,7 +39,7 @@ import org.jetbrains.annotations.NotNull;
@@ -1816,10 +1816,10 @@ index 83ed9e483431aec0bff04268c58bb0240ff97d35..3489835618fbb9ad328347d29cf5facd
              this.fadeOut = fadeOut;
              return this;
 diff --git a/src/main/java/com/destroystokyo/paper/block/TargetBlockInfo.java b/src/main/java/com/destroystokyo/paper/block/TargetBlockInfo.java
-index c81d87d3238762fd0a3ca1e418ea184b658510bd..a71961720fccbc2adc815a7d62fe1292f37eda9d 100644
+index d9666a3b79581525857c09a4afb9187441be068a..f6d3177566b04023a839b128fbca29831e2adf56 100644
 --- a/src/main/java/com/destroystokyo/paper/block/TargetBlockInfo.java
 +++ b/src/main/java/com/destroystokyo/paper/block/TargetBlockInfo.java
-@@ -11,7 +11,7 @@ public class TargetBlockInfo {
+@@ -14,7 +14,7 @@ public class TargetBlockInfo {
      private final @NotNull Block block;
      private final @NotNull BlockFace blockFace;
  
@@ -1882,10 +1882,10 @@ index 43f062257472a06e9e64c2feef6c3b1012aee00e..12b75ccbf2ac52c3250719006a3269d2
      }
  
 diff --git a/src/main/java/com/destroystokyo/paper/entity/TargetEntityInfo.java b/src/main/java/com/destroystokyo/paper/entity/TargetEntityInfo.java
-index c8a9ee815066dea7c57fe4156f714dc76751ff96..df24c561f31b42f4b4cf5afa243b3b91b685b9ec 100644
+index 08f3108662cee13c6dff65e5d7c0cfdd73300747..9b9a16e8fa42239941f8ca28e53f0672faa439fa 100644
 --- a/src/main/java/com/destroystokyo/paper/entity/TargetEntityInfo.java
 +++ b/src/main/java/com/destroystokyo/paper/entity/TargetEntityInfo.java
-@@ -11,7 +11,7 @@ public class TargetEntityInfo {
+@@ -13,7 +13,7 @@ public class TargetEntityInfo {
      private final @NotNull Entity entity;
      private final @NotNull Vector hitVec;
  
@@ -2868,17 +2868,18 @@ index 688a596aa2b925651a92bf092e1ef4d77a47258c..5bf19e717d0a5a110b3e67f7206aa9ab
      }
  }
 diff --git a/src/main/java/com/destroystokyo/paper/event/executor/MethodHandleEventExecutor.java b/src/main/java/com/destroystokyo/paper/event/executor/MethodHandleEventExecutor.java
-index 8d61799b3f012bb7ac28e875c633725ab9cd3d3d..40eb0f08372e072edb64de928ffb6193c9d991e3 100644
+index bbec023085c651e80eef6d7c7d0329d60cd23229..cc1f7a361640e443e67209a25bb47fc1f235a71f 100644
 --- a/src/main/java/com/destroystokyo/paper/event/executor/MethodHandleEventExecutor.java
 +++ b/src/main/java/com/destroystokyo/paper/event/executor/MethodHandleEventExecutor.java
-@@ -15,27 +15,27 @@ public class MethodHandleEventExecutor implements EventExecutor {
-     private final @NotNull Class<? extends Event> eventClass;
+@@ -16,29 +16,29 @@ public class MethodHandleEventExecutor implements EventExecutor {
      private final MethodHandle handle;
+     private final Method method;
  
 -    public MethodHandleEventExecutor(@NotNull Class<? extends Event> eventClass, @NotNull MethodHandle handle) {
 +    public MethodHandleEventExecutor(@NotNull final Class<? extends Event> eventClass, @NotNull final MethodHandle handle) {
          this.eventClass = eventClass;
          this.handle = handle;
+         this.method = null;
      }
  
 -    public MethodHandleEventExecutor(@NotNull Class<? extends Event> eventClass, @NotNull Method m) {
@@ -2891,6 +2892,7 @@ index 8d61799b3f012bb7ac28e875c633725ab9cd3d3d..40eb0f08372e072edb64de928ffb6193
 +        } catch (final IllegalAccessException e) {
              throw new AssertionError("Unable to set accessible", e);
          }
+         this.method = m;
      }
  
      @Override
@@ -2905,12 +2907,12 @@ index 8d61799b3f012bb7ac28e875c633725ab9cd3d3d..40eb0f08372e072edb64de928ffb6193
          }
      }
 diff --git a/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java b/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
-index d69ef3dda605ad6d90384616e7252ca8f279c078..cbf613e9385ea6b1219153397d7d185ffa80967b 100644
+index e316fb60f1fef29a9a6427b789d18d8a1d104d9a..55c20a7e4a23e861c017a8b52313752dab36badc 100644
 --- a/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
 +++ b/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
-@@ -18,24 +18,24 @@ public class StaticMethodHandleEventExecutor implements EventExecutor {
-     private final @NotNull Class<? extends Event> eventClass;
+@@ -19,25 +19,25 @@ public class StaticMethodHandleEventExecutor implements EventExecutor {
      private final MethodHandle handle;
+     private final Method method;
  
 -    public StaticMethodHandleEventExecutor(@NotNull Class<? extends Event> eventClass, @NotNull Method m) {
 +    public StaticMethodHandleEventExecutor(@NotNull final Class<? extends Event> eventClass, @NotNull final Method m) {
@@ -2924,6 +2926,7 @@ index d69ef3dda605ad6d90384616e7252ca8f279c078..cbf613e9385ea6b1219153397d7d185f
 +        } catch (final IllegalAccessException e) {
              throw new AssertionError("Unable to set accessible", e);
          }
+         this.method = m;
      }
  
      @Override
@@ -3019,7 +3022,7 @@ index 1c1554f89739ce37ac4ef28558fee6ee4bd458f6..d1310d35395673779d9807b1b92a5ae9
                  }
              }
 diff --git a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
-index 7a144854ec8998e758bf2327d30d8165fbf39e0f..616ae996065be6204c9a8d7d000832572ba448d5 100644
+index a89d189e1175e980e5af8476f539f0a025e8903b..355640d14d5a2f6f41fc9dedab8a5ac23352dbc9 100644
 --- a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
 +++ b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
 @@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
@@ -3032,27 +3035,27 @@ index 7a144854ec8998e758bf2327d30d8165fbf39e0f..616ae996065be6204c9a8d7d00083257
      }
  
 diff --git a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
-index 476f36ae16115d34cab9748c8d7d0947d0a24b96..fdc1bdbec275e8cbd0200e1e71392a90103ca305 100644
+index 25e5f0354b3b65c656d6c173ec108825f1e8b1be..40000244927db5398aee0e14194c5267b3662cec 100644
 --- a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
 +++ b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
-@@ -15,7 +15,7 @@ public class PrepareResultEvent extends InventoryEvent {
-     private static final HandlerList handlers = new HandlerList();
-     private @Nullable ItemStack result;
+@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
+ public class PrepareResultEvent extends PrepareInventoryResultEvent {
  
+     // HandlerList on PrepareInventoryResultEvent to ensure api compat
 -    public PrepareResultEvent(@NotNull InventoryView inventory, @Nullable ItemStack result) {
 +    public PrepareResultEvent(@NotNull final InventoryView inventory, @Nullable final ItemStack result) {
-         super(inventory);
-         this.result = result;
-     }
-@@ -30,7 +30,7 @@ public class PrepareResultEvent extends InventoryEvent {
-         return result;
+         super(inventory, result);
      }
  
+@@ -31,7 +31,7 @@ public class PrepareResultEvent extends PrepareInventoryResultEvent {
+      *
+      * @param result result item
+      */
 -    public void setResult(@Nullable ItemStack result) {
 +    public void setResult(@Nullable final ItemStack result) {
-         this.result = result;
+         super.setResult(result);
      }
- 
+ }
 diff --git a/src/main/java/com/destroystokyo/paper/event/player/IllegalPacketEvent.java b/src/main/java/com/destroystokyo/paper/event/player/IllegalPacketEvent.java
 index 8d8e9b16f2a6707d2af7567c7682dfc5db51a737..8476aa274fab55420fc6b90644e94573f4d24646 100644
 --- a/src/main/java/com/destroystokyo/paper/event/player/IllegalPacketEvent.java
@@ -3952,29 +3955,29 @@ index 99abacc44ed55e35f0619fda0a617da41e85616b..fee67b299493105c6da98abad0e1e1d3
              }
          }
 diff --git a/src/main/java/com/destroystokyo/paper/event/server/PaperServerListPingEvent.java b/src/main/java/com/destroystokyo/paper/event/server/PaperServerListPingEvent.java
-index 2a9f1081474c81c550d15d5ac8bc588e954707ec..582db5364740882629ecf5f604e88684f99ff04b 100644
+index 292c69fedf381dd55f1864136fe5a1a343cd5ea7..83ea31695a73d3e06ef7b1ecbb864a25de2e321a 100644
 --- a/src/main/java/com/destroystokyo/paper/event/server/PaperServerListPingEvent.java
 +++ b/src/main/java/com/destroystokyo/paper/event/server/PaperServerListPingEvent.java
 @@ -42,8 +42,8 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
      private Object[] players;
  
      @Deprecated
--    public PaperServerListPingEvent(@NotNull StatusClient client, @NotNull String motd, boolean shouldSendChatPreviews, int numPlayers, int maxPlayers,
+-    public PaperServerListPingEvent(@NotNull StatusClient client, @NotNull String motd, int numPlayers, int maxPlayers,
 -            @NotNull String version, int protocolVersion, @Nullable CachedServerIcon favicon) {
-+    public PaperServerListPingEvent(@NotNull final StatusClient client, @NotNull final String motd, final boolean shouldSendChatPreviews, final int numPlayers, final int maxPlayers,
-+                                    @NotNull final String version, final int protocolVersion, @Nullable final CachedServerIcon favicon) {
-         super(client.getAddress().getAddress(), motd, shouldSendChatPreviews, numPlayers, maxPlayers);
++    public PaperServerListPingEvent(@NotNull final StatusClient client, @NotNull final String motd, final int numPlayers, final int maxPlayers,
++            @NotNull final String version, final int protocolVersion, @Nullable final CachedServerIcon favicon) {
+         super("", client.getAddress().getAddress(), motd, numPlayers, maxPlayers);
          this.client = client;
          this.numPlayers = numPlayers;
 @@ -52,8 +52,8 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
          setServerIcon(favicon);
      }
  
--    public PaperServerListPingEvent(@NotNull StatusClient client, @NotNull net.kyori.adventure.text.Component motd, boolean shouldSendChatPreviews, int numPlayers, int maxPlayers,
+-    public PaperServerListPingEvent(@NotNull StatusClient client, @NotNull net.kyori.adventure.text.Component motd, int numPlayers, int maxPlayers,
 -                                    @NotNull String version, int protocolVersion, @Nullable CachedServerIcon favicon) {
-+    public PaperServerListPingEvent(@NotNull final StatusClient client, @NotNull final net.kyori.adventure.text.Component motd, final boolean shouldSendChatPreviews, final int numPlayers, final int maxPlayers,
++    public PaperServerListPingEvent(@NotNull final StatusClient client, @NotNull final net.kyori.adventure.text.Component motd, final int numPlayers, final int maxPlayers,
 +                                    @NotNull final String version, final int protocolVersion, @Nullable final CachedServerIcon favicon) {
-         super(client.getAddress().getAddress(), motd, shouldSendChatPreviews, numPlayers, maxPlayers);
+         super("", client.getAddress().getAddress(), motd, numPlayers, maxPlayers);
          this.client = client;
          this.numPlayers = numPlayers;
 @@ -95,7 +95,7 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
@@ -4574,10 +4577,10 @@ index 76f2cb9cd99cad2a9484eab2becd8c36f1dd91b3..4678d8c93eddbe89b90ef3d200c6b5f6
              warning("Ignoring attempt to change parent of plugin logger");
          } else {
 diff --git a/src/main/java/io/papermc/paper/advancement/AdvancementDisplay.java b/src/main/java/io/papermc/paper/advancement/AdvancementDisplay.java
-index 67341bb70762a2326030abd2548372b92474f544..6d561d1bd19ad474c35159594ed717371b87fc17 100644
+index 19202e17f362fdffca472178b102d1336349590c..33befc2b2b32bb7f2f3ccac90210f3cf61e21a4e 100644
 --- a/src/main/java/io/papermc/paper/advancement/AdvancementDisplay.java
 +++ b/src/main/java/io/papermc/paper/advancement/AdvancementDisplay.java
-@@ -125,7 +125,7 @@ public interface AdvancementDisplay {
+@@ -135,7 +135,7 @@ public interface AdvancementDisplay {
          private final String name;
          private final TextColor color;
  
@@ -4888,10 +4891,10 @@ index b121ec4764525c143d459980b255e569f15f824f..68179eae95f4bc6ad5abaa5d35ea9453
      }
  
 diff --git a/src/main/java/io/papermc/paper/event/entity/EntityInsideBlockEvent.java b/src/main/java/io/papermc/paper/event/entity/EntityInsideBlockEvent.java
-index 747a917f508aea351881348fd916193e3b4a317e..62f7b76eb69304294f3dd05270897e0c2ce10c2b 100644
+index 68616f056b4942e11a1d40a9d84a9fbbb4010150..f7069158f98c8916b02074ffde39d2a3127ab2e0 100644
 --- a/src/main/java/io/papermc/paper/event/entity/EntityInsideBlockEvent.java
 +++ b/src/main/java/io/papermc/paper/event/entity/EntityInsideBlockEvent.java
-@@ -42,7 +42,7 @@ public class EntityInsideBlockEvent extends EntityEvent implements Cancellable {
+@@ -45,7 +45,7 @@ public class EntityInsideBlockEvent extends EntityEvent implements Cancellable {
      private final @NotNull Block block;
      private boolean cancelled;
  
@@ -4900,7 +4903,7 @@ index 747a917f508aea351881348fd916193e3b4a317e..62f7b76eb69304294f3dd05270897e0c
          super(entity);
          this.block = block;
      }
-@@ -63,7 +63,7 @@ public class EntityInsideBlockEvent extends EntityEvent implements Cancellable {
+@@ -66,7 +66,7 @@ public class EntityInsideBlockEvent extends EntityEvent implements Cancellable {
      }
  
      @Override
@@ -5113,23 +5116,23 @@ index d19ef7eb03751d081601c3db9735636539e2f15c..ac83b33a88a78f5a63d41126a93d3a6f
          this.player = player;
      }
 diff --git a/src/main/java/io/papermc/paper/event/player/AsyncChatCommandDecorateEvent.java b/src/main/java/io/papermc/paper/event/player/AsyncChatCommandDecorateEvent.java
-index bd216f7333795fc6bc5bec593f9cc0e3c2c1a27e..4577ad32c635187bf59688478140c26b3b6178f0 100644
+index feece00981ebf932e64760e7a10a04ad080d0228..c882bc833028edca8770aa84752159f10f87f2b2 100644
 --- a/src/main/java/io/papermc/paper/event/player/AsyncChatCommandDecorateEvent.java
 +++ b/src/main/java/io/papermc/paper/event/player/AsyncChatCommandDecorateEvent.java
-@@ -12,7 +12,7 @@ public class AsyncChatCommandDecorateEvent extends AsyncChatDecorateEvent {
- 
+@@ -13,7 +13,7 @@ public class AsyncChatCommandDecorateEvent extends AsyncChatDecorateEvent {
      private static final HandlerList HANDLER_LIST = new HandlerList();
  
--    public AsyncChatCommandDecorateEvent(boolean async, @Nullable Player player, @NotNull Component originalMessage, boolean isPreview, @NotNull Component result) {
-+    public AsyncChatCommandDecorateEvent(final boolean async, @Nullable final Player player, @NotNull final Component originalMessage, final boolean isPreview, @NotNull final Component result) {
-         super(async, player, originalMessage, isPreview, result);
+     @ApiStatus.Internal
+-    public AsyncChatCommandDecorateEvent(boolean async, @Nullable Player player, @NotNull Component originalMessage, @NotNull Component result) {
++    public AsyncChatCommandDecorateEvent(final boolean async, @Nullable final Player player, @NotNull final Component originalMessage, @NotNull final Component result) {
+         super(async, player, originalMessage, result);
      }
  
 diff --git a/src/main/java/io/papermc/paper/event/player/AsyncChatDecorateEvent.java b/src/main/java/io/papermc/paper/event/player/AsyncChatDecorateEvent.java
-index 7add237c6439986ae52f884fbcdfe31f44d4a2b2..21734458477df231ed411430a087c9b3a0fc6998 100644
+index bd800f6640b9920d371e505be7aa6cb7705966f3..778361a6a7910246fbcb3bb0156b65edb23139c8 100644
 --- a/src/main/java/io/papermc/paper/event/player/AsyncChatDecorateEvent.java
 +++ b/src/main/java/io/papermc/paper/event/player/AsyncChatDecorateEvent.java
-@@ -80,7 +80,7 @@ public class AsyncChatDecorateEvent extends ServerEvent implements Cancellable {
+@@ -74,7 +74,7 @@ public class AsyncChatDecorateEvent extends ServerEvent implements Cancellable {
       *
       * @param result the result
       */
@@ -5138,7 +5141,7 @@ index 7add237c6439986ae52f884fbcdfe31f44d4a2b2..21734458477df231ed411430a087c9b3
          this.result = result;
      }
  
-@@ -104,7 +104,7 @@ public class AsyncChatDecorateEvent extends ServerEvent implements Cancellable {
+@@ -101,7 +101,7 @@ public class AsyncChatDecorateEvent extends ServerEvent implements Cancellable {
       * component.
       */
      @Override
@@ -5925,10 +5928,10 @@ index d880810cbf05bc45051fe29515054211572e33b4..0200ae44fe5d03c9ec62c9c4f27a8fd6
      }
  }
 diff --git a/src/main/java/io/papermc/paper/tag/BaseTag.java b/src/main/java/io/papermc/paper/tag/BaseTag.java
-index a82227ad755111c01f320ea19ccf87d35c21d3f1..13c928da1c892ec11b3fa5e0319f4cd5387b4aaa 100644
+index 256600ce5b345d43bfdbe1f2a726e3512f874580..b8ca9f180587e5d2a1a4e522ae080401309ae70d 100644
 --- a/src/main/java/io/papermc/paper/tag/BaseTag.java
 +++ b/src/main/java/io/papermc/paper/tag/BaseTag.java
-@@ -21,27 +21,27 @@ public abstract class BaseTag<T extends Keyed, C extends BaseTag<T, C>> implemen
+@@ -22,27 +22,27 @@ public abstract class BaseTag<T extends Keyed, C extends BaseTag<T, C>> implemen
      private final @NotNull List<Predicate<T>> globalPredicates;
      private boolean locked = false;
  
@@ -5961,7 +5964,7 @@ index a82227ad755111c01f320ea19ccf87d35c21d3f1..13c928da1c892ec11b3fa5e0319f4cd5
          assert enumClass.isEnum();
          return (Set<E>) EnumSet.noneOf((Class<Enum>) enumClass);
      }
-@@ -74,98 +74,98 @@ public abstract class BaseTag<T extends Keyed, C extends BaseTag<T, C>> implemen
+@@ -75,98 +75,98 @@ public abstract class BaseTag<T extends Keyed, C extends BaseTag<T, C>> implemen
      }
  
      @Override
@@ -6327,7 +6330,7 @@ index a5daea2daf79a3207e1dbf84ca182912157badad..463d8787a9eeec684750d01dc2329abd
              BY_NAME.put(art.toString().toLowerCase(java.util.Locale.ENGLISH), art);
          }
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4610dc01e 100644
+index ac9b690fcccb60b587e5345f12f1383afd0a73a1..055492f291c430defc979f6d7de784c7378ecbbf 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -98,7 +98,7 @@ public final class Bukkit {
@@ -6618,7 +6621,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          server.setSpawnRadius(value);
      }
  
-@@ -1209,7 +1209,7 @@ public final class Bukkit {
+@@ -1211,7 +1211,7 @@ public final class Bukkit {
       * @param message the message
       * @return the number of players
       */
@@ -6627,7 +6630,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.broadcast(message);
      }
      /**
-@@ -1221,7 +1221,7 @@ public final class Bukkit {
+@@ -1223,7 +1223,7 @@ public final class Bukkit {
       *     permissibles} must have to receive the broadcast
       * @return number of message recipients
       */
@@ -6636,7 +6639,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.broadcast(message, permission);
      }
      // Paper end
-@@ -1236,7 +1236,7 @@ public final class Bukkit {
+@@ -1238,7 +1238,7 @@ public final class Bukkit {
       * @deprecated in favour of {@link #broadcast(net.kyori.adventure.text.Component, String)}
       */
      @Deprecated // Paper
@@ -6645,7 +6648,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.broadcast(message, permission);
      }
  
-@@ -1256,7 +1256,7 @@ public final class Bukkit {
+@@ -1258,7 +1258,7 @@ public final class Bukkit {
       */
      // @Deprecated // Paper
      @NotNull
@@ -6654,7 +6657,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getOfflinePlayer(name);
      }
  
-@@ -1276,7 +1276,7 @@ public final class Bukkit {
+@@ -1278,7 +1278,7 @@ public final class Bukkit {
       * @see #getOfflinePlayer(java.util.UUID)
       */
      @Nullable
@@ -6663,7 +6666,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getOfflinePlayerIfCached(name);
      }
      // Paper end
-@@ -1292,7 +1292,7 @@ public final class Bukkit {
+@@ -1294,7 +1294,7 @@ public final class Bukkit {
       * @return an offline player
       */
      @NotNull
@@ -6672,7 +6675,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getOfflinePlayer(id);
      }
  
-@@ -1308,7 +1308,7 @@ public final class Bukkit {
+@@ -1310,7 +1310,7 @@ public final class Bukkit {
       */
      @NotNull
      @Deprecated // Paper
@@ -6681,7 +6684,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createPlayerProfile(uniqueId, name);
      }
  
-@@ -1322,7 +1322,7 @@ public final class Bukkit {
+@@ -1324,7 +1324,7 @@ public final class Bukkit {
       */
      @NotNull
      @Deprecated // Paper
@@ -6690,7 +6693,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createPlayerProfile(uniqueId);
      }
  
-@@ -1337,7 +1337,7 @@ public final class Bukkit {
+@@ -1339,7 +1339,7 @@ public final class Bukkit {
       */
      @NotNull
      @Deprecated // Paper
@@ -6699,7 +6702,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createPlayerProfile(name);
      }
  
-@@ -1356,7 +1356,7 @@ public final class Bukkit {
+@@ -1358,7 +1358,7 @@ public final class Bukkit {
       *
       * @param address the IP address to ban
       */
@@ -6708,7 +6711,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          server.banIP(address);
      }
  
-@@ -1365,7 +1365,7 @@ public final class Bukkit {
+@@ -1367,7 +1367,7 @@ public final class Bukkit {
       *
       * @param address the IP address to unban
       */
@@ -6717,7 +6720,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          server.unbanIP(address);
      }
  
-@@ -1389,7 +1389,7 @@ public final class Bukkit {
+@@ -1391,7 +1391,7 @@ public final class Bukkit {
       * @return a ban list of the specified type
       */
      @NotNull
@@ -6726,7 +6729,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getBanList(type);
      }
  
-@@ -1418,7 +1418,7 @@ public final class Bukkit {
+@@ -1420,7 +1420,7 @@ public final class Bukkit {
       *
       * @param mode the new game mode
       */
@@ -6735,7 +6738,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          server.setDefaultGameMode(mode);
      }
  
-@@ -1511,7 +1511,7 @@ public final class Bukkit {
+@@ -1513,7 +1513,7 @@ public final class Bukkit {
       * @see InventoryType#isCreatable()
       */
      @NotNull
@@ -6744,7 +6747,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createInventory(owner, type);
      }
  
-@@ -1541,7 +1541,7 @@ public final class Bukkit {
+@@ -1543,7 +1543,7 @@ public final class Bukkit {
       * @see InventoryType#isCreatable()
       */
      @NotNull
@@ -6753,7 +6756,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createInventory(owner, type, title);
      }
      // Paper end
-@@ -1573,7 +1573,7 @@ public final class Bukkit {
+@@ -1575,7 +1575,7 @@ public final class Bukkit {
       */
      @Deprecated // Paper
      @NotNull
@@ -6762,7 +6765,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createInventory(owner, type, title);
      }
  
-@@ -1587,7 +1587,7 @@ public final class Bukkit {
+@@ -1589,7 +1589,7 @@ public final class Bukkit {
       * @throws IllegalArgumentException if the size is not a multiple of 9
       */
      @NotNull
@@ -6771,7 +6774,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createInventory(owner, size);
      }
  
-@@ -1604,7 +1604,7 @@ public final class Bukkit {
+@@ -1606,7 +1606,7 @@ public final class Bukkit {
       * @throws IllegalArgumentException if the size is not a multiple of 9
       */
      @NotNull
@@ -6780,7 +6783,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createInventory(owner, size, title);
      }
      // Paper end
-@@ -1623,7 +1623,7 @@ public final class Bukkit {
+@@ -1625,7 +1625,7 @@ public final class Bukkit {
       */
      @Deprecated // Paper
      @NotNull
@@ -6789,7 +6792,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createInventory(owner, size, title);
      }
  
-@@ -1635,7 +1635,7 @@ public final class Bukkit {
+@@ -1637,7 +1637,7 @@ public final class Bukkit {
       * when the merchant inventory is viewed
       * @return a new merchant
       */
@@ -6798,7 +6801,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createMerchant(title);
      }
      // Paper start
-@@ -1649,7 +1649,7 @@ public final class Bukkit {
+@@ -1651,7 +1651,7 @@ public final class Bukkit {
       */
      @NotNull
      @Deprecated // Paper
@@ -6807,7 +6810,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createMerchant(title);
      }
  
-@@ -1745,7 +1745,7 @@ public final class Bukkit {
+@@ -1747,7 +1747,7 @@ public final class Bukkit {
       * @param spawnCategory the category spawn
       * @return the {@link SpawnCategory} spawn limit
       */
@@ -6816,7 +6819,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getSpawnLimit(spawnCategory);
      }
  
-@@ -1851,7 +1851,7 @@ public final class Bukkit {
+@@ -1853,7 +1853,7 @@ public final class Bukkit {
       * @see Criteria Criteria for a list of constants
       */
      @NotNull
@@ -6825,7 +6828,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getScoreboardCriteria(name);
      }
  
-@@ -1882,7 +1882,7 @@ public final class Bukkit {
+@@ -1884,7 +1884,7 @@ public final class Bukkit {
       *     specifications
       */
      @NotNull
@@ -6834,7 +6837,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.loadServerIcon(file);
      }
  
-@@ -1900,7 +1900,7 @@ public final class Bukkit {
+@@ -1902,7 +1902,7 @@ public final class Bukkit {
       *     server-icon specifications
       */
      @NotNull
@@ -6843,7 +6846,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.loadServerIcon(image);
      }
  
-@@ -1912,7 +1912,7 @@ public final class Bukkit {
+@@ -1914,7 +1914,7 @@ public final class Bukkit {
       *
       * @param threshold the idle timeout in minutes
       */
@@ -6852,7 +6855,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          server.setIdleTimeout(threshold);
      }
  
-@@ -1935,7 +1935,7 @@ public final class Bukkit {
+@@ -1937,7 +1937,7 @@ public final class Bukkit {
       *
       */
      @NotNull
@@ -6861,7 +6864,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createChunkData(world);
      }
  
-@@ -1952,7 +1952,7 @@ public final class Bukkit {
+@@ -1954,7 +1954,7 @@ public final class Bukkit {
       */
      @NotNull
      @Deprecated(forRemoval = true)
@@ -6870,7 +6873,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createVanillaChunkData(world, x, z);
      }
      // Paper stop
-@@ -1968,7 +1968,7 @@ public final class Bukkit {
+@@ -1970,7 +1970,7 @@ public final class Bukkit {
       * @return the created boss bar
       */
      @NotNull
@@ -6879,7 +6882,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createBossBar(title, color, style, flags);
      }
  
-@@ -1987,7 +1987,7 @@ public final class Bukkit {
+@@ -1989,7 +1989,7 @@ public final class Bukkit {
       * @return the created boss bar
       */
      @NotNull
@@ -6888,7 +6891,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createBossBar(key, title, color, style, flags);
      }
  
-@@ -2026,7 +2026,7 @@ public final class Bukkit {
+@@ -2028,7 +2028,7 @@ public final class Bukkit {
       * @return bossbar or null if not exists
       */
      @Nullable
@@ -6897,7 +6900,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getBossBar(key);
      }
  
-@@ -2045,7 +2045,7 @@ public final class Bukkit {
+@@ -2047,7 +2047,7 @@ public final class Bukkit {
       * @param key unique bossbar key
       * @return true if removal succeeded or false
       */
@@ -6906,7 +6909,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.removeBossBar(key);
      }
  
-@@ -2056,7 +2056,7 @@ public final class Bukkit {
+@@ -2058,7 +2058,7 @@ public final class Bukkit {
       * @return the entity with the given UUID, or null if it isn't found
       */
      @Nullable
@@ -6915,7 +6918,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getEntity(uuid);
      }
  
-@@ -2097,7 +2097,7 @@ public final class Bukkit {
+@@ -2099,7 +2099,7 @@ public final class Bukkit {
       * @return advancement or null if not exists
       */
      @Nullable
@@ -6924,7 +6927,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getAdvancement(key);
      }
  
-@@ -2120,7 +2120,7 @@ public final class Bukkit {
+@@ -2122,7 +2122,7 @@ public final class Bukkit {
       * @return new data instance
       */
      @NotNull
@@ -6933,7 +6936,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createBlockData(material);
      }
  
-@@ -2133,7 +2133,7 @@ public final class Bukkit {
+@@ -2135,7 +2135,7 @@ public final class Bukkit {
       * @return new data instance
       */
      @NotNull
@@ -6942,7 +6945,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createBlockData(material, consumer);
      }
  
-@@ -2146,7 +2146,7 @@ public final class Bukkit {
+@@ -2148,7 +2148,7 @@ public final class Bukkit {
       * @throws IllegalArgumentException if the specified data is not valid
       */
      @NotNull
@@ -6951,7 +6954,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createBlockData(data);
      }
  
-@@ -2162,7 +2162,7 @@ public final class Bukkit {
+@@ -2164,7 +2164,7 @@ public final class Bukkit {
       */
      @NotNull
      @Contract("null, null -> fail")
@@ -6960,7 +6963,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createBlockData(material, data);
      }
  
-@@ -2185,7 +2185,7 @@ public final class Bukkit {
+@@ -2187,7 +2187,7 @@ public final class Bukkit {
       * @return the tag or null
       */
      @Nullable
@@ -6969,7 +6972,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getTag(registry, tag, clazz);
      }
  
-@@ -2203,7 +2203,7 @@ public final class Bukkit {
+@@ -2205,7 +2205,7 @@ public final class Bukkit {
       * @return all defined tags
       */
      @NotNull
@@ -6978,7 +6981,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getTags(registry, clazz);
      }
  
-@@ -2214,7 +2214,7 @@ public final class Bukkit {
+@@ -2216,7 +2216,7 @@ public final class Bukkit {
       * @return the LootTable, or null if no LootTable is found with that name
       */
      @Nullable
@@ -6987,7 +6990,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getLootTable(key);
      }
  
-@@ -2239,7 +2239,7 @@ public final class Bukkit {
+@@ -2241,7 +2241,7 @@ public final class Bukkit {
       * or a parameter is null
       */
      @NotNull
@@ -6996,7 +6999,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.selectEntities(sender, selector);
      }
  
-@@ -2266,7 +2266,7 @@ public final class Bukkit {
+@@ -2268,7 +2268,7 @@ public final class Bukkit {
       * @return the corresponding registry or null if not present
       */
      @Nullable
@@ -7005,7 +7008,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.getRegistry(tClass);
      }
  
-@@ -2350,7 +2350,7 @@ public final class Bukkit {
+@@ -2352,7 +2352,7 @@ public final class Bukkit {
       * @return A PlayerProfile object
       */
      @NotNull
@@ -7014,7 +7017,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createProfile(uuid);
      }
  
-@@ -2369,7 +2369,7 @@ public final class Bukkit {
+@@ -2371,7 +2371,7 @@ public final class Bukkit {
       * @return A PlayerProfile object
       */
      @NotNull
@@ -7023,7 +7026,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createProfile(name);
      }
  
-@@ -2393,7 +2393,7 @@ public final class Bukkit {
+@@ -2395,7 +2395,7 @@ public final class Bukkit {
       * @return A PlayerProfile object
       */
      @NotNull
@@ -7032,7 +7035,7 @@ index 232c08c9a588d957d90f198ce479e57615c6e650..3ddbe8892d7087785905c1a4159da2c4
          return server.createProfile(uuid, name);
      }
  
-@@ -2413,7 +2413,7 @@ public final class Bukkit {
+@@ -2415,7 +2415,7 @@ public final class Bukkit {
       * @return A PlayerProfile object
       */
      @NotNull
@@ -7398,10 +7401,10 @@ index 11ff11d2fe4dc66df6b31ef648859079618fcc59..d68815eb5641e82b10747a317ee026f0
              BY_DYE_DATA[color.dyeData & 0xff] = color;
              byColor.put(color.getColor(), color);
 diff --git a/src/main/java/org/bukkit/Effect.java b/src/main/java/org/bukkit/Effect.java
-index 23fc945f0344fa1588acf6117f9d1fc5e8906609..f77d8cce84413ab1752632a52e077941b8e72826 100644
+index f5b4b1b41e67b3fab00198e3e10f508d87d92111..4d43009401c4b3337030adb27f1ebc383f33f3cd 100644
 --- a/src/main/java/org/bukkit/Effect.java
 +++ b/src/main/java/org/bukkit/Effect.java
-@@ -407,11 +407,11 @@ public enum Effect {
+@@ -437,11 +437,11 @@ public enum Effect {
      private final Class<?> data;
      private static final Map<Integer, Effect> BY_ID = Maps.newHashMap();
  
@@ -7415,7 +7418,7 @@ index 23fc945f0344fa1588acf6117f9d1fc5e8906609..f77d8cce84413ab1752632a52e077941
          this.id = id;
          this.type = type;
          this.data = data;
-@@ -454,22 +454,22 @@ public enum Effect {
+@@ -484,22 +484,22 @@ public enum Effect {
       */
      @Deprecated
      @Nullable
@@ -7656,10 +7659,10 @@ index a20ad2d433a9973941219a28f046ca0e07fac489..b80433461d38a198b2666092ef38bb43
          }
      }
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index ded6aa4dfe8457c4f5b26e07134d6905bf1119b2..6a5230fe951a85b0eb4a69948b360402e6347566 100644
+index 6cac68a60ee0b39937d6987579f2bab9b8f512de..b897bd619f19cedf009d1b2e8be7be8e5ce68422 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -220,7 +220,7 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -246,7 +246,7 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
      private final @NotNull String name;
      private final @NotNull Class<T> type;
  
@@ -7668,7 +7671,7 @@ index ded6aa4dfe8457c4f5b26e07134d6905bf1119b2..6a5230fe951a85b0eb4a69948b360402
          Preconditions.checkNotNull(name, "GameRule name cannot be null");
          Preconditions.checkNotNull(clazz, "GameRule type cannot be null");
          Preconditions.checkArgument(clazz == Boolean.class || clazz == Integer.class, "Must be of type Boolean or Integer. Found %s ", clazz.getName());
-@@ -250,14 +250,14 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -276,14 +276,14 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
      }
  
      @Override
@@ -7685,7 +7688,7 @@ index ded6aa4dfe8457c4f5b26e07134d6905bf1119b2..6a5230fe951a85b0eb4a69948b360402
          return this.getName().equals(other.getName()) && this.getType() == other.getType();
      }
  
-@@ -274,7 +274,7 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -300,7 +300,7 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
       * name
       */
      @Nullable
@@ -7708,10 +7711,10 @@ index 0ad046fa4ce3b89d13f9964aa9e8aca738ff112f..32c7dee71859daafc81e5bfadd7e4a1c
          }
      }
 diff --git a/src/main/java/org/bukkit/Instrument.java b/src/main/java/org/bukkit/Instrument.java
-index ca79912f6258b14b5b640c277f39da3faa748aa2..f6f828975a847d3184a6935bc1ce2ce588815262 100644
+index 79f9c3e427a7016190de65eabe20083681d2b7f6..832559f0776edbab408d1cc5076aca2d15a35504 100644
 --- a/src/main/java/org/bukkit/Instrument.java
 +++ b/src/main/java/org/bukkit/Instrument.java
-@@ -106,7 +106,7 @@ public enum Instrument {
+@@ -143,7 +143,7 @@ public enum Instrument {
      }
  
      static {
@@ -7721,10 +7724,10 @@ index ca79912f6258b14b5b640c277f39da3faa748aa2..f6f828975a847d3184a6935bc1ce2ce5
          }
      }
 diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
-index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e5934699314 100644
+index 736836c2c0cb83a76659a4a99c59416d801a4ae3..b891e5b4c0dd367d849e0845a99bfbd9228e469b 100644
 --- a/src/main/java/org/bukkit/Location.java
 +++ b/src/main/java/org/bukkit/Location.java
-@@ -75,7 +75,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -75,7 +75,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       *
       * @param world New world that this location resides in
       */
@@ -7733,7 +7736,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.world = (world == null) ? null : new WeakReference<>(world);
      }
  
-@@ -89,7 +89,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -89,7 +89,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
              return false;
          }
  
@@ -7742,7 +7745,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return world != null && Bukkit.getWorld(world.getUID()) != null;
      }
  
-@@ -106,7 +106,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -106,7 +106,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
              return null;
          }
  
@@ -7751,7 +7754,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          Preconditions.checkArgument(world != null, "World unloaded");
          return world;
      }
-@@ -136,7 +136,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -136,7 +136,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       *
       * @param x X-coordinate
       */
@@ -7760,7 +7763,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.x = x;
      }
  
-@@ -164,7 +164,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -164,7 +164,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       *
       * @param y y-coordinate
       */
@@ -7769,7 +7772,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.y = y;
      }
  
-@@ -192,7 +192,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -192,7 +192,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       *
       * @param z z-coordinate
       */
@@ -7778,7 +7781,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.z = z;
      }
  
-@@ -229,7 +229,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -229,7 +229,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       *
       * @param yaw new rotation's yaw
       */
@@ -7787,7 +7790,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.yaw = yaw;
      }
  
-@@ -263,7 +263,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -263,7 +263,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       *
       * @param pitch new incline's pitch
       */
@@ -7796,7 +7799,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.pitch = pitch;
      }
  
-@@ -292,14 +292,14 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -292,14 +292,14 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       */
      @NotNull
      public Vector getDirection() {
@@ -7815,7 +7818,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
  
          vector.setX(-xz * Math.sin(Math.toRadians(rotX)));
          vector.setZ(xz * Math.cos(Math.toRadians(rotX)));
-@@ -315,7 +315,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -315,7 +315,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the same location
       */
      @NotNull
@@ -7824,7 +7827,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          /*
           * Sin = Opp / Hyp
           * Cos = Adj / Hyp
-@@ -333,12 +333,12 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -333,12 +333,12 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
              return this;
          }
  
@@ -7841,7 +7844,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          pitch = (float) Math.toDegrees(Math.atan(-vector.getY() / xz));
  
          return this;
-@@ -353,7 +353,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -353,7 +353,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @see Vector
       */
      @NotNull
@@ -7850,7 +7853,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          if (vec == null || vec.getWorld() != getWorld()) {
              throw new IllegalArgumentException("Cannot add Locations of differing worlds");
          }
-@@ -372,7 +372,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -372,7 +372,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @see Vector
       */
      @NotNull
@@ -7859,7 +7862,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.x += vec.getX();
          this.y += vec.getY();
          this.z += vec.getZ();
-@@ -389,7 +389,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -389,7 +389,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @see Vector
       */
      @NotNull
@@ -7868,7 +7871,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.x += x;
          this.y += y;
          this.z += z;
-@@ -405,7 +405,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -405,7 +405,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @see Vector
       */
      @NotNull
@@ -7877,7 +7880,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          if (vec == null || vec.getWorld() != getWorld()) {
              throw new IllegalArgumentException("Cannot add Locations of differing worlds");
          }
-@@ -424,7 +424,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -424,7 +424,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @see Vector
       */
      @NotNull
@@ -7886,7 +7889,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.x -= vec.getX();
          this.y -= vec.getY();
          this.z -= vec.getZ();
-@@ -442,7 +442,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -442,7 +442,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @see Vector
       */
      @NotNull
@@ -7895,7 +7898,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.x -= x;
          this.y -= y;
          this.z -= z;
-@@ -487,7 +487,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -487,7 +487,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @throws IllegalArgumentException for differing worlds
       * @see Vector
       */
@@ -7904,7 +7907,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return Math.sqrt(distanceSquared(o));
      }
  
-@@ -499,7 +499,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -499,7 +499,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @throws IllegalArgumentException for differing worlds
       * @see Vector
       */
@@ -7913,7 +7916,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          if (o == null) {
              throw new IllegalArgumentException("Cannot measure distance to a null location");
          } else if (o.getWorld() == null || getWorld() == null) {
-@@ -520,7 +520,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -520,7 +520,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @see Vector
       */
      @NotNull
@@ -7922,7 +7925,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          x *= m;
          y *= m;
          z *= m;
-@@ -550,7 +550,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -550,7 +550,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return true if a chunk has been generated at this location
       */
      public boolean isGenerated() {
@@ -7931,7 +7934,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          Preconditions.checkNotNull(world, "Location has no world!");
          return world.isChunkGenerated(locToBlock(x) >> 4, locToBlock(z) >> 4);
      }
-@@ -565,7 +565,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -565,7 +565,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return self (not cloned)
       */
      @NotNull
@@ -7940,7 +7943,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          this.x = x;
          this.y = y;
          this.z = z;
-@@ -583,7 +583,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -583,7 +583,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return self (not cloned)
       */
      @NotNull
@@ -7949,7 +7952,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return this.set(base.x + x, base.y + y, base.z + z);
      }
  
-@@ -598,7 +598,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -598,7 +598,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return self (not cloned)
       */
      @NotNull
@@ -7958,7 +7961,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return this.set(base.x - x, base.y - y, base.z - z);
      }
  
-@@ -607,7 +607,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -607,7 +607,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       */
      @NotNull
      public Location toBlockLocation() {
@@ -7967,7 +7970,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          blockLoc.setX(getBlockX());
          blockLoc.setY(getBlockY());
          blockLoc.setZ(getBlockZ());
-@@ -631,7 +631,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -631,7 +631,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       */
      @NotNull
      public Location toCenterLocation() {
@@ -7976,7 +7979,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          centerLoc.setX(getBlockX() + 0.5);
          centerLoc.setY(getBlockY() + 0.5);
          centerLoc.setZ(getBlockZ() + 0.5);
-@@ -687,7 +687,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -687,7 +687,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @param power The power of explosion, where 4F is TNT
       * @return false if explosion was canceled, otherwise true
       */
@@ -7985,7 +7988,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return this.getWorld().createExplosion(this, power);
      }
  
-@@ -701,7 +701,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -701,7 +701,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @param setFire Whether or not to set blocks on fire
       * @return false if explosion was canceled, otherwise true
       */
@@ -7994,7 +7997,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return this.getWorld().createExplosion(this, power, setFire);
      }
  
-@@ -714,7 +714,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -714,7 +714,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @param breakBlocks Whether or not to have blocks be destroyed
       * @return false if explosion was canceled, otherwise true
       */
@@ -8003,7 +8006,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return this.getWorld().createExplosion(this, power, setFire, breakBlocks);
      }
  
-@@ -727,7 +727,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -727,7 +727,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @param power The power of explosion, where 4F is TNT
       * @return false if explosion was canceled, otherwise true
       */
@@ -8012,7 +8015,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return this.getWorld().createExplosion(source, this, power, true, true);
      }
  
-@@ -742,7 +742,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -742,7 +742,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @param setFire Whether or not to set blocks on fire
       * @return false if explosion was canceled, otherwise true
       */
@@ -8021,7 +8024,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return this.getWorld().createExplosion(source, this, power, setFire, true);
      }
  
-@@ -756,7 +756,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -756,7 +756,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @param breakBlocks Whether or not to have blocks be destroyed
       * @return false if explosion was canceled, otherwise true
       */
@@ -8030,7 +8033,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return this.getWorld().createExplosion(source, this, power, setFire, breakBlocks);
      }
  
-@@ -771,8 +771,8 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -771,8 +771,8 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8041,7 +8044,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          if (world == null) {
              throw new IllegalArgumentException("Location has no world");
          }
-@@ -785,7 +785,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -785,7 +785,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8050,7 +8053,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.LivingEntity.class, radius, radius, radius);
      }
  
-@@ -796,7 +796,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -796,7 +796,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of living entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8059,7 +8062,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.LivingEntity.class, xzRadius, yRadius, xzRadius);
      }
  
-@@ -808,7 +808,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -808,7 +808,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of living entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8068,7 +8071,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.LivingEntity.class, xRadius, yRadius, zRadius);
      }
  
-@@ -819,7 +819,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -819,7 +819,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of living entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8077,7 +8080,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.LivingEntity.class, radius, radius, radius, predicate);
      }
  
-@@ -831,7 +831,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -831,7 +831,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of living entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8086,7 +8089,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.LivingEntity.class, xzRadius, yRadius, xzRadius, predicate);
      }
  
-@@ -844,7 +844,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -844,7 +844,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of living entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8095,7 +8098,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.LivingEntity.class, xRadius, yRadius, zRadius, predicate);
      }
  
-@@ -854,7 +854,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -854,7 +854,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of players near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8104,7 +8107,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.Player.class, radius, radius, radius);
      }
  
-@@ -865,7 +865,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -865,7 +865,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of players near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8113,7 +8116,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.Player.class, xzRadius, yRadius, xzRadius);
      }
  
-@@ -877,7 +877,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -877,7 +877,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of players near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8122,7 +8125,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.Player.class, xRadius, yRadius, zRadius);
      }
  
-@@ -888,7 +888,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -888,7 +888,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of players near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8131,7 +8134,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.Player.class, radius, radius, radius, predicate);
      }
  
-@@ -900,7 +900,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -900,7 +900,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of players near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8140,7 +8143,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.Player.class, xzRadius, yRadius, xzRadius, predicate);
      }
  
-@@ -913,7 +913,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -913,7 +913,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of players near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8149,7 +8152,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(org.bukkit.entity.Player.class, xRadius, yRadius, zRadius, predicate);
      }
  
-@@ -925,7 +925,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -925,7 +925,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of entities of type clazz near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8158,7 +8161,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(clazz, radius, radius, radius, null);
      }
  
-@@ -938,7 +938,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -938,7 +938,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8167,7 +8170,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(clazz, xzRadius, yRadius, xzRadius, null);
      }
  
-@@ -952,7 +952,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -952,7 +952,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8176,7 +8179,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(clazz, xRadius, yRadius, zRadius, null);
      }
  
-@@ -965,7 +965,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -965,7 +965,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8185,7 +8188,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(clazz, radius, radius, radius, predicate);
      }
  
-@@ -979,7 +979,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -979,7 +979,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8194,7 +8197,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return getNearbyEntitiesByType(clazz, xzRadius, yRadius, xzRadius, predicate);
      }
  
-@@ -994,8 +994,8 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -994,8 +994,8 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @return the collection of entities near location. This will always be a non-null collection.
       */
      @NotNull
@@ -8205,7 +8208,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          if (world == null) {
              throw new IllegalArgumentException("Location has no world");
          }
-@@ -1003,7 +1003,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1003,7 +1003,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
      }
      // Paper end
      @Override
@@ -8214,7 +8217,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          if (obj == null) {
              return false;
          }
-@@ -1012,8 +1012,8 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1012,8 +1012,8 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
          }
          final Location other = (Location) obj;
  
@@ -8225,7 +8228,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          if (world != otherWorld && (world == null || !world.equals(otherWorld))) {
              return false;
          }
-@@ -1039,7 +1039,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1039,7 +1039,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
      public int hashCode() {
          int hash = 3;
  
@@ -8234,7 +8237,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          hash = 19 * hash + (world != null ? world.hashCode() : 0);
          hash = 19 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
          hash = 19 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
-@@ -1051,7 +1051,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1051,7 +1051,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
  
      @Override
      public @NotNull String toString() {
@@ -8243,7 +8246,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return "Location{" + "world=" + world + ",x=" + x + ",y=" + y + ",z=" + z + ",pitch=" + pitch + ",yaw=" + yaw + '}';
      }
  
-@@ -1071,7 +1071,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1071,7 +1071,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
      public Location clone() {
          try {
              return (Location) super.clone();
@@ -8252,7 +8255,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
              throw new Error(e);
          }
      }
-@@ -1096,7 +1096,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1096,7 +1096,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @param loc Precise coordinate
       * @return Block coordinate
       */
@@ -8261,7 +8264,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          return NumberConversions.floor(loc);
      }
  
-@@ -1104,7 +1104,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1104,7 +1104,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
      @Utility
      @NotNull
      public Map<String, Object> serialize() {
@@ -8270,7 +8273,7 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
  
          if (this.world != null) {
              data.put("world", getWorld().getName());
-@@ -1129,7 +1129,7 @@ public class Location implements Cloneable, ConfigurationSerializable {
+@@ -1129,7 +1129,7 @@ public class Location implements Cloneable, ConfigurationSerializable, io.paperm
       * @see ConfigurationSerializable
       */
      @NotNull
@@ -8280,10 +8283,10 @@ index 93cf2be32c24fb966aee2bbcd05a73f1c51cdd26..a4d7401a346a24ff9fecb7e3b85a6e59
          if (args.containsKey("world")) {
              world = Bukkit.getWorld((String) args.get("world"));
 diff --git a/src/main/java/org/bukkit/Material.java b/src/main/java/org/bukkit/Material.java
-index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2ffdbbcbe2 100644
+index b940edce5becab4754d0d8e1a2895a8a6e7090bb..1e991012fab9dc9a121bb7dee91ef316e0fbdafa 100644
 --- a/src/main/java/org/bukkit/Material.java
 +++ b/src/main/java/org/bukkit/Material.java
-@@ -4108,9 +4108,9 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -4311,9 +4311,9 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
              } else {
                  this.ctor = null;
              }
@@ -8295,7 +8298,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
              throw new AssertionError(ex);
          }
      }
-@@ -4169,7 +4169,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -4372,7 +4372,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
       */
      @NotNull
      @Deprecated
@@ -8304,7 +8307,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
          return Bukkit.getUnsafe().getItemAttributes(this, equipmentSlot);
      }
  
-@@ -4250,7 +4250,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -4453,7 +4453,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
       * @return new data instance
       */
      @NotNull
@@ -8313,7 +8316,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
          return Bukkit.createBlockData(this, consumer);
      }
  
-@@ -4264,7 +4264,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -4467,7 +4467,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
       * @throws IllegalArgumentException if the specified data is not valid
       */
      @NotNull
@@ -8322,7 +8325,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
          return Bukkit.createBlockData(this, data);
      }
  
-@@ -4295,7 +4295,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -4498,7 +4498,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
          Preconditions.checkArgument(legacy, "Cannot get new data of Modern Material");
          try {
              return ctor.newInstance(this, Byte.valueOf(raw));
@@ -8331,7 +8334,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
              final Throwable t = ex.getCause();
              if (t instanceof RuntimeException) {
                  throw (RuntimeException) t;
-@@ -4304,7 +4304,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -4507,7 +4507,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
                  throw (Error) t;
              }
              throw new AssertionError(t);
@@ -8340,7 +8343,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
              throw new AssertionError(t);
          }
      }
-@@ -5378,13 +5378,13 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -5620,13 +5620,13 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
       * @return Material if found, or null
       */
      @Nullable
@@ -8356,7 +8359,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
              return Bukkit.getUnsafe().fromLegacy(match);
          }
  
-@@ -5419,7 +5419,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -5661,7 +5661,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
       * @return Material if found, or null
       */
      @Nullable
@@ -8365,7 +8368,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
          Preconditions.checkArgument(name != null, "Name cannot be null");
  
          String filtered = name;
-@@ -5434,7 +5434,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -5676,7 +5676,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
      }
  
      static {
@@ -8374,7 +8377,7 @@ index 2155d172fd5264857da4c390a745c31d0dd910ba..a2f434ab62cf97cad843cd72c01fbb2f
              BY_NAME.put(material.name(), material);
              material.isBlock = material.isBlock0(); // Paper
          }
-@@ -10219,7 +10219,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -10672,7 +10672,7 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
       * Attributes and modifiers, or an empty map if no attributes are set.
       */
      @NotNull
@@ -8814,7 +8817,7 @@ index ca7624624ca0b47120753c623f8d84b8f1dd26ea..bf48d0ca9865920ee2b30f3f09968e96
          }
      }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index e43fef0152468944d8a33036344a43e95fe58476..00463c1379d5aff1c0094d1b92ec005beee802d4 100644
+index 2204336d8800311b65e894739ab1b27273e7c6f2..e93b8f743f912544af0937fa71be7f552a0db46e 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -339,7 +339,7 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
@@ -8835,7 +8838,7 @@ index e43fef0152468944d8a33036344a43e95fe58476..00463c1379d5aff1c0094d1b92ec005b
          spigot().broadcast(components);
      }
      // Paper end
-@@ -1976,7 +1976,7 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -1978,7 +1978,7 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
           * @deprecated use {@link #broadcast(net.kyori.adventure.text.Component)}
           */
          @Deprecated // Paper
@@ -8844,7 +8847,7 @@ index e43fef0152468944d8a33036344a43e95fe58476..00463c1379d5aff1c0094d1b92ec005b
              throw new UnsupportedOperationException("Not supported yet.");
          }
  
-@@ -1987,7 +1987,7 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -1989,7 +1989,7 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
           * @deprecated use {@link #broadcast(net.kyori.adventure.text.Component)}
           */
          @Deprecated // Paper
@@ -8854,10 +8857,10 @@ index e43fef0152468944d8a33036344a43e95fe58476..00463c1379d5aff1c0094d1b92ec005b
          }
  
 diff --git a/src/main/java/org/bukkit/Sound.java b/src/main/java/org/bukkit/Sound.java
-index baa9e50fe81b678789c1cabcf5895b9b24c3e756..5bbb6ea016ed3b7854acaaba4a35829eb83cc37e 100644
+index 060a57f469e8175ad5d1d92d604e332d7bc29b84..fd784e5d1efe80b0dd2d9674f887a8e0d1a5eead 100644
 --- a/src/main/java/org/bukkit/Sound.java
 +++ b/src/main/java/org/bukkit/Sound.java
-@@ -1336,7 +1336,7 @@ public enum Sound implements Keyed, net.kyori.adventure.sound.Sound.Type { // Pa
+@@ -1407,7 +1407,7 @@ public enum Sound implements Keyed, net.kyori.adventure.sound.Sound.Type { // Pa
  
      private final @NotNull NamespacedKey key;
  
@@ -8932,10 +8935,10 @@ index 4899a84d77e92b339dd8b26d972a1ef9d9923836..0f557cfeddb1dac1c2a378ff36abadb4
          }
      }
 diff --git a/src/main/java/org/bukkit/UnsafeValues.java b/src/main/java/org/bukkit/UnsafeValues.java
-index dbe1e139a64c8d7935e4a5a69776c7f1f0997d1b..b04ad1dfcaa9c676c8ab133528e0d53f865ad35a 100644
+index c4c0d8f4a06b23e0c75ce81124a330bfe7ad7bf6..eab60f2aa59947135555f769829910ae2f5b1568 100644
 --- a/src/main/java/org/bukkit/UnsafeValues.java
 +++ b/src/main/java/org/bukkit/UnsafeValues.java
-@@ -107,7 +107,7 @@ public interface UnsafeValues {
+@@ -108,7 +108,7 @@ public interface UnsafeValues {
  
      boolean isSupportedApiVersion(String apiVersion);
  
@@ -8944,7 +8947,7 @@ index dbe1e139a64c8d7935e4a5a69776c7f1f0997d1b..b04ad1dfcaa9c676c8ab133528e0d53f
          return !Bukkit.getUnsafe().isSupportedApiVersion(plugin.getDescription().getAPIVersion());
      }
  
-@@ -117,7 +117,7 @@ public interface UnsafeValues {
+@@ -118,7 +118,7 @@ public interface UnsafeValues {
  
      byte[] serializeEntity(org.bukkit.entity.Entity entity);
  
@@ -9929,7 +9932,7 @@ index cab8b50f1dbc31511be6bdda404126ad0832d0e4..b3ee36308458b1dd2041757d8b74e8ff
              return new AttributeModifier(UUID.fromString((String) args.get("uuid")), (String) args.get("name"), NumberConversions.toDouble(args.get("amount")), Operation.values()[NumberConversions.toInt(args.get("operation"))], EquipmentSlot.valueOf((args.get("slot").toString().toUpperCase())));
          }
 diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
-index 9930ebe7a23d306c602840fd43652fbdaba481b3..fc64b15a8566997e74e2a0d1d70a8ec3495304a8 100644
+index aba40431c5a1ae43106a678445483e0653e130d1..91813465436a6d9072bd99189df151d235c95e96 100644
 --- a/src/main/java/org/bukkit/block/Block.java
 +++ b/src/main/java/org/bukkit/block/Block.java
 @@ -190,7 +190,7 @@ public interface Block extends Metadatable, net.kyori.adventure.translation.Tran
@@ -9968,7 +9971,7 @@ index 9930ebe7a23d306c602840fd43652fbdaba481b3..fc64b15a8566997e74e2a0d1d70a8ec3
          return (int) ((packed << 10) >> 37);
      }
  
-@@ -745,7 +745,7 @@ public interface Block extends Metadatable, net.kyori.adventure.translation.Tran
+@@ -771,7 +771,7 @@ public interface Block extends Metadatable, net.kyori.adventure.translation.Tran
       * @return the speed that this Block will be mined by the given {@link ItemStack}
       */
      @NotNull
@@ -13972,7 +13975,7 @@ index 8111acaa1af53c53fd66b734c403afb8adfadb24..dedfeba0c5041329f8b0edf6d9067f40
  
          this.cost = cost;
 diff --git a/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java b/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
-index 635e07a6b0e255c4fdad58ba9d281c807af4e229..132f81384ede06cd7d9c34926d8f38db64fc4e7f 100644
+index cb9e8b53da300a911f84e15ee9be2261cf1cc340..843107cfad60725cd7d47c660576a8bf7729021b 100644
 --- a/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
 +++ b/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
 @@ -16,8 +16,8 @@ public enum EnchantmentTarget {
@@ -14085,7 +14088,7 @@ index 635e07a6b0e255c4fdad58ba9d281c807af4e229..132f81384ede06cd7d9c34926d8f38db
              return ARMOR.includes(item)
                      || item.equals(Material.ELYTRA)
                      || item.equals(Material.CARVED_PUMPKIN)
-@@ -203,7 +203,7 @@ public enum EnchantmentTarget {
+@@ -204,7 +204,7 @@ public enum EnchantmentTarget {
       */
      TRIDENT {
          @Override
@@ -14094,7 +14097,7 @@ index 635e07a6b0e255c4fdad58ba9d281c807af4e229..132f81384ede06cd7d9c34926d8f38db
              return item.equals(Material.TRIDENT);
          }
      },
-@@ -213,7 +213,7 @@ public enum EnchantmentTarget {
+@@ -214,7 +214,7 @@ public enum EnchantmentTarget {
       */
      CROSSBOW {
          @Override
@@ -14103,7 +14106,7 @@ index 635e07a6b0e255c4fdad58ba9d281c807af4e229..132f81384ede06cd7d9c34926d8f38db
              return item.equals(Material.CROSSBOW);
          }
      },
-@@ -223,7 +223,7 @@ public enum EnchantmentTarget {
+@@ -224,7 +224,7 @@ public enum EnchantmentTarget {
       */
      VANISHABLE {
          @Override
@@ -14112,7 +14115,7 @@ index 635e07a6b0e255c4fdad58ba9d281c807af4e229..132f81384ede06cd7d9c34926d8f38db
              return BREAKABLE.includes(item) || (WEARABLE.includes(item) && !item.equals(Material.ELYTRA)) || item.equals(Material.COMPASS);
          }
      };
-@@ -242,7 +242,7 @@ public enum EnchantmentTarget {
+@@ -243,7 +243,7 @@ public enum EnchantmentTarget {
       * @param item The item to check
       * @return True if the target includes the item
       */
@@ -14182,10 +14185,10 @@ index bfcb013504b5010073f59c0636a7dfec16b5ea3a..8c11a6a43aecb3fe7ba8fd8dce793e0f
      }
  
 diff --git a/src/main/java/org/bukkit/entity/Boat.java b/src/main/java/org/bukkit/entity/Boat.java
-index 3e458b96d5c15a78d3d411d5b88a716213588a94..709461a071fc71e474a1a4273438b8a0abdbd12f 100644
+index f54136f7f1ed11bd8e49cc48f8f50ebde694c327..35e0e5c36a3aba90dbbaf19b2ea4afddc4547775 100644
 --- a/src/main/java/org/bukkit/entity/Boat.java
 +++ b/src/main/java/org/bukkit/entity/Boat.java
-@@ -147,7 +147,7 @@ public interface Boat extends Vehicle {
+@@ -149,7 +149,7 @@ public interface Boat extends Vehicle {
  
          private final Material materialBlock;
  
@@ -14195,7 +14198,7 @@ index 3e458b96d5c15a78d3d411d5b88a716213588a94..709461a071fc71e474a1a4273438b8a0
          }
  
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index b7dfbbfadeebf771ad26bfee5db4a59f36f9c233..b62830bc4bbce6277a1f415cb0a81dfc8020725a 100644
+index 008ef0402b23402ecf3cc3f93b8d29cb5e61ed11..443804116a9903ad57d920dbe789ed535eb66432 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -137,7 +137,7 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
@@ -14245,7 +14248,7 @@ index b7dfbbfadeebf771ad26bfee5db4a59f36f9c233..b62830bc4bbce6277a1f415cb0a81dfc
          loc.getWorld().getChunkAtAsyncUrgently(loc).thenAccept((chunk) -> future.complete(Boolean.valueOf(teleport(loc, cause)))).exceptionally(ex -> {
              future.completeExceptionally(ex);
              return null;
-@@ -905,7 +905,7 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+@@ -924,7 +924,7 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
       * @param location The location to spawn the entity at.
       * @return Whether the entity was successfully spawned.
       */
@@ -14255,10 +14258,10 @@ index b7dfbbfadeebf771ad26bfee5db4a59f36f9c233..b62830bc4bbce6277a1f415cb0a81dfc
      }
  
 diff --git a/src/main/java/org/bukkit/entity/EntityType.java b/src/main/java/org/bukkit/entity/EntityType.java
-index fdd4d060613f2a7c153ac2fe7713b200e1351af2..e26d2cab5e70abc5f67e9777f2c506580793264c 100644
+index 882d699f781160765db4a5eb3a71ab3732c07f9a..bb8b43f261cdde208c4614f0c0f56013aa5be270 100644
 --- a/src/main/java/org/bukkit/entity/EntityType.java
 +++ b/src/main/java/org/bukkit/entity/EntityType.java
-@@ -302,7 +302,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
+@@ -304,7 +304,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
      private static final Map<Short, EntityType> ID_MAP = new HashMap<Short, EntityType>();
  
      static {
@@ -14267,7 +14270,7 @@ index fdd4d060613f2a7c153ac2fe7713b200e1351af2..e26d2cab5e70abc5f67e9777f2c50658
              if (type.name != null) {
                  NAME_MAP.put(type.name.toLowerCase(java.util.Locale.ENGLISH), type);
              }
-@@ -327,11 +327,11 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
+@@ -329,11 +329,11 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
          NAME_MAP.put("zombie_pigman", ZOMBIFIED_PIGLIN);
      }
  
@@ -14281,7 +14284,7 @@ index fdd4d060613f2a7c153ac2fe7713b200e1351af2..e26d2cab5e70abc5f67e9777f2c50658
          this.name = name;
          this.clazz = clazz;
          this.typeId = (short) typeId;
-@@ -386,7 +386,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
+@@ -388,7 +388,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
      @Deprecated
      @Contract("null -> null")
      @Nullable
@@ -14290,7 +14293,7 @@ index fdd4d060613f2a7c153ac2fe7713b200e1351af2..e26d2cab5e70abc5f67e9777f2c50658
          if (name == null) {
              return null;
          }
-@@ -402,7 +402,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
+@@ -404,7 +404,7 @@ public enum EntityType implements Keyed, net.kyori.adventure.translation.Transla
       */
      @Deprecated
      @Nullable
@@ -14300,37 +14303,37 @@ index fdd4d060613f2a7c153ac2fe7713b200e1351af2..e26d2cab5e70abc5f67e9777f2c50658
              return null;
          }
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 3bd1d100d0c481ae7edaa251869640ab370aeb42..b600805d79403e70f2a69b90dbc9267aeb3abe7c 100644
+index ead90b002034c463983af948a4fb882109b8d3a2..399e73fb41ad3f4b26b65484aee39dba73b0b083 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -92,7 +92,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
-      *     or null if no block is within maxDistance
+@@ -94,7 +94,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       */
+     @Deprecated(forRemoval = true)
      @Nullable
 -    public default Block getTargetBlock(int maxDistance) {
 +    public default Block getTargetBlock(final int maxDistance) {
          return getTargetBlock(maxDistance, com.destroystokyo.paper.block.TargetBlockInfo.FluidMode.NEVER);
      }
  
-@@ -115,7 +115,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -119,7 +119,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       *     or null if no block is targeted
       */
      @Nullable
 -    public default org.bukkit.block.BlockFace getTargetBlockFace(int maxDistance) {
 +    public default org.bukkit.block.BlockFace getTargetBlockFace(final int maxDistance) {
-         return getTargetBlockFace(maxDistance, com.destroystokyo.paper.block.TargetBlockInfo.FluidMode.NEVER);
+         return getTargetBlockFace(maxDistance, org.bukkit.FluidCollisionMode.NEVER);
      }
  
-@@ -138,7 +138,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
-      *     or null if no block is targeted
+@@ -157,7 +157,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       */
+     @Deprecated(forRemoval = true)
      @Nullable
 -    public default com.destroystokyo.paper.block.TargetBlockInfo getTargetBlockInfo(int maxDistance) {
 +    public default com.destroystokyo.paper.block.TargetBlockInfo getTargetBlockInfo(final int maxDistance) {
          return getTargetBlockInfo(maxDistance, com.destroystokyo.paper.block.TargetBlockInfo.FluidMode.NEVER);
      }
  
-@@ -160,7 +160,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -181,7 +181,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       * @return entity being targeted, or null if no entity is targeted
       */
      @Nullable
@@ -14339,16 +14342,16 @@ index 3bd1d100d0c481ae7edaa251869640ab370aeb42..b600805d79403e70f2a69b90dbc9267a
          return getTargetEntity(maxDistance, false);
      }
  
-@@ -182,7 +182,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
-      *     or null if no entity is targeted
+@@ -205,7 +205,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       */
+     @Deprecated(forRemoval = true)
      @Nullable
 -    public default com.destroystokyo.paper.entity.TargetEntityInfo getTargetEntityInfo(int maxDistance) {
 +    public default com.destroystokyo.paper.entity.TargetEntityInfo getTargetEntityInfo(final int maxDistance) {
          return getTargetEntityInfo(maxDistance, false);
      }
  
-@@ -958,7 +958,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -1006,7 +1006,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       *
       * @param item item to pickup
       */
@@ -14357,7 +14360,7 @@ index 3bd1d100d0c481ae7edaa251869640ab370aeb42..b600805d79403e70f2a69b90dbc9267a
          playPickupItemAnimation(item, item.getItemStack().getAmount());
      }
  
-@@ -995,7 +995,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -1043,7 +1043,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       * @param hand hand to be swung, either {@link org.bukkit.inventory.EquipmentSlot#HAND} or {@link org.bukkit.inventory.EquipmentSlot#OFF_HAND}
       * @throws IllegalArgumentException if invalid hand is passed
       */
@@ -14426,7 +14429,7 @@ index 57cf24cfd15a541f60aafc8507c189344aead0f7..69fca1772a19f31c05c3907a13050b30
          }
  
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 0d746b6f5003f33e3ad6a2bc03a4c97ea3190112..8d713284fe06e277445d6b8bcf1dab0f567d8305 100644
+index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928fb982d0a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -643,7 +643,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
@@ -14770,10 +14773,10 @@ index 376c5375df21d59c520c99eb3bc64e9ddae007a6..25408d57f94ed24ed4d819546cebaa2b
      }
  
 diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
-index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf81a129fc3 100644
+index 3eef84ae13f9dff828bc1d9411575b8b3bf77703..b1efa3ffa0e21968ada70da3d95b9e8a13b86d00 100644
 --- a/src/main/java/org/bukkit/event/HandlerList.java
 +++ b/src/main/java/org/bukkit/event/HandlerList.java
-@@ -42,7 +42,7 @@ public class HandlerList {
+@@ -49,7 +49,7 @@ public class HandlerList {
       */
      public static void bakeAll() {
          synchronized (allLists) {
@@ -14782,7 +14785,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
                  h.bake();
              }
          }
-@@ -53,9 +53,9 @@ public class HandlerList {
+@@ -60,9 +60,9 @@ public class HandlerList {
       */
      public static void unregisterAll() {
          synchronized (allLists) {
@@ -14794,7 +14797,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
                          list.clear();
                      }
                      h.handlers = null;
-@@ -69,9 +69,9 @@ public class HandlerList {
+@@ -76,9 +76,9 @@ public class HandlerList {
       *
       * @param plugin plugin to unregister
       */
@@ -14806,7 +14809,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
                  h.unregister(plugin);
              }
          }
-@@ -82,9 +82,9 @@ public class HandlerList {
+@@ -89,9 +89,9 @@ public class HandlerList {
       *
       * @param listener listener to unregister
       */
@@ -14818,16 +14821,16 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
                  h.unregister(listener);
              }
          }
-@@ -97,7 +97,7 @@ public class HandlerList {
-      */
-     public HandlerList() {
+@@ -110,7 +110,7 @@ public class HandlerList {
+             .ifPresent(EVENT_TYPES::add);
+         // Paper end
          handlerslots = new EnumMap<EventPriority, ArrayList<RegisteredListener>>(EventPriority.class);
 -        for (EventPriority o : EventPriority.values()) {
 +        for (final EventPriority o : EventPriority.values()) {
              handlerslots.put(o, new ArrayList<RegisteredListener>());
          }
          synchronized (allLists) {
-@@ -110,7 +110,7 @@ public class HandlerList {
+@@ -123,7 +123,7 @@ public class HandlerList {
       *
       * @param listener listener to register
       */
@@ -14836,7 +14839,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
          if (handlerslots.get(listener.getPriority()).contains(listener))
              throw new IllegalStateException("This listener is already registered to priority " + listener.getPriority());
          handlers = null;
-@@ -122,8 +122,8 @@ public class HandlerList {
+@@ -135,8 +135,8 @@ public class HandlerList {
       *
       * @param listeners listeners to register
       */
@@ -14847,7 +14850,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
              register(listener);
          }
      }
-@@ -133,7 +133,7 @@ public class HandlerList {
+@@ -146,7 +146,7 @@ public class HandlerList {
       *
       * @param listener listener to remove
       */
@@ -14856,7 +14859,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
          if (handlerslots.get(listener.getPriority()).remove(listener)) {
              handlers = null;
          }
-@@ -144,10 +144,10 @@ public class HandlerList {
+@@ -157,10 +157,10 @@ public class HandlerList {
       *
       * @param plugin plugin to remove
       */
@@ -14870,7 +14873,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
                  if (i.next().getPlugin().equals(plugin)) {
                      i.remove();
                      changed = true;
-@@ -162,10 +162,10 @@ public class HandlerList {
+@@ -175,10 +175,10 @@ public class HandlerList {
       *
       * @param listener listener to remove
       */
@@ -14884,7 +14887,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
                  if (i.next().getListener().equals(listener)) {
                      i.remove();
                      changed = true;
-@@ -180,8 +180,8 @@ public class HandlerList {
+@@ -193,8 +193,8 @@ public class HandlerList {
       */
      public synchronized void bake() {
          if (handlers != null) return; // don't re-bake when still valid
@@ -14895,7 +14898,7 @@ index 453e5798dd40f69b563908b339208e9253ec0650..3a3db9e8d3e720e7a827b3abad670cf8
              entries.addAll(entry.getValue());
          }
          handlers = entries.toArray(new RegisteredListener[0]);
-@@ -207,13 +207,13 @@ public class HandlerList {
+@@ -220,13 +220,13 @@ public class HandlerList {
       * @return the list of registered listeners
       */
      @NotNull
@@ -16784,7 +16787,7 @@ index 05e96d239e1dbbc770c014514bcb05582e91edaa..860a01cb02dbb0fb26ff9b170c96ebe6
      }
  
 diff --git a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
-index 7b4e0997c18eb147973d347493b287b7b99da266..84b992be575a06f10e79303ec99893f5880b05ca 100644
+index a7f3c4f820b4ba619269ccb358506eb2b12707f7..18d73094dded379dee5ed794024a3cd11245559a 100644
 --- a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 @@ -25,15 +25,15 @@ public class PlayerDeathEvent extends EntityDeathEvent {
@@ -16840,7 +16843,7 @@ index 7b4e0997c18eb147973d347493b287b7b99da266..84b992be575a06f10e79303ec99893f5
 -    public void setDeathMessage(@Nullable String deathMessage) {
 +    public void setDeathMessage(@Nullable final String deathMessage) {
          this.deathMessage = deathMessage;
-         this.adventure$deathMessage = deathMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(deathMessage) : net.kyori.adventure.text.Component.empty(); // Paper
+         this.adventure$deathMessage = deathMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(deathMessage) : null; // Paper
      }
 @@ -179,7 +179,7 @@ public class PlayerDeathEvent extends EntityDeathEvent {
          return this.deathMessage != null ? this.deathMessage : (this.adventure$deathMessage != null ? getDeathMessageString(this.adventure$deathMessage) : null); // Paper
@@ -16928,7 +16931,7 @@ index e3d77dd9973512e58863504c08e939482cd282f2..b6779ac65921bd3908623b03d26f75e5
      }
  }
 diff --git a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
-index b20d725514a75e3e7db77658f81926fdc3d156bb..2704b974c144e84c3189181e082d66bbc60f9973 100644
+index 9343a7f5f2d8bc1ddd8aad02f91a5794a6fe23c8..9b9b951bb254a9df92fa34056f92277ac379d99a 100644
 --- a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
 @@ -58,8 +58,8 @@ public class PotionSplashEvent extends ProjectileHitEvent implements Cancellable
@@ -17616,10 +17619,10 @@ index cd10a36b4d018760e7a0728ae7fba6016cedf39e..a2fa02a3d0a517037550559c0ccca13f
      }
  
 diff --git a/src/main/java/org/bukkit/event/inventory/InventoryType.java b/src/main/java/org/bukkit/event/inventory/InventoryType.java
-index c096266200c1ac513f0238927d09198afbe63f0e..af9cc3c9b789e42b10a26600830912577c8c80b4 100644
+index 6ae5e2c7f0197400c333c514122d92c8d0d2cf56..5dca0d2b0419e2a72679336f0bc1b3b3c1934be6 100644
 --- a/src/main/java/org/bukkit/event/inventory/InventoryType.java
 +++ b/src/main/java/org/bukkit/event/inventory/InventoryType.java
-@@ -152,11 +152,11 @@ public enum InventoryType {
+@@ -157,11 +157,11 @@ public enum InventoryType {
          return defaultTitleComponent;
      }
      // Paper end
@@ -17634,25 +17637,16 @@ index c096266200c1ac513f0238927d09198afbe63f0e..af9cc3c9b789e42b10a2660083091257
          title = defaultTitle;
          this.isCreatable = isCreatable;
 diff --git a/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java b/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
-index 04e9626ef920f90a8e287a36e003bc4c4a6c5ede..c8c604c84f9c7e571b701475da8eb088b7f4472b 100644
+index d2f7d0631d8001d4a7783946497e8c5b598bb408..67d8213e38ab0c9e5f8dc7ec9287e8529fd83130 100644
 --- a/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
 +++ b/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
-@@ -16,7 +16,7 @@ public class PrepareAnvilEvent extends PrepareResultEvent {
-     //private static final HandlerList handlers = new HandlerList();
-     //private ItemStack result;
+@@ -13,7 +13,7 @@ public class PrepareAnvilEvent extends com.destroystokyo.paper.event.inventory.P
+ 
+     // Paper - move HandlerList to PrepareInventoryResultEvent
  
 -    public PrepareAnvilEvent(@NotNull InventoryView inventory, @Nullable ItemStack result) {
 +    public PrepareAnvilEvent(@NotNull final InventoryView inventory, @Nullable final ItemStack result) {
          super(inventory, result);
-         //this.result = result;
-         // Paper end
-@@ -38,7 +38,7 @@ public class PrepareAnvilEvent extends PrepareResultEvent {
-         return super.getResult(); // Paper
-     }
- 
--    public void setResult(@Nullable ItemStack result) {
-+    public void setResult(@Nullable final ItemStack result) {
-         super.setResult(result); // Paper
      }
  
 diff --git a/src/main/java/org/bukkit/event/inventory/PrepareItemCraftEvent.java b/src/main/java/org/bukkit/event/inventory/PrepareItemCraftEvent.java
@@ -17669,25 +17663,23 @@ index 82a8dda53ff613b1fd171d91d693749bb88c8d09..d8a17c63cfd0a3abbe9f39e526b73ce2
          this.matrix = what;
          this.repair = isRepair;
 diff --git a/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java b/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
-index 4c8659b479842853739b43d685f5bc82820639c7..9deb3981ebf9f58cc949bc477b317656dbb97de7 100644
+index 8d7924fa81e9b53514fa534f0572fd7effef73c4..ba2193924d2b865df07e37f31d866ae1e3a8d553 100644
 --- a/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
 +++ b/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
-@@ -16,7 +16,7 @@ public class PrepareSmithingEvent extends PrepareResultEvent {
-     //private static final HandlerList handlers = new HandlerList();
-     //private ItemStack result;
+@@ -1,6 +1,5 @@
+ package org.bukkit.event.inventory;
+ 
+-import org.bukkit.event.HandlerList;
+ import org.bukkit.inventory.InventoryView;
+ import org.bukkit.inventory.ItemStack;
+ import org.bukkit.inventory.SmithingInventory;
+@@ -14,7 +13,7 @@ public class PrepareSmithingEvent extends com.destroystokyo.paper.event.inventor
+ 
+     // Paper - move HandlerList ot PrepareInventoryResultEvent
  
 -    public PrepareSmithingEvent(@NotNull InventoryView inventory, @Nullable ItemStack result) {
 +    public PrepareSmithingEvent(@NotNull final InventoryView inventory, @Nullable final ItemStack result) {
          super(inventory, result);
-         //this.result = result;
-         // Paper end
-@@ -38,7 +38,7 @@ public class PrepareSmithingEvent extends PrepareResultEvent {
-         return super.getResult(); // Paper
-     }
- 
--    public void setResult(@Nullable ItemStack result) {
-+    public void setResult(@Nullable final ItemStack result) {
-         super.setResult(result); // Paper
      }
  
 diff --git a/src/main/java/org/bukkit/event/inventory/SmithItemEvent.java b/src/main/java/org/bukkit/event/inventory/SmithItemEvent.java
@@ -18489,7 +18481,7 @@ index 81e0f2127787fab3318c8751a6ac198d1e764fad..aad03552c93796a81217e9c66eb45732
      }
  
 diff --git a/src/main/java/org/bukkit/event/player/PlayerKickEvent.java b/src/main/java/org/bukkit/event/player/PlayerKickEvent.java
-index ab6482c54ff134bc36c11354afdf532c66e9c228..6b0efd8d6b185c2cd70b5d3dcb115b94cacdd310 100644
+index c1ce175905986c2a978a9ef406d718cd388a311e..1ef4207798a4b88a1ec20d054aed0c79f9cecab6 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerKickEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerKickEvent.java
 @@ -55,7 +55,7 @@ public class PlayerKickEvent extends PlayerEvent implements Cancellable {
@@ -18922,7 +18914,7 @@ index 0a61c7e0ea2886b4aec97f981266cf04e7182a1d..e5816db0c13282abd6ea6068d1e9a3ef
      }
  
 diff --git a/src/main/java/org/bukkit/event/player/PlayerTeleportEvent.java b/src/main/java/org/bukkit/event/player/PlayerTeleportEvent.java
-index 11ce5b005640aedef2547cf9b9ef617c66fcf9f3..faedbf529843f6af046440991a576df4b2102a09 100644
+index a1e70269162f7a1af3a8c90778e72bdda0322784..ca3891cd9220bcf7e8a9b1e694b95ffe1221986f 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerTeleportEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerTeleportEvent.java
 @@ -31,7 +31,7 @@ public class PlayerTeleportEvent extends PlayerMoveEvent {
@@ -19201,50 +19193,10 @@ index 05167fb34e4c42edc67af6e6700a2a3cc0f92769..6b9903e2072c676e3a1767a1a2d3d0c4
      }
  }
 diff --git a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
-index bb55cb0a8769803e5455f65633794d6ad03e61b8..e8513e430c82276830dbe28f526012a1b99ba845 100644
+index c854f0347dce51dc75105fef2dd69ef71bcc43c3..cca19dd4827721f9763cd1a03d15c1a5df26010c 100644
 --- a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
 +++ b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
-@@ -44,7 +44,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
-     }
- 
-     @Deprecated
--    protected ServerListPingEvent(@NotNull final InetAddress address, @NotNull final String motd, boolean shouldSendChatPreviews, final int maxPlayers) {
-+    protected ServerListPingEvent(@NotNull final InetAddress address, @NotNull final String motd, final boolean shouldSendChatPreviews, final int maxPlayers) {
-         this("", address, motd, shouldSendChatPreviews, maxPlayers);
-     }
- 
-@@ -61,7 +61,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
-      * @deprecated in favour of {@link #ServerListPingEvent(String, java.net.InetAddress, net.kyori.adventure.text.Component, boolean, int)}
-      */
-     @Deprecated // Paper
--    protected ServerListPingEvent(@NotNull final String hostname, @NotNull final InetAddress address, @NotNull final String motd, boolean shouldSendChatPreviews, final int maxPlayers) {
-+    protected ServerListPingEvent(@NotNull final String hostname, @NotNull final InetAddress address, @NotNull final String motd, final boolean shouldSendChatPreviews, final int maxPlayers) {
-         super(true);
-         this.numPlayers = MAGIC_PLAYER_COUNT;
-         this.hostname = hostname;
-@@ -72,10 +72,10 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
-     }
-     // Paper start
-     @Deprecated
--    public ServerListPingEvent(@NotNull final InetAddress address, @NotNull final net.kyori.adventure.text.Component motd, boolean shouldSendChatPreviews, final int numPlayers, final int maxPlayers) {
-+    public ServerListPingEvent(@NotNull final InetAddress address, @NotNull final net.kyori.adventure.text.Component motd, final boolean shouldSendChatPreviews, final int numPlayers, final int maxPlayers) {
-         this("", address, motd, shouldSendChatPreviews, numPlayers, maxPlayers);
-     }
--    public ServerListPingEvent(@NotNull final String hostname, @NotNull final InetAddress address, @NotNull final net.kyori.adventure.text.Component motd, boolean shouldSendChatPreviews, final int numPlayers, final int maxPlayers) {
-+    public ServerListPingEvent(@NotNull final String hostname, @NotNull final InetAddress address, @NotNull final net.kyori.adventure.text.Component motd, final boolean shouldSendChatPreviews, final int numPlayers, final int maxPlayers) {
-         super(true);
-         Preconditions.checkArgument(numPlayers >= 0, "Cannot have negative number of players online (%s)", numPlayers);
-         this.hostname = hostname;
-@@ -96,7 +96,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
-      * @deprecated in favour of {@link #ServerListPingEvent(String, java.net.InetAddress, net.kyori.adventure.text.Component, boolean, int)}
-      */
-     @Deprecated
--    protected ServerListPingEvent(@NotNull final InetAddress address, @NotNull final net.kyori.adventure.text.Component motd, boolean shouldSendChatPreviews, final int maxPlayers) {
-+    protected ServerListPingEvent(@NotNull final InetAddress address, @NotNull final net.kyori.adventure.text.Component motd, final boolean shouldSendChatPreviews, final int maxPlayers) {
-         this("", address, motd, shouldSendChatPreviews, maxPlayers);
-     }
- 
-@@ -131,7 +131,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
+@@ -115,7 +115,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
       *
       * @param motd the message of the day
       */
@@ -19253,7 +19205,7 @@ index bb55cb0a8769803e5455f65633794d6ad03e61b8..e8513e430c82276830dbe28f526012a1
          this.motd = motd;
      }
      // Paper end
-@@ -176,7 +176,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
+@@ -160,7 +160,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
       * @deprecated in favour of {@link #motd(net.kyori.adventure.text.Component)}
       */
      @Deprecated // Paper
@@ -19262,7 +19214,7 @@ index bb55cb0a8769803e5455f65633794d6ad03e61b8..e8513e430c82276830dbe28f526012a1
          this.motd = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(motd); // Paper
      }
  
-@@ -220,7 +220,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
+@@ -206,7 +206,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
       *
       * @param maxPlayers the maximum number of player
       */
@@ -19271,7 +19223,7 @@ index bb55cb0a8769803e5455f65633794d6ad03e61b8..e8513e430c82276830dbe28f526012a1
          this.maxPlayers = maxPlayers;
      }
  
-@@ -234,7 +234,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
+@@ -220,7 +220,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
       * @throws UnsupportedOperationException if the caller of this event does
       *     not support setting the server icon
       */
@@ -19744,7 +19696,7 @@ index 4704ea919b0cf4dbdf0e02c335ff483f7d3508b9..a57fcf72865b643490fb18f37fd47954
      }
  }
 diff --git a/src/main/java/org/bukkit/generator/ChunkGenerator.java b/src/main/java/org/bukkit/generator/ChunkGenerator.java
-index ab972330f6219fae8d1d443b36dd9b04df22d777..8858d7ca5e0f93d2b727d0499d10141eb211a3fe 100644
+index f1f60710ea44a078aa071dbf2d5c0ed3724e31b3..86f562ade3c6adbd1152beecab7bd223cdce8139 100644
 --- a/src/main/java/org/bukkit/generator/ChunkGenerator.java
 +++ b/src/main/java/org/bukkit/generator/ChunkGenerator.java
 @@ -76,7 +76,7 @@ public abstract class ChunkGenerator {
@@ -19848,7 +19800,7 @@ index ab972330f6219fae8d1d443b36dd9b04df22d777..8858d7ca5e0f93d2b727d0499d10141e
          return null;
      }
  
-@@ -464,7 +464,7 @@ public abstract class ChunkGenerator {
+@@ -588,7 +588,7 @@ public abstract class ChunkGenerator {
       *
       */
      @NotNull
@@ -20195,10 +20147,10 @@ index a1bd3a68d004c19b162dd1ce6b951eaa533f295e..313ddb57d9928a6e09ea2616334f260e
      }
  }
 diff --git a/src/main/java/org/bukkit/inventory/CookingRecipe.java b/src/main/java/org/bukkit/inventory/CookingRecipe.java
-index 993675b57b0a6acc58cd5f2176f8227b84f80b7c..a7cc7565644b1507a22148b9f835329a2d8fa93b 100644
+index 1ea8ef6debb15fea9184ce325385d641360dea13..5a929ce3e40dbde3b3971539a4378dbd7d4bb6fb 100644
 --- a/src/main/java/org/bukkit/inventory/CookingRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/CookingRecipe.java
-@@ -28,7 +28,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
+@@ -30,7 +30,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
       * @param experience The experience given by this recipe
       * @param cookingTime The cooking time (in ticks)
       */
@@ -20207,7 +20159,7 @@ index 993675b57b0a6acc58cd5f2176f8227b84f80b7c..a7cc7565644b1507a22148b9f835329a
          this(key, result, new RecipeChoice.MaterialChoice(Collections.singletonList(source)), experience, cookingTime);
      }
  
-@@ -41,7 +41,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
+@@ -43,7 +43,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
       * @param experience The experience given by this recipe
       * @param cookingTime The cooking time (in ticks)
       */
@@ -20216,7 +20168,7 @@ index 993675b57b0a6acc58cd5f2176f8227b84f80b7c..a7cc7565644b1507a22148b9f835329a
          Preconditions.checkArgument(result.getType() != Material.AIR, "Recipe must have non-AIR result.");
          this.key = key;
          this.output = new ItemStack(result);
-@@ -57,7 +57,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
+@@ -59,7 +59,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
       * @return The changed recipe, so you can chain calls.
       */
      @NotNull
@@ -20225,7 +20177,7 @@ index 993675b57b0a6acc58cd5f2176f8227b84f80b7c..a7cc7565644b1507a22148b9f835329a
          this.ingredient = new RecipeChoice.MaterialChoice(Collections.singletonList(input));
          return this;
      }
-@@ -81,7 +81,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
+@@ -83,7 +83,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
       * @return The changed recipe, so you can chain calls.
       */
      @NotNull
@@ -20234,7 +20186,7 @@ index 993675b57b0a6acc58cd5f2176f8227b84f80b7c..a7cc7565644b1507a22148b9f835329a
          this.ingredient = input;
          return (T) this;
      }
-@@ -112,7 +112,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
+@@ -114,7 +114,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
       *
       * @param experience the experience level
       */
@@ -20243,7 +20195,7 @@ index 993675b57b0a6acc58cd5f2176f8227b84f80b7c..a7cc7565644b1507a22148b9f835329a
          this.experience = experience;
      }
  
-@@ -130,7 +130,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
+@@ -132,7 +132,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
       *
       * @param cookingTime new cooking time
       */
@@ -20252,13 +20204,13 @@ index 993675b57b0a6acc58cd5f2176f8227b84f80b7c..a7cc7565644b1507a22148b9f835329a
          Preconditions.checkArgument(cookingTime >= 0, "cookingTime must be >= 0");
          this.cookingTime = cookingTime;
      }
-@@ -168,7 +168,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
+@@ -170,7 +170,7 @@ public abstract class CookingRecipe<T extends CookingRecipe> implements Recipe,
       * @param group recipe group. An empty string denotes no group. May not be
       * null.
       */
 -    public void setGroup(@NotNull String group) {
 +    public void setGroup(@NotNull final String group) {
-         Preconditions.checkArgument(group != null, "group");
+         Preconditions.checkArgument(group != null, "group cannot be null");
          this.group = group;
      }
 diff --git a/src/main/java/org/bukkit/inventory/CreativeCategory.java b/src/main/java/org/bukkit/inventory/CreativeCategory.java
@@ -20475,7 +20427,7 @@ index 2448e70d75ae7a678c6befac4506c103edb78875..00912c571d84b72a7a6cb8f452892502
      }
  
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index 9d0f4328f5206b3365f10a410f90aa2f5902851c..1f6df81bd0a27df836dca74203b3a60c85068fdf 100644
+index 761b5c0336802ff421f798cf7788cb4ecb171b45..a86bf2a27dd66c6f8abb91d9498992800d632697 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
 @@ -135,7 +135,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
@@ -20903,7 +20855,7 @@ index 9d0f4328f5206b3365f10a410f90aa2f5902851c..1f6df81bd0a27df836dca74203b3a60c
 +    public boolean canRepair(@NotNull final ItemStack toBeRepaired) {
          return Bukkit.getUnsafe().isValidRepairItemStack(toBeRepaired, this);
      }
-     // Paper end
+ 
 diff --git a/src/main/java/org/bukkit/inventory/LecternInventory.java b/src/main/java/org/bukkit/inventory/LecternInventory.java
 index acf2244f77133df53eb5f862c8e713c85192f13d..8cdafb96729ec2c3a07ea049972498f54c198954 100644
 --- a/src/main/java/org/bukkit/inventory/LecternInventory.java
@@ -21220,11 +21172,11 @@ index ad7b2c50d70950592f69e19116b103d208c3a265..0dbda042d2aece5eb50aeb963707d9fd
                  return true;
              }
 diff --git a/src/main/java/org/bukkit/inventory/ShapedRecipe.java b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
-index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a31479d1537f 100644
+index 0819a4886fb77215645e56aa75e9821381f4b6d9..e136f00d2516b0243817f1996252fc4127b32003 100644
 --- a/src/main/java/org/bukkit/inventory/ShapedRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
-@@ -21,7 +21,7 @@ public class ShapedRecipe implements Recipe, Keyed {
-     private @NotNull String group = "";
+@@ -23,7 +23,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+     private CraftingBookCategory category = CraftingBookCategory.MISC;
  
      @Deprecated
 -    public ShapedRecipe(@NotNull ItemStack result) {
@@ -21232,7 +21184,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
          Preconditions.checkArgument(result.getType() != Material.AIR, "Recipe must have non-AIR result.");
          this.key = NamespacedKey.randomKey();
          new Throwable("Warning: A plugin is creating a recipe using a Deprecated method. This will cause you to receive warnings stating 'Tried to load unrecognized recipe: bukkit:<ID>'. Please ask the author to give their recipe a static key using NamespacedKey.").printStackTrace();
-@@ -40,7 +40,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -42,7 +42,7 @@ public class ShapedRecipe implements Recipe, Keyed {
       * @see ShapedRecipe#setIngredient(char, Material, int)
       * @see ShapedRecipe#setIngredient(char, MaterialData)
       */
@@ -21241,7 +21193,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
          Preconditions.checkArgument(key != null, "key");
          Preconditions.checkArgument(result.getType() != Material.AIR, "Recipe must have non-AIR result.");
  
-@@ -65,7 +65,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -67,7 +67,7 @@ public class ShapedRecipe implements Recipe, Keyed {
          Preconditions.checkArgument(shape.length > 0 && shape.length < 4, "Crafting recipes should be 1, 2 or 3 rows, not ", shape.length);
  
          int lastLen = -1;
@@ -21250,7 +21202,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
              Preconditions.checkArgument(row != null, "Shape cannot have null rows");
              Preconditions.checkArgument(row.length() > 0 && row.length() < 4, "Crafting rows should be 1, 2, or 3 characters, not ", row.length());
  
-@@ -76,9 +76,9 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -78,9 +78,9 @@ public class ShapedRecipe implements Recipe, Keyed {
          System.arraycopy(shape, 0, this.rows, 0, shape.length);
  
          // Remove character mappings for characters that no longer exist in the shape
@@ -21263,7 +21215,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
                  newIngredients.put(c, ingredients.get(c));
              }
          }
-@@ -97,7 +97,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -99,7 +99,7 @@ public class ShapedRecipe implements Recipe, Keyed {
       */
      @NotNull
      @Deprecated // Paper
@@ -21272,7 +21224,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
          return setIngredient(key, ingredient.getItemType(), ingredient.getData());
      }
  
-@@ -109,7 +109,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -111,7 +111,7 @@ public class ShapedRecipe implements Recipe, Keyed {
       * @return The changed recipe, so you can chain calls.
       */
      @NotNull
@@ -21281,7 +21233,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
          return setIngredient(key, ingredient, 0);
      }
  
-@@ -124,7 +124,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -126,7 +126,7 @@ public class ShapedRecipe implements Recipe, Keyed {
       */
      @Deprecated
      @NotNull
@@ -21290,7 +21242,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
          Preconditions.checkArgument(ingredients.containsKey(Character.valueOf(key)), "Symbol does not appear in the shape:", key);
  
          // -1 is the old wildcard, map to Short.MAX_VALUE as the new one
-@@ -137,7 +137,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -139,7 +139,7 @@ public class ShapedRecipe implements Recipe, Keyed {
      }
  
      @NotNull
@@ -21299,7 +21251,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
          Preconditions.checkArgument(ingredients.containsKey(Character.valueOf(key)), "Symbol does not appear in the shape:", key);
  
          ingredients.put(Character.valueOf(key), ingredient);
-@@ -146,7 +146,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -148,7 +148,7 @@ public class ShapedRecipe implements Recipe, Keyed {
  
      // Paper start
      @NotNull
@@ -21308,7 +21260,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
          return setIngredient(key, new RecipeChoice.ExactChoice(item));
      }
      // Paper end
-@@ -160,8 +160,8 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -162,8 +162,8 @@ public class ShapedRecipe implements Recipe, Keyed {
      @Deprecated // Paper
      @NotNull
      public Map<Character, ItemStack> getIngredientMap() {
@@ -21319,7 +21271,7 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
              if (ingredient.getValue() == null) {
                  result.put(ingredient.getKey(), null);
              } else {
-@@ -173,8 +173,8 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -175,8 +175,8 @@ public class ShapedRecipe implements Recipe, Keyed {
  
      @NotNull
      public Map<Character, RecipeChoice> getChoiceMap() {
@@ -21330,21 +21282,21 @@ index 5acb4582224931b0906aabc2c36883372912c045..94b689293298c981220c176d5be1a314
              if (ingredient.getValue() == null) {
                  result.put(ingredient.getKey(), null);
              } else {
-@@ -230,7 +230,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -232,7 +232,7 @@ public class ShapedRecipe implements Recipe, Keyed {
       * @param group recipe group. An empty string denotes no group. May not be
       * null.
       */
 -    public void setGroup(@NotNull String group) {
 +    public void setGroup(@NotNull final String group) {
-         Preconditions.checkArgument(group != null, "group");
+         Preconditions.checkArgument(group != null, "group cannot be null");
          this.group = group;
      }
 diff --git a/src/main/java/org/bukkit/inventory/ShapelessRecipe.java b/src/main/java/org/bukkit/inventory/ShapelessRecipe.java
-index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d8db19c2f 100644
+index b065a8a487ed9d5c88e8fb46a3ba180310df54a2..ec358535cdf5d9ed7a059182f354b5ad14beed72 100644
 --- a/src/main/java/org/bukkit/inventory/ShapelessRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/ShapelessRecipe.java
-@@ -22,7 +22,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
-     private @NotNull String group = "";
+@@ -24,7 +24,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+     private CraftingBookCategory category = CraftingBookCategory.MISC;
  
      @Deprecated
 -    public ShapelessRecipe(@NotNull ItemStack result) {
@@ -21352,7 +21304,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          Preconditions.checkArgument(result.getType() != Material.AIR, "Recipe must have non-AIR result.");
          this.key = NamespacedKey.randomKey();
          new Throwable("Warning: A plugin is creating a recipe using a Deprecated method. This will cause you to receive warnings stating 'Tried to load unrecognized recipe: bukkit:<ID>'. Please ask the author to give their recipe a static key using NamespacedKey.").printStackTrace();
-@@ -43,7 +43,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -45,7 +45,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       * @see ShapelessRecipe#addIngredient(int,MaterialData)
       * @see ShapelessRecipe#addIngredient(int,Material,int)
       */
@@ -21361,7 +21313,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          Preconditions.checkArgument(result.getType() != Material.AIR, "Recipe must have non-AIR result.");
          this.key = key;
          this.output = new ItemStack(result);
-@@ -58,7 +58,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -60,7 +60,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       */
      @NotNull
      @Deprecated
@@ -21370,7 +21322,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return addIngredient(1, ingredient);
      }
  
-@@ -69,7 +69,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -71,7 +71,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       * @return The changed recipe, so you can chain calls.
       */
      @NotNull
@@ -21379,7 +21331,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return addIngredient(1, ingredient, 0);
      }
  
-@@ -83,7 +83,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -85,7 +85,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       */
      @Deprecated
      @NotNull
@@ -21388,7 +21340,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return addIngredient(1, ingredient, rawdata);
      }
  
-@@ -97,7 +97,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -99,7 +99,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       */
      @NotNull
      @Deprecated // Paper
@@ -21397,7 +21349,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return addIngredient(count, ingredient.getItemType(), ingredient.getData());
      }
  
-@@ -109,7 +109,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -111,7 +111,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       * @return The changed recipe, so you can chain calls.
       */
      @NotNull
@@ -21406,7 +21358,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return addIngredient(count, ingredient, 0);
      }
  
-@@ -124,7 +124,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -126,7 +126,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       */
      @Deprecated
      @NotNull
@@ -21415,7 +21367,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          Preconditions.checkArgument(ingredients.size() + count <= 9, "Shapeless recipes cannot have more than 9 ingredients");
  
          // -1 is the old wildcard, map to Short.MAX_VALUE as the new one
-@@ -139,7 +139,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -141,7 +141,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
      }
  
      @NotNull
@@ -21424,7 +21376,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          Preconditions.checkArgument(ingredients.size() + 1 <= 9, "Shapeless recipes cannot have more than 9 ingredients");
  
          ingredients.add(ingredient);
-@@ -148,12 +148,12 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -150,12 +150,12 @@ public class ShapelessRecipe implements Recipe, Keyed {
  
      // Paper start
      @NotNull
@@ -21439,7 +21391,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          Preconditions.checkArgument(ingredients.size() + count <= 9, "Shapeless recipes cannot have more than 9 ingredients");
          while (count-- > 0) {
              ingredients.add(new RecipeChoice.ExactChoice(item));
-@@ -162,15 +162,15 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -164,15 +164,15 @@ public class ShapelessRecipe implements Recipe, Keyed {
      }
  
      @NotNull
@@ -21459,7 +21411,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
              if (choice.test(item)) {
                  iterator.remove();
                  count--;
-@@ -187,7 +187,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -189,7 +189,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       * @return The changed recipe.
       */
      @NotNull
@@ -21468,7 +21420,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          ingredients.remove(ingredient);
  
          return this;
-@@ -202,7 +202,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -204,7 +204,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       * @return The changed recipe.
       */
      @NotNull
@@ -21477,7 +21429,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return removeIngredient(new ItemStack(ingredient)); // Paper - avoid using deprecated methods (magic values; RecipeChoice#getItemStack)
      }
  
-@@ -217,7 +217,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -219,7 +219,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       */
      @NotNull
      @Deprecated // Paper
@@ -21486,7 +21438,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return removeIngredient(ingredient.getItemType(), ingredient.getData());
      }
  
-@@ -231,7 +231,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -233,7 +233,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       * @return The changed recipe.
       */
      @NotNull
@@ -21495,7 +21447,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return removeIngredient(count, new ItemStack(ingredient)); // Paper - avoid using deprecated methods (magic values; RecipeChoice#getItemStack)
      }
  
-@@ -247,7 +247,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -249,7 +249,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       */
      @NotNull
      @Deprecated // Paper
@@ -21504,7 +21456,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return removeIngredient(count, ingredient.getItemType(), ingredient.getData());
      }
  
-@@ -263,7 +263,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -265,7 +265,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       */
      @Deprecated
      @NotNull
@@ -21513,7 +21465,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
          return removeIngredient(1, ingredient, rawdata);
      }
  
-@@ -280,10 +280,10 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -282,10 +282,10 @@ public class ShapelessRecipe implements Recipe, Keyed {
       */
      @Deprecated
      @NotNull
@@ -21527,7 +21479,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
              if (stack.getType() == ingredient && stack.getDurability() == rawdata) {
                  iterator.remove();
                  count--;
-@@ -312,8 +312,8 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -314,8 +314,8 @@ public class ShapelessRecipe implements Recipe, Keyed {
      @Deprecated // Paper
      @NotNull
      public List<ItemStack> getIngredientList() {
@@ -21538,7 +21490,7 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
              result.add(ingredient.getItemStack().clone());
          }
          return result;
-@@ -321,8 +321,8 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -323,8 +323,8 @@ public class ShapelessRecipe implements Recipe, Keyed {
  
      @NotNull
      public List<RecipeChoice> getChoiceList() {
@@ -21549,13 +21501,13 @@ index 1f9c86b27a9c99f0bffb99bf8eb28089837bf3f6..77d36ce5ce3ec5c0b6b2f3b51cd8661d
              result.add(ingredient.clone());
          }
          return result;
-@@ -352,7 +352,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -354,7 +354,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
       * @param group recipe group. An empty string denotes no group. May not be
       * null.
       */
 -    public void setGroup(@NotNull String group) {
 +    public void setGroup(@NotNull final String group) {
-         Preconditions.checkArgument(group != null, "group");
+         Preconditions.checkArgument(group != null, "group cannot be null");
          this.group = group;
      }
 diff --git a/src/main/java/org/bukkit/inventory/SmithingInventory.java b/src/main/java/org/bukkit/inventory/SmithingInventory.java
@@ -21643,7 +21595,7 @@ index e7a8e7188bf8b9840de56dc80c2b79d64a9389cb..a9a121c986b083b8de02caaaf7f8d691
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java b/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
-index 692a6c17126751180fc76577d4510cb60b9671ab..af92427bd1565c6ea57b10488d851dde672a46c3 100644
+index c971c18bb8b8ac78133f3d5624320f9d565b7763..8e9be1fed2f78a08d1805f4799fda2708fad9b9f 100644
 --- a/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/StonecuttingRecipe.java
 @@ -23,7 +23,7 @@ public class StonecuttingRecipe implements Recipe, Keyed {
@@ -21688,7 +21640,7 @@ index 692a6c17126751180fc76577d4510cb60b9671ab..af92427bd1565c6ea57b10488d851dde
       */
 -    public void setGroup(@NotNull String group) {
 +    public void setGroup(@NotNull final String group) {
-         Preconditions.checkArgument(group != null, "group");
+         Preconditions.checkArgument(group != null, "group cannot be null");
          this.group = group;
      }
 diff --git a/src/main/java/org/bukkit/inventory/meta/BookMeta.java b/src/main/java/org/bukkit/inventory/meta/BookMeta.java
@@ -24991,7 +24943,7 @@ index f0838860b1bb9c1f16b10dfdc5445817f48854f9..9a98d6ea2c6277fe814af1751e6a5fd5
          }
      }
 diff --git a/src/main/java/org/bukkit/plugin/EventExecutor.java b/src/main/java/org/bukkit/plugin/EventExecutor.java
-index e1860322ae0f3c35097d16767628744034941749..1bcb3d735b7deab0f3b4054681730dc483a7b610 100644
+index bdfa3b5f4ab5023d3e1b5c50bed885b6aa118a02..f1ac654b5aa4889babf47d34e9e2c56da2fa5cde 100644
 --- a/src/main/java/org/bukkit/plugin/EventExecutor.java
 +++ b/src/main/java/org/bukkit/plugin/EventExecutor.java
 @@ -29,7 +29,7 @@ public interface EventExecutor {
@@ -25017,7 +24969,7 @@ index e1860322ae0f3c35097d16767628744034941749..1bcb3d735b7deab0f3b4054681730dc4
          if (m.getReturnType() != Void.TYPE) {
              final org.bukkit.plugin.java.JavaPlugin plugin = org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(m.getDeclaringClass());
              org.bukkit.Bukkit.getLogger().warning("@EventHandler method " + m.getDeclaringClass().getName() + (Modifier.isStatic(m.getModifiers()) ? '.' : '#') + m.getName()
-@@ -61,20 +61,20 @@ public interface EventExecutor {
+@@ -61,14 +61,14 @@ public interface EventExecutor {
              return new StaticMethodHandleEventExecutor(eventClass, m);
          } else if (definer.isBypassAccessChecks() || Modifier.isPublic(m.getDeclaringClass().getModifiers()) && Modifier.isPublic(m.getModifiers())) {
              // get the existing generated EventExecutor class for the Method or generate one
@@ -25034,9 +24986,11 @@ index e1860322ae0f3c35097d16767628744034941749..1bcb3d735b7deab0f3b4054681730dc4
 -                EventExecutor asmExecutor = executorClass.newInstance();
 +                final EventExecutor asmExecutor = executorClass.newInstance();
                  // Define a wrapper to conform to bukkit stupidity (passing in events that don't match and wrapper exception)
-                 return (listener, event) -> {
-                     if (!eventClass.isInstance(event)) return;
-                     asmExecutor.execute(listener, event);
+                 return new EventExecutor() {
+                     @Override
+@@ -83,7 +83,7 @@ public interface EventExecutor {
+                         return "ASMEventExecutor['" + m + "']";
+                     }
                  };
 -            } catch (InstantiationException | IllegalAccessException e) {
 +            } catch (final InstantiationException | IllegalAccessException e) {
@@ -25282,10 +25236,10 @@ index 53fcd44b978aaac1ecc78552c101b42eeca7330a..92053f0465dec37d5d0312a8c743cf7f
              return (Map<?, ?>) object;
          }
 diff --git a/src/main/java/org/bukkit/plugin/PluginLoader.java b/src/main/java/org/bukkit/plugin/PluginLoader.java
-index 256e440e699942e3c9da4205bb964bdc10ec92c4..343fefebddb3931edd560b3457cba2f72c38028b 100644
+index a11515b81575fc42c771a218a81fea8f05d2289d..8d70b2bfa83bd91834047a6cf2f3f5ec0756d310 100644
 --- a/src/main/java/org/bukkit/plugin/PluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/PluginLoader.java
-@@ -90,7 +90,7 @@ public interface PluginLoader {
+@@ -91,7 +91,7 @@ public interface PluginLoader {
       */
      @Deprecated(forRemoval = true)
      // provide default to allow other PluginLoader implementations to work
@@ -25319,10 +25273,10 @@ index 1e0eed8dcb9cce410aad02472e5f1adfa70f6586..07c7955736c6ca50ed291d197049eaa4
          super.log(logRecord);
      }
 diff --git a/src/main/java/org/bukkit/plugin/PluginManager.java b/src/main/java/org/bukkit/plugin/PluginManager.java
-index 0d1b20f2b5580ea5505ccc2f003925dbcee67199..fe0ec482c34b3f6612ae67d0a0b85c723d8b08cf 100644
+index efc04803a1eab01053a1f003d6feb2b712165d69..5ecdba5f7f33271dbed975d4c124b2774aec48c0 100644
 --- a/src/main/java/org/bukkit/plugin/PluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/PluginManager.java
-@@ -172,7 +172,7 @@ public interface PluginManager {
+@@ -173,7 +173,7 @@ public interface PluginManager {
       * @deprecated Classloader is always closed by upstream now.
       */
      @Deprecated(forRemoval = true)
@@ -25354,10 +25308,10 @@ index e92458d4f3c9abe9dc55c693f03216f880284db1..a4863ca2ee6f852ebb3f7369d71fc610
              return 0;
          } else {
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec86aa2ba52 100644
+index 9d826cae3b1bc5848c584ba062c91ddd8a7a3bbc..627b645521bafa81f76d738e583aae472c9d8f2e 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -57,7 +57,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -59,7 +59,7 @@ public final class SimplePluginManager implements PluginManager {
      private final Map<Boolean, Map<Permissible, Boolean>> defSubs = new HashMap<Boolean, Map<Permissible, Boolean>>();
      private final boolean useTimings = false;
  
@@ -25366,7 +25320,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          server = instance;
          this.commandMap = commandMap;
  
-@@ -73,30 +73,30 @@ public final class SimplePluginManager implements PluginManager {
+@@ -75,30 +75,30 @@ public final class SimplePluginManager implements PluginManager {
       *     valid PluginLoader
       */
      @Override
@@ -25405,7 +25359,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  fileAssociations.put(pattern, instance);
              }
          }
-@@ -110,7 +110,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -112,7 +112,7 @@ public final class SimplePluginManager implements PluginManager {
       */
      @Override
      @NotNull
@@ -25414,7 +25368,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          // Paper start - extra jars
          return this.loadPlugins(directory, java.util.Collections.emptyList());
      }
-@@ -120,28 +120,28 @@ public final class SimplePluginManager implements PluginManager {
+@@ -122,28 +122,28 @@ public final class SimplePluginManager implements PluginManager {
          Preconditions.checkArgument(directory != null, "Directory cannot be null");
          Preconditions.checkArgument(directory.isDirectory(), "Directory must be a directory");
  
@@ -25451,7 +25405,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  if (match.find()) {
                      loader = entry.getValue();
                  }
-@@ -152,7 +152,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -154,7 +154,7 @@ public final class SimplePluginManager implements PluginManager {
              PluginDescriptionFile description = null;
              try {
                  description = loader.getPluginDescription(file);
@@ -25460,7 +25414,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  if (name.equalsIgnoreCase("bukkit") || name.equalsIgnoreCase("minecraft") || name.equalsIgnoreCase("mojang")) {
                      server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "': Restricted Name"); // Paper
                      continue;
-@@ -160,12 +160,12 @@ public final class SimplePluginManager implements PluginManager {
+@@ -162,12 +162,12 @@ public final class SimplePluginManager implements PluginManager {
                      server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "': uses the space-character (0x20) in its name"); // Paper
                      continue;
                  }
@@ -25475,7 +25429,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
              if (replacedFile != null) {
                  server.getLogger().severe(String.format(
                      "Ambiguous plugin name `%s' for files `%s' and `%s' in `%s'",
-@@ -176,7 +176,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -178,7 +178,7 @@ public final class SimplePluginManager implements PluginManager {
                  ));
              }
  
@@ -25484,7 +25438,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
              if (removedProvided != null) {
                  server.getLogger().warning(String.format(
                          "Ambiguous plugin name `%s'. It is also provided by `%s'",
-@@ -185,8 +185,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -187,8 +187,8 @@ public final class SimplePluginManager implements PluginManager {
                  ));
              }
  
@@ -25495,7 +25449,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  if (pluginFile != null) {
                      server.getLogger().warning(String.format(
                              "`%s provides `%s' while this is also the name of `%s' in `%s'",
-@@ -196,7 +196,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -198,7 +198,7 @@ public final class SimplePluginManager implements PluginManager {
                              file.getParentFile().getPath() // Paper
                      ));
                  } else {
@@ -25504,7 +25458,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                      if (replacedPlugin != null) {
                          server.getLogger().warning(String.format(
                                  "`%s' is provided by both `%s' and `%s'",
-@@ -208,7 +208,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -210,7 +210,7 @@ public final class SimplePluginManager implements PluginManager {
                  }
              }
  
@@ -25513,7 +25467,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
              if (softDependencySet != null && !softDependencySet.isEmpty()) {
                  if (softDependencies.containsKey(description.getName())) {
                      // Duplicates do not matter, they will be removed together if applicable
-@@ -217,28 +217,28 @@ public final class SimplePluginManager implements PluginManager {
+@@ -219,28 +219,28 @@ public final class SimplePluginManager implements PluginManager {
                      softDependencies.put(description.getName(), new LinkedList<String>(softDependencySet));
                  }
  
@@ -25548,7 +25502,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                          shortSoftDependency.add(description.getName());
                          softDependencies.put(loadBeforeTarget, shortSoftDependency);
                      }
-@@ -253,15 +253,15 @@ public final class SimplePluginManager implements PluginManager {
+@@ -255,15 +255,15 @@ public final class SimplePluginManager implements PluginManager {
              Iterator<Map.Entry<String, File>> pluginIterator = plugins.entrySet().iterator();
  
              while (pluginIterator.hasNext()) {
@@ -25568,7 +25522,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
                          // Dependency loaded
                          if (loadedPlugins.contains(dependency)) {
-@@ -292,10 +292,10 @@ public final class SimplePluginManager implements PluginManager {
+@@ -294,10 +294,10 @@ public final class SimplePluginManager implements PluginManager {
                      }
                  }
                  if (softDependencies.containsKey(plugin)) {
@@ -25581,7 +25535,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
                          // Soft depend is no longer around
                          if (!plugins.containsKey(softDependency) && !pluginsProvided.containsKey(softDependency)) {
-@@ -309,13 +309,13 @@ public final class SimplePluginManager implements PluginManager {
+@@ -311,13 +311,13 @@ public final class SimplePluginManager implements PluginManager {
                  }
                  if (!(dependencies.containsKey(plugin) || softDependencies.containsKey(plugin)) && plugins.containsKey(plugin)) {
                      // We're clear to load, no more soft or hard dependencies left
@@ -25597,7 +25551,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                          if (loadedPlugin != null) {
                              result.add(loadedPlugin);
                              loadedPlugins.add(loadedPlugin.getName());
-@@ -324,7 +324,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -326,7 +326,7 @@ public final class SimplePluginManager implements PluginManager {
                              server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'"); // Paper
                          }
                          continue;
@@ -25606,7 +25560,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                          server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'", ex); // Paper
                      }
                  }
-@@ -336,17 +336,17 @@ public final class SimplePluginManager implements PluginManager {
+@@ -338,17 +338,17 @@ public final class SimplePluginManager implements PluginManager {
                  pluginIterator = plugins.entrySet().iterator();
  
                  while (pluginIterator.hasNext()) {
@@ -25628,7 +25582,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                              if (loadedPlugin != null) {
                                  result.add(loadedPlugin);
                                  loadedPlugins.add(loadedPlugin.getName());
-@@ -355,7 +355,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -357,7 +357,7 @@ public final class SimplePluginManager implements PluginManager {
                                  server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'"); // Paper
                              }
                              break;
@@ -25637,7 +25591,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                              server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'", ex); // Paper
                          }
                      }
-@@ -364,10 +364,10 @@ public final class SimplePluginManager implements PluginManager {
+@@ -366,10 +366,10 @@ public final class SimplePluginManager implements PluginManager {
                  if (missingDependency) {
                      softDependencies.clear();
                      dependencies.clear();
@@ -25650,7 +25604,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                          failedPluginIterator.remove();
                          server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "': circular dependency detected"); // Paper
                      }
-@@ -400,11 +400,11 @@ public final class SimplePluginManager implements PluginManager {
+@@ -402,11 +402,11 @@ public final class SimplePluginManager implements PluginManager {
          Plugin result = null;
  
          for (final Map.Entry<Pattern, PluginLoader> entry : fileAssociations.entrySet()) {
@@ -25665,7 +25619,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
                  result = loader.loadPlugin(file);
              }
-@@ -413,7 +413,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -415,7 +415,7 @@ public final class SimplePluginManager implements PluginManager {
          if (result != null) {
              plugins.add(result);
              lookupNames.put(result.getDescription().getName().toLowerCase(java.util.Locale.ENGLISH), result); // Paper
@@ -25674,7 +25628,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  lookupNames.putIfAbsent(provided.toLowerCase(java.util.Locale.ENGLISH), result); // Paper
              }
          }
-@@ -427,47 +427,47 @@ public final class SimplePluginManager implements PluginManager {
+@@ -429,47 +429,47 @@ public final class SimplePluginManager implements PluginManager {
       * @param file
       * @throws InvalidPluginException
       */
@@ -25734,7 +25688,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
              if (match.find()) {
                  return entry.getValue();
              }
-@@ -486,7 +486,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -488,7 +488,7 @@ public final class SimplePluginManager implements PluginManager {
       */
      @Override
      @Nullable
@@ -25743,7 +25697,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          return lookupNames.get(name.replace(' ', '_').toLowerCase(java.util.Locale.ENGLISH)); // Paper
      }
  
-@@ -505,8 +505,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -507,8 +507,8 @@ public final class SimplePluginManager implements PluginManager {
       * @return true if the plugin is enabled, otherwise false
       */
      @Override
@@ -25754,7 +25708,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
          return isPluginEnabled(plugin);
      }
-@@ -518,7 +518,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -520,7 +520,7 @@ public final class SimplePluginManager implements PluginManager {
       * @return true if the plugin is enabled, otherwise false
       */
      @Override
@@ -25763,7 +25717,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          if ((plugin != null) && (plugins.contains(plugin))) {
              return plugin.isEnabled();
          } else {
-@@ -529,7 +529,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -531,7 +531,7 @@ public final class SimplePluginManager implements PluginManager {
      @Override
      public synchronized void enablePlugin(@NotNull final Plugin plugin) { // Paper - synchronize
          if (!plugin.isEnabled()) {
@@ -25772,7 +25726,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
              if (!pluginCommands.isEmpty()) {
                  commandMap.registerAll(plugin.getDescription().getName(), pluginCommands);
-@@ -537,7 +537,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -539,7 +539,7 @@ public final class SimplePluginManager implements PluginManager {
  
              try {
                  plugin.getPluginLoader().enablePlugin(plugin);
@@ -25781,7 +25735,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  handlePluginException("Error occurred (in the plugin loader) while enabling "
                          + plugin.getDescription().getFullName() + " (Is it up to date?)", ex, plugin);
              }
-@@ -548,7 +548,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -550,7 +550,7 @@ public final class SimplePluginManager implements PluginManager {
  
      @Override
      public void disablePlugins() {
@@ -25790,7 +25744,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          for (int i = plugins.length - 1; i >= 0; i--) {
              disablePlugin(plugins[i]);
          }
-@@ -564,7 +564,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -566,7 +566,7 @@ public final class SimplePluginManager implements PluginManager {
       * @deprecated Classloader is always closed by upstream now.
       */
      @Deprecated(forRemoval = true)
@@ -25799,7 +25753,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          this.disablePlugins();
      }
      // Paper end
-@@ -574,28 +574,28 @@ public final class SimplePluginManager implements PluginManager {
+@@ -576,28 +576,28 @@ public final class SimplePluginManager implements PluginManager {
          if (plugin.isEnabled()) {
              try {
                  plugin.getPluginLoader().disablePlugin(plugin);
@@ -25832,7 +25786,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  handlePluginException("Error occurred (in the plugin loader) while unregistering events for "
                          + plugin.getDescription().getFullName() + " (Is it up to date?)", ex, plugin); // Paper
              }
-@@ -603,23 +603,23 @@ public final class SimplePluginManager implements PluginManager {
+@@ -605,23 +605,23 @@ public final class SimplePluginManager implements PluginManager {
              try {
                  server.getMessenger().unregisterIncomingPluginChannel(plugin);
                  server.getMessenger().unregisterOutgoingPluginChannel(plugin);
@@ -25860,7 +25814,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          server.getLogger().log(Level.SEVERE, msg, ex);
          callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerPluginEnableDisableException(msg, ex, plugin)));
      }
-@@ -639,7 +639,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -641,7 +641,7 @@ public final class SimplePluginManager implements PluginManager {
              defaultPerms.get(Boolean.FALSE).clear();
          }
      }
@@ -25869,7 +25823,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
      /**
       * Calls an event with the given details.
-@@ -647,7 +647,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -649,7 +649,7 @@ public final class SimplePluginManager implements PluginManager {
       * @param event Event details
       */
      @Override
@@ -25878,7 +25832,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          // Paper - replace callEvent by merging to below method
          if (event.isAsynchronous() && server.isPrimaryThread()) {
              throw new IllegalStateException(event.getEventName() + " may only be triggered asynchronously.");
-@@ -655,18 +655,18 @@ public final class SimplePluginManager implements PluginManager {
+@@ -657,18 +657,18 @@ public final class SimplePluginManager implements PluginManager {
              throw new IllegalStateException(event.getEventName() + " may only be triggered synchronously.");
          }
  
@@ -25902,7 +25856,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
                  if (plugin.isNaggable()) {
                      plugin.setNaggable(false);
-@@ -678,9 +678,9 @@ public final class SimplePluginManager implements PluginManager {
+@@ -680,9 +680,9 @@ public final class SimplePluginManager implements PluginManager {
                              ex.getMessage()
                              ));
                  }
@@ -25914,7 +25868,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  server.getLogger().log(Level.SEVERE, msg, ex);
                  if (!(event instanceof com.destroystokyo.paper.event.server.ServerExceptionEvent)) { // We don't want to cause an endless event loop
                      callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerEventException(msg, ex, registration.getPlugin(), registration.getListener(), event)));
-@@ -691,19 +691,19 @@ public final class SimplePluginManager implements PluginManager {
+@@ -693,19 +693,19 @@ public final class SimplePluginManager implements PluginManager {
      }
  
      @Override
@@ -25937,7 +25891,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          registerEvent(event, listener, priority, executor, plugin, false);
      }
  
-@@ -720,7 +720,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -722,7 +722,7 @@ public final class SimplePluginManager implements PluginManager {
       *     cancelled
       */
      @Override
@@ -25946,7 +25900,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          Preconditions.checkArgument(listener != null, "Listener cannot be null");
          Preconditions.checkArgument(priority != null, "Priority cannot be null");
          Preconditions.checkArgument(executor != null, "Executor cannot be null");
-@@ -739,9 +739,9 @@ public final class SimplePluginManager implements PluginManager {
+@@ -741,9 +741,9 @@ public final class SimplePluginManager implements PluginManager {
      }
  
      @NotNull
@@ -25958,7 +25912,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
              method.setAccessible(true);
  
              if (!Modifier.isStatic(method.getModifiers())) {
-@@ -749,17 +749,17 @@ public final class SimplePluginManager implements PluginManager {
+@@ -751,17 +751,17 @@ public final class SimplePluginManager implements PluginManager {
              }
  
              return (HandlerList) method.invoke(null);
@@ -25979,7 +25933,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
              if (clazz.getSuperclass() != null
                      && !clazz.getSuperclass().equals(Event.class)
                      && Event.class.isAssignableFrom(clazz.getSuperclass())) {
-@@ -772,18 +772,18 @@ public final class SimplePluginManager implements PluginManager {
+@@ -774,18 +774,18 @@ public final class SimplePluginManager implements PluginManager {
  
      @Override
      @Nullable
@@ -26002,7 +25956,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
          if (permissions.containsKey(name)) {
              throw new IllegalArgumentException("The permission " + name + " is already defined!");
-@@ -795,22 +795,22 @@ public final class SimplePluginManager implements PluginManager {
+@@ -797,22 +797,22 @@ public final class SimplePluginManager implements PluginManager {
  
      @Override
      @NotNull
@@ -26029,7 +25983,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          if (perm != null && permissions.containsKey(perm.getName().toLowerCase(java.util.Locale.ENGLISH))) {
              defaultPerms.get(Boolean.TRUE).remove(perm);
              defaultPerms.get(Boolean.FALSE).remove(perm);
-@@ -819,7 +819,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -821,7 +821,7 @@ public final class SimplePluginManager implements PluginManager {
          }
      }
  
@@ -26038,7 +25992,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          if ((perm.getDefault() == PermissionDefault.OP) || (perm.getDefault() == PermissionDefault.TRUE)) {
              defaultPerms.get(Boolean.TRUE).add(perm);
              if (dirty) {
-@@ -840,17 +840,17 @@ public final class SimplePluginManager implements PluginManager {
+@@ -842,17 +842,17 @@ public final class SimplePluginManager implements PluginManager {
          dirtyPermissibles(false);
      }
  
@@ -26061,7 +26015,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          Map<Permissible, Boolean> map = permSubs.get(name);
  
          if (map == null) {
-@@ -862,9 +862,9 @@ public final class SimplePluginManager implements PluginManager {
+@@ -864,9 +864,9 @@ public final class SimplePluginManager implements PluginManager {
      }
  
      @Override
@@ -26074,7 +26028,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
          if (map != null) {
              map.remove(permissible);
-@@ -877,9 +877,9 @@ public final class SimplePluginManager implements PluginManager {
+@@ -879,9 +879,9 @@ public final class SimplePluginManager implements PluginManager {
  
      @Override
      @NotNull
@@ -26087,7 +26041,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
          if (map == null) {
              return ImmutableSet.of();
-@@ -889,7 +889,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -891,7 +891,7 @@ public final class SimplePluginManager implements PluginManager {
      }
  
      @Override
@@ -26096,7 +26050,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
          Map<Permissible, Boolean> map = defSubs.get(Boolean.valueOf(op));
  
          if (map == null) {
-@@ -901,8 +901,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -903,8 +903,8 @@ public final class SimplePluginManager implements PluginManager {
      }
  
      @Override
@@ -26107,7 +26061,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
          if (map != null) {
              map.remove(permissible);
-@@ -915,8 +915,8 @@ public final class SimplePluginManager implements PluginManager {
+@@ -917,8 +917,8 @@ public final class SimplePluginManager implements PluginManager {
  
      @Override
      @NotNull
@@ -26118,7 +26072,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
  
          if (map == null) {
              return ImmutableSet.of();
-@@ -931,16 +931,16 @@ public final class SimplePluginManager implements PluginManager {
+@@ -933,16 +933,16 @@ public final class SimplePluginManager implements PluginManager {
          return new HashSet<Permission>(permissions.values());
      }
  
@@ -26138,7 +26092,7 @@ index ef14de5e40290e5a8cef7d31f0c852949ff37624..645772b73588bd090f28b4e7ca017ec8
                  if (reachableNodes.contains(provided)) {
                      return true;
                  }
-@@ -959,7 +959,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -961,7 +961,7 @@ public final class SimplePluginManager implements PluginManager {
       *
       * @param use True if per event timing code should be used
       */
@@ -26618,10 +26572,10 @@ index 371b32f6371d637c8ac0d47a172eed191f0452b4..4a15c2fddf7bde7551ba6b6548d934dd
              throw new IllegalStateException("Cannot get plugin for " + clazz + " from a static initializer");
          }
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897aaeae4714 100644
+index 5c23d0b1e4ec778d860e35b8834bea417b766fdb..e59dd098b8d8d13848f3d1f33391c4234dde7ddc 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -64,14 +64,14 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -65,14 +65,14 @@ public final class JavaPluginLoader implements PluginLoader {
       * @param instance the server instance
       */
      @Deprecated
@@ -26638,7 +26592,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
              // Provided depends were not added back
              server.getLogger().warning("Could not initialize LibraryLoader (missing dependencies?)");
          }
-@@ -90,7 +90,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -91,7 +91,7 @@ public final class JavaPluginLoader implements PluginLoader {
          final PluginDescriptionFile description;
          try {
              description = getPluginDescription(file);
@@ -26647,7 +26601,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
              throw new InvalidPluginException(ex);
          }
  
-@@ -132,9 +132,9 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -133,9 +133,9 @@ public final class JavaPluginLoader implements PluginLoader {
              ));
          }
  
@@ -26659,7 +26613,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
  
              if (current == null) {
                  missingHardDependencies.add(pluginName); // Paper - list all missing hard depends
-@@ -151,9 +151,9 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -152,9 +152,9 @@ public final class JavaPluginLoader implements PluginLoader {
          final PluginClassLoader loader;
          try {
              loader = new PluginClassLoader(this, getClass().getClassLoader(), description, dataFolder, file, (libraryLoader != null) ? libraryLoader.createLoader(description) : null);
@@ -26671,7 +26625,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
              throw new InvalidPluginException(ex);
          }
  
-@@ -164,7 +164,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -165,7 +165,7 @@ public final class JavaPluginLoader implements PluginLoader {
  
      @Override
      @NotNull
@@ -26680,7 +26634,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
          Preconditions.checkArgument(file != null, "File cannot be null");
  
          JarFile jar = null;
-@@ -172,7 +172,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -173,7 +173,7 @@ public final class JavaPluginLoader implements PluginLoader {
  
          try {
              jar = new JarFile(file);
@@ -26689,7 +26643,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
  
              if (entry == null) {
                  throw new InvalidDescriptionException(new FileNotFoundException("Jar does not contain plugin.yml"));
-@@ -182,21 +182,21 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -183,21 +183,21 @@ public final class JavaPluginLoader implements PluginLoader {
  
              return new PluginDescriptionFile(stream);
  
@@ -26715,7 +26669,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
                  }
              }
          }
-@@ -209,14 +209,14 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -210,14 +210,14 @@ public final class JavaPluginLoader implements PluginLoader {
      }
  
      @Nullable
@@ -26733,7 +26687,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
          synchronized (classLoadLock) {
              lock = classLoadLock.computeIfAbsent(name, (x) -> new java.util.concurrent.locks.ReentrantReadWriteLock());
              classLoadLockCount.compute(name, (x, prev) -> Integer.valueOf(prev != null ? prev + 1 : 1));
-@@ -226,14 +226,14 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -227,14 +227,14 @@ public final class JavaPluginLoader implements PluginLoader {
              if (!DISABLE_CLASS_PRIORITIZATION && requester != null) {
                  try {
                  return requester.loadClass0(name, false, false, ((SimplePluginManager) server.getPluginManager()).isTransitiveDepend(description, requester.getDescription()));
@@ -26751,7 +26705,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
              }
          }
          // Paper start - make MT safe
-@@ -254,34 +254,34 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -255,34 +255,34 @@ public final class JavaPluginLoader implements PluginLoader {
  
      void setClass(@NotNull final String name, @NotNull final Class<?> clazz) {
          if (ConfigurationSerializable.class.isAssignableFrom(clazz)) {
@@ -26796,7 +26750,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
              plugin.getLogger().severe("Plugin " + plugin.getDescription().getFullName() + " has failed to register events for " + listener.getClass() + " because " + e.getMessage() + " does not exist.");
              return ret;
          }
-@@ -310,8 +310,8 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -311,8 +311,8 @@ public final class JavaPluginLoader implements PluginLoader {
              for (Class<?> clazz = eventClass; Event.class.isAssignableFrom(clazz); clazz = clazz.getSuperclass()) {
                  // This loop checks for extending deprecated events
                  if (clazz.getAnnotation(Deprecated.class) != null) {
@@ -26807,7 +26761,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
                      if (!warningState.printFor(warning)) {
                          break;
                      }
-@@ -329,7 +329,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -330,7 +330,7 @@ public final class JavaPluginLoader implements PluginLoader {
                  }
              }
  
@@ -26816,7 +26770,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
              if (false) { // Spigot - RL handles useTimings check now
                  eventSet.add(new TimedRegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
              } else {
-@@ -353,9 +353,9 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -354,9 +354,9 @@ public final class JavaPluginLoader implements PluginLoader {
              plugin.getLogger().info(enableMsg);
              // Paper end
  
@@ -26828,7 +26782,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
  
              if (!loaders.contains(pluginLoader)) {
                  loaders.add(pluginLoader);
-@@ -364,7 +364,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -365,7 +365,7 @@ public final class JavaPluginLoader implements PluginLoader {
  
              try {
                  jPlugin.setEnabled(true);
@@ -26837,7 +26791,7 @@ index 0caca8466cb5a806cb540fc14d1814dc413351e7..483d7203e1d44dd1d96d310ea7e1897a
                  server.getLogger().log(Level.SEVERE, "Error occurred while enabling " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
                  // Paper start - Disable plugins that fail to load
                  this.server.getPluginManager().disablePlugin(jPlugin);
-@@ -379,37 +379,37 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -380,37 +380,37 @@ public final class JavaPluginLoader implements PluginLoader {
      }
  
      @Override

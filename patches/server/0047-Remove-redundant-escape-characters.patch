@@ -5,10 +5,10 @@ Subject: [PATCH] Remove redundant escape characters
 
 
 diff --git a/src/main/java/net/minecraft/server/Bootstrap.java b/src/main/java/net/minecraft/server/Bootstrap.java
-index 0af4a1dff11e6d4610bf74914efcf01eea170dca..60a10d8d6a56ac337e63f1148e294b85d196dcf9 100644
+index 3974c4d14b4f0d0cfea096a2d9eb2f243fd2a16c..0afa54ad6935f1c8bc5d5c7b3b4ce246d5a995ea 100644
 --- a/src/main/java/net/minecraft/server/Bootstrap.java
 +++ b/src/main/java/net/minecraft/server/Bootstrap.java
-@@ -98,7 +98,7 @@ public class Bootstrap {
+@@ -95,7 +95,7 @@ public class Bootstrap {
                  BlockStateData.register(1023, "{Name:'minecraft:oak_sign',Properties:{rotation:'15'}}", "{Name:'minecraft:standing_sign',Properties:{rotation:'15'}}");
                  ItemIdFix.ITEM_NAMES.put(323, "minecraft:oak_sign");
  
@@ -18,10 +18,10 @@ index 0af4a1dff11e6d4610bf74914efcf01eea170dca..60a10d8d6a56ac337e63f1148e294b85
                  ItemIdFix.ITEM_NAMES.put(409, "minecraft:prismarine_shard");
                  ItemIdFix.ITEM_NAMES.put(410, "minecraft:prismarine_crystals");
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 79702ba47245e24e9792efb375f8a703720a50f4..7e974e5d2071c4d72a51f78e576ffd864ac5ea83 100644
+index 21bbe6933a3bb5778a5c5f7f96fe019433e9194f..7c40536c89a8172613d14341001b25eec0cc8c10 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3657,7 +3657,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3516,7 +3516,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                      this.getCraftPlayer().addChannel(channel);
                  }
              } catch (Exception ex) {
@@ -30,7 +30,7 @@ index 79702ba47245e24e9792efb375f8a703720a50f4..7e974e5d2071c4d72a51f78e576ffd86
                  this.disconnect("Invalid payload REGISTER!", org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
              }
          } else if (packet.identifier.equals(CUSTOM_UNREGISTER)) {
-@@ -3667,7 +3667,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3526,7 +3526,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                      this.getCraftPlayer().removeChannel(channel);
                  }
              } catch (Exception ex) {
@@ -39,7 +39,7 @@ index 79702ba47245e24e9792efb375f8a703720a50f4..7e974e5d2071c4d72a51f78e576ffd86
                  this.disconnect("Invalid payload UNREGISTER!", org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
              }
          } else {
-@@ -3685,7 +3685,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3544,7 +3544,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                  // Paper end
                  this.cserver.getMessenger().dispatchIncomingMessage(this.player.getBukkitEntity(), packet.identifier.toString(), data);
              } catch (Exception ex) {
@@ -49,7 +49,7 @@ index 79702ba47245e24e9792efb375f8a703720a50f4..7e974e5d2071c4d72a51f78e576ffd86
              }
          }
 diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
-index a067a5cc30bcd2dbecd914b75504fa105b1517dc..18ebebc76d630f531706b8036b4db5d1ef361f4b 100644
+index 20a5203a8540a9a0383f91c5ca55f1e1ff9eff42..9042848450f2f90d4bfc5f5be0c0063038932c9d 100644
 --- a/src/main/java/org/spigotmc/SpigotConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotConfig.java
 @@ -201,7 +201,7 @@ public class SpigotConfig

@@ -31,10 +31,10 @@ index 494131fdca607dc14eb24c974af89082b8eced90..5174eb4d16b20b751ce583735f707af8
                      final String usage = this.getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
                      if (usage != null) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index ca7384b61cf554afbc524b085ce3e531701025d1..72d9a2126f5f8622c03b5adee489b280c00a7b68 100644
+index bd0c403d7ece0482f3d28f9b066e943f1e75bb27..fcbee958cb35273363aa63d4eac7ee8df8456f7b 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -621,7 +621,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -620,7 +620,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
          // Paper start - Handle collideRule team for player collision toggle
          final ServerScoreboard scoreboard = this.getScoreboard();
@@ -57,10 +57,10 @@ index 09ac53cfd77a97a932f90857559b3892dad6c7db..1498f17e3349929e43dad914d6a49211
                      while (iterator.hasNext()) {
                          Entry<ResourceLocation, AdvancementProgress> entry = (Entry) iterator.next();
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 3bb42a14a4be4daa0a867ffc4065d539f1ee2ce4..2d5f013a8bb5d9441060f3b57511e89efe43c367 100644
+index 69163d500c855d04b9f6ee54b33f76f29c9b36fb..75b3dbdb1c6b6bf9f4cba89586428599b3b6896f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -788,7 +788,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -789,7 +789,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
  
      private void wakeUpAllPlayers() {
          this.sleepStatus.removeAllSleepers();
@@ -70,10 +70,10 @@ index 3bb42a14a4be4daa0a867ffc4065d539f1ee2ce4..2d5f013a8bb5d9441060f3b57511e89e
          });
      }
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index 28f374eae5b12753d0053087cfac4948c3555035..17d5a753b8e79338bb5a4233484e63a5d349511a 100644
+index b2d09e709571ac5b5e965eb72d3e4ac91010a26c..d7062815d9e34f9d5168883b3a47dc6e6cb38548 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
-@@ -778,7 +778,7 @@ public abstract class Mob extends LivingEntity {
+@@ -796,7 +796,7 @@ public abstract class Mob extends LivingEntity {
      public boolean canReplaceEqualItem(ItemStack newStack, ItemStack oldStack) {
          return newStack.getDamageValue() >= oldStack.getDamageValue() && (!newStack.hasTag() || oldStack.hasTag()) ? (newStack.hasTag() && oldStack.hasTag() ? newStack.getTag().getAllKeys().stream().anyMatch((s) -> {
              return !s.equals("Damage");
@@ -83,11 +83,11 @@ index 28f374eae5b12753d0053087cfac4948c3555035..17d5a753b8e79338bb5a4233484e63a5
          }) : false) : true;
      }
 diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
-index 82a95e83d5005f6e6092960e8b21306a999bf060..1a61602b969109f7c71264eba0409ead85a91e68 100644
+index 9c5fef6a0d6a1597c13ef63ad39f0bef5adddf7f..1ec44433a59a1c3bbdb66bbeffc8737320476270 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
-@@ -43,7 +43,7 @@ public class TemptingSensor extends Sensor<PathfinderMob> {
-         }).filter(this::playerHoldingTemptation);
+@@ -46,7 +46,7 @@ public class TemptingSensor extends Sensor<PathfinderMob> {
+         });
  
          Objects.requireNonNull(entity);
 -        List<Player> list = stream.sorted(Comparator.comparingDouble(entity::distanceToSqr)).collect(Collectors.toList());
@@ -96,10 +96,10 @@ index 82a95e83d5005f6e6092960e8b21306a999bf060..1a61602b969109f7c71264eba0409ead
          if (!list.isEmpty()) {
              Player entityhuman = list.get(0);
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index 7b0551c215db1cd9b8c009bc3491c00f2688c75b..c93a1703a997c5d8d82b69913575717673421706 100644
+index 0b18218bcd10dbc0a0001d636ce56cbbb2b5f4b8..c1a7ba65e2bb5bfe5327e6def1045ed59e5fd380 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-@@ -959,7 +959,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -971,7 +971,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
              List<Villager> list = world.getEntitiesOfClass(Villager.class, axisalignedbb);
              List<Villager> list1 = list.stream().filter((entityvillager) -> {
                  return entityvillager.wantsToSpawnGolem(time);
@@ -109,22 +109,22 @@ index 7b0551c215db1cd9b8c009bc3491c00f2688c75b..c93a1703a997c5d8d82b699135757176
              if (list1.size() >= requiredCount) {
                  if (SpawnUtil.trySpawnMob(EntityType.IRON_GOLEM, MobSpawnType.MOB_SUMMONED, world, this.blockPosition(), 10, 8, 6, SpawnUtil.Strategy.LEGACY_IRON_GOLEM, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE, () -> {GolemSensor.golemDetected(this);}).isPresent()) { // CraftBukkit // Paper - Set Golem Last Seen to stop it from spawning another one
 diff --git a/src/main/java/net/minecraft/world/entity/npc/VillagerTrades.java b/src/main/java/net/minecraft/world/entity/npc/VillagerTrades.java
-index bfa308406d0fe5c55ed535dda45972ca1f3d00af..d616dd6f232b20985f269e065f967a70f54d7cbc 100644
+index 1fcf0b61bf4ed43da41c96a83e63b1632028c854..8e698bad9aaed2fdddf621ed38af836e50e41247 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/VillagerTrades.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/VillagerTrades.java
 @@ -185,7 +185,7 @@ public class VillagerTrades {
  
          @Override
          public MerchantOffer getOffer(Entity entity, RandomSource random) {
--            List<Enchantment> list = Registry.ENCHANTMENT.stream().filter(Enchantment::isTradeable).collect(Collectors.toList());
-+            List<Enchantment> list = Registry.ENCHANTMENT.stream().filter(Enchantment::isTradeable).toList();
+-            List<Enchantment> list = BuiltInRegistries.ENCHANTMENT.stream().filter(Enchantment::isTradeable).collect(Collectors.toList());
++            List<Enchantment> list = BuiltInRegistries.ENCHANTMENT.stream().filter(Enchantment::isTradeable).toList();
              Enchantment enchantment = list.get(random.nextInt(list.size()));
              int i = Mth.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
              ItemStack itemStack = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i));
 @@ -355,8 +355,8 @@ public class VillagerTrades {
          public MerchantOffer getOffer(Entity entity, RandomSource random) {
              ItemStack itemStack = new ItemStack(Items.EMERALD, this.emeraldCost);
-             List<Potion> list = Registry.POTION.stream().filter((potionx) -> {
+             List<Potion> list = BuiltInRegistries.POTION.stream().filter((potionx) -> {
 -                return !potionx.getEffects().isEmpty() && PotionBrewing.isBrewablePotion(potionx);
 -            }).collect(Collectors.toList());
 +	            return !potionx.getEffects().isEmpty() && PotionBrewing.isBrewablePotion(potionx);

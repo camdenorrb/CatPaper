@@ -5,10 +5,10 @@ Subject: [PATCH] Utilize sublist clear rather than looping
 
 
 diff --git a/src/main/java/io/papermc/paper/util/PoiAccess.java b/src/main/java/io/papermc/paper/util/PoiAccess.java
-index e3b7440173a243c11fe0a915a52f9b1a6194cd2b..e77e5127adf9b2906510f541463b6da071ed37b6 100644
+index 07f40187f326a0d8d053be3070d1b39856546cbe..a2f0906b0eb93836978337a90012f041f636d18f 100644
 --- a/src/main/java/io/papermc/paper/util/PoiAccess.java
 +++ b/src/main/java/io/papermc/paper/util/PoiAccess.java
-@@ -650,8 +650,8 @@ public final class PoiAccess {
+@@ -649,8 +649,8 @@ public final class PoiAccess {
          });
  
          // trim out any entries exceeding our maximum

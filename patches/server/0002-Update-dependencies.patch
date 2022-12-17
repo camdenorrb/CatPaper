@@ -5,7 +5,7 @@ Subject: [PATCH] Update dependencies
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 64a2451e4c3639ace04dbb7e75f210e7922cacdc..cdfbff66fd92c04448e99298414be28a926ad722 100644
+index 6ff8768dd9e71b9bb0fb6d3ce342fdbd9139de3e..9c4af4e5d859ceee2012fbfee51ea4ea85706cbc 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -6,6 +6,10 @@ plugins {
@@ -19,19 +19,18 @@ index 64a2451e4c3639ace04dbb7e75f210e7922cacdc..cdfbff66fd92c04448e99298414be28a
  dependencies {
  
      // CatPaper start
-@@ -24,14 +28,14 @@ dependencies {
+@@ -24,13 +28,14 @@ dependencies {
            all its classes to check if they are plugins.
            Scanning takes about 1-2 seconds so adding this speeds up the server start.
       */
--    implementation("org.apache.logging.log4j:log4j-core:2.17.1") // Paper - implementation
--    annotationProcessor("org.apache.logging.log4j:log4j-core:2.17.1") // Paper - Needed to generate meta for our Log4j plugins
--    implementation("io.netty:netty-codec-haproxy:4.1.77.Final")
+-    implementation("org.apache.logging.log4j:log4j-core:2.14.1") // Paper - implementation
+-    annotationProcessor("org.apache.logging.log4j:log4j-core:2.14.1") // Paper - Needed to generate meta for our Log4j plugins
+-    implementation("io.netty:netty-codec-haproxy:4.1.77.Final") // Paper - Add support for proxy protocol
 +    implementation("org.apache.logging.log4j:log4j-core:2.19.0") // Paper - implementation
 +    annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0") // Paper - Needed to generate meta for our Log4j plugins
 +    implementation("io.netty:netty-codec-haproxy:4.1.84.Final")
      // Paper end
--    implementation("org.apache.logging.log4j:log4j-iostreams:2.17.1") // Paper
--    implementation("org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1") // Paper
+-    implementation("org.apache.logging.log4j:log4j-iostreams:2.19.0") // Paper - remove exclusion
 -    implementation("org.ow2.asm:asm:9.3")
 -    implementation("org.ow2.asm:asm-commons:9.3") // Paper - ASM event executor generation
 +    implementation("org.apache.logging.log4j:log4j-iostreams:2.19.0") // Paper
@@ -41,7 +40,7 @@ index 64a2451e4c3639ace04dbb7e75f210e7922cacdc..cdfbff66fd92c04448e99298414be28a
      implementation("org.spongepowered:configurate-yaml:4.1.2") // Paper - config files
      implementation("commons-lang:commons-lang:2.6")
      implementation("net.fabricmc:mapping-io:0.3.0") // Paper - needed to read mappings for stacktrace deobfuscation
-@@ -40,19 +44,19 @@ dependencies {
+@@ -39,19 +44,19 @@ dependencies {
          isTransitive = false
      }
      // Paper end
@@ -67,4 +66,4 @@ index 64a2451e4c3639ace04dbb7e75f210e7922cacdc..cdfbff66fd92c04448e99298414be28a
 +    implementation("io.netty:netty-all:4.1.84.Final"); // Paper - Bump netty
  }
  
- val craftbukkitPackageVersion = "1_19_R1" // Paper
+ val craftbukkitPackageVersion = "1_19_R2" // Paper

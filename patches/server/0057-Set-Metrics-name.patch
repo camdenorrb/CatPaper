@@ -5,7 +5,7 @@ Subject: [PATCH] Set Metrics name
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 548aad349ce3b9629cba9f3807dc291d3e51b273..35cdb5fec5ab984f547ef339c00a741290579991 100644
+index f1378e589396a621c59015e6482d6dda3c35e4aa..b9605643993895806f3cbb9e3882a4f676e84032 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -595,7 +595,7 @@ public class Metrics {
@@ -17,12 +17,12 @@ index 548aad349ce3b9629cba9f3807dc291d3e51b273..35cdb5fec5ab984f547ef339c00a7412
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
-@@ -605,7 +605,7 @@ public class Metrics {
- 
-                 metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> Integer.valueOf(Bukkit.getOnlinePlayers().size())));
-                 metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> Bukkit.getOnlineMode() ? "online" : "offline"));
--                metrics.addCustomChart(new Metrics.SimplePie("paper_version", () -> (Metrics.class.getPackage().getImplementationVersion() != null) ? Metrics.class.getPackage().getImplementationVersion() : "unknown"));
-+                metrics.addCustomChart(new Metrics.SimplePie("catPaper_version", () -> (Metrics.class.getPackage().getImplementationVersion() != null) ? Metrics.class.getPackage().getImplementationVersion() : "unknown"));
+@@ -613,7 +613,7 @@ public class Metrics {
+                 } else {
+                     paperVersion = "unknown";
+                 }
+-                metrics.addCustomChart(new Metrics.SimplePie("paper_version", () -> paperVersion));
++                metrics.addCustomChart(new Metrics.SimplePie("catPaper_version", () -> paperVersion));
  
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();

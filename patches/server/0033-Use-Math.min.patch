@@ -5,7 +5,7 @@ Subject: [PATCH] Use Math.min
 
 
 diff --git a/src/main/java/io/papermc/paper/util/PoiAccess.java b/src/main/java/io/papermc/paper/util/PoiAccess.java
-index e77e5127adf9b2906510f541463b6da071ed37b6..a125fa5feda6ac46f0a658bac9fd6d1b9b6a4cb1 100644
+index a2f0906b0eb93836978337a90012f041f636d18f..c7c76bb066fafae866e37b1fb96befcb8bb4810a 100644
 --- a/src/main/java/io/papermc/paper/util/PoiAccess.java
 +++ b/src/main/java/io/papermc/paper/util/PoiAccess.java
 @@ -31,7 +31,7 @@ import java.util.function.Predicate;
@@ -18,10 +18,10 @@ index e77e5127adf9b2906510f541463b6da071ed37b6..a125fa5feda6ac46f0a658bac9fd6d1b
  
      protected static double getSmallestDistanceSquared(final double boxMinX, final double boxMinY, final double boxMinZ,
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index be97d38f45046a7f6d2337d879651f04cf9ff825..425cc33566edbe44423d6e7d93376f476735256b 100644
+index ca84eddbdb1e198b899750e5f6b3eafd25ce970f..7721872c953ecb151a7d34f922954838a31fe941 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-@@ -680,7 +680,7 @@ public class ServerChunkCache extends ChunkSource {
+@@ -681,7 +681,7 @@ public class ServerChunkCache extends ChunkSource {
                  // copied and modified from isOutisdeRange
                  int chunkRange = level.spigotConfig.mobSpawnRange;
                  chunkRange = (chunkRange > viewDistance) ? (byte)viewDistance : chunkRange;
@@ -31,7 +31,7 @@ index be97d38f45046a7f6d2337d879651f04cf9ff825..425cc33566edbe44423d6e7d93376f47
                  com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent event = new com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent(player.getBukkitEntity(), (byte)chunkRange);
                  event.callEvent();
 diff --git a/src/main/java/net/minecraft/world/entity/player/Inventory.java b/src/main/java/net/minecraft/world/entity/player/Inventory.java
-index 1d5411762562229cd768f29bec5c15a0e5b44a48..a638d24af84df5a6da8222caf38640f64a3b9440 100644
+index fff74ea2cb90451cadc96af04ace3b22863378fb..eb0b18b525ee560422d461809b529c2a809f0bb5 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Inventory.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Inventory.java
 @@ -280,11 +280,7 @@ public class Inventory implements Container, Nameable {
@@ -48,10 +48,10 @@ index 1d5411762562229cd768f29bec5c15a0e5b44a48..a638d24af84df5a6da8222caf38640f6
          if (k > this.getMaxStackSize() - itemstack1.getCount()) {
              k = this.getMaxStackSize() - itemstack1.getCount();
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index c7b5f04d3dca907f158945316d97ba6eda4944b2..d3e77906d0b66b9ad70b44766ee050a2cdb6a0b7 100644
+index b5bb135967d7071443722f4ba295544cb8e450ff..b5b7c048d71bb66b9cad39827b4a51e0d9c19321 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -1978,7 +1978,7 @@ public abstract class Player extends LivingEntity {
+@@ -1950,7 +1950,7 @@ public abstract class Player extends LivingEntity {
          if (!this.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && !this.isSpectator()) {
              int i = this.experienceLevel * 7;
  
@@ -61,10 +61,10 @@ index c7b5f04d3dca907f158945316d97ba6eda4944b2..d3e77906d0b66b9ad70b44766ee050a2
              return 0;
          }
 diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
-index c426cd1d608728e3890437a50c515439b07b355e..809d0817d37efa35f175d78cb1f182a0a9ac3e67 100644
+index 61884e22f966581a23d90ca910cac94c38a1d769..da38bcf59be3f8873b42b97d08b1e5a624158b86 100644
 --- a/src/main/java/net/minecraft/world/level/block/Block.java
 +++ b/src/main/java/net/minecraft/world/level/block/Block.java
-@@ -600,10 +600,7 @@ public class Block extends BlockBehaviour implements ItemLike {
+@@ -594,10 +594,7 @@ public class Block extends BlockBehaviour implements ItemLike {
          if (value < min) {
              return min;
          }

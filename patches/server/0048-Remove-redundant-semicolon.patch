@@ -5,7 +5,7 @@ Subject: [PATCH] Remove redundant semicolon
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 360e6f89dd2ab81dae41bf33efd8e9681a50f4c1..b85d59a1a00af1ad0d0b66ce3202ab5aa7ed3989 100644
+index 87ce62c2544112bbb970cbfd8213674bd3b900f3..12743e9bb0d5f2648fd0bb790c2e44a6eabd7843 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -58,7 +58,7 @@ dependencies {
@@ -16,4 +16,4 @@ index 360e6f89dd2ab81dae41bf33efd8e9681a50f4c1..b85d59a1a00af1ad0d0b66ce3202ab5a
 +    implementation("io.netty:netty-all:4.1.84.Final") // Paper - Bump netty
  }
  
- val craftbukkitPackageVersion = "1_19_R1" // Paper
+ val craftbukkitPackageVersion = "1_19_R2" // Paper

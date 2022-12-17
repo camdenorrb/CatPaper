@@ -5,7 +5,7 @@ Subject: [PATCH] Use optional.isEmpty
 
 
 diff --git a/src/main/java/io/papermc/paper/util/PoiAccess.java b/src/main/java/io/papermc/paper/util/PoiAccess.java
-index a125fa5feda6ac46f0a658bac9fd6d1b9b6a4cb1..27749a3fe554952c119eee2ebd825ff1a2511015 100644
+index c7c76bb066fafae866e37b1fb96befcb8bb4810a..c2e119a7da112daa8566aa4717b8c80e28ee6ca7 100644
 --- a/src/main/java/io/papermc/paper/util/PoiAccess.java
 +++ b/src/main/java/io/papermc/paper/util/PoiAccess.java
 @@ -276,7 +276,7 @@ public final class PoiAccess {
@@ -17,7 +17,7 @@ index a125fa5feda6ac46f0a658bac9fd6d1b9b6a4cb1..27749a3fe554952c119eee2ebd825ff1
                  continue;
              }
  
-@@ -519,7 +519,7 @@ public final class PoiAccess {
+@@ -518,7 +518,7 @@ public final class PoiAccess {
  
              final Optional<PoiSection> poiSectionOptional = load ? poiStorage.getOrLoad(key) : poiStorage.get(key);
  
@@ -27,7 +27,7 @@ index a125fa5feda6ac46f0a658bac9fd6d1b9b6a4cb1..27749a3fe554952c119eee2ebd825ff1
              }
  
 diff --git a/src/main/java/net/minecraft/network/chat/Component.java b/src/main/java/net/minecraft/network/chat/Component.java
-index e16c8642203f55255dc54ab01569f091af530728..ef9c254f798deb2c05878387d34c50910c7918c9 100644
+index ad8065f45a61881220e294cc050207b0e350f5c5..b4fd1a50aa2f04ad97b19af2a0b2df8b5e30ee94 100644
 --- a/src/main/java/net/minecraft/network/chat/Component.java
 +++ b/src/main/java/net/minecraft/network/chat/Component.java
 @@ -118,7 +118,7 @@ public interface Component extends Message, FormattedText, Iterable<Component> {
@@ -49,7 +49,7 @@ index e16c8642203f55255dc54ab01569f091af530728..ef9c254f798deb2c05878387d34c5091
              return optional1;
          }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index fc69e6663bd258670a246bed3e68129d8d10d774..075b8f7dcd60efd7027c208ffc5e7b22840ebc1f 100644
+index 1a101c7232037900fb5800430c89da732a946a7f..6ce4fafebbb01f61a32455cc6cf18eda7702fd60 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1344,7 +1344,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -75,10 +75,10 @@ index 46fff641abef20753c4f72a3d5fb71769eeb964a..9df486c17d44db247216cf9e20830a59
                      }
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 80ef961d45841d03f16945b89c9528495f3c0b14..f740ebeed2c793bc06f56dbceb6887a65af56a7b 100644
+index 2496e3fd54d5b06671b6daf19cb51fe7b76e1efc..ab89cd249f770959defd929dd2315659157d8d5b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1242,7 +1242,7 @@ public class ServerPlayer extends Player {
+@@ -1271,7 +1271,7 @@ public class ServerPlayer extends Player {
              Direction.Axis enumdirection_enumaxis = (Direction.Axis) this.level.getBlockState(this.portalEntrancePos).getOptionalValue(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
              Optional<BlockUtil.FoundRectangle> optional1 = worldserver.getPortalForcer().createPortal(blockposition, enumdirection_enumaxis, this, createRadius); // CraftBukkit
  
@@ -127,10 +127,10 @@ index 0dd66aae6f05dde95e79dda2dfbdb2310ab44b65..f7da1948992698f14cd14880517a6e8f
              } else {
                  Typed<?> typed1 = typed;
 diff --git a/src/main/java/net/minecraft/world/entity/LightningBolt.java b/src/main/java/net/minecraft/world/entity/LightningBolt.java
-index 50612c00f53821ccafce94835caf1ba442be299a..ca51b0608cad70b556766f246e1f5e4628644228 100644
+index 0142aff35dea5bf5aff55e3293fb2d173c97e677..72357b2414fe7bd572b19e33ddd8985bb0198a54 100644
 --- a/src/main/java/net/minecraft/world/entity/LightningBolt.java
 +++ b/src/main/java/net/minecraft/world/entity/LightningBolt.java
-@@ -232,7 +232,7 @@ public class LightningBolt extends Entity {
+@@ -230,7 +230,7 @@ public class LightningBolt extends Entity {
          for (int j = 0; j < count; ++j) {
              Optional<BlockPos> optional = LightningBolt.randomStepCleaningCopper(world, mutablePos, lightning); // Paper - transmit LightningBolt instance to call EntityChangeBlockEvent
  
@@ -139,37 +139,11 @@ index 50612c00f53821ccafce94835caf1ba442be299a..ca51b0608cad70b556766f246e1f5e46
                  break;
              }
  
-diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java b/src/main/java/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java
-index 46e33f1c6d2397af02bb6bbf035c1c92512a6cbc..15676c0ffc46c267984cfef2444b0d83ea9262f7 100644
---- a/src/main/java/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java
-+++ b/src/main/java/net/minecraft/world/entity/ai/behavior/PrepareRamNearestTarget.java
-@@ -107,7 +107,7 @@ public class PrepareRamNearestTarget<E extends PathfinderMob> extends Behavior<E
- 
-                 if (blockposition.equals(((PrepareRamNearestTarget.RamCandidate) this.ramCandidate.get()).getStartPosition())) {
-                     world.broadcastEntityEvent(entity, (byte) 58);
--                    if (!this.reachedRamPositionTimestamp.isPresent()) {
-+                    if (this.reachedRamPositionTimestamp.isEmpty()) {
-                         this.reachedRamPositionTimestamp = Optional.of(Long.valueOf(time));
-                     }
- 
-diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java b/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
-index 9367ef8d70c9517be6bfbf41378286957d0baf62..769df43f4e6c299bc961a13df9801591b777dbfd 100644
---- a/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
-+++ b/src/main/java/net/minecraft/world/entity/ai/behavior/RamTarget.java
-@@ -92,7 +92,7 @@ public class RamTarget extends Behavior<Goat> {
-         } else {
-             Optional<WalkTarget> optional = brain.getMemory(MemoryModuleType.WALK_TARGET);
-             Optional<Vec3> optional2 = brain.getMemory(MemoryModuleType.RAM_TARGET);
--            boolean bl2 = !optional.isPresent() || !optional2.isPresent() || optional.get().getTarget().currentPosition().closerThan(optional2.get(), 0.25D);
-+            boolean bl2 = optional.isEmpty() || optional2.isEmpty() || optional.get().getTarget().currentPosition().closerThan(optional2.get(), 0.25D);
-             if (bl2) {
-                 this.finishRam(serverLevel, goat);
-             }
 diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/SleepInBed.java b/src/main/java/net/minecraft/world/entity/ai/behavior/SleepInBed.java
-index ec43c73dc47b30b870a1d39a710cd4f34f8c94b2..68944824eb86e24678678bee654520c6a3f65643 100644
+index d6666ba4a945d4a2a50a7bd610a906df9570f87f..f41524fe8d67cb56d46b00c1d3a3f4363f651af7 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/behavior/SleepInBed.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/behavior/SleepInBed.java
-@@ -51,7 +51,7 @@ public class SleepInBed extends Behavior<LivingEntity> {
+@@ -53,7 +53,7 @@ public class SleepInBed extends Behavior<LivingEntity> {
      @Override
      protected boolean canStillUse(ServerLevel world, LivingEntity entity, long time) {
          Optional<GlobalPos> optional = entity.getBrain().getMemory(MemoryModuleType.HOME);
@@ -179,7 +153,7 @@ index ec43c73dc47b30b870a1d39a710cd4f34f8c94b2..68944824eb86e24678678bee654520c6
          } else {
              BlockPos blockPos = optional.get().pos();
 diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java b/src/main/java/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
-index b3adff55870c673d753f05dee4540bef0d142c7b..ce4e0342fe4941f31e947f5061fde33b3ffec9eb 100644
+index 0951c04533e7c39b969d041271684355770b53c2..18d137226c419a44de14d70494364b1cc04e5424 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
 @@ -67,7 +67,7 @@ public class VillagerMakeLove extends Behavior<Villager> {
@@ -201,10 +175,10 @@ index b3adff55870c673d753f05dee4540bef0d142c7b..ce4e0342fe4941f31e947f5061fde33b
  
      private Optional<BlockPos> takeVacantBed(ServerLevel world, Villager villager) {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/MushroomCow.java b/src/main/java/net/minecraft/world/entity/animal/MushroomCow.java
-index fa345c090b517c2a2571149de01b13ef2eb399b9..b4eb410403c1277f1a93fe7951f6f2dfd1191a85 100644
+index ef7333b7995dfe12f7f32bde44316c115e61dfa5..8c32ae043da03b04e1f20304a3138bd7897ec01a 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/MushroomCow.java
-@@ -145,7 +145,7 @@ public class MushroomCow extends Cow implements Shearable {
+@@ -144,7 +144,7 @@ public class MushroomCow extends Cow implements Shearable, VariantHolder<Mushroo
              } else {
                  Optional<Pair<MobEffect, Integer>> optional = this.getEffectFromItemStack(itemstack);
  
@@ -214,10 +188,10 @@ index fa345c090b517c2a2571149de01b13ef2eb399b9..b4eb410403c1277f1a93fe7951f6f2df
                  }
  
 diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-index 9cce3bd9dcb455f1530a007e343f13c9b4a200ce..f9b781d651c611f1780ba33e86cf68c3ab016d0c 100644
+index 8b064875fdd8082168561cf8d3182841e9cec115..401cc4b5a37394756d1b71f44ca3b0a1c3341fe0 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-@@ -666,7 +666,7 @@ public class PiglinAi {
+@@ -670,7 +670,7 @@ public class PiglinAi {
          Optional<LivingEntity> optional = PiglinAi.getAngerTarget(piglin);
          LivingEntity entityliving1 = BehaviorUtils.getNearestTarget(piglin, optional, target);
  
@@ -253,20 +227,20 @@ index 490d116e58c19cc0b3701cffd0179f9e9fc7fe6b..ccbca0c50c6b8bd92e04a3a8ab9327b5
                      break;
                  }
 diff --git a/src/main/java/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java b/src/main/java/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
-index 935025a2fe5eeb83500fe0f26204e2c91fcc0ba6..64b859c5a09fa130c32f9bc344df75f0222878ba 100644
+index 06c9ce065fe40e887af44430b3d23de2cd1815a2..1bd5a585f5ceebd91c79cf0bcfbbebffb7f121a8 100644
 --- a/src/main/java/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 +++ b/src/main/java/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
-@@ -77,7 +77,7 @@ public abstract class StructurePlacement {
-         } else if (this.frequency < 1.0F && !this.frequencyReductionMethod.shouldGenerate(seed, this.salt, chunkX, chunkZ, this.frequency, saltOverride)) { // Paper
+@@ -79,7 +79,7 @@ public abstract class StructurePlacement {
+         } else if (this.frequency < 1.0F && !this.frequencyReductionMethod.shouldGenerate(calculator.getLevelSeed(), this.salt, chunkX, chunkZ, this.frequency, saltOverride)) { // Paper
              return false;
          } else {
--            return !this.exclusionZone.isPresent() || !this.exclusionZone.get().isPlacementForbidden(chunkGenerator, noiseConfig, seed, chunkX, chunkZ);
-+            return this.exclusionZone.isEmpty() || !this.exclusionZone.get().isPlacementForbidden(chunkGenerator, noiseConfig, seed, chunkX, chunkZ);
+-            return !this.exclusionZone.isPresent() || !this.exclusionZone.get().isPlacementForbidden(calculator, chunkX, chunkZ);
++            return this.exclusionZone.isEmpty() || !this.exclusionZone.get().isPlacementForbidden(calculator, chunkX, chunkZ);
          }
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftFox.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftFox.java
-index 3ca434320e70929dd86b509b3bf5b80a02d2871d..58ffcc497eb00f653142b488a17923bd0b0aa30c 100644
+index fdfa7251d2998ed2a2cf0999b6c145bd4ff09d0d..70b86d3671a704c8a5c2a3c90a9f3018103d4630 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftFox.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftFox.java
 @@ -111,7 +111,7 @@ public class CraftFox extends CraftAnimals implements Fox {
@@ -310,10 +284,10 @@ index ebdff7bd0053e4b4c982256283cdfd003b38fa9d..d698c09d2146d6ecab141fde44f91659
  
          return null;
 diff --git a/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java b/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
-index 5add16e463374a23e7ab3094758d37ae46338eaa..da96ffb83cca8f70f89cfc3fc4a8d0c2f7bf2b6d 100644
+index 2dcd13ac0c9ff07f8d58cfcd257f077010a2afd3..df96f7f55d2e6654f0bcbe216e68dde0b534f5b1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
 +++ b/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
-@@ -358,7 +358,7 @@ public final class CraftLegacy {
+@@ -359,7 +359,7 @@ public final class CraftLegacy {
  
                              Preconditions.checkState(!properties.getString(dataKey).isEmpty(), "Empty data string");
                              Optional opt = state.getValue(properties.getString(dataKey));

@@ -52,10 +52,10 @@ index ddc53b2ec1bf4a5c1545d25679dfd1f7a79961ef..f5c051f9e0e4503a04826303ff6611e8
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index 84e1ff89d18096426487fa6a9ba8131043493904..0a85d8b601fa5420584fe8caae92113a19b83492 100644
+index 657d53ac05764274743cef39a668a83dc855da7d..30958b002c296050cda577c85e1446ef61ceb42a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-@@ -455,7 +455,7 @@ public class CraftBlock implements Block {
+@@ -457,7 +457,7 @@ public class CraftBlock implements Block {
          } else {
              int j = iblockdata.<Integer>getValue(RedStoneWireBlock.POWER).intValue();
  

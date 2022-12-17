@@ -2,8 +2,12 @@
 (Fixed) Redstone not acting normal
 (Sorta fixed) TNT not exploding
 
+Sometimes you get stuck on loading terrain, usually happens after chunks stop loading
+Chunk corruption, most likely issue in SingleThreadChunkRegionManager
+
 After bugs are ironed out, remove copyonwritearraylist and replace with more efficient alternatives where possible
 Perhaps fastutil synchronized collections or concurrent if applicable
+
 
 
 Crash from `java.lang.Throwable: java.lang.IllegalStateException: Expected INACCESSIBLE for pending, but got BORDER`

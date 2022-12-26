@@ -31,10 +31,10 @@ index 7dea90d9f60712b45da0cf5104aa0c689409b551..423a65e63aff5c407f314a1b76f22329
              MultiPackResourceManager resourcemanager = new MultiPackResourceManager(PackType.SERVER_DATA, immutablelist);
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 6e1fc1f092419e3dbd971d7ac82551fc9f009cf6..af8abe0eb071928d403e77198b70d7d8a75c5e2d 100644
+index 8ec4851e8e64fdd90f4cf2bc6550bde57009a7d5..0e87c68545b50cfcf53586655bb2ff9395e62ff6 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1746,7 +1746,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -1742,7 +1742,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
      }
  
      public void teleport(Location dest) {
@@ -83,7 +83,7 @@ index 087f2d32b680992ff2ea7901e34bc7cc416d08e8..4910354f780be26c39feb159dbf2c0fb
  
      public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String name, Class<T> type, T... values) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 849c1d6f01dfa5eb306b428aace5fb29e30154f2..b646d5bae8ac0d30ba555ab62ec5e6fccd5fdb86 100644
+index 48e334b7d1e3fc713a3a552931a50268daf2c09f..1c254519e27a0977ee857c046276e13a9888d923 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -2275,7 +2275,7 @@ public final class CraftServer implements Server {
@@ -122,7 +122,7 @@ index 2a614fb24d48157fa6ec980b12eac82506b47be7..7d8f1646937d16bb3588648078dcbfd3
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
-index a0e35ce3d4ad178d4ed50ce872a6bb16d5059760..a66acf86d1fa3738cd79525b241833e9b2c52204 100644
+index cb2f289ef733e362c155a5d7c1d7de8a76694262..f0c741b9e58337111edee343eda70546f1a35a6c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 @@ -368,7 +368,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {

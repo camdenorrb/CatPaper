@@ -18,10 +18,10 @@ index 3974c4d14b4f0d0cfea096a2d9eb2f243fd2a16c..0afa54ad6935f1c8bc5d5c7b3b4ce246
                  ItemIdFix.ITEM_NAMES.put(409, "minecraft:prismarine_shard");
                  ItemIdFix.ITEM_NAMES.put(410, "minecraft:prismarine_crystals");
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 21bbe6933a3bb5778a5c5f7f96fe019433e9194f..7c40536c89a8172613d14341001b25eec0cc8c10 100644
+index 320941f7d8d791e1d3f7f587d9bf13152e954b22..b7f31496c6f1f286e29545f3766553730c54cb66 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3516,7 +3516,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3514,7 +3514,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                      this.getCraftPlayer().addChannel(channel);
                  }
              } catch (Exception ex) {
@@ -30,7 +30,7 @@ index 21bbe6933a3bb5778a5c5f7f96fe019433e9194f..7c40536c89a8172613d14341001b25ee
                  this.disconnect("Invalid payload REGISTER!", org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
              }
          } else if (packet.identifier.equals(CUSTOM_UNREGISTER)) {
-@@ -3526,7 +3526,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3524,7 +3524,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                      this.getCraftPlayer().removeChannel(channel);
                  }
              } catch (Exception ex) {
@@ -39,7 +39,7 @@ index 21bbe6933a3bb5778a5c5f7f96fe019433e9194f..7c40536c89a8172613d14341001b25ee
                  this.disconnect("Invalid payload UNREGISTER!", org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
              }
          } else {
-@@ -3544,7 +3544,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3542,7 +3542,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                  // Paper end
                  this.cserver.getMessenger().dispatchIncomingMessage(this.player.getBukkitEntity(), packet.identifier.toString(), data);
              } catch (Exception ex) {

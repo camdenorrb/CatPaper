@@ -57,10 +57,10 @@ index 09ac53cfd77a97a932f90857559b3892dad6c7db..1498f17e3349929e43dad914d6a49211
                      while (iterator.hasNext()) {
                          Entry<ResourceLocation, AdvancementProgress> entry = (Entry) iterator.next();
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 69163d500c855d04b9f6ee54b33f76f29c9b36fb..75b3dbdb1c6b6bf9f4cba89586428599b3b6896f 100644
+index 4dfb93770528131a376538686df7eea0d3334f49..ab9043e1997fdcfb294dde999f62f8418eb4a176 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -789,7 +789,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -787,7 +787,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
  
      private void wakeUpAllPlayers() {
          this.sleepStatus.removeAllSleepers();

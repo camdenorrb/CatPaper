@@ -1,0 +1,60 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 17 Dec 2022 12:16:19 -0600
+Subject: [PATCH] Fixes
+
+
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 3ccd6ceacf7b239281a8eff65b749fc455862e6f..27d187b5878be48c64be3a49d24a156d080b4b6e 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -139,14 +139,14 @@ public class LevelChunk extends ChunkAccess {
+         return NEIGHBOUR_CACHE_RADIUS;
+     }
+ 
+-    boolean loadedTicketLevel;
++    volatile boolean loadedTicketLevel;
+     private long neighbourChunksLoadedBitset;
+-    private final LevelChunk[] loadedNeighbourChunks = new LevelChunk[(NEIGHBOUR_CACHE_RADIUS * 2 + 1) * (NEIGHBOUR_CACHE_RADIUS * 2 + 1)];
++    private final LevelChunk[] loadedNeighbourChunks = new LevelChunk[((NEIGHBOUR_CACHE_RADIUS << 1) + 1) * ((NEIGHBOUR_CACHE_RADIUS << 1) + 1)];
+ 
+     private static int getNeighbourIndex(final int relativeX, final int relativeZ) {
+         // index = (relativeX + NEIGHBOUR_CACHE_RADIUS) + (relativeZ + NEIGHBOUR_CACHE_RADIUS) * (NEIGHBOUR_CACHE_RADIUS * 2 + 1)
+         // optimised variant of the above by moving some of the ops to compile time
+-        return relativeX + (relativeZ * (NEIGHBOUR_CACHE_RADIUS * 2 + 1)) + (NEIGHBOUR_CACHE_RADIUS + NEIGHBOUR_CACHE_RADIUS * ((NEIGHBOUR_CACHE_RADIUS * 2 + 1)));
++        return relativeX + (relativeZ * ((NEIGHBOUR_CACHE_RADIUS << 1) + 1)) + (NEIGHBOUR_CACHE_RADIUS + NEIGHBOUR_CACHE_RADIUS * (((NEIGHBOUR_CACHE_RADIUS << 1) + 1)));
+     }
+ 
+     public final LevelChunk getRelativeNeighbourIfLoaded(final int relativeX, final int relativeZ) {
+@@ -731,7 +731,7 @@ public class LevelChunk extends ChunkAccess {
+                 "Attempted to place a tile entity (" + blockEntity + ") at " + blockEntity.getBlockPos().getX() + ","
+                     + blockEntity.getBlockPos().getY() + "," + blockEntity.getBlockPos().getZ()
+                     + " (" + getBlockState(blockposition) + ") where there was no entity tile!\n" +
+-                    "Chunk coordinates: " + (this.chunkPos.x * 16) + "," + (this.chunkPos.z * 16) +
++                    "Chunk coordinates: " + (this.chunkPos.x << 4) + "," + (this.chunkPos.z << 4) +
+                     "\nWorld: " + level.getLevel().dimension().location());
+             io.papermc.paper.util.TraceUtil.printStackTrace(e);
+             ServerInternalException.reportInternalException(e);
+@@ -901,7 +901,10 @@ public class LevelChunk extends ChunkAccess {
+ 
+     // CraftBukkit start
+     public void loadCallback() {
+-        if (this.loadedTicketLevel) { LOGGER.error("Double calling chunk load!", new Throwable()); } // Paper
++        if (this.loadedTicketLevel) {
++            //LOGGER.error("Double calling chunk load!", new Throwable());
++            return;
++        } // Paper
+         // Paper - rewrite chunk system - move into separate callback
+         this.loadedTicketLevel = true;
+         // Paper - rewrite chunk system - move into separate callback
+@@ -921,8 +924,8 @@ public class LevelChunk extends ChunkAccess {
+                 this.needsDecoration = false;
+                 final java.util.Random random = new java.util.Random();
+                 random.setSeed(this.level.getSeed());
+-                final long xRand = random.nextLong() / 2L * 2L + 1L;
+-                final long zRand = random.nextLong() / 2L * 2L + 1L;
++                final long xRand = (random.nextLong() / 2L << 1) + 1L;
++                final long zRand = (random.nextLong() / 2L << 1) + 1L;
+                 random.setSeed((long) this.chunkPos.x * xRand + (long) this.chunkPos.z * zRand ^ this.level.getSeed());
+ 
+                 final org.bukkit.World world = this.level.getWorld();

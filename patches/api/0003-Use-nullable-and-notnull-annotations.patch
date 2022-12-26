@@ -1378,10 +1378,10 @@ index 12163a7b0591a7d022dc7eb9ee6608a1b6c39d9b..d19ef7eb03751d081601c3db97356365
      public PlayerChunkUnloadEvent(@NotNull Chunk chunk, @NotNull Player player) {
          super(chunk);
 diff --git a/src/main/java/io/papermc/paper/event/player/AbstractChatEvent.java b/src/main/java/io/papermc/paper/event/player/AbstractChatEvent.java
-index fa03a5cb2d3e3e0a60d84bacc911d96c454f81da..4bbc549d6655b7bb2e3b4547f5819006e971c328 100644
+index e7e13011c76285681ad420e6f356f6b83045d31a..bf10d267e67a55c6c41852a87079bea8fdac44a6 100644
 --- a/src/main/java/io/papermc/paper/event/player/AbstractChatEvent.java
 +++ b/src/main/java/io/papermc/paper/event/player/AbstractChatEvent.java
-@@ -15,8 +15,8 @@ import static java.util.Objects.requireNonNull;
+@@ -17,8 +17,8 @@ import static java.util.Objects.requireNonNull;
   * An abstract implementation of a chat event, handling shared logic.
   */
  public abstract class AbstractChatEvent extends PlayerEvent implements Cancellable {
@@ -1389,9 +1389,9 @@ index fa03a5cb2d3e3e0a60d84bacc911d96c454f81da..4bbc549d6655b7bb2e3b4547f5819006
 -    private final Component originalMessage;
 +    private final @NotNull Set<Audience> viewers;
 +    private final @NotNull Component originalMessage;
+     private final SignedMessage signedMessage;
      private ChatRenderer renderer;
      private Component message;
-     private boolean cancelled = false;
 diff --git a/src/main/java/io/papermc/paper/event/player/AsyncChatDecorateEvent.java b/src/main/java/io/papermc/paper/event/player/AsyncChatDecorateEvent.java
 index 9a962337948810b00ceae1124962fcc7058b70ad..bd800f6640b9920d371e505be7aa6cb7705966f3 100644
 --- a/src/main/java/io/papermc/paper/event/player/AsyncChatDecorateEvent.java
@@ -4593,18 +4593,18 @@ index 3dd4bd38e72c04e74e5787fb38ca9abd10bad06b..49f9a41dffb0eb993d4d5d28f2adb621
      public BlockDropItemEvent(@NotNull Block block, @NotNull BlockState blockState, @NotNull Player player, @NotNull List<Item> items) {
          super(block);
 diff --git a/src/main/java/org/bukkit/event/block/BlockExplodeEvent.java b/src/main/java/org/bukkit/event/block/BlockExplodeEvent.java
-index 44f7f6939a27b9a0a796d91eac4b7c97ec90a643..b0ad0e103ef349648264a4503d1da016c0f4b435 100644
+index 2474628851c35fe8500d4d113aaafda6ce087313..29cb1322c2a516e9750d4f76e0552d660572d171 100644
 --- a/src/main/java/org/bukkit/event/block/BlockExplodeEvent.java
 +++ b/src/main/java/org/bukkit/event/block/BlockExplodeEvent.java
-@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
+@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  public class BlockExplodeEvent extends BlockEvent implements Cancellable {
      private static final HandlerList handlers = new HandlerList();
      private boolean cancel;
 -    private final List<Block> blocks;
 +    private final @NotNull List<Block> blocks;
      private float yield;
+     private final org.bukkit.block.BlockState explodedBlockState; // Paper
  
-     public BlockExplodeEvent(@NotNull final Block what, @NotNull final List<Block> blocks, final float yield) {
 diff --git a/src/main/java/org/bukkit/event/block/BlockFadeEvent.java b/src/main/java/org/bukkit/event/block/BlockFadeEvent.java
 index 362643de40ff283ad37ac63c1349f91ae2b9b326..89e1e761e2ee2f552037d3f97d7e7730a131701e 100644
 --- a/src/main/java/org/bukkit/event/block/BlockFadeEvent.java

@@ -370,11 +370,11 @@ index f8ae143acbf586d5279b44f7311ca97f3ae4ead2..0ad046fa4ce3b89d13f9964aa9e8aca7
      }
  }
 diff --git a/src/main/java/org/bukkit/Instrument.java b/src/main/java/org/bukkit/Instrument.java
-index ec36b0a685bbaf80ae563ad169a94a62298edd88..79f9c3e427a7016190de65eabe20083681d2b7f6 100644
+index 27dafd1850d3b984a6af155f5c08ee543cd109f0..947669c6f42b7e06e680d50df19828c3f47f42ac 100644
 --- a/src/main/java/org/bukkit/Instrument.java
 +++ b/src/main/java/org/bukkit/Instrument.java
-@@ -139,12 +139,12 @@ public enum Instrument {
-     @Deprecated
+@@ -137,12 +137,12 @@ public enum Instrument {
+     @org.jetbrains.annotations.ApiStatus.Internal // Paper
      @Nullable
      public static Instrument getByType(final byte type) {
 -        return BY_DATA.get(type);

@@ -75,10 +75,10 @@ index 46fff641abef20753c4f72a3d5fb71769eeb964a..9df486c17d44db247216cf9e20830a59
                      }
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 2496e3fd54d5b06671b6daf19cb51fe7b76e1efc..ab89cd249f770959defd929dd2315659157d8d5b 100644
+index 2509fa9f8f5b224b796654c344ff93fbb4efc07d..17d9dc7fc57261a5e85fcbe1fa871c80d5d7b7e4 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1271,7 +1271,7 @@ public class ServerPlayer extends Player {
+@@ -1269,7 +1269,7 @@ public class ServerPlayer extends Player {
              Direction.Axis enumdirection_enumaxis = (Direction.Axis) this.level.getBlockState(this.portalEntrancePos).getOptionalValue(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
              Optional<BlockUtil.FoundRectangle> optional1 = worldserver.getPortalForcer().createPortal(blockposition, enumdirection_enumaxis, this, createRadius); // CraftBukkit
  

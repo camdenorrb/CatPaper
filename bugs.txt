@@ -1,9 +1,9 @@
 (Sorta fixed) Blocks sometimes are hidden when placing into a new chunk
-(Fixed) Redstone not acting normal
+(Sorta fixed) Redstone not acting normal
 (Sorta fixed) TNT not exploding
 
 Sometimes you get stuck on loading terrain, usually happens after chunks stop loading
-Chunk corruption, most likely issue in SingleThreadChunkRegionManager
+// (Ended up not being true) Chunk corruption, most likely issue in SingleThreadChunkRegionManager
 
 After bugs are ironed out, remove copyonwritearraylist and replace with more efficient alternatives where possible
 Perhaps fastutil synchronized collections or concurrent if applicable

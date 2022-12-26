@@ -65,7 +65,7 @@ index 9b28c8e9e5bc2dfa300f5f7a3a41cc6d6136aeb1..aa88200b88462706baad682892fdc99a
          protected static final VarHandle READS_HANDLE = ConcurrentUtil.getVarHandle(CancellableReads.class, "reads", Cancellable[].class);
  
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 8333498f96c292c301f09bc28a5219654c37b017..3021f1d3776d8639358119a856b4f567c471abe9 100644
+index 93b94311c0f150de5a40ed285ab1b6f494b648f2..43ddbee231043f9eb7182709d3ebf033ee3d7cab 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -117,7 +117,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -104,10 +104,10 @@ index a45e5d6e6dfda024ed0b0d38aff6b7ede41399ef..1a101c7232037900fb5800430c89da73
      public final RollingAverage tps5 = new RollingAverage(60 * 5);
      public final RollingAverage tps15 = new RollingAverage(60 * 15);
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 76e397788a5e83808edff06ebe24a6e9ffdba760..48931bc6f0c5a23f4d59b693c02efe6ef3d373a1 100644
+index 80c4a62498e83f0dbb6b8888682c10dbf1a76835..9d1290c504309dfbe0655080f41c5f145d847d07 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -160,7 +160,7 @@ public abstract class PlayerList {
+@@ -159,7 +159,7 @@ public abstract class PlayerList {
      private int sendAllPlayerInfoIn;
  
      // CraftBukkit start
@@ -130,7 +130,7 @@ index 4fd709a550bf8da1e996894a1ca6b91206c31e9e..10300c9166111130fefa8b103a9e8f2c
          public Type[] getActualTypeArguments() {
              return new Type[]{StoredUserEntry.class};
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index e7059bed91f57aa4976ef7b23c5150b91333cc3c..1ff4f45f0083af16a0b40a61e21f860a3da44658 100644
+index cce59d43500c7b2a95475ae10b9d05a3cd3bce48..c33041be2464f1f8a04a8146b251975be2f3f3fc 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -869,7 +869,7 @@ public abstract class LivingEntity extends Entity {
@@ -143,7 +143,7 @@ index e7059bed91f57aa4976ef7b23c5150b91333cc3c..1ff4f45f0083af16a0b40a61e21f860a
      private static class ProcessableEffect {
  
 diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-index 244991df0a864905b6db374f95c579d00e26679f..e48fd6bea4b5820438e6db8e00afc6cb60729058 100644
+index 16c5c7bad21e0b2ef8bafef4c5a50f05543519da..cb21dbf16e2befd27d85839d4d984445d22f5b2f 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 @@ -98,7 +98,7 @@ public class EnderDragon extends Mob implements Enemy {
@@ -410,7 +410,7 @@ index b2845ed8d28627178589da3d2224cd9edd29c31e..0958173390836c4172772dfc017430f1
      public String id;
      // CraftBukkit end
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 63fdb79ff680a70b0188d03c9978397c3849b649..53db207c9749cb2184f1a9f2ca99e3fece4ca830 100644
+index d611cd288b98f6343f5c3a647c941534257e32f3..c31d4984052a9c04fc8f14c5e967e78bfb899e10 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -2390,6 +2390,7 @@ public final class CraftServer implements Server {
@@ -472,7 +472,7 @@ index 28704c9615732c24f30119a02391fe43254ae96d..ab4fc0faca6c93d85b9676768cce91be
          private FlagContainer(Supplier<Boolean> get, Consumer<Boolean> set) {
              this.get = get;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 37a1aa1564a89b0361084420f84e03942bb40691..20a4e58e5a89ba878257821b51f4d2681c4f79a8 100644
+index 106961e4ed5245f3a5597ec45b41867f01fd17ed..6707740173541ca556055b4556400209a7cc96f7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -171,7 +171,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

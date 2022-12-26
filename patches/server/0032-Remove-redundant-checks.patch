@@ -70,10 +70,10 @@ index 37d3b670a93c26b87ffc5c93ad7828f45b4b0217..8501c50059631c6b8dc3c1592b9f8d11
              return false;
          }
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-index b9bb9d4054bda956d32a983c7fc5b2ee130b5082..d25d2eaffb818c91867fcffbfc82dad881315288 100644
+index 6d05fa20d9d3415de4d3ce9d4fd46dc24ea24a4f..e82ce610b0af421b891679b41c1926e6e72df43a 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -437,7 +437,7 @@ public abstract class AbstractArrow extends Projectile {
+@@ -426,7 +426,7 @@ public abstract class AbstractArrow extends Projectile {
                  }
  
                  this.doPostHurtEffects(entityliving);
@@ -96,7 +96,7 @@ index 05eab04e4aec4151018f25b59f92ddbbb4c09f87..68703fdfd17f3295dd37ea276f1cfcf9
                          BlockState iblockdata = world.getBlockState(blockposition2);
                          Block[] ablock = ConduitBlockEntity.VALID_BLOCKS;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
-index d498418bb6394d625a278247c22a01eba737b5e4..fa8742723a12e4c0c20e68cbbc56cc1d0d21ff41 100644
+index 9125a1ab3ea57d29390d710cdfc8787a2883cb9f..d82748f7aaec88cd80d41de6b57aa5e781c8ce34 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
 @@ -171,7 +171,7 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa

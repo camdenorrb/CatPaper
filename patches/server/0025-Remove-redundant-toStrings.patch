@@ -422,10 +422,10 @@ index a1a8f99dc27202aed94f37cb10226af3d2e1e8c6..479a3179596d93a197d052dc150b2e21
                  }
              };
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c3495c298e81e80544b33424c31a72c848cbf0f0..235f14e498a6c104c34340e151d31bb296e23f73 100644
+index 97e9bab342745d40e3c3e0d8df4c7fb0525eca78..2d142d9f36ec02a6501dd562fa592d823c663d4b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -397,7 +397,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -396,7 +396,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
              ChunkPos nbtPos = nbt == null ? null : EntityStorage.readChunkPos(nbt);
              if (nbtPos != null && !pos.equals(nbtPos)) {
                  throw new IllegalArgumentException(
@@ -434,7 +434,7 @@ index c3495c298e81e80544b33424c31a72c848cbf0f0..235f14e498a6c104c34340e151d31bb2
                          + " but compound says coordinate is " + nbtPos + " for world: " + this
                  );
              }
-@@ -1469,7 +1469,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1467,7 +1467,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
          Entity entity = (Entity) this.getEntities().get(player.getUUID());
  
          if (entity != null) {
@@ -494,7 +494,7 @@ index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..ba2f0b3c7ab09b685e2e33089e93d8d5
                      player1.setFirstPlayed(modified);
                  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 53db207c9749cb2184f1a9f2ca99e3fece4ca830..849c1d6f01dfa5eb306b428aace5fb29e30154f2 100644
+index c31d4984052a9c04fc8f14c5e967e78bfb899e10..48e334b7d1e3fc713a3a552931a50268daf2c09f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1107,7 +1107,7 @@ public final class CraftServer implements Server {

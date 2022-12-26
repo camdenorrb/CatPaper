@@ -2311,27 +2311,18 @@ index f0067c2e953d18e1a33536980071ba3f0152ecb4..425330e7f43bda2394dcb8ee68b196e7
      }
  
 diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EntityKnockbackByEntityEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EntityKnockbackByEntityEvent.java
-index 9efecabab813f575bb447a356e5e7e952d110f30..cae3c394051e558f821a61acedeb88ea9baeab26 100644
+index 42fdf7a5bfab99a61ff2fbf562f2872ac360bef2..0153dfb35aeae5e62425253542b16923d0c680ec 100644
 --- a/src/main/java/com/destroystokyo/paper/event/entity/EntityKnockbackByEntityEvent.java
 +++ b/src/main/java/com/destroystokyo/paper/event/entity/EntityKnockbackByEntityEvent.java
-@@ -21,7 +21,7 @@ public class EntityKnockbackByEntityEvent extends EntityEvent implements Cancell
-     @NotNull private final Vector acceleration;
-     private boolean cancelled = false;
+@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
+ public class EntityKnockbackByEntityEvent extends EntityPushedByEntityAttackEvent {
+     private final float knockbackStrength;
  
 -    public EntityKnockbackByEntityEvent(@NotNull LivingEntity entity, @NotNull Entity hitBy, float knockbackStrength, @NotNull Vector acceleration) {
 +    public EntityKnockbackByEntityEvent(@NotNull final LivingEntity entity, @NotNull final Entity hitBy, final float knockbackStrength, @NotNull final Vector acceleration) {
-         super(entity);
-         this.hitBy = hitBy;
+         super(entity, hitBy, acceleration);
          this.knockbackStrength = knockbackStrength;
-@@ -44,7 +44,7 @@ public class EntityKnockbackByEntityEvent extends EntityEvent implements Cancell
      }
- 
-     @Override
--    public void setCancelled(boolean cancel) {
-+    public void setCancelled(final boolean cancel) {
-         cancelled = cancel;
-     }
- 
 diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EntityPathfindEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EntityPathfindEvent.java
 index 63e46b2fb1b12b36fcb1e98b178cf29dd2e3d1b5..577301921036ec15d3040cac09a5430be0886217 100644
 --- a/src/main/java/com/destroystokyo/paper/event/entity/EntityPathfindEvent.java
@@ -2526,10 +2517,10 @@ index 48cff063594840a07aeaf35513780e28ea019a76..49371ead4b6fb95b81eeae2019b61112
          this.spawnerLocation = Preconditions.checkNotNull(spawnerLocation, "Spawner location may not be null");
      }
 diff --git a/src/main/java/com/destroystokyo/paper/event/entity/ProjectileCollideEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/ProjectileCollideEvent.java
-index 453663893021768ae21d4980ce17ffba55d9e129..23fc9fab98a9c352c2d21a6beda0ded9e619384e 100644
+index 6ae2bc3d952d34f298220738856024e0b6594199..5567a2e7dd402afc9799cc96d6f23b0b6f92e83d 100644
 --- a/src/main/java/com/destroystokyo/paper/event/entity/ProjectileCollideEvent.java
 +++ b/src/main/java/com/destroystokyo/paper/event/entity/ProjectileCollideEvent.java
-@@ -25,7 +25,7 @@ public class ProjectileCollideEvent extends EntityEvent implements Cancellable {
+@@ -27,7 +27,7 @@ public class ProjectileCollideEvent extends EntityEvent implements Cancellable {
          return collidedWith;
      }
  
@@ -2538,7 +2529,7 @@ index 453663893021768ae21d4980ce17ffba55d9e129..23fc9fab98a9c352c2d21a6beda0ded9
          super(what);
          this.collidedWith = collidedWith;
      }
-@@ -61,7 +61,7 @@ public class ProjectileCollideEvent extends EntityEvent implements Cancellable {
+@@ -63,7 +63,7 @@ public class ProjectileCollideEvent extends EntityEvent implements Cancellable {
      }
  
      @Override
@@ -7711,10 +7702,10 @@ index 0ad046fa4ce3b89d13f9964aa9e8aca738ff112f..32c7dee71859daafc81e5bfadd7e4a1c
          }
      }
 diff --git a/src/main/java/org/bukkit/Instrument.java b/src/main/java/org/bukkit/Instrument.java
-index 79f9c3e427a7016190de65eabe20083681d2b7f6..832559f0776edbab408d1cc5076aca2d15a35504 100644
+index 947669c6f42b7e06e680d50df19828c3f47f42ac..115294f070db6f15bbcba2d3e63da279b1b82fe9 100644
 --- a/src/main/java/org/bukkit/Instrument.java
 +++ b/src/main/java/org/bukkit/Instrument.java
-@@ -143,7 +143,7 @@ public enum Instrument {
+@@ -141,7 +141,7 @@ public enum Instrument {
      }
  
      static {
@@ -8603,7 +8594,7 @@ index 7d02ad6c002595c249fa55770d2437127c36d729..499d354eaed10b21bcc1c0207bb03c69
              return false;
          return true;
 diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
-index a7d1f1e701f23e851f735584a30bedadb0d8b9bd..0d32f5d5668f5f7b9c5948c9f66396bf85b48dc1 100644
+index 69b50eee42e8c52063033705bd23a5ef5231ed83..c588531f98869b9eff9353a75850444b5a5d11da 100644
 --- a/src/main/java/org/bukkit/OfflinePlayer.java
 +++ b/src/main/java/org/bukkit/OfflinePlayer.java
 @@ -67,7 +67,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
@@ -15107,10 +15098,10 @@ index 21b9026552fd135ef2c49dd011b17f5679ac3fc1..1514ff8376f14605a8a21f63dc297205
      }
  
 diff --git a/src/main/java/org/bukkit/event/block/BlockExplodeEvent.java b/src/main/java/org/bukkit/event/block/BlockExplodeEvent.java
-index b0ad0e103ef349648264a4503d1da016c0f4b435..6134af18730572d809403d0a141f7437ed0671c6 100644
+index 29cb1322c2a516e9750d4f76e0552d660572d171..2e7e32e10eb83bfc38a8f85e945c8920c9793676 100644
 --- a/src/main/java/org/bukkit/event/block/BlockExplodeEvent.java
 +++ b/src/main/java/org/bukkit/event/block/BlockExplodeEvent.java
-@@ -28,7 +28,7 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
+@@ -39,7 +39,7 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
      }
  
      @Override
@@ -15119,7 +15110,7 @@ index b0ad0e103ef349648264a4503d1da016c0f4b435..6134af18730572d809403d0a141f7437
          this.cancel = cancel;
      }
  
-@@ -57,7 +57,7 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
+@@ -84,7 +84,7 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
       *
       * @param yield The new yield percentage
       */
@@ -16190,19 +16181,19 @@ index 2ca958ada7afe32ba5c547d01e80f7b238da1023..777bc9b8dbf2034f5fd5f640e88f8421
      }
  
 diff --git a/src/main/java/org/bukkit/event/entity/EntityPortalEvent.java b/src/main/java/org/bukkit/event/entity/EntityPortalEvent.java
-index 67fb9d93e808e907fa980f3004d415ae5d0a53fc..6543d1495a0de51363fec5b88752e708cce75797 100644
+index 97e36c7f6e09276fbae20eaeee0965566332ca46..78f3ccc2c5457bbe5e12801673cf709e7224e8b1 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityPortalEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityPortalEvent.java
-@@ -20,7 +20,7 @@ public class EntityPortalEvent extends EntityTeleportEvent {
-         super(entity, from, to);
+@@ -21,7 +21,7 @@ public class EntityPortalEvent extends EntityTeleportEvent {
+         this(entity, from, to, 128); // Paper
      }
  
 -    public EntityPortalEvent(@NotNull Entity entity, @NotNull Location from, @Nullable Location to, int searchRadius) {
 +    public EntityPortalEvent(@NotNull final Entity entity, @NotNull final Location from, @Nullable final Location to, final int searchRadius) {
          super(entity, from, to);
          this.searchRadius = searchRadius;
-     }
-@@ -31,7 +31,7 @@ public class EntityPortalEvent extends EntityTeleportEvent {
+         this.type = org.bukkit.PortalType.CUSTOM; // Paper
+@@ -74,7 +74,7 @@ public class EntityPortalEvent extends EntityTeleportEvent {
       * @param searchRadius the radius in which to search for a portal from the
       * location
       */
@@ -18636,7 +18627,7 @@ index 51ffd54ab9ee226e7abbd7eddf95928c730f067c..64770af0841d2f0abb494c17d5509c91
          this.flyAtPlayer = !cancel; // Paper
      }
 diff --git a/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java b/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
-index 57eeeafae84f83a939925820e827769749ff27ec..6e8f9a204d2f16472e756eedfe88da02b9c37e1a 100644
+index da753259e3c461d9fd40b7eb7d0abf7965497a47..21bb500b161eac64e59d12665f563141bce592f2 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
 @@ -22,11 +22,11 @@ public class PlayerPortalEvent extends PlayerTeleportEvent {
@@ -18653,7 +18644,7 @@ index 57eeeafae84f83a939925820e827769749ff27ec..6e8f9a204d2f16472e756eedfe88da02
          super(player, from, to, cause);
          this.getSearchRadius = getSearchRadius;
          this.canCreatePortal = canCreatePortal;
-@@ -39,7 +39,7 @@ public class PlayerPortalEvent extends PlayerTeleportEvent {
+@@ -86,7 +86,7 @@ public class PlayerPortalEvent extends PlayerTeleportEvent {
       * @param searchRadius the radius in which to search for a portal from the
       * location
       */
@@ -18662,7 +18653,7 @@ index 57eeeafae84f83a939925820e827769749ff27ec..6e8f9a204d2f16472e756eedfe88da02
          this.getSearchRadius = searchRadius;
      }
  
-@@ -69,7 +69,7 @@ public class PlayerPortalEvent extends PlayerTeleportEvent {
+@@ -116,7 +116,7 @@ public class PlayerPortalEvent extends PlayerTeleportEvent {
       * @param canCreatePortal Sets whether there should be a destination portal
       * created
       */
@@ -18671,7 +18662,7 @@ index 57eeeafae84f83a939925820e827769749ff27ec..6e8f9a204d2f16472e756eedfe88da02
          this.canCreatePortal = canCreatePortal;
      }
  
-@@ -86,7 +86,7 @@ public class PlayerPortalEvent extends PlayerTeleportEvent {
+@@ -133,7 +133,7 @@ public class PlayerPortalEvent extends PlayerTeleportEvent {
       * @param creationRadius the radius in which to create a portal from the
       * location
       */

@@ -786,7 +786,7 @@ index 83612087715f047e16a5e115ce77e0ecb3dbb854..3ec1e6be4d5f39bdfcabbf941f2c3f1e
          return executedUnloadTask | canSaveChunk | canSaveEntities | canSavePOI ? new SaveStat(executedUnloadTask || canSaveChunk, canSaveEntities, canSavePOI): null;
      }
 diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-index d3456225bee108b47a2401bf38774e34fb90a1c0..1094fc8de5f63bdb8465cd92a02458f5b09136fb 100644
+index ff0c03885b900e357769e1dd29d58206432b13bb..7396161be636d16a732c7ff322daf6e4fbe2266c 100644
 --- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 @@ -1,6 +1,5 @@
@@ -1259,10 +1259,10 @@ index 499f0ab3968643ed10e9ef240693904ee76c88f7..219ec92182de3dc4fe3559fa74e6dead
              // Paper end - use set of chunks requiring updates, rather than iterating every single one loaded
              // Paper start - controlled flush for entity tracker packets
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da37778b271c4a 100644
+index 31a3f373132c465ad7b0179296ea8a83574614e9..608d06239e197123f2d7ca7054fd2f5cc78f3205 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -667,7 +667,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -650,7 +650,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
              this.updateSkyBrightness();
              this.tickTime();
              gameprofilerfiller.popPush("tickPending");
@@ -1270,7 +1270,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
              if (!this.isDebug()) {
                  j = this.getGameTime();
                  gameprofilerfiller.push("blockTicks");
-@@ -676,20 +675,13 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -659,20 +658,13 @@ public class ServerLevel extends Level implements WorldGenLevel {
                  this.fluidTicks.tick(j, 65536, this::tickFluid);
                  gameprofilerfiller.pop();
              }
@@ -1291,7 +1291,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
              this.handlingTick = false;
              gameprofilerfiller.pop();
              final boolean flag = true || !this.players.isEmpty() || !this.getForcedChunks().isEmpty(); // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
-@@ -700,7 +692,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -683,7 +675,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
  
              if (flag || this.emptyTime++ < 300) {
                  gameprofilerfiller.push("entities");
@@ -1299,7 +1299,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
                  if (this.dragonFight != null) {
                      gameprofilerfiller.push("dragonFight");
                      this.dragonFight.tick();
-@@ -709,11 +700,9 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -692,11 +683,9 @@ public class ServerLevel extends Level implements WorldGenLevel {
  
  
                  ActivationRange.activateEntities(self); // Spigot
@@ -1311,7 +1311,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
                          gameprofilerfiller.push("checkDespawn");
                          entity.checkDespawn();
                          gameprofilerfiller.pop();
-@@ -732,10 +721,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -715,10 +704,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
                          gameprofilerfiller.pop();
                      }
                  });
@@ -1323,7 +1323,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
              }
  
  
-@@ -888,7 +875,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -871,7 +858,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
  
          // Paper start - optimise random block ticking
          gameprofilerfiller.popPush("randomTick");
@@ -1331,7 +1331,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
          if (randomTickSpeed > 0) {
              final LevelChunkSection[] sections = chunk.getSections();
              final int minSection = io.papermc.paper.util.WorldUtil.getMinSection(this);
-@@ -922,7 +908,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -905,7 +891,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
              }
          }
          // Paper end - optimise random block ticking
@@ -1339,7 +1339,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
          gameprofilerfiller.pop();
      }
  
-@@ -1184,9 +1169,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1167,9 +1152,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
                  currentlyTickingEntity.lazySet(entity);
              }
              // Paper end - log detailed entity tick information
@@ -1349,7 +1349,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
          /*if (!org.spigotmc.ActivationRange.checkIfActive(entity)) { // Paper - comment out - EAR 2, reimplement below
              entity.tickCount++;
              timer = entity.getType().inactiveTickTimer.startTiming(); try { // Paper - timings
-@@ -1197,24 +1180,19 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1180,24 +1163,19 @@ public class ServerLevel extends Level implements WorldGenLevel {
          // Spigot end
          // Paper start- timings
          final boolean isActive = org.spigotmc.ActivationRange.checkIfActive(entity);
@@ -1378,7 +1378,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
          final Iterator iterator = entity.getPassengers().iterator();
  
          while (iterator.hasNext()) {
-@@ -1237,8 +1215,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1220,8 +1198,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
              if (passenger instanceof Player || this.entityTickList.contains(passenger)) {
                  // Paper - EAR 2
                  final boolean isActive = org.spigotmc.ActivationRange.checkIfActive(passenger);
@@ -1387,7 +1387,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
                  // Paper end
                  passenger.setOldPosAndRot();
                  ++passenger.tickCount;
-@@ -1267,8 +1243,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1250,8 +1226,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
  
                      this.tickPassenger(passenger, entity2);
                  }
@@ -1396,7 +1396,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
              }
          } else {
              passenger.stopRiding();
-@@ -1288,14 +1262,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1271,14 +1245,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
              org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld()));
          }
  
@@ -1411,7 +1411,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
  
              // Copied from save()
              // CraftBukkit start - moved from MinecraftServer.saveChunks
-@@ -1307,7 +1278,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1290,7 +1261,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
                  this.convertable.saveDataTag(this.server.registryAccess(), this.serverLevelData, this.server.getPlayerList().getSingleplayerData());
              }
              // CraftBukkit end
@@ -1420,7 +1420,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
      }
      // Paper end
  
-@@ -1321,7 +1292,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1304,7 +1275,6 @@ public class ServerLevel extends Level implements WorldGenLevel {
  
          if (!savingDisabled) {
              org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
@@ -1428,7 +1428,7 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
              if (progressListener != null) {
                  progressListener.progressStartNoAbort(Component.translatable("menu.savingLevel"));
              }
-@@ -1331,11 +1301,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1314,11 +1284,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
                  progressListener.progressStage(Component.translatable("menu.savingChunks"));
              }
  
@@ -1441,10 +1441,10 @@ index c88cc8e62d17699dec9352bd570279ff2eb8c4ba..79957d65a8e6e3bc5cda5899d1da3777
  
          } else if (close) { chunkproviderserver.close(false); } // Paper - rewrite chunk system
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 7a73ad3d2a30fb1bef4fba77f77ea4f263183877..1f1d6ae8f660d0857b5bebf00a79488d99744b58 100644
+index 64bfe950addc20f7af474f1f27c34ee9de3dbea7..91c7613bfbcc5cc6aa1bb9e8b6ac1066f4bb6ce9 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2478,7 +2478,6 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2476,7 +2476,6 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              }
          }
          // Paper End
@@ -1452,7 +1452,7 @@ index 7a73ad3d2a30fb1bef4fba77f77ea4f263183877..1f1d6ae8f660d0857b5bebf00a79488d
          if ( org.spigotmc.SpigotConfig.logCommands ) // Spigot
          this.LOGGER.info(this.player.getScoreboardName() + " issued server command: " + s);
  
-@@ -2488,7 +2487,6 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2486,7 +2485,6 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
          this.cserver.getPluginManager().callEvent(event);
  
          if (event.isCancelled()) {
@@ -1460,7 +1460,7 @@ index 7a73ad3d2a30fb1bef4fba77f77ea4f263183877..1f1d6ae8f660d0857b5bebf00a79488d
              return;
          }
  
-@@ -2500,8 +2498,6 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2498,8 +2496,6 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              player.sendMessage(org.bukkit.ChatColor.RED + "An internal error occurred while attempting to perform this command");
              java.util.logging.Logger.getLogger(ServerGamePacketListenerImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
              return;
@@ -1470,7 +1470,7 @@ index 7a73ad3d2a30fb1bef4fba77f77ea4f263183877..1f1d6ae8f660d0857b5bebf00a79488d
      }
      // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 5d50ea584ca6cf01157418a231f4a76ffb3631ac..8557c0de9d556ac58d8699b4f27ff276fad8d3ed 100644
+index 9dfff900192f430c1051692ecf2d7a5524e5f0b2..dfc48d0ca2748c76ba802610b69fa134665f9e73 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -1,6 +1,5 @@
@@ -1480,7 +1480,7 @@ index 5d50ea584ca6cf01157418a231f4a76ffb3631ac..8557c0de9d556ac58d8699b4f27ff276
  import com.google.common.collect.Lists;
  import com.google.common.collect.Maps;
  import com.google.common.collect.Sets;
-@@ -1260,7 +1259,6 @@ public abstract class PlayerList {
+@@ -1182,7 +1181,6 @@ public abstract class PlayerList {
  
      public void saveAll(final int interval) {
          io.papermc.paper.util.MCUtil.ensureMain("Save Players" , () -> { // Paper - Ensure main
@@ -1488,7 +1488,7 @@ index 5d50ea584ca6cf01157418a231f4a76ffb3631ac..8557c0de9d556ac58d8699b4f27ff276
          int numSaved = 0;
          final long now = MinecraftServer.currentTick;
          for (int i = 0; i < this.players.size(); ++i) {
-@@ -1271,7 +1269,6 @@ public abstract class PlayerList {
+@@ -1193,7 +1191,6 @@ public abstract class PlayerList {
              }
              // Paper end
          }

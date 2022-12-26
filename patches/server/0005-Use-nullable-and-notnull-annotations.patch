@@ -18671,10 +18671,10 @@ index 4f5f2c25e12ee6d977bc98d9118650cfe91e6c0e..e4a5716e2c3e5867dd52dfc848659efa
              return (U[])Arrays.copyOf(this.contents, this.size, objects.getClass());
          } else {
 diff --git a/src/main/java/net/minecraft/world/damagesource/DamageSource.java b/src/main/java/net/minecraft/world/damagesource/DamageSource.java
-index 8795c94e6b6474addddbb0b337a962e8fac46b2b..d96a9faf07242c6c640e7c009ad11ee2c0d05118 100644
+index 2848cb7c76e94d8349f042dc92daf01322a6ce5a..5cb8d2ac145c5bbb3d0a3efabb70057c4859f88c 100644
 --- a/src/main/java/net/minecraft/world/damagesource/DamageSource.java
 +++ b/src/main/java/net/minecraft/world/damagesource/DamageSource.java
-@@ -202,12 +202,12 @@ public class DamageSource {
+@@ -211,12 +211,12 @@ public class DamageSource {
      }
  
      @Nullable
@@ -18689,7 +18689,7 @@ index 8795c94e6b6474addddbb0b337a962e8fac46b2b..d96a9faf07242c6c640e7c009ad11ee2
          return null;
      }
  
-@@ -302,7 +302,7 @@ public class DamageSource {
+@@ -311,7 +311,7 @@ public class DamageSource {
      }
  
      @Nullable
@@ -18721,10 +18721,10 @@ index 22ba53d9f8866327752b0c33b517adb02c50b684..21a82083a6ae4a3d3c19265cd6ee3742
      @Override
      protected void defineSynchedData() {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 7f94da8059147760cbdc2476d0e8beda4a105f40..6023e939554266804f974f3bf27d72813ed84e19 100644
+index 7555b04dcf274bb624b89f2eb9ff80da0056de4e..e4c97c9aaf6655e403ee669c8dca10034038a475 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -2519,7 +2519,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -2529,7 +2529,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -18733,7 +18733,7 @@ index 7f94da8059147760cbdc2476d0e8beda4a105f40..6023e939554266804f974f3bf27d7281
          if (stack.isEmpty()) {
              return null;
          } else if (this.level.isClientSide) {
-@@ -3060,7 +3060,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3070,7 +3070,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      public void updateDynamicGameEventListener(BiConsumer<DynamicGameEventListener<?>, ServerLevel> callback) {}
  
      @Nullable
@@ -18742,7 +18742,7 @@ index 7f94da8059147760cbdc2476d0e8beda4a105f40..6023e939554266804f974f3bf27d7281
          if (!this.level.paperConfig().scoreboards.allowNonPlayerEntitiesOnScoreboards && !(this instanceof Player)) { return null; } // Paper
          return this.level.getScoreboard().getPlayersTeam(this.getScoreboardName());
      }
-@@ -3352,7 +3352,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3362,7 +3362,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -18751,7 +18751,7 @@ index 7f94da8059147760cbdc2476d0e8beda4a105f40..6023e939554266804f974f3bf27d7281
          // CraftBukkit start
          return this.teleportTo(destination, null);
      }
-@@ -3447,7 +3447,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3457,7 +3457,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -18760,7 +18760,7 @@ index 7f94da8059147760cbdc2476d0e8beda4a105f40..6023e939554266804f974f3bf27d7281
          // CraftBukkit start
          if (destination == null) {
              return null;
-@@ -3889,7 +3889,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3906,7 +3906,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -18769,7 +18769,7 @@ index 7f94da8059147760cbdc2476d0e8beda4a105f40..6023e939554266804f974f3bf27d7281
          return null;
      }
  
-@@ -4372,7 +4372,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4389,7 +4389,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      @Nullable
@@ -18792,7 +18792,7 @@ index 72abebff2018cde2922e97ad6478f93da9aed3ec..0cff406722f3d9efbc2f32d4da9707eb
                  if (entity1.isPassenger()) {
                      entity1 = entity1.getVehicle();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 864ab97b7a6c62c376ca38dbbc65bc9406dfd62b..77533835224abde77a6f52a51136625a44845746 100644
+index 529ea9094c0c7b6263c13b3b7a2d1e652f7bc29e..8d0900ed5f251fbd8ad34a94aea2e6a7aea98dc0 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -121,6 +121,7 @@ import net.minecraft.world.phys.EntityHitResult;
@@ -19130,7 +19130,7 @@ index 78f1ee0d804c28292ac66641ce2ce52056d81430..b3a02c96718c7c373cf49b3c036d2b77
          protected abstract SpellcasterIllager.IllagerSpell getSpell();
      }
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Spider.java b/src/main/java/net/minecraft/world/entity/monster/Spider.java
-index 001f6cf2ea3d664864f444a92dd71d069b9a38f5..811012aa931644c22b0fd81e62aaade742dcd7c4 100644
+index d786b8b8c9d478504f74e65c3bc7ed3e9884d003..0c16afc64ecb04515b9ba92bd322d75972650a11 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Spider.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Spider.java
 @@ -154,7 +154,7 @@ public class Spider extends Monster {
@@ -19202,7 +19202,7 @@ index 44a237426739fad0096b2f5108f1d25bd388ea08..a4e2a7e5d4b38b67333beaf75ff95b07
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 2e6557a19523d18aecff709de30cb4466b46a9fa..f8667abaf289be29fef458cde71a102a4b2d55d1 100644
+index 0dcae10fd05a8fe963fdedda8199aa09dc717c9a..8f573d603eb8c2b4d73d0800584c661b76c8e2de 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -707,7 +707,7 @@ public abstract class Player extends LivingEntity {
@@ -19215,10 +19215,10 @@ index 2e6557a19523d18aecff709de30cb4466b46a9fa..f8667abaf289be29fef458cde71a102a
          return this.drop(stack, throwRandomly, retainOwnership, true);
      }
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-index e7ef36dac559d03d127cf45373a7e0dc935b80a8..636c9e2b347c2f9377379f50d99bfe266622034e 100644
+index 9788e477ff1446ad2ea3669922cc7dfc09900ce8..dd37f956fc3582266275b1e6fabaebccefb84dcc 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -507,7 +507,7 @@ public abstract class AbstractArrow extends Projectile {
+@@ -496,7 +496,7 @@ public abstract class AbstractArrow extends Projectile {
      protected void doPostHurtEffects(LivingEntity target) {}
  
      @Nullable
@@ -19387,7 +19387,7 @@ index 3b959f42d958bf0f426853aee56753d6c455fcdb..75224df98bbc25c497cb3faf4ce409b5
              Player player = this.players().get(i);
              if (uuid.equals(player.getUUID())) {
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 122880ca3cfe6528e10e6df4c3200d6c66421c8b..c2a6187107a4766d924608b978a3671b9bd5048a 100644
+index f16593a99ca4089151c2247f6028b823614c78e4..d4cbd3acbcad8408048717d44887a2e5796d6971 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -538,7 +538,7 @@ public class Explosion {
@@ -20410,7 +20410,7 @@ index 46a7585d1a161dd598e2cdd7244874390fe821c5..42c6c1f401bdead5d8a666092830f10f
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
-index 6d2ba650f53de8a460857f1846401a20b50cc43c..d498418bb6394d625a278247c22a01eba737b5e4 100644
+index 714afc98b5150907b45a00060be4e41582333204..9125a1ab3ea57d29390d710cdfc8787a2883cb9f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
 @@ -28,15 +28,18 @@ import org.bukkit.entity.Player;
@@ -20444,9 +20444,9 @@ index 6d2ba650f53de8a460857f1846401a20b50cc43c..d498418bb6394d625a278247c22a01eb
      }
  
      @Override
--    public PlayerProfile getPlayerProfile() {
-+    public @NotNull PlayerProfile getPlayerProfile() {
-         return new CraftPlayerProfile(this.profile);
+-    public com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile() { // Paper
++    public @NotNull com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile() { // Paper
+         return new com.destroystokyo.paper.profile.CraftPlayerProfile(this.profile); // Paper
      }
  
 -    public Server getServer() {
@@ -21265,7 +21265,7 @@ index 763f9d4740429840e78d3462277eb577d2d9f66a..5e956a5b75d7b0a28c29c8aeabd69f5b
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index d78b74bf85e0a4b89041e46d84896b5e64777435..e1bd4cb0183cc177453aed3694463824d89a9b5d 100644
+index 49d718b4d03587e2be9906ffcf10541e41dd9c76..9d55213fdc003676b6908133069a1b8aa4887736 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -251,6 +251,7 @@ import org.bukkit.scoreboard.Criteria;
@@ -23901,7 +23901,7 @@ index a5aba836c13d827cefbded86408ceaf89af85707..acbb284901e3692098a6abd48915a8ce
  
          return (this.world == null || location.getWorld().equals(this.world)) && this.handle.isWithinBounds(new BlockPos(location.getX(), location.getY(), location.getZ()));
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 119d9bb5e41038704654e248bf168d22af246b7f..e63ff7cf3ef311e62f6f55742c439ac963e144f3 100644
+index 190e17eb28d166aedee06e9578561ba402d1b6d2..69bd5ca1d957494116d21372744200978a39c827 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -15,6 +15,8 @@ import joptsimple.OptionSet;
@@ -25159,7 +25159,7 @@ index a8ab1d3ee81664193be39d2735d6495136e0e310..f6effc81b4b8bf4e79e1f7a933d8db69
  
          // Modelled off EntityHuman#hasBlock
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-index d3f66bc8c9fa18322bd025fac2793456a5200717..bad8295a23d8ede0886ac8f1d5ec7aeba0ae582e 100644
+index 4d6f2b9b063b4b5accfe9fe1e6c230f114451d23..fdb02d63b2313d926341f8babddbb3f2bc6592f7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
 @@ -57,6 +57,8 @@ import org.bukkit.block.Block;
@@ -25255,8 +25255,8 @@ index d3f66bc8c9fa18322bd025fac2793456a5200717..bad8295a23d8ede0886ac8f1d5ec7aeb
          Preconditions.checkNotNull(blockPosition, "blockPosition is null");
          Preconditions.checkNotNull(blockData, "blockData is null");
          BlockEntity tileEntity = (blockEntityTag == null) ? null : BlockEntity.loadStatic(blockPosition, blockData, blockEntityTag);
-@@ -269,7 +271,7 @@ public final class CraftBlockStates {
-     }
+@@ -275,7 +277,7 @@ public final class CraftBlockStates {
+     // Paper end
  
      // See BlockStateFactory#createBlockState(World, BlockPosition, IBlockData, TileEntity)
 -    private static CraftBlockState getBlockState(World world, BlockPos blockPosition, net.minecraft.world.level.block.state.BlockState blockData, BlockEntity tileEntity) {
@@ -25264,7 +25264,7 @@ index d3f66bc8c9fa18322bd025fac2793456a5200717..bad8295a23d8ede0886ac8f1d5ec7aeb
          Material material = CraftMagicNumbers.getMaterial(blockData.getBlock());
          BlockStateFactory<?> factory;
          // For some types of TileEntity blocks (eg. moving pistons), Minecraft may in some situations (eg. when using Block#setType or the
-@@ -287,12 +289,12 @@ public final class CraftBlockStates {
+@@ -293,12 +295,12 @@ public final class CraftBlockStates {
      }
  
      // This ignores tile entity data.
@@ -26229,17 +26229,17 @@ index 548f0676fc42523d6b64f3186508ef004c3a7f9e..d2810357d77a129c9c8919bfc78276aa
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftSkull.java b/src/main/java/org/bukkit/craftbukkit/block/CraftSkull.java
-index 060939a6720049a4fef345f228ce76517f7741a4..420dc799b433b1b3e1c7c2a82d67292d191d983e 100644
+index 1325e9140a4b568170f0bd400904fe3c9d00cd4f..de818e0e6de9d9612f66ebe1789eb3ef505e106f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftSkull.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftSkull.java
-@@ -16,24 +16,27 @@ import org.bukkit.block.data.Rotatable;
- import org.bukkit.craftbukkit.entity.CraftPlayer;
+@@ -19,25 +19,27 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
  import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
+ import org.bukkit.craftbukkit.util.CraftNamespacedKey;
  import org.bukkit.profile.PlayerProfile;
 +import org.jetbrains.annotations.NotNull;
-+import org.jetbrains.annotations.Nullable;
-+
+ import org.jetbrains.annotations.Nullable;
  
++
  public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implements Skull {
  
      private static final int MAX_OWNER_LENGTH = 16;
@@ -26264,7 +26264,7 @@ index 060939a6720049a4fef345f228ce76517f7741a4..420dc799b433b1b3e1c7c2a82d67292d
          switch (type) {
              default:
              case SKELETON:
-@@ -62,7 +65,7 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
+@@ -66,7 +68,7 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
      }
  
      @Override
@@ -26273,7 +26273,7 @@ index 060939a6720049a4fef345f228ce76517f7741a4..420dc799b433b1b3e1c7c2a82d67292d
          if (name == null || name.length() > CraftSkull.MAX_OWNER_LENGTH) {
              return false;
          }
-@@ -128,7 +131,7 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
+@@ -132,7 +134,7 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
  
      @Override
      @Deprecated // Paper
@@ -26282,7 +26282,7 @@ index 060939a6720049a4fef345f228ce76517f7741a4..420dc799b433b1b3e1c7c2a82d67292d
          if (profile == null) {
              this.profile = null;
          } else {
-@@ -137,13 +140,13 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
+@@ -156,13 +158,13 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
      }
  
      @Override
@@ -26298,7 +26298,7 @@ index 060939a6720049a4fef345f228ce76517f7741a4..420dc799b433b1b3e1c7c2a82d67292d
          BlockData blockData = getBlockData();
          if (blockData instanceof Rotatable) {
              ((Rotatable) blockData).setRotation(rotation);
-@@ -154,7 +157,7 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
+@@ -173,7 +175,7 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
      }
  
      @Override
@@ -26307,7 +26307,7 @@ index 060939a6720049a4fef345f228ce76517f7741a4..420dc799b433b1b3e1c7c2a82d67292d
          switch (getType()) {
              case SKELETON_SKULL:
              case SKELETON_WALL_SKULL:
-@@ -188,7 +191,7 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
+@@ -207,7 +209,7 @@ public class CraftSkull extends CraftBlockEntityState<SkullBlockEntity> implemen
      }
  
      @Override
@@ -31800,7 +31800,7 @@ index 762354681315e4c74e414bf7d677b5422385161e..62696493d1022977c18ce07a9372dfda
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftAllay.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftAllay.java
-index db3b0a9d3696f31d473342312d437e1eae97404a..5a8e8868c62e3dcb7aaa16e37082bd6e59354871 100644
+index 6dfb0b47bd77fa4584744b3a54267879521b540a..3f15532f422b50b8da609ebbd5e9943e856aeea6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftAllay.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftAllay.java
 @@ -9,6 +9,8 @@ import org.bukkit.craftbukkit.CraftServer;
@@ -36712,7 +36712,7 @@ index beea227855f0b978e655efc298024120df8f4945..6b2abd10bf40dc91f762670feac48381
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a093f615b 100644
+index 99bf1485ddecb5fc88850242e9c32850781c4b36..42b2d495dd340a6eb6b6c063675ee1ff93a11be5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -170,8 +170,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -37758,7 +37758,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          this.getHandle().adventure$displayName = displayName != null ? displayName : net.kyori.adventure.text.Component.text(this.getName());
          this.getHandle().displayName = null;
      }
-@@ -2642,14 +2642,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2646,14 +2646,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Deprecated(forRemoval = true)
      @Override
@@ -37775,7 +37775,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          final net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket packet = new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket((net.minecraft.network.chat.Component) null);
          packet.adventure$text = message;
          this.getHandle().connection.send(packet);
-@@ -2684,7 +2684,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2688,7 +2688,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -37784,7 +37784,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          final ServerGamePacketListenerImpl connection = this.getHandle().connection;
          final net.kyori.adventure.title.Title.Times times = title.times();
          if (times != null) {
-@@ -2718,7 +2718,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2722,7 +2722,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
  
@@ -37793,7 +37793,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          if (duration == null) {
              return -1;
          }
-@@ -2733,23 +2733,23 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2737,23 +2737,23 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      // resetTitle implemented above
  
      @Override
@@ -37821,7 +37821,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          final long seed = sound.seed().orElseGet(this.getHandle().getRandom()::nextLong);
          final ResourceLocation name = io.papermc.paper.adventure.PaperAdventure.asVanilla(sound.name());
          final java.util.Optional<net.minecraft.sounds.SoundEvent> event = BuiltInRegistries.SOUND_EVENT.getOptional(name);
-@@ -2765,7 +2765,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2769,7 +2769,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -37830,7 +37830,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          final Entity entity;
          if (emitter == net.kyori.adventure.sound.Sound.Emitter.self()) {
              entity = this.getHandle();
-@@ -2789,7 +2789,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2793,7 +2793,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -37839,7 +37839,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          this.getHandle().connection.send(new ClientboundStopSoundPacket(
              io.papermc.paper.adventure.PaperAdventure.asVanillaNullable(stop.sound()),
              io.papermc.paper.adventure.PaperAdventure.asVanillaNullable(stop.source())
-@@ -2797,7 +2797,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2801,7 +2801,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -37848,7 +37848,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          final java.util.Locale locale = this.getHandle().adventure$locale;
          final net.minecraft.world.item.ItemStack item = io.papermc.paper.adventure.PaperAdventure.asItemStack(book, locale);
          final ServerPlayer player = this.getHandle();
-@@ -2811,7 +2811,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2815,7 +2815,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -37857,7 +37857,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          if (this.adventure$pointers == null) {
              this.adventure$pointers = net.kyori.adventure.pointer.Pointers.builder()
                  .withDynamic(net.kyori.adventure.identity.Identity.DISPLAY_NAME, this::displayName)
-@@ -2854,7 +2854,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2858,7 +2858,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      {
  
          @Override
@@ -37866,7 +37866,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          {
              return (InetSocketAddress) CraftPlayer.this.getHandle().connection.connection.getRawAddress();
          }
-@@ -2879,7 +2879,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2883,7 +2883,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          @Override
@@ -37875,7 +37875,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
          {
              Set<Player> ret = new HashSet<Player>();
              for ( UUID u : CraftPlayer.this.hiddenEntities.keySet() )
-@@ -2930,7 +2930,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2934,7 +2934,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          @Override
@@ -37884,7 +37884,7 @@ index 5b18b560d94a1f36bcb0b962a93ba81236f767ac..4c612b0feca42695b223bf917c615d4a
              if ( CraftPlayer.this.getHandle().connection == null ) return;
  
              CraftPlayer.this.getHandle().connection.send(new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(components, position == net.md_5.bungee.api.ChatMessageType.ACTION_BAR));
-@@ -2994,7 +2994,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2998,7 +2998,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
      // Paper end
  
@@ -38673,7 +38673,7 @@ index 06540d3771949daff641e518219090559f363959..859658c86bca624d1cc68bb48731be1b
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftTadpole.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftTadpole.java
-index 1dfd4d92dfcb55d26fc5e9adfd1df3fbc9f02ca0..28fa62c17530cc7ebcdaa72e542064bbcf668c8f 100644
+index 43c2d820d164d36a28c4920d70aea2fe5096763a..ede32d0f40032c2d64c2c5f408cbec642bc48a88 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftTadpole.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftTadpole.java
 @@ -3,6 +3,8 @@ package org.bukkit.craftbukkit.entity;
@@ -39824,7 +39824,7 @@ index 6c60e6c919967f824ea5128641cbd4006bdd4d01..6515b157b87b99addc96910dd356ae82
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a8ca590c4 100644
+index 6a52ae70b5f7fd9953b6b2605cae722f606e7fec..5fbff0b13feb1c0fd819d3cb127c8458752b3148 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -224,15 +224,17 @@ import org.bukkit.inventory.meta.BookMeta;
@@ -40440,16 +40440,16 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          CraftInventoryCrafting inventory = new CraftInventoryCrafting(matrix, resultInventory);
          inventory.setResult(CraftItemStack.asCraftMirror(result));
  
-@@ -1378,7 +1380,7 @@ public class CraftEventFactory {
-     }
+@@ -1379,7 +1381,7 @@ public class CraftEventFactory {
  
      // Paper start
+     @Deprecated
 -    public static com.destroystokyo.paper.event.entity.ProjectileCollideEvent callProjectileCollideEvent(Entity entity, EntityHitResult position) {
 +    public static com.destroystokyo.paper.event.entity.@NotNull ProjectileCollideEvent callProjectileCollideEvent(@NotNull Entity entity, @NotNull EntityHitResult position) {
          Projectile projectile = (Projectile) entity.getBukkitEntity();
          org.bukkit.entity.Entity collided = position.getEntity().getBukkitEntity();
          com.destroystokyo.paper.event.entity.ProjectileCollideEvent event = new com.destroystokyo.paper.event.entity.ProjectileCollideEvent(projectile, collided);
-@@ -1395,14 +1397,14 @@ public class CraftEventFactory {
+@@ -1396,14 +1398,14 @@ public class CraftEventFactory {
      }
      // Paper end
  
@@ -40466,7 +40466,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          if (position.getType() == HitResult.Type.MISS) {
              return null;
          }
-@@ -1425,32 +1427,32 @@ public class CraftEventFactory {
+@@ -1433,32 +1435,32 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40504,7 +40504,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          org.bukkit.World bukkitWorld = world.getWorld();
          Block igniter = bukkitWorld.getBlockAt(source.getX(), source.getY(), source.getZ());
          IgniteCause cause;
-@@ -1471,7 +1473,7 @@ public class CraftEventFactory {
+@@ -1479,7 +1481,7 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40513,7 +40513,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          org.bukkit.World bukkitWorld = world.getWorld();
          org.bukkit.entity.Entity bukkitIgniter = igniter.getBukkitEntity();
          IgniteCause cause;
-@@ -1505,7 +1507,7 @@ public class CraftEventFactory {
+@@ -1513,7 +1515,7 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40522,7 +40522,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          org.bukkit.World bukkitWorld = world.getWorld();
          org.bukkit.entity.Entity igniter = explosion.source == null ? null : explosion.source.getBukkitEntity();
  
-@@ -1514,7 +1516,7 @@ public class CraftEventFactory {
+@@ -1522,7 +1524,7 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40531,7 +40531,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          BlockIgniteEvent event = new BlockIgniteEvent(world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()), cause, igniter.getBukkitEntity());
          world.getCraftServer().getPluginManager().callEvent(event);
          return event;
-@@ -1526,17 +1528,17 @@ public class CraftEventFactory {
+@@ -1534,17 +1536,17 @@ public class CraftEventFactory {
       * @param human
       */
      @Deprecated
@@ -40552,7 +40552,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          PlayerEditBookEvent editBookEvent = new PlayerEditBookEvent(player.getBukkitEntity(), (itemInHandIndex >= 0 && itemInHandIndex <= 8) ? itemInHandIndex : -1, (BookMeta) CraftItemStack.getItemMeta(itemInHand), (BookMeta) CraftItemStack.getItemMeta(newBookItem), newBookItem.getItem() == Items.WRITTEN_BOOK);
          player.level.getCraftServer().getPluginManager().callEvent(editBookEvent);
  
-@@ -1555,26 +1557,26 @@ public class CraftEventFactory {
+@@ -1563,26 +1565,26 @@ public class CraftEventFactory {
      }
  
      // Paper start - drop leash variable
@@ -40583,7 +40583,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          if (!(player instanceof ServerPlayer)) {
              return true;
          }
-@@ -1584,7 +1586,7 @@ public class CraftEventFactory {
+@@ -1592,7 +1594,7 @@ public class CraftEventFactory {
          return !event.isCancelled();
      }
  
@@ -40592,7 +40592,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          Player player = ((ServerPlayer) entityHuman).getBukkitEntity();
          Event event;
          if (true) {
-@@ -1632,14 +1634,14 @@ public class CraftEventFactory {
+@@ -1640,14 +1642,14 @@ public class CraftEventFactory {
          return (Cancellable) event;
      }
  
@@ -40609,7 +40609,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          PrepareAnvilEvent event = new PrepareAnvilEvent(view, CraftItemStack.asCraftMirror(item)); // Paper - remove clone
          //event.getView().getPlayer().getServer().getPluginManager().callEvent(event); // Paper - disable event
          event.getInventory().setItem(2, event.getResult());
-@@ -1657,7 +1659,7 @@ public class CraftEventFactory {
+@@ -1665,7 +1667,7 @@ public class CraftEventFactory {
      // Paper end
  
      // Paper start - disable this method, handled in callPrepareResultEvent
@@ -40618,7 +40618,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          PrepareSmithingEvent event = new PrepareSmithingEvent(view, CraftItemStack.asCraftMirror(item)); // Paper - remove clone
          //event.getView().getPlayer().getServer().getPluginManager().callEvent(event); // Paper - disable event
          event.getInventory().setItem(2, event.getResult());
-@@ -1666,7 +1668,7 @@ public class CraftEventFactory {
+@@ -1674,7 +1676,7 @@ public class CraftEventFactory {
      // Paper end
  
      // Paper start - support specific overrides for prepare result
@@ -40627,7 +40627,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          com.destroystokyo.paper.event.inventory.PrepareResultEvent event;
          InventoryView view = container.getBukkitView();
          org.bukkit.inventory.ItemStack origItem = view.getTopInventory().getItem(resultSlot);
-@@ -1689,7 +1691,7 @@ public class CraftEventFactory {
+@@ -1697,7 +1699,7 @@ public class CraftEventFactory {
      /**
       * Mob spawner event.
       */
@@ -40636,7 +40636,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          org.bukkit.craftbukkit.entity.CraftEntity entity = spawnee.getBukkitEntity();
          BlockState state = entity.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()).getState();
          if (!(state instanceof org.bukkit.block.CreatureSpawner)) {
-@@ -1701,32 +1703,32 @@ public class CraftEventFactory {
+@@ -1709,32 +1711,32 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40674,7 +40674,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          org.bukkit.entity.LivingEntity breederEntity = (LivingEntity) (breeder == null ? null : breeder.getBukkitEntity());
          CraftItemStack bredWithStack = bredWith == null ? null : CraftItemStack.asCraftMirror(bredWith).clone();
  
-@@ -1735,7 +1737,7 @@ public class CraftEventFactory {
+@@ -1743,7 +1745,7 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40683,7 +40683,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          org.bukkit.block.Block block = CraftBlock.at(world, blockposition);
          BlockPhysicsEvent event = new BlockPhysicsEvent(block, block.getBlockData());
          // Suppress during worldgen
-@@ -1745,19 +1747,19 @@ public class CraftEventFactory {
+@@ -1753,19 +1755,19 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40707,7 +40707,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          EntityPotionEffectEvent.Action action = EntityPotionEffectEvent.Action.CHANGED;
          if (oldEffect == null) {
              action = EntityPotionEffectEvent.Action.ADDED;
-@@ -1768,7 +1770,7 @@ public class CraftEventFactory {
+@@ -1776,7 +1778,7 @@ public class CraftEventFactory {
          return CraftEventFactory.callEntityPotionEffectChangeEvent(entity, oldEffect, newEffect, cause, action, willOverride);
      }
  
@@ -40716,7 +40716,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          PotionEffect bukkitOldEffect = (oldEffect == null) ? null : CraftPotionUtil.toBukkit(oldEffect);
          PotionEffect bukkitNewEffect = (newEffect == null) ? null : CraftPotionUtil.toBukkit(newEffect);
  
-@@ -1782,15 +1784,15 @@ public class CraftEventFactory {
+@@ -1790,15 +1792,15 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40735,7 +40735,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          CraftBlockState blockState = CraftBlockStates.getBlockState(world, pos, flag);
          blockState.setData(block);
  
-@@ -1804,26 +1806,26 @@ public class CraftEventFactory {
+@@ -1812,26 +1814,26 @@ public class CraftEventFactory {
          return !event.isCancelled();
      }
  
@@ -40766,7 +40766,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          LightningStrikeEvent event = new LightningStrikeEvent(entity.getWorld(), entity, cause);
          Bukkit.getPluginManager().callEvent(event);
          return event;
-@@ -1832,23 +1834,23 @@ public class CraftEventFactory {
+@@ -1840,23 +1842,23 @@ public class CraftEventFactory {
      /**
       * Raid events
       */
@@ -40794,7 +40794,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          Raider craftLeader = (CraftRaider) leader.getBukkitEntity();
          List<Raider> craftRaiders = new ArrayList<>();
          for (net.minecraft.world.entity.raid.Raider entityRaider : raiders) {
-@@ -1858,7 +1860,7 @@ public class CraftEventFactory {
+@@ -1866,7 +1868,7 @@ public class CraftEventFactory {
          Bukkit.getPluginManager().callEvent(event);
      }
  
@@ -40803,7 +40803,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          CraftWorld world = lootInfo.getLevel().getWorld();
          Entity entity = lootInfo.getParamOrNull(LootContextParams.THIS_ENTITY);
          NamespacedKey key = CraftNamespacedKey.fromMinecraft(world.getHandle().getServer().getLootTables().lootTableToKey.get(lootTable));
-@@ -1870,13 +1872,13 @@ public class CraftEventFactory {
+@@ -1878,13 +1880,13 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -40819,7 +40819,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          EntitySpellCastEvent event = new EntitySpellCastEvent((Spellcaster) caster.getBukkitEntity(), CraftSpellcaster.toBukkitSpell(spell));
          Bukkit.getPluginManager().callEvent(event);
          return !event.isCancelled();
-@@ -1885,7 +1887,7 @@ public class CraftEventFactory {
+@@ -1893,7 +1895,7 @@ public class CraftEventFactory {
      /**
       * ArrowBodyCountChangeEvent
       */
@@ -40828,7 +40828,7 @@ index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..348e1f3dfa35e57738e05d74cb9b447a
          org.bukkit.entity.LivingEntity bukkitEntity = (LivingEntity) entity.getBukkitEntity();
  
          ArrowBodyCountChangeEvent event = new ArrowBodyCountChangeEvent(bukkitEntity, oldAmount, newAmount, isReset);
-@@ -1894,38 +1896,38 @@ public class CraftEventFactory {
+@@ -1902,38 +1904,38 @@ public class CraftEventFactory {
          return event;
      }
  
@@ -43403,7 +43403,7 @@ index c48f67f4202e32d9793b462609bd3b95c9765bbd..5c0ea4d11357a072d0e8347f6be830d8
              return (CraftMerchantRecipe) recipe;
          } else {
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaArmorStand.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaArmorStand.java
-index 0c40a4a18cfc6f4ed6473a475f307f5c75ab56c5..1331333366015313998c126117b167961be5f767 100644
+index e721517ce7b52a1aa10d039aa9f309eb69db4733..cb8e57f3472836c3151b0cac86a368563aeadc1b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaArmorStand.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaArmorStand.java
 @@ -6,6 +6,8 @@ import net.minecraft.nbt.CompoundTag;
@@ -44761,7 +44761,7 @@ index e65bdbbbedb91eca016d46de5cc7cbb70dd9f659..d9b71972416575b25482baa3f5ec6dd1
  
          if (this.entityTag != null) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
-index fe67d65460377e92376aa50ad50c35be1c88ae49..1675110f4ed10b38c331ef478423dd0e7d86d42c 100644
+index 907b016d3d7b4c756fa0ca75fb92d86b2e9bde1c..f7d171c0cf7e48ddb64e9fbc01beec779ad54dc3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 @@ -19,6 +19,9 @@ import org.bukkit.craftbukkit.inventory.CraftMetaItem.ItemMetaKey.Specific.To;
@@ -44780,7 +44780,7 @@ index fe67d65460377e92376aa50ad50c35be1c88ae49..1675110f4ed10b38c331ef478423dd0e
  
 -    private List<FireworkEffect> effects;
 +    private @Nullable List<FireworkEffect> effects;
-     private int power;
+     private Integer power;
  
      CraftMetaFirework(CraftMetaItem meta) {
 @@ -71,7 +74,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
@@ -45849,11 +45849,11 @@ index 298326115f048bb79e3c949861c187134eb5efb8..40c2f0d6e5f2b853da3d39afef7f56c7
          if (this.type.getType() != PotionType.UNCRAFTABLE) {
              builder.put(DEFAULT_POTION.BUKKIT, CraftPotionUtil.fromBukkit(type));
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java
-index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b515c7667 100644
+index deed77a3d44bc55681483d7f47f148b5220135f2..d50634d122079653b91f85b0c3226fc37e63d5d3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java
-@@ -19,6 +19,9 @@ import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
- import org.bukkit.craftbukkit.util.CraftMagicNumbers;
+@@ -23,6 +23,9 @@ import org.bukkit.craftbukkit.util.CraftMagicNumbers;
+ import org.bukkit.craftbukkit.util.CraftNamespacedKey;
  import org.bukkit.inventory.meta.SkullMeta;
  import org.bukkit.profile.PlayerProfile;
 +import org.jetbrains.annotations.NotNull;
@@ -45862,17 +45862,17 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
  
  @DelegateDeserialization(SerializableMeta.class)
  class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
-@@ -47,7 +50,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -55,7 +58,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
      static final int MAX_OWNER_LENGTH = 16;
  
      private GameProfile profile;
 -    private CompoundTag serializedProfile;
 +    private @Nullable CompoundTag serializedProfile;
+     private ResourceLocation noteBlockSound;
  
      CraftMetaSkull(CraftMetaItem meta) {
-         super(meta);
-@@ -58,7 +61,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
-         this.setProfile(skullMeta.profile);
+@@ -68,7 +71,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+         this.noteBlockSound = skullMeta.noteBlockSound;
      }
  
 -    CraftMetaSkull(CompoundTag tag) {
@@ -45880,7 +45880,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          super(tag);
  
          if (tag.contains(SKULL_OWNER.NBT, CraftMagicNumbers.NBT.TAG_COMPOUND)) {
-@@ -68,7 +71,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -85,7 +88,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
          }
      }
  
@@ -45889,7 +45889,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          super(map);
          if (this.profile == null) {
              Object object = map.get(SKULL_OWNER.BUKKIT);
-@@ -81,7 +84,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -107,7 +110,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
      }
  
      @Override
@@ -45898,7 +45898,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          super.deserializeInternal(tag, context);
  
          if (tag.contains(SKULL_PROFILE.NBT, CraftMagicNumbers.NBT.TAG_COMPOUND)) {
-@@ -96,13 +99,13 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -129,13 +132,13 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
          }
      }
  
@@ -45914,7 +45914,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          super.applyToItem(tag);
  
          if (this.profile != null) {
-@@ -131,7 +134,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -170,7 +173,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
      }
  
      @Override
@@ -45923,7 +45923,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          return (CraftMetaSkull) super.clone();
      }
  
-@@ -174,7 +177,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -213,7 +216,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
      }
  
      @Override
@@ -45932,7 +45932,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          if (name != null && name.length() > CraftMetaSkull.MAX_OWNER_LENGTH) {
              return false;
          }
-@@ -195,7 +198,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -234,7 +237,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
      }
  
      @Override
@@ -45941,7 +45941,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          if (owner == null) {
              this.setProfile(null);
          } else if (owner instanceof CraftPlayer) {
-@@ -219,7 +222,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -258,7 +261,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
  
      @Override
      @Deprecated // Paper
@@ -45950,7 +45950,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          if (profile == null) {
              this.setProfile(null);
          } else {
-@@ -238,7 +241,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -294,7 +297,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
      }
  
      @Override
@@ -45959,7 +45959,7 @@ index 2771dd62c04c8da890724fe03f836fdeba440c55..1a4e144bc439a760a3d8d7cf327ab53b
          if (!super.equalsCommon(meta)) {
              return false;
          }
-@@ -257,7 +260,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
+@@ -313,7 +316,7 @@ class CraftMetaSkull extends CraftMetaItem implements SkullMeta {
      }
  
      @Override
@@ -49975,10 +49975,10 @@ index 9643fb87b1cad02b873651cd205678c4e92c7611..b47b724990ebdda7ec3cfdd3d75ae22e
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/BlockStateListPopulator.java b/src/main/java/org/bukkit/craftbukkit/util/BlockStateListPopulator.java
-index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18ad3dc1949 100644
+index 602ce766f00dfde057c735eae3351068d09feab1..7e7820053731b40488fd2be2045bea0c0dbed38f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/BlockStateListPopulator.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/BlockStateListPopulator.java
-@@ -18,6 +18,8 @@ import org.bukkit.block.BlockState;
+@@ -19,6 +19,8 @@ import org.bukkit.block.BlockState;
  import org.bukkit.craftbukkit.block.CraftBlock;
  import org.bukkit.craftbukkit.block.CraftBlockEntityState;
  import org.bukkit.craftbukkit.block.CraftBlockState;
@@ -49987,7 +49987,7 @@ index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18a
  
  public class BlockStateListPopulator extends DummyGeneratorAccess {
      private final LevelAccessor world;
-@@ -35,13 +37,13 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
+@@ -36,13 +38,13 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
      }
  
      @Override
@@ -50003,7 +50003,7 @@ index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18a
          net.minecraft.world.level.block.state.BlockState blockData = this.dataMap.get(pos);
          return (blockData != null) ? blockData.getFluidState() : this.world.getFluidState(pos);
      }
-@@ -79,7 +81,7 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
+@@ -80,7 +82,7 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
      }
  
      @Override
@@ -50012,7 +50012,7 @@ index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18a
          return this.world.getMinecraftWorld();
      }
  
-@@ -97,11 +99,11 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
+@@ -98,11 +100,11 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
          }
      }
  
@@ -50026,7 +50026,7 @@ index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18a
          return new ArrayList<>(this.list.values());
      }
  
-@@ -121,29 +123,29 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
+@@ -122,7 +124,7 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
      }
  
      @Override
@@ -50035,18 +50035,18 @@ index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18a
          return state.test(this.getBlockState(pos));
      }
  
+@@ -132,7 +134,7 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
+     }
+ 
      @Override
 -    public DimensionType dimensionType() {
 +    public @NotNull DimensionType dimensionType() {
          return this.world.dimensionType();
      }
-     // Paper start
-     @Override
--    public boolean isFluidAtPosition(BlockPos pos, Predicate<FluidState> state) {
-+    public boolean isFluidAtPosition(BlockPos pos, @NotNull Predicate<FluidState> state) {
-         return state.test(this.getFluidState(pos));
-     }
  
+@@ -143,14 +145,14 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
+ 
+     // Paper start
      @Override
 -    public <T extends BlockEntity> java.util.Optional<T> getBlockEntity(BlockPos pos, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
 +    public <T extends BlockEntity> java.util.@NotNull Optional<T> getBlockEntity(BlockPos pos, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
@@ -50061,7 +50061,7 @@ index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18a
          return world.getHeightmapPos(heightmap, pos);
      }
  
-@@ -153,7 +155,7 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
+@@ -160,7 +162,7 @@ public class BlockStateListPopulator extends DummyGeneratorAccess {
      }
  
      @Override
@@ -50071,7 +50071,7 @@ index 19abf7b6000a875be8c7141cfba81b279b2cae60..faad2f39a62b58d46d3ef8fff352a18a
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Commodore.java b/src/main/java/org/bukkit/craftbukkit/util/Commodore.java
-index 1ea5be29f3f06042d7cc278ce82790e4e439a81f..be2d776c663ba182e8b4f7c39e872156d93eb7b4 100644
+index ebbbfc318439fec33331d71563e528cd3429e541..18788abd108972e0177dc61cbefcb88e01812bda 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Commodore.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Commodore.java
 @@ -19,6 +19,8 @@ import joptsimple.OptionSet;

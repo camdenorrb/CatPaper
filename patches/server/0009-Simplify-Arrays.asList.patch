@@ -5,10 +5,10 @@ Subject: [PATCH] Simplify Arrays.asList
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-index 35f63a7e23d8558e41cccdbf7049abbdbbe6389a..b9bb9d4054bda956d32a983c7fc5b2ee130b5082 100644
+index d0dace61c627a1e521658fc40fe3dbcda9d9b105..6d05fa20d9d3415de4d3ce9d4fd46dc24ea24a4f 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -451,7 +451,7 @@ public abstract class AbstractArrow extends Projectile {
+@@ -440,7 +440,7 @@ public abstract class AbstractArrow extends Projectile {
                      if (this.piercedAndKilledEntities != null && this.shotFromCrossbow()) {
                          CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(entityplayer, (Collection) this.piercedAndKilledEntities);
                      } else if (!entity.isAlive() && this.shotFromCrossbow()) {
@@ -68,7 +68,7 @@ index 912c5ed715cdc28e6d01b1958bf0b959b7ed9aa2..b02f00eee359fbd14b4694f5088d3e23
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index f96d0319574ad7682ff6a2d5a0852a23cf6e1b8d..37a1aa1564a89b0361084420f84e03942bb40691 100644
+index 1b45c3b60c699f1e40536285e90262ab480dad3a..106961e4ed5245f3a5597ec45b41867f01fd17ed 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1063,8 +1063,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

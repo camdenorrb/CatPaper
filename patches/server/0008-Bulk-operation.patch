@@ -51,10 +51,10 @@ index 27d4aa45e585842c04491839826d405d6f447f0e..d1e2ba1698f006013826f137035b325f
          return ret;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index ef7794f3a2a73c2a97eabbf11ea09ffc10d3edfb..3edbe2ee0451118451e9683cbcaa5073a9a0d5ec 100644
+index ea7fdc20246ea4e10b3380ce2ca3f77380557adf..9f38cc99658a3608af6977b1e985e2b3945e0911 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -897,9 +897,7 @@ public class ServerPlayer extends Player {
+@@ -895,9 +895,7 @@ public class ServerPlayer extends Player {
          if (this.shouldDropLoot() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) { // Paper - preserve this check from vanilla
          // SPIGOT-5071: manually add player loot tables (SPIGOT-5195 - ignores keepInventory rule)
          this.dropFromLootTable(damageSource, this.lastHurtByPlayerTime > 0);

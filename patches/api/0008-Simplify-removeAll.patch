@@ -5,10 +5,10 @@ Subject: [PATCH] Simplify removeAll
 
 
 diff --git a/src/main/java/io/papermc/paper/tag/BaseTag.java b/src/main/java/io/papermc/paper/tag/BaseTag.java
-index c494885e0a889889e40280eb29283f497708a4a9..a82227ad755111c01f320ea19ccf87d35c21d3f1 100644
+index 06e437b743e26afc1b4a1aab4113541f91c11bde..256600ce5b345d43bfdbe1f2a726e3512f874580 100644
 --- a/src/main/java/io/papermc/paper/tag/BaseTag.java
 +++ b/src/main/java/io/papermc/paper/tag/BaseTag.java
-@@ -131,7 +131,7 @@ public abstract class BaseTag<T extends Keyed, C extends BaseTag<T, C>> implemen
+@@ -132,7 +132,7 @@ public abstract class BaseTag<T extends Keyed, C extends BaseTag<T, C>> implemen
      @NotNull
      public C not(@NotNull T...values) {
          this.checkLock();

@@ -50,6 +50,7 @@ subprojects {
 	repositories {
 		mavenCentral()
 		maven(paperMavenPublicUrl)
+		maven("https://maven.12oclock.dev/releases")
 	}
 }
 

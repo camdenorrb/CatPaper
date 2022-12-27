@@ -1,0 +1,7 @@
+# https://github.com/FabricMC/tiny-remapper/issues/9
+
+tiny	2	0	mojang+yarn	spigot
+
+#c	net/minecraft/server/level/ChunkMap	net/minecraft/server/level/PlayerChunkMap
+#	f	Ljava/util/Map;	entityMap	K
+

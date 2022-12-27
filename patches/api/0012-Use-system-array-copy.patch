@@ -5,10 +5,10 @@ Subject: [PATCH] Use system array copy
 
 
 diff --git a/src/main/java/org/bukkit/inventory/ShapedRecipe.java b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
-index 21d3d7e97db1f4a0c835b1695fb884add6518f80..5acb4582224931b0906aabc2c36883372912c045 100644
+index 4eb31d5198adbd62644a53a32d5bf10ed001e802..0819a4886fb77215645e56aa75e9821381f4b6d9 100644
 --- a/src/main/java/org/bukkit/inventory/ShapedRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
-@@ -73,9 +73,7 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -75,9 +75,7 @@ public class ShapedRecipe implements Recipe, Keyed {
              lastLen = row.length();
          }
          this.rows = new String[shape.length];

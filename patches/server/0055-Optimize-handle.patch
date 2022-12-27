@@ -5,10 +5,10 @@ Subject: [PATCH] Optimize handle
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c182211ad0f 100644
+index b7f212996de59620573c24b052407a449a62a64d..acce3d76f255e5b356704b637b2d3769d308ee39 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -491,17 +491,17 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -499,17 +499,17 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public double getHeight() {
@@ -29,7 +29,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
          return new BoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
      }
  
-@@ -635,34 +635,34 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -643,34 +643,34 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public void setVisualFire(boolean fire) {
@@ -70,7 +70,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      // Paper Start - Freeze Tick Lock API
-@@ -716,7 +716,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -724,7 +724,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public org.bukkit.entity.Entity getPassenger() {
@@ -79,7 +79,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -724,7 +724,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -732,7 +732,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          Preconditions.checkArgument(!this.equals(passenger), "Entity cannot ride itself.");
          if (passenger instanceof CraftEntity) {
              this.eject();
@@ -88,7 +88,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
          } else {
              return false;
          }
-@@ -732,7 +732,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -740,7 +740,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public @NotNull List<org.bukkit.entity.Entity> getPassengers() {
@@ -97,7 +97,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
              @Override
              public org.bukkit.entity.@NotNull Entity apply(@NotNull Entity input) {
                  return input.getBukkitEntity();
-@@ -745,20 +745,20 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -753,20 +753,20 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          Preconditions.checkArgument(passenger != null, "passenger == null");
          Preconditions.checkArgument(!this.equals(passenger), "Entity cannot ride itself.");
  
@@ -121,7 +121,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -767,18 +767,18 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -775,18 +775,18 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
              return false;
          }
  
@@ -143,7 +143,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -793,12 +793,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -801,12 +801,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public @NotNull UUID getUniqueId() {
@@ -158,7 +158,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -806,7 +806,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -814,7 +814,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          if (value <= 0) {
              throw new IllegalArgumentException("Age must be at least 1 tick");
          }
@@ -167,7 +167,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      public Entity getHandle() {
-@@ -819,23 +819,23 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -827,23 +827,23 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          Preconditions.checkState(!entity.generation, "Cannot play effect during world generation");
  
          if (type.getApplicable().isInstance(this)) {
@@ -195,7 +195,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      public void setHandle(final Entity entity) {
-@@ -856,7 +856,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -864,7 +864,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
              return false;
          }
          final CraftEntity other = (CraftEntity) obj;
@@ -204,7 +204,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      // Paper - Fix hashCode. entity ID's are not static.
-@@ -889,7 +889,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -897,7 +897,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public boolean isInsideVehicle() {
@@ -213,7 +213,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -898,7 +898,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -906,7 +906,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
              return false;
          }
  
@@ -222,7 +222,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
          return true;
      }
  
-@@ -908,19 +908,19 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -916,19 +916,19 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
              return null;
          }
  
@@ -245,7 +245,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -944,12 +944,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -952,12 +952,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
              name = name.substring(0, 256);
          }
  
@@ -260,7 +260,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
  
          if (name == null) {
              return null;
-@@ -960,12 +960,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -968,12 +968,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public void setCustomNameVisible(boolean flag) {
@@ -275,7 +275,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -990,17 +990,17 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -998,17 +998,17 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public @NotNull String getName() {
@@ -296,7 +296,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
      // Paper end
  
-@@ -1071,78 +1071,78 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1079,78 +1079,78 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public void setGlowing(boolean flag) {
@@ -390,13 +390,16 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -1152,12 +1152,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1160,7 +1160,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public @NotNull Pose getPose() {
 -        return Pose.values()[this.getHandle().getPose().ordinal()];
 +        return Pose.values()[this.entity.getPose().ordinal()];
      }
+ 
+     // Paper start
+@@ -1177,7 +1177,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public @NotNull SpawnCategory getSpawnCategory() {
@@ -405,7 +408,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      public void storeBukkitValues(@NotNull CompoundTag c) {
-@@ -1176,15 +1176,15 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1196,15 +1196,15 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
      protected @NotNull CompoundTag save() {
          CompoundTag nbttagcompound = new CompoundTag();
  
@@ -424,7 +427,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
              return;
          }
  
-@@ -1195,7 +1195,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1215,7 +1215,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
              return;
          }
  
@@ -433,7 +436,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      private static @NotNull PermissibleBase getPermissibleBase() {
-@@ -1257,7 +1257,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1277,7 +1277,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          net.minecraft.server.level.ServerLevel world = ((CraftWorld)locationClone.getWorld()).getHandle();
          java.util.concurrent.CompletableFuture<Boolean> ret = new java.util.concurrent.CompletableFuture<>();
  
@@ -442,7 +445,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
              this instanceof CraftPlayer ? ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor.Priority.HIGHER : ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor.Priority.NORMAL, (list) -> {
              net.minecraft.server.level.ServerChunkCache chunkProviderServer = world.getChunkSource();
              for (net.minecraft.world.level.chunk.ChunkAccess chunk : list) {
-@@ -1281,13 +1281,13 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1301,13 +1301,13 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public Location getOrigin() {
@@ -459,7 +462,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
          }
  
          //noinspection ConstantConditions
-@@ -1296,52 +1296,52 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1316,52 +1316,52 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public boolean fromMobSpawner() {
@@ -522,7 +525,7 @@ index 3ece10be63be154e98a7ea67e7e4b7bba425f55d..5fe5d060db9c6c39e5706bac31eb7c18
      }
  
      @Override
-@@ -1369,22 +1369,22 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1389,22 +1389,22 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public boolean isInPowderedSnow() {

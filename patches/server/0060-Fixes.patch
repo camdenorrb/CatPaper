@@ -1,0 +1,62 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Fri, 16 Dec 2022 22:02:40 -0600
+Subject: [PATCH] Fixes
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/SingleThreadChunkRegionManager.java b/src/main/java/io/papermc/paper/chunk/SingleThreadChunkRegionManager.java
+index 37b7454201efe1c2bf15f59a8f96503b36270cd8..0fcf288b42358a20c389ca4d336f1e899e0db635 100644
+--- a/src/main/java/io/papermc/paper/chunk/SingleThreadChunkRegionManager.java
++++ b/src/main/java/io/papermc/paper/chunk/SingleThreadChunkRegionManager.java
+@@ -1,8 +1,8 @@
+ package io.papermc.paper.chunk;
+ 
++import dev.twelveoclock.fastutil.map.impl.ConcurrentLong2ObjectOpenHashMap;
+ import dev.twelveoclock.fastutil.set.impl.ConcurrentObjectOpenHashSet;
+ import io.papermc.paper.util.MCUtil;
+-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
+ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+ import net.minecraft.server.level.ServerLevel;
+@@ -22,7 +22,7 @@ public final class SingleThreadChunkRegionManager {
+     public final ServerLevel world;
+     public final String name;
+ 
+-    protected final Long2ObjectOpenHashMap<RegionSection> regionsBySection = new Long2ObjectOpenHashMap<>();
++    protected final ConcurrentLong2ObjectOpenHashMap<RegionSection> regionsBySection = new ConcurrentLong2ObjectOpenHashMap<>();
+     protected final ReferenceLinkedOpenHashSet<Region> needsRecalculation = new ReferenceLinkedOpenHashSet<>();
+     protected final int minSectionRecalcCount;
+     protected final double maxDeadRegionPercent;
+diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
+index 3ec1e6be4d5f39bdfcabbf941f2c3f1e4d3d8340..e0b476fd853f93e59a0e6e0919e06d8acceaa43c 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
++++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
+@@ -46,12 +46,9 @@ public final class NewChunkHolder {
+ 
+     private static final Logger LOGGER = LogUtils.getClassLogger();
+ 
+-    public static final Thread.UncaughtExceptionHandler CHUNKSYSTEM_UNCAUGHT_EXCEPTION_HANDLER = new Thread.UncaughtExceptionHandler() {
+-        @Override
+-        public void uncaughtException(final @NotNull Thread thread, final Throwable throwable) {
+-            if (!(throwable instanceof ThreadDeath)) {
+-                LOGGER.error("Uncaught exception in thread " + thread.getName(), throwable);
+-            }
++    public static final Thread.UncaughtExceptionHandler CHUNKSYSTEM_UNCAUGHT_EXCEPTION_HANDLER = (thread, throwable) -> {
++        if (!(throwable instanceof ThreadDeath)) {
++            LOGGER.error("Uncaught exception in thread " + thread.getName(), throwable);
+         }
+     };
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
+index 3452e36367e1905940bcba6ba3d69eea340ced90..d75203780e33b485155bc94e4994af2dcc54d6e0 100644
+--- a/src/main/java/net/minecraft/world/entity/Mob.java
++++ b/src/main/java/net/minecraft/world/entity/Mob.java
+@@ -974,7 +974,7 @@ public abstract class Mob extends LivingEntity {
+         } else {
+             int i = (int) (this.getHealth() - this.getMaxHealth() * 0.33F);
+ 
+-            i -= (3 - this.level.getDifficulty().getId()) * 4;
++            i -= (3 - this.level.getDifficulty().getId()) << 2;
+             if (i < 0) {
+                 i = 0;
+             }

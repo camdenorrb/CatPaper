@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 17 Dec 2022 01:25:24 -0600
+Subject: [PATCH] Fixes
+
+
+diff --git a/src/test/java/io/papermc/paper/util/TickTest.java b/src/test/java/io/papermc/paper/util/TickTest.java
+index 9a48f7a82636d4047a3f5fefe69bb88c2f5aaaef..05ac4944dce40c3991b535684381ff9b1adb6931 100644
+--- a/src/test/java/io/papermc/paper/util/TickTest.java
++++ b/src/test/java/io/papermc/paper/util/TickTest.java
+@@ -1,9 +1,11 @@
+ package io.papermc.paper.util;
+ 
++import org.junit.jupiter.api.Test;
++
+ import java.time.Duration;
+-import org.junit.Test;
+ 
+-import static org.junit.Assert.assertEquals;
++import static org.junit.jupiter.api.Assertions.assertEquals;
++
+ 
+ public class TickTest {
+ 

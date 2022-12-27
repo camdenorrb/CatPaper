@@ -5,10 +5,10 @@ Subject: [PATCH] Unfold ifPresent
 
 
 diff --git a/src/main/java/net/minecraft/world/effect/MobEffectInstance.java b/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
-index 94b04e2b50bd28c30396d2a50c19fe48e7464e5f..2b41ed39f53ed24aff0ebb0302364f490ae818e4 100644
+index 1cdbd27c3d36993f205e05480a82b48da4b0449e..55d4462f890018c544a1eb6642abfa15d1421494 100644
 --- a/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
-@@ -250,10 +250,8 @@ public class MobEffectInstance implements Comparable<MobEffectInstance> {
+@@ -249,10 +249,8 @@ public class MobEffectInstance implements Comparable<MobEffectInstance> {
              nbt.put("HiddenEffect", compoundTag);
          }
  

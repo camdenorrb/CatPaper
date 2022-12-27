@@ -94,10 +94,10 @@ index 9f20e08f02e6ab63b8064eed41f6f72793694810..abcdb3f998aadb7838f4df2d50b6ec72
          }
  
 diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
-index 55695dbcb1923dcac7352ae08f17c783b36369cc..453e5798dd40f69b563908b339208e9253ec0650 100644
+index 1d01fec9c8f022b39a3b768d728bf17b9a5e77ea..3eef84ae13f9dff828bc1d9411575b8b3bf77703 100644
 --- a/src/main/java/org/bukkit/event/HandlerList.java
 +++ b/src/main/java/org/bukkit/event/HandlerList.java
-@@ -112,7 +112,7 @@ public class HandlerList {
+@@ -125,7 +125,7 @@ public class HandlerList {
       */
      public synchronized void register(@NotNull RegisteredListener listener) {
          if (handlerslots.get(listener.getPriority()).contains(listener))
@@ -129,10 +129,10 @@ index 5d17242a8c17e4e78c5c2644c2c725591d357bad..2936af2a17bca15ffd2d34e074f1258c
      }
  
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index 2e5649a7f6f0aa893edb5b422682f3ec02f31e87..bb06e9676f881e4a61f29d8eac7ee3db830bcf49 100644
+index 77793d0248616a46958ffb8f432f353721fafa79..a7046f79894a4854108dece915096f7fb94919ea 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -750,7 +750,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -752,7 +752,7 @@ public final class SimplePluginManager implements PluginManager {
  
              return (HandlerList) method.invoke(null);
          } catch (Exception e) {

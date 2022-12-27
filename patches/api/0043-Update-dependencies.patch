@@ -1,0 +1,112 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sun, 4 Dec 2022 11:49:31 -0600
+Subject: [PATCH] Update dependencies
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 2218e59c409846d7ded33ee38ddfde7d89cafb87..a896058357453cc825ee6ae72c8b99676f5cf9d9 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -11,12 +11,12 @@ java {
+ 
+ val adventureVersion = "4.12.0"
+ val apiAndDocs: Configuration by configurations.creating {
+-    attributes {
+-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))
+-        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
+-        attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType.SOURCES))
+-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+-    }
++	attributes {
++		attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))
++		attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
++		attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType.SOURCES))
++		attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
++	}
+ }
+ configurations.api {
+     extendsFrom(apiAndDocs)
+@@ -41,28 +41,28 @@ dependencies {
+     apiAndDocs("net.kyori:adventure-text-minimessage")
+     apiAndDocs("net.kyori:adventure-text-serializer-gson")
+     apiAndDocs("net.kyori:adventure-text-serializer-legacy")
+-    apiAndDocs("net.kyori:adventure-text-serializer-plain")
+-    apiAndDocs("net.kyori:adventure-text-logger-slf4j")
+-    api("org.apache.logging.log4j:log4j-api:2.19.0")
+-    api("org.slf4j:slf4j-api:2.0.3")
++	apiAndDocs("net.kyori:adventure-text-serializer-plain")
++	apiAndDocs("net.kyori:adventure-text-logger-slf4j")
++	api("org.apache.logging.log4j:log4j-api:2.19.0")
++	api("org.slf4j:slf4j-api:2.0.5")
+ 
+-    implementation("org.ow2.asm:asm:9.4")
+-    implementation("org.ow2.asm:asm-commons:9.4")
+-    // Paper end
++	implementation("org.ow2.asm:asm:9.4")
++	implementation("org.ow2.asm:asm-commons:9.4")
++	// Paper end
+ 
+-    compileOnly("org.apache.maven:maven-resolver-provider:3.8.5")
+-    compileOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.8.2")
+-    compileOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.8.2")
++	compileOnly("org.apache.maven:maven-resolver-provider:3.8.6")
++    compileOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.2")
++	compileOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.2")
+ 
+-    compileOnly("com.google.code.findbugs:jsr305:3.0.2") // Paper
++	compileOnly("com.google.code.findbugs:jsr305:3.0.2") // Paper
+ 
+-    val annotations = "org.jetbrains:annotations:23.0.0" // Paper - we don't want Java 5 annotations...
+-    compileOnly(annotations)
+-    testCompileOnly(annotations)
++	val annotations = "org.jetbrains:annotations:23.0.0" // Paper - we don't want Java 5 annotations...
++	compileOnly(annotations)
++	testCompileOnly(annotations)
+ 
+-    // Paper start - add checker
+-    val checkerQual = "org.checkerframework:checker-qual:3.21.0"
+-    compileOnlyApi("org.checkerframework:checker-qual:3.25.0")
++	// Paper start - add checker
++	val checkerQual = "org.checkerframework:checker-qual:3.21.0"
++	compileOnlyApi("org.checkerframework:checker-qual:3.25.0")
+     testCompileOnly("org.checkerframework:checker-qual:3.25.0")
+     // Paper end
+ 
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+index 4a15c2fddf7bde7551ba6b6548d934ddfe3e8840..e4755ad409f5abf0b2b2394a9efb9e2675e3ccb6 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+@@ -2,18 +2,6 @@ package org.bukkit.plugin.java;
+ 
+ import com.google.common.base.Charsets;
+ import com.google.common.base.Preconditions;
+-import java.io.File;
+-import java.io.FileOutputStream;
+-import java.io.IOException;
+-import java.io.InputStream;
+-import java.io.InputStreamReader;
+-import java.io.OutputStream;
+-import java.io.Reader;
+-import java.net.URL;
+-import java.net.URLConnection;
+-import java.util.List;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+ import org.bukkit.Server;
+ import org.bukkit.command.Command;
+ import org.bukkit.command.CommandSender;
+@@ -28,6 +16,13 @@ import org.bukkit.plugin.PluginLoader;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
++import java.io.*;
++import java.net.URL;
++import java.net.URLConnection;
++import java.util.List;
++import java.util.logging.Level;
++import java.util.logging.Logger;
++
+ /**
+  * Represents a Java plugin
+  */

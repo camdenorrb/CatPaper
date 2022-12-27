@@ -5,10 +5,10 @@ Subject: [PATCH] Utilize char where possible for indexOf
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java b/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
-index 57318617df5c7bf0afa0f2763376f034890e93f2..a48de84674d1a5dc1b81143b510a38548ed3136d 100644
+index a66c25aefc8cc2b5dae120982f2ea52449228bf6..00daf2ea6924275a23f4d2c2ef8e22be27b5d05c 100644
 --- a/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
 +++ b/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
-@@ -247,11 +247,11 @@ public class MobGoalHelper {
+@@ -249,11 +249,11 @@ public class MobGoalHelper {
  
      public static String getUsableName(@NotNull Class<?> clazz) {
          String name = ObfHelper.INSTANCE.deobfClassName(clazz.getName());
@@ -23,10 +23,10 @@ index 57318617df5c7bf0afa0f2763376f034890e93f2..a48de84674d1a5dc1b81143b510a3854
                  name = name.replace("Entity", "");
                  name = name.replace("$", "_");
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 8b2a66c637aa5b1f5ed12081a5fda6f39431df93..80ef961d45841d03f16945b89c9528495f3c0b14 100644
+index 9f38cc99658a3608af6977b1e985e2b3945e0911..2509fa9f8f5b224b796654c344ff93fbb4efc07d 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1911,8 +1911,8 @@ public class ServerPlayer extends Player {
+@@ -1940,8 +1940,8 @@ public class ServerPlayer extends Player {
      public String getIpAddress() {
          String s = this.connection.connection.getRemoteAddress().toString();
  

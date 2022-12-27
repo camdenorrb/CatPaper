@@ -5,7 +5,7 @@ Subject: [PATCH] Utilize enum map
 
 
 diff --git a/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java b/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
-index 1587998d2569b65da0901292f9da940600eab0f5..486a4fe66dc8711deefa3a64dcd5551252071b4a 100644
+index 1675fd4dbb2046b6dca806b3cd2c78221c88d940..7c6ce6d2e8a45d40e6a4c47fd61d3bb5b8881e33 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
 @@ -3,10 +3,8 @@ package net.minecraft.world.level.chunk;
@@ -31,19 +31,19 @@ index 1587998d2569b65da0901292f9da940600eab0f5..486a4fe66dc8711deefa3a64dcd55512
      private BelowZeroRetrogen belowZeroRetrogen;
      private final ProtoChunkTicks<Block> blockTicks;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftParticle.java b/src/main/java/org/bukkit/craftbukkit/CraftParticle.java
-index 63ba5d5ee35323de7fbc475cff18e0f9968159fb..d0ace0ecf6977e1d970045cf5d2d4f1104b9f39b 100644
+index 595b301b871875f237cfd4c104d66c8b5f674a61..6af3a5e2437da63b93238ea4dda597915392741c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftParticle.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftParticle.java
-@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
+@@ -3,7 +3,7 @@ package org.bukkit.craftbukkit;
+ import com.google.common.base.Preconditions;
  import com.google.common.collect.BiMap;
  import com.google.common.collect.HashBiMap;
- import com.mojang.math.Vector3f;
-+
+-import java.util.HashMap;
 +import java.util.EnumMap;
- import java.util.HashMap;
  import java.util.Map;
  import net.minecraft.core.BlockPos;
-@@ -146,7 +148,7 @@ public enum CraftParticle {
+ import net.minecraft.core.particles.BlockParticleOption;
+@@ -146,7 +146,7 @@ public enum CraftParticle {
  
      static {
          particles = HashBiMap.create();
@@ -53,7 +53,7 @@ index 63ba5d5ee35323de7fbc475cff18e0f9968159fb..d0ace0ecf6977e1d970045cf5d2d4f11
          for (CraftParticle particle : CraftParticle.values()) {
              if (particles.containsValue(particle.minecraftKey)) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-index 6607f540724a55ab92e876f862ff2dc3ed608bb4..329697b7a68af30fb0bf21dd7e7963407a30e9dd 100644
+index bad8295a23d8ede0886ac8f1d5ec7aeba0ae582e..e412287cf0fe181819c4fcecea19ad7d6de3ad02 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
 @@ -1,11 +1,8 @@
@@ -70,7 +70,7 @@ index 6607f540724a55ab92e876f862ff2dc3ed608bb4..329697b7a68af30fb0bf21dd7e796340
  import java.util.function.BiFunction;
  import javax.annotation.Nullable;
  import net.minecraft.core.BlockPos;
-@@ -107,7 +104,7 @@ public final class CraftBlockStates {
+@@ -109,7 +106,7 @@ public final class CraftBlockStates {
          }
      }
  
@@ -122,11 +122,11 @@ index 4972ce5d876d74e04a4fbfeb860f1d44e25b3470..01d9e623457b89099bcac286e5dd6511
      private CraftInventoryCreator() {
          this.converterMap.put(InventoryType.CHEST, DEFAULT_CONVERTER);
 diff --git a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionEffectType.java b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionEffectType.java
-index b6d9bdb9da44c5679afe6828449bfaca62a78a84..fb02cde243d4607f2c611b1527c88cdbc29b231b 100644
+index 2f2938bd7507fd9389064c3aa279cf57e58c5dd3..2616122acb8f0a5931e19dea6a650fdbc44dfb1a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionEffectType.java
 +++ b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionEffectType.java
-@@ -2,9 +2,12 @@ package org.bukkit.craftbukkit.potion;
- 
+@@ -3,9 +3,12 @@ package org.bukkit.craftbukkit.potion;
+ import net.minecraft.core.registries.BuiltInRegistries;
  import net.minecraft.world.effect.MobEffect;
  import org.bukkit.Color;
 +import org.bukkit.attribute.Attribute;
@@ -138,7 +138,7 @@ index b6d9bdb9da44c5679afe6828449bfaca62a78a84..fb02cde243d4607f2c611b1527c88cdb
  
  public class CraftPotionEffectType extends PotionEffectType {
      private final @NotNull MobEffect handle;
-@@ -115,7 +118,7 @@ public class CraftPotionEffectType extends PotionEffectType {
+@@ -116,7 +119,7 @@ public class CraftPotionEffectType extends PotionEffectType {
      @Override
      public java.util.@NotNull Map<org.bukkit.attribute.Attribute, org.bukkit.attribute.AttributeModifier> getEffectAttributes() {
          // re-create map each time because a nms MobEffect can have its attributes modified
@@ -148,7 +148,7 @@ index b6d9bdb9da44c5679afe6828449bfaca62a78a84..fb02cde243d4607f2c611b1527c88cdb
              attributeMap.put(org.bukkit.craftbukkit.attribute.CraftAttributeMap.fromMinecraft(attribute.toString()), org.bukkit.craftbukkit.attribute.CraftAttributeInstance.convert(attributeModifier));
          });
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index eecbfa6e776b7f8e47406e70a521e149fb4457f0..ae6dac017789db394fd0e16e3cb4268a583cae1e 100644
+index 17ce1108eb2cab17e862ff167594ff4afd3eddf0..891387ea27e6679259301c5fff34a721219b25c4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 @@ -12,12 +12,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -165,15 +165,15 @@ index eecbfa6e776b7f8e47406e70a521e149fb4457f0..ae6dac017789db394fd0e16e3cb4268a
  import java.util.Map.Entry;
  import java.util.logging.Level;
  import java.util.logging.Logger;
-@@ -56,6 +51,7 @@ import org.bukkit.craftbukkit.block.data.CraftBlockData;
- import org.bukkit.craftbukkit.inventory.CraftCreativeCategory;
+@@ -55,6 +50,7 @@ import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
+ import org.bukkit.craftbukkit.block.data.CraftBlockData;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
  import org.bukkit.craftbukkit.legacy.CraftLegacy;
 +import org.bukkit.entity.EntityType;
  import org.bukkit.inventory.CreativeCategory;
  import org.bukkit.inventory.EquipmentSlot;
  import org.bukkit.inventory.ItemStack;
-@@ -132,11 +128,11 @@ public final class CraftMagicNumbers implements UnsafeValues {
+@@ -136,11 +132,11 @@ public final class CraftMagicNumbers implements UnsafeValues {
      private static final Map<Block, Material> BLOCK_MATERIAL = new HashMap<>();
      private static final Map<Item, Material> ITEM_MATERIAL = new HashMap<>();
      private static final Map<net.minecraft.world.level.material.Fluid, Fluid> FLUID_MATERIAL = new HashMap<>();

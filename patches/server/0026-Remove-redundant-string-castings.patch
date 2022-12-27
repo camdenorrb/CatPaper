@@ -5,10 +5,10 @@ Subject: [PATCH] Remove redundant string castings
 
 
 diff --git a/src/main/java/net/minecraft/commands/arguments/selector/EntitySelectorParser.java b/src/main/java/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
-index 1b8cc61bacf2256576c5eab5acf91b30c48c5fea..65e774c73b959fb6213860f8514e3fc9636cccc7 100644
+index 2dba694477d7b77bdf6c4e8bfe4f1bdfe18d5c55..47d418ac7a5601dfc91be301f3924b486d56cb6d 100644
 --- a/src/main/java/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
 +++ b/src/main/java/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
-@@ -246,7 +246,7 @@ public class EntitySelectorParser {
+@@ -244,7 +244,7 @@ public class EntitySelectorParser {
              } else {
                  if (c0 != 'e') {
                      this.reader.setCursor(i);

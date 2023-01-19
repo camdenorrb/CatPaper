@@ -36,7 +36,7 @@ index 58caff48752ef72ccc35fb32b53c630ba3990b9c..4ba45bf44e278228fb372633d45de9c9
              return list.toArray(generator);
          }
 diff --git a/src/main/java/net/minecraft/network/protocol/PacketUtils.java b/src/main/java/net/minecraft/network/protocol/PacketUtils.java
-index 8bc0cb9ad5bb4e76d962ff54305e2c08e279a17b..8cf8b406029f75d5bd464ae86338efa0834efaac 100644
+index 27d4aa45e585842c04491839826d405d6f447f0e..d1e2ba1698f006013826f137035b325fea910225 100644
 --- a/src/main/java/net/minecraft/network/protocol/PacketUtils.java
 +++ b/src/main/java/net/minecraft/network/protocol/PacketUtils.java
 @@ -25,9 +25,7 @@ public class PacketUtils {
@@ -51,10 +51,10 @@ index 8bc0cb9ad5bb4e76d962ff54305e2c08e279a17b..8cf8b406029f75d5bd464ae86338efa0
          return ret;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 77f63020aa93a284c56521e99a59d7a566fa275d..02eaa31927ab93168ffbc92954f376314f51f70a 100644
+index ea7fdc20246ea4e10b3380ce2ca3f77380557adf..9f38cc99658a3608af6977b1e985e2b3945e0911 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -868,9 +868,7 @@ public class ServerPlayer extends Player {
+@@ -895,9 +895,7 @@ public class ServerPlayer extends Player {
          if (this.shouldDropLoot() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) { // Paper - preserve this check from vanilla
          // SPIGOT-5071: manually add player loot tables (SPIGOT-5195 - ignores keepInventory rule)
          this.dropFromLootTable(damageSource, this.lastHurtByPlayerTime > 0);

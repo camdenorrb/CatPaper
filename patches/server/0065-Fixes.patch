@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Tue, 20 Dec 2022 01:30:10 -0600
+Subject: [PATCH] Fixes
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 0494dc8b80dff2855765fab4dd54fe96227df740..107fb80ba034d56cda48326a362a6306b1016a83 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -18,12 +18,7 @@ import net.minecraft.core.PositionImpl;
+ import net.minecraft.core.SectionPos;
+ import net.minecraft.core.particles.BlockParticleOption;
+ import net.minecraft.core.particles.ParticleTypes;
+-import net.minecraft.nbt.CompoundTag;
+-import net.minecraft.nbt.DoubleTag;
+-import net.minecraft.nbt.FloatTag;
+-import net.minecraft.nbt.ListTag;
+-import net.minecraft.nbt.StringTag;
+-import net.minecraft.network.chat.ClickEvent;
++import net.minecraft.nbt.*;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.HoverEvent;
+ import net.minecraft.network.chat.MutableComponent;
+@@ -4290,7 +4285,8 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         // Paper end
+         // Paper start - rewrite chunk system
+         if (this.updatingSectionStatus) {
+-            LOGGER.error("Refusing to update position for entity " + this + " to position " + new Vec3(x, y, z) + " since it is processing a section status update", new Throwable());
++            //LOGGER.warn("Entity.setPosRaw called while updating section status");
++            LOGGER.warn("Refusing to update position for entity " + this + " to position " + new Vec3(x, y, z) + " since it is processing a section status update", new Throwable());
+             return;
+         }
+         // Paper end - rewrite chunk system
+diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
+index bde516cdf764e5fc1c8064bd99b753abc0c17a39..236834cdd433ef648856e99894c52a2053125b16 100644
+--- a/src/main/java/net/minecraft/world/item/ItemStack.java
++++ b/src/main/java/net/minecraft/world/item/ItemStack.java
+@@ -225,7 +225,10 @@ public final class ItemStack {
+     }
+ 
+     private void updateEmptyCacheFlag() {
+-        if (this.emptyCacheFlag && this == ItemStack.EMPTY) throw new AssertionError("TRAP"); // CraftBukkit
++        if (this.emptyCacheFlag && this == ItemStack.EMPTY) {
++            //throw new AssertionError("TRAP"); // CraftBukkit
++            return;
++        }
+         this.emptyCacheFlag = false;
+         this.emptyCacheFlag = this.isEmpty();
+     }

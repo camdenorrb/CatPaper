@@ -4,24 +4,11 @@ Date: Sat, 22 Oct 2022 04:09:22 -0500
 Subject: [PATCH] Remove redundant string operations
 
 
-diff --git a/src/main/java/net/minecraft/resources/ResourceLocation.java b/src/main/java/net/minecraft/resources/ResourceLocation.java
-index 7017dd42f832d928f1008a05f01701667d951644..0d16f4b2e134c9dbaf66f128d15ad573b1eccda8 100644
---- a/src/main/java/net/minecraft/resources/ResourceLocation.java
-+++ b/src/main/java/net/minecraft/resources/ResourceLocation.java
-@@ -72,7 +72,7 @@ public class ResourceLocation implements Comparable<ResourceLocation> {
-         String[] strings = new String[]{"minecraft", id};
-         int i = id.indexOf(delimiter);
-         if (i >= 0) {
--            strings[1] = id.substring(i + 1, id.length());
-+            strings[1] = id.substring(i + 1);
-             if (i >= 1) {
-                 strings[0] = id.substring(0, i);
-             }
 diff --git a/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java b/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
-index da96ffb83cca8f70f89cfc3fc4a8d0c2f7bf2b6d..d6efed14223689589b35018d13d669e3c501553a 100644
+index df96f7f55d2e6654f0bcbe216e68dde0b534f5b1..d19a28226b873f327442fad5069119db2526113e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
 +++ b/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
-@@ -437,6 +437,6 @@ public final class CraftLegacy {
+@@ -438,6 +438,6 @@ public final class CraftLegacy {
      }
  
      public static void main(String[] args) {

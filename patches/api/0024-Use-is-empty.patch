@@ -5,10 +5,10 @@ Subject: [PATCH] Use is empty
 
 
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index bb06e9676f881e4a61f29d8eac7ee3db830bcf49..ef14de5e40290e5a8cef7d31f0c852949ff37624 100644
+index a7046f79894a4854108dece915096f7fb94919ea..9d826cae3b1bc5848c584ba062c91ddd8a7a3bbc 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -122,7 +122,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -124,7 +124,7 @@ public final class SimplePluginManager implements PluginManager {
  
          List<Plugin> result = new ArrayList<Plugin>();
  

@@ -250,7 +250,7 @@ index 5b43b7bedc31ff4f00b0dbb66d1e06208798b3ea..f1e568e3e5c753796d39bdbb77bcbe30
  
                  task.complete(null, thr);
 diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkLoadTask.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkLoadTask.java
-index 89a5537f3a789b48e7a0c1ebbd332dc923b8b726..9ea6e60bf5374d6881962ab1447ada6fb227b632 100644
+index ae2bcb550ac901ed2f9d44b5f407b8a59cdf7682..1202362a3f7091de04ee8f0f99c95680628d3192 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkLoadTask.java
 +++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkLoadTask.java
 @@ -285,7 +285,7 @@ public final class ChunkLoadTask extends ChunkProgressionTask {
@@ -396,10 +396,10 @@ index a6fb7ae77d7cad2243e28a33718e4631f65697fa..5a177e1bf36db9c7cf741cca6805a038
                  }
              }
 diff --git a/src/main/java/net/minecraft/nbt/NbtUtils.java b/src/main/java/net/minecraft/nbt/NbtUtils.java
-index 903e126facf5d8abb9520e8385faba65924fdbb1..b70968f18842684309bcb33d34c74fb427aea1b3 100644
+index 5e6346b273d0c9d947f2b3447b99c22ea635d4e3..3589f398bf48098e51d210fc6a2deab69d9658a2 100644
 --- a/src/main/java/net/minecraft/nbt/NbtUtils.java
 +++ b/src/main/java/net/minecraft/nbt/NbtUtils.java
-@@ -253,7 +253,7 @@ public final class NbtUtils {
+@@ -263,7 +263,7 @@ public final class NbtUtils {
          if (optional.isPresent()) {
              return state.setValue(property, optional.get());
          } else {
@@ -409,10 +409,10 @@ index 903e126facf5d8abb9520e8385faba65924fdbb1..b70968f18842684309bcb33d34c74fb4
          }
      }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 13b0b2a5b1c228a17075ab3dabab5b9ea6bba978..af15842c622fb11a0ee2ed871655affdf6a11f84 100644
+index a1a8f99dc27202aed94f37cb10226af3d2e1e8c6..479a3179596d93a197d052dc150b2e21146e0443 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -469,7 +469,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -463,7 +463,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
                      io.papermc.paper.util.MCUtil.dumpChunks(file, true);
                      sender.sendMessage(net.kyori.adventure.text.Component.text("Successfully written chunk information!", net.kyori.adventure.text.format.NamedTextColor.GREEN));
                  } catch (Throwable thr) {
@@ -422,10 +422,10 @@ index 13b0b2a5b1c228a17075ab3dabab5b9ea6bba978..af15842c622fb11a0ee2ed871655affd
                  }
              };
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 365b599c054ab18e0ba5c38057534e5f7b94f5ce..9881924f74103aaad96aca54ec7329cc73c8e3e8 100644
+index 97e9bab342745d40e3c3e0d8df4c7fb0525eca78..2d142d9f36ec02a6501dd562fa592d823c663d4b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -394,7 +394,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -396,7 +396,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
              ChunkPos nbtPos = nbt == null ? null : EntityStorage.readChunkPos(nbt);
              if (nbtPos != null && !pos.equals(nbtPos)) {
                  throw new IllegalArgumentException(
@@ -434,7 +434,7 @@ index 365b599c054ab18e0ba5c38057534e5f7b94f5ce..9881924f74103aaad96aca54ec7329cc
                          + " but compound says coordinate is " + nbtPos + " for world: " + this
                  );
              }
-@@ -1429,7 +1429,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1467,7 +1467,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
          Entity entity = (Entity) this.getEntities().get(player.getUUID());
  
          if (entity != null) {
@@ -444,10 +444,10 @@ index 365b599c054ab18e0ba5c38057534e5f7b94f5ce..9881924f74103aaad96aca54ec7329cc
              this.removePlayerImmediately((ServerPlayer) entity, Entity.RemovalReason.DISCARDED);
          }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index f472e0b103463f3b45b6b316d08c50b6a093de78..d53f1895a853d2e33d79df3c7eeb98cd3b5d87be 100644
+index 462f9f26395ed15c75caf32cd98ff576785f46c9..5a5dc296405d4f5dcb84c2297a9bf3a9ab5fd1c5 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -1274,7 +1274,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -1272,7 +1272,7 @@ public class LevelChunk extends ChunkAccess {
          }
  
          public String toString() {
@@ -457,7 +457,7 @@ index f472e0b103463f3b45b6b316d08c50b6a093de78..d53f1895a853d2e33d79df3c7eeb98cd
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
-index 65136b6d4661fad4f81a1517e434e059669a7bd4..fc13747ffbd4e3fa10dcf48fc4428fa3d1df55e1 100644
+index cb9eabe97f30da8bb1ff9fec729eb5416603b877..04323b462530906f4d506b46644a3273453affd6 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
 @@ -182,8 +182,8 @@ public class ChunkStorage implements AutoCloseable {
@@ -494,10 +494,10 @@ index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..ba2f0b3c7ab09b685e2e33089e93d8d5
                      player1.setFirstPlayed(modified);
                  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 26f8aff3685d11ccc2d7d9124895ffa520564810..939226a32fbab022c0b2a45184249177b54dcf63 100644
+index c31d4984052a9c04fc8f14c5e967e78bfb899e10..48e334b7d1e3fc713a3a552931a50268daf2c09f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1094,7 +1094,7 @@ public final class CraftServer implements Server {
+@@ -1107,7 +1107,7 @@ public final class CraftServer implements Server {
          try {
              perms = (Map<String, Map<String, Object>>) this.yaml.load(stream);
          } catch (MarkedYAMLException ex) {
@@ -520,10 +520,10 @@ index b02f00eee359fbd14b4694f5088d3e23a9db57e2..c1431a6fc52c0659519fb2010e98034c
  
          mcMerchant.setTradingPlayer(this.getHandle());
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index d6a7d401ee5b8d49ee05ab9f085c1f8a11f46009..e5717c9384aa14e169b7db848af4fa876853d29b 100644
+index 9ce46b36369a00dc2ee23873686881993502964c..9b561f8f94b26ee0eb99d375557e8f22cfd811c6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -1794,7 +1794,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1796,7 +1796,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
                  resource = CraftNamespacedKey.fromMinecraft(key);
              }
          } catch (IllegalArgumentException ex) {

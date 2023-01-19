@@ -18,10 +18,10 @@ index 1e74db13757e898f088167df8b634c345c339e5e..49186b4fcb81b284cebb57052b208bc8
          long ticks = 0;
          for (MinuteReport mp : this.minuteReports) {
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index d417b98581cdfa1654307e424be6cfe4f17ea00a..e6e2e680ab68f281a7cac3ad62e5e95f4b23d0e0 100644
+index dc79508b8bf6ade66b911036e6eaba87341ddf64..06aadc6e86b16e85488cc8ea6a4caa1929831cf7 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -286,7 +286,7 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -312,7 +312,7 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
       */
      @NotNull
      public static GameRule<?> @NotNull [] values() {
@@ -56,10 +56,10 @@ index 4360347c61b3b969d551e5a82c4d580e02b06722..e9425309bcfb352c242702634858ab71
      }
  }
 diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
-index 839917c466163a0d58c4472105e4e85a8fdce73c..fe60c6e7c474bf21c98e331f13e214e10e9e3107 100644
+index cffed9934a0d311b618a0bbc7b79a01caa600c07..91e4e856ed129b2eb5bc9c6d9491c3712375fd8e 100644
 --- a/src/main/java/org/bukkit/event/HandlerList.java
 +++ b/src/main/java/org/bukkit/event/HandlerList.java
-@@ -184,7 +184,7 @@ public class HandlerList {
+@@ -197,7 +197,7 @@ public class HandlerList {
          for (Entry<EventPriority, ArrayList<RegisteredListener>> entry : handlerslots.entrySet()) {
              entries.addAll(entry.getValue());
          }
@@ -69,10 +69,10 @@ index 839917c466163a0d58c4472105e4e85a8fdce73c..fe60c6e7c474bf21c98e331f13e214e1
  
      /**
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index e916436b710b9ab1044e3f71b311ee42924d6e31..5ab93237a4dab733fb28df95d018158b69719e6c 100644
+index 0c7e6ccf221bb94a79e83239f509261ea76654a7..9ef0ae3dfab896a7062191a940214c7d161dff90 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -376,7 +376,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -378,7 +378,7 @@ public final class SimplePluginManager implements PluginManager {
              }
          }
  
@@ -81,7 +81,7 @@ index e916436b710b9ab1044e3f71b311ee42924d6e31..5ab93237a4dab733fb28df95d018158b
      }
  
      /**
-@@ -496,7 +496,7 @@ public final class SimplePluginManager implements PluginManager {
+@@ -498,7 +498,7 @@ public final class SimplePluginManager implements PluginManager {
      @Override
      @NotNull
      public synchronized Plugin @NotNull [] getPlugins() {

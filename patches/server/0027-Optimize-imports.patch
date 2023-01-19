@@ -95,18 +95,6 @@ index bbfddd7aa30b3167e8fc28d48f62920bd082284e..09e688b9af28b686994329021faa3bcd
  import net.minecraft.world.entity.vehicle.ContainerEntity;
  import net.minecraft.world.level.Level;
  import org.bukkit.Bukkit;
-diff --git a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
-index 36ac623b4ecd8f0235ca399d5ea83d01b820e5e9..9de7e11eda69a07903ddefe8c5281b22d238c964 100644
---- a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
-+++ b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
-@@ -36,7 +36,6 @@ import net.minecraft.sounds.SoundSource;
- import net.minecraft.world.BossEvent;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.WrittenBookItem;
--import org.bukkit.ChatColor;
- import org.jetbrains.annotations.NotNull;
- import org.jetbrains.annotations.Nullable;
- 
 diff --git a/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeInstance.java b/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeInstance.java
 index 12135ffeacd648f6bc4d7d327059ea1a7e8c79c4..b57c328d230b5ee8de426c2f7d16b692c4517fc1 100644
 --- a/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeInstance.java
@@ -120,43 +108,17 @@ index 12135ffeacd648f6bc4d7d327059ea1a7e8c79c4..b57c328d230b5ee8de426c2f7d16b692
  public class UnmodifiableAttributeInstance extends CraftAttributeInstance {
  
 diff --git a/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeMap.java b/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeMap.java
-index ca9fb5ef2b85338bcaa04013b1412caf36e9a8d7..fb457d4de0027c210e4cf5f9a5881e7cc9193e9c 100644
+index bdfd32a768175188ff02c18b54abd98039558438..bf6ecd8cf37a1db9678b14e858b24adb55d243c6 100644
 --- a/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeMap.java
 +++ b/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeMap.java
-@@ -1,20 +1,16 @@
- package io.papermc.paper.attribute;
- 
- import com.google.common.collect.Maps;
--import com.google.common.util.concurrent.Callables;
--import com.google.common.util.concurrent.Runnables;
- import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
- import org.bukkit.attribute.Attributable;
- import org.bukkit.attribute.Attribute;
- import org.bukkit.attribute.AttributeInstance;
--import org.bukkit.craftbukkit.attribute.CraftAttributeInstance;
- import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
+@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
  import org.jetbrains.annotations.NotNull;
  import org.jetbrains.annotations.Nullable;
  
- import java.util.Map;
--import java.util.function.Consumer;
--import java.util.function.Function;
 +
- 
  public class UnmodifiableAttributeMap implements Attributable {
  
-diff --git a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
-index 834b92195861883cd4cd1b8c027fb23bec31701d..3ef398885526c9133c2205dd8b143703b1e09672 100644
---- a/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
-+++ b/src/main/java/io/papermc/paper/chunk/system/entity/EntityLookup.java
-@@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
- import net.minecraft.core.BlockPos;
- import io.papermc.paper.chunk.system.ChunkSystem;
- import net.minecraft.server.level.ChunkHolder;
--import net.minecraft.server.level.ChunkMap;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.util.Mth;
- import net.minecraft.world.entity.Entity;
+     private final @NotNull AttributeSupplier handle;
 diff --git a/src/main/java/io/papermc/paper/chunk/system/light/LightQueue.java b/src/main/java/io/papermc/paper/chunk/system/light/LightQueue.java
 index 1d50392687302cd2d4191084c136a694673a3708..6da9811aeb6e9bd68e75de17b3a61a33c0f5fd0c 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/light/LightQueue.java
@@ -279,7 +241,7 @@ index 88adbf5b38cbe62c7f61f74e54315af416b09b40..840f77c41e79716a8d2188f9b4d13240
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
 diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
-index c935676453b36950dddafda5a47494fdaacff3a9..1d4321b1e7effd564c9d4f657a82573e04a56b1e 100644
+index 40db29e614ab86893bf0faa220237b3770bf7682..eec3ee0f790f2391a7b75d6f50080ff5be7e911f 100644
 --- a/src/main/java/io/papermc/paper/util/MCUtil.java
 +++ b/src/main/java/io/papermc/paper/util/MCUtil.java
 @@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
@@ -382,12 +344,12 @@ index bb1f0e9dbcb792d015d1cb65664a96fdd3e0489e..83e250107a34eb93fe86cb2c8fc10cc8
  import java.util.function.Predicate;
  import net.minecraft.advancements.CriterionTrigger;
 diff --git a/src/main/java/net/minecraft/core/MappedRegistry.java b/src/main/java/net/minecraft/core/MappedRegistry.java
-index d62d0eaaa93d3f0011682a18994dcfadd3158901..1929e045c7677502a4fa9ed7a910aeda43999f8a 100644
+index 04576acf8a4e3678d5ed514f53f1bd6d203065aa..6f597bc5fe91165afa340f1a695d955d38b4e2b9 100644
 --- a/src/main/java/net/minecraft/core/MappedRegistry.java
 +++ b/src/main/java/net/minecraft/core/MappedRegistry.java
-@@ -7,8 +7,6 @@ import com.mojang.datafixers.util.Pair;
+@@ -6,8 +6,6 @@ import com.google.common.collect.Sets;
+ import com.mojang.datafixers.util.Pair;
  import com.mojang.logging.LogUtils;
- import com.mojang.serialization.DataResult;
  import com.mojang.serialization.Lifecycle;
 -import it.unimi.dsi.fastutil.objects.Object2IntMap;
 -import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -395,7 +357,7 @@ index d62d0eaaa93d3f0011682a18994dcfadd3158901..1929e045c7677502a4fa9ed7a910aeda
  import it.unimi.dsi.fastutil.objects.ObjectList;
  import java.util.ArrayList;
 diff --git a/src/main/java/net/minecraft/nbt/CompoundTag.java b/src/main/java/net/minecraft/nbt/CompoundTag.java
-index ceb3d4eddfcd6a0aac3a6e155d7aa95f1b529d8a..faf279c8a98c8783cd1b3d09feeb7292305eb79d 100644
+index e483f089c2b1870e640d40c81e2e79043abb79d8..3f943093d8e24d7bfecdc976be0903886c5a796a 100644
 --- a/src/main/java/net/minecraft/nbt/CompoundTag.java
 +++ b/src/main/java/net/minecraft/nbt/CompoundTag.java
 @@ -1,6 +1,5 @@
@@ -433,7 +395,7 @@ index 5dd7be70603e8754d2625bb9d16900cb01b9c730..a3e858167a1fad13b43c0dc7d087e987
  
  public class CipherEncoder extends io.netty.handler.codec.MessageToMessageEncoder<ByteBuf> { // Paper - change superclass
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index bba253c39134f7fb1ccfe0b0111cec4a4cdde3cf..cfd32f66ab3a1972af44ae606823b894b132a03b 100644
+index 3021f1d3776d8639358119a856b4f567c471abe9..892576791a85ed5009274108d42064784ec77c24 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -20,7 +20,6 @@ import io.netty.channel.epoll.EpollSocketChannel;
@@ -453,41 +415,29 @@ index bba253c39134f7fb1ccfe0b0111cec4a4cdde3cf..cfd32f66ab3a1972af44ae606823b894
  import net.minecraft.Util;
  import net.minecraft.network.chat.Component;
  import net.minecraft.network.chat.MutableComponent;
-diff --git a/src/main/java/net/minecraft/network/chat/ChatPreviewCache.java b/src/main/java/net/minecraft/network/chat/ChatPreviewCache.java
-index 487822cc8e491c38a276d0d78db6f5207de8a65b..123fde129092b8aab4772e582e22ab0874c7161d 100644
---- a/src/main/java/net/minecraft/network/chat/ChatPreviewCache.java
-+++ b/src/main/java/net/minecraft/network/chat/ChatPreviewCache.java
-@@ -1,7 +1,7 @@
- package net.minecraft.network.chat;
- 
- import javax.annotation.Nullable;
--import net.minecraft.Util;
-+
- 
- public class ChatPreviewCache {
-     @Nullable
 diff --git a/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java b/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
-index 877c3500e4cedca487968577637f255a55e6a5e1..beb63538b3fc19b88e03027afe03a07ce3417b21 100644
+index b48e0e83339c2248f8557f73cab4727006298707..2fe04783e0fae628688508771f8a11005a637feb 100644
 --- a/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
 +++ b/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
-@@ -14,11 +14,8 @@ import java.util.Iterator;
- import java.util.List;
- import java.util.Locale;
- import java.util.Objects;
--import java.util.concurrent.locks.ReadWriteLock;
--import java.util.concurrent.locks.ReentrantReadWriteLock;
- import javax.annotation.Nullable;
--import net.minecraft.CrashReport;
--import net.minecraft.ReportedException;
+@@ -8,6 +8,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.Object2IntMap;
+ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.ObjectIterator;
++import java.util.ArrayList;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Locale;
++import java.util.Objects;
++import javax.annotation.Nullable;
 +
  import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.world.entity.Entity;
- import org.apache.commons.lang3.ObjectUtils;
+ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+ import net.minecraft.server.level.ServerPlayer;
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 9fddb70fe57a90950799c5eb1a05d31457af03cb..01bb98746d6718ac9aff7874ae65ccbc34fed92a 100644
+index 37f56b6c097165f29d23f692e1a5bb84e5a7048e..b8976f259bb136f881bb531a5f0b3f0672b6f5c5 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -1,12 +1,10 @@
+@@ -1,28 +1,20 @@
  package net.minecraft.server;
  
 -import com.mojang.authlib.GameProfile;
@@ -501,9 +451,8 @@ index 9fddb70fe57a90950799c5eb1a05d31457af03cb..01bb98746d6718ac9aff7874ae65ccbc
  import java.awt.GraphicsEnvironment;
  import java.io.File;
  import java.net.Proxy;
-@@ -14,16 +12,10 @@ import java.nio.file.Path;
+ import java.nio.file.Path;
  import java.nio.file.Paths;
- import java.util.Objects;
  import java.util.Optional;
 -import java.util.UUID;
  import java.util.function.BooleanSupplier;
@@ -517,22 +466,23 @@ index 9fddb70fe57a90950799c5eb1a05d31457af03cb..01bb98746d6718ac9aff7874ae65ccbc
 -import net.minecraft.SharedConstants;
  import net.minecraft.Util;
  import net.minecraft.commands.Commands;
- import net.minecraft.core.RegistryAccess;
-@@ -33,7 +25,6 @@ import net.minecraft.network.chat.Component;
+ import net.minecraft.core.HolderLookup;
+@@ -34,7 +26,6 @@ import net.minecraft.network.chat.Component;
  import net.minecraft.obfuscate.DontObfuscate;
  import net.minecraft.resources.RegistryOps;
  import net.minecraft.server.dedicated.DedicatedServer;
 -import net.minecraft.server.dedicated.DedicatedServerProperties;
  import net.minecraft.server.dedicated.DedicatedServerSettings;
  import net.minecraft.server.level.progress.LoggerChunkProgressListener;
- import net.minecraft.server.packs.PackType;
-@@ -48,10 +39,8 @@ import net.minecraft.util.profiling.jfr.Environment;
- import net.minecraft.util.profiling.jfr.JvmProfiler;
- import net.minecraft.util.worldupdate.WorldUpgrader;
- import net.minecraft.world.level.DataPackConfig;
--import net.minecraft.world.level.GameRules;
+ import net.minecraft.server.packs.repository.PackRepository;
+@@ -48,10 +39,10 @@ import net.minecraft.world.flag.FeatureFlags;
+ import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.LevelSettings;
+ import net.minecraft.world.level.WorldDataConfiguration;
++import net.minecraft.world.level.DataPackConfig;
  import net.minecraft.world.level.dimension.LevelStem;
- import net.minecraft.world.level.levelgen.WorldGenSettings;
+ import net.minecraft.world.level.levelgen.WorldDimensions;
+ import net.minecraft.world.level.levelgen.WorldOptions;
 -import net.minecraft.world.level.levelgen.presets.WorldPresets;
  import net.minecraft.world.level.storage.LevelResource;
  import net.minecraft.world.level.storage.LevelStorageSource;
@@ -550,7 +500,7 @@ index 4cbbafaf1bf17eaf7498a7c0d703451c0abd1d50..7eb2ea34517e4a202c8620f37a6ae8f4
  import io.netty.handler.timeout.ReadTimeoutHandler;
  import io.netty.util.HashedWheelTimer;
 diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index b7b7f791591259100a359a0c0c5ce04f10d62d3c..02ae14a27c5ce94fb3759ebaa364d59716a3c90c 100644
+index 985ca4464a407ff313e6704887952183fe42dbdd..a3151b04a83976123fbaecc79982a8d301febafc 100644
 --- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 @@ -4,7 +4,6 @@ import net.minecraft.SharedConstants;
@@ -562,7 +512,7 @@ index b7b7f791591259100a359a0c0c5ce04f10d62d3c..02ae14a27c5ce94fb3759ebaa364d597
  import net.minecraft.network.protocol.handshake.ServerHandshakePacketListener;
  import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
 diff --git a/src/main/java/net/minecraft/server/network/ServerStatusPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
-index 29a22da1b94d51300481c071aa16bfd8cd02178f..4d78798f19cb235cace941b2732d6718866c9a97 100644
+index 0725c39d9cbec3282f93975a0ae76f060f70d86d..9cfe16cef904c617c46138dd0008b4466c39d19b 100644
 --- a/src/main/java/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
 @@ -1,23 +1,13 @@
@@ -626,10 +576,10 @@ index 5d8e9bdf5538b19681f21949368d862fab8a89ad..a510390bf4b657e7d601c3b4d7e28a7b
  public class ZeroBitStorage implements BitStorage {
      public static final long[] RAW = new long[0];
 diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java b/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
-index 44698b5792ffa84fb28d146389620d4cc9e78dd5..8c8bd633e1332d1424feddb23572f72642b6d6bc 100644
+index d4c91e0a0c64fcb7f1145de3f30134cb1f1f8ee6..02006efcef6e437f4eba0add153044d3471936e2 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
-@@ -8,7 +8,6 @@ import java.util.HashSet;
+@@ -7,7 +7,6 @@ import java.util.HashSet;
  import java.util.Optional;
  import java.util.Set;
  import java.util.function.Predicate;
@@ -637,20 +587,8 @@ index 44698b5792ffa84fb28d146389620d4cc9e78dd5..8c8bd633e1332d1424feddb23572f726
  import javax.annotation.Nullable;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.GlobalPos;
-diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java b/src/main/java/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
-index 5e4d2bac66f53f4631ab0cd4e124fe21c7319cb8..e89253f3977687b36eb45840d8656d9613b2ad96 100644
---- a/src/main/java/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
-+++ b/src/main/java/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
-@@ -5,7 +5,6 @@ import java.util.function.Function;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.util.valueproviders.UniformInt;
- import net.minecraft.world.entity.AgeableMob;
--import net.minecraft.world.entity.Entity;
- import net.minecraft.world.entity.LivingEntity;
- import net.minecraft.world.entity.ai.memory.MemoryModuleType;
- import net.minecraft.world.entity.ai.memory.MemoryStatus;
 diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/GateBehavior.java b/src/main/java/net/minecraft/world/entity/ai/behavior/GateBehavior.java
-index 9c8d168e5c9d4f01d55890ee6cae28fffdf2f1c5..ace83c981a531eca00043a188aef1084587d808d 100644
+index 413feca993ae701c41b187d37110c7d7f45f191a..64fb650fedfad2d7f74c128101f8bda4d86b622f 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/behavior/GateBehavior.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/behavior/GateBehavior.java
 @@ -6,7 +6,7 @@ import java.util.Map;
@@ -663,11 +601,11 @@ index 9c8d168e5c9d4f01d55890ee6cae28fffdf2f1c5..ace83c981a531eca00043a188aef1084
  import net.minecraft.world.entity.LivingEntity;
  import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java b/src/main/java/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
-index 61fb886a573e9ea16ca8883f3ad085d0de3032a0..d02801b154c49b35efbe33f8cf17ffac04dbe4cf 100644
+index 212e307077dfa274a4d4e4192760de23a75ef12a..5190de14373554272ecb64837c2002f2af611c24 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
-@@ -11,7 +11,6 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
- import net.minecraft.world.entity.ai.memory.MemoryStatus;
+@@ -9,7 +9,6 @@ import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
  
  // CraftBukkit start
 -import org.bukkit.craftbukkit.entity.CraftLivingEntity;
@@ -719,7 +657,7 @@ index 75d9c4f011b5a97def215784c92bb57bbb35d06b..1ab7c12052ef5c5b1b45cb5b2b32f2f1
  import net.minecraft.world.entity.EntitySelector;
  import net.minecraft.world.entity.LivingEntity;
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Animal.java b/src/main/java/net/minecraft/world/entity/animal/Animal.java
-index 6216513805add7c8f52e1ed6c77e2d26786b3ab5..e939fbab44fe6ba6899b1a7b1abf6c611cecc58b 100644
+index 3c4d142e982c34a23bdb5da1f51c8dcacc0532c1..c03146d2ac21569ad0af196bf7d65b5923c2f351 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Animal.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Animal.java
 @@ -13,7 +13,6 @@ import net.minecraft.tags.BlockTags;
@@ -731,7 +669,7 @@ index 6216513805add7c8f52e1ed6c77e2d26786b3ab5..e939fbab44fe6ba6899b1a7b1abf6c61
  import net.minecraft.world.entity.EntityType;
  import net.minecraft.world.entity.ExperienceOrb;
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Ocelot.java b/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
-index 6bea1489808551a28304b0e8d976baaeed356f08..f32f71c1d9ff693070c0f01e1a4102dd9859d1aa 100644
+index 12c300df78a9269e35e8df5a39c35c2e97e1dba5..12758e5d892f45aa5ed636d0d42a4be860fa09b4 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
 @@ -1,7 +1,5 @@
@@ -742,18 +680,6 @@ index 6bea1489808551a28304b0e8d976baaeed356f08..f32f71c1d9ff693070c0f01e1a4102dd
  import javax.annotation.Nullable;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.particles.ParticleTypes;
-diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-index 0fc54c90220cb63786acd240c7c53cec3709d9f7..31c349ec573b4124737cf54cdb40945e0c03e296 100644
---- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
-+++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-@@ -5,7 +5,6 @@ import java.util.Comparator;
- import java.util.EnumSet;
- import java.util.Iterator;
- import java.util.List;
--import java.util.Objects;
- import java.util.function.Predicate;
- import javax.annotation.Nullable;
- import net.minecraft.core.BlockPos;
 diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/phases/DragonDeathPhase.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/phases/DragonDeathPhase.java
 index 0f78e1ab090bb1df7b863c90b3c7465a3ce28c8c..7a3d98f88051b1afe0396bf09c5bf1b9de297f29 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/phases/DragonDeathPhase.java
@@ -767,10 +693,10 @@ index 0f78e1ab090bb1df7b863c90b3c7465a3ce28c8c..7a3d98f88051b1afe0396bf09c5bf1b9
  
  public class DragonDeathPhase extends AbstractDragonPhaseInstance {
 diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/phases/DragonHoldingPatternPhase.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/phases/DragonHoldingPatternPhase.java
-index 4c338d7f3d5274a36db768e4a1cdedca130127d4..d24c5906aa754bc1adae335b318e383d2f9a0efd 100644
+index 77206aba171d063691b8f32afcebd570784d7da2..540fc254371065a78ba101d8b6ff4e49c95e92c0 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/phases/DragonHoldingPatternPhase.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/phases/DragonHoldingPatternPhase.java
-@@ -10,7 +10,6 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
+@@ -9,7 +9,6 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
  import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.level.levelgen.Heightmap;
@@ -815,7 +741,7 @@ index ffe89d8c1f22f672d145fedb3bb102589dc31656..977abd57b0edc56d04a3ddb2b48fe3fc
  import net.minecraft.world.level.pathfinder.Path;
  import net.minecraft.world.phys.Vec3;
 diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
-index e6392454c10a08c8cf5590e17a8d8d320f0a6d5e..ab075ce78520725902bcd04778e3ab25ff5c525f 100644
+index 802a1dd2cac4404a9449c88ed52657554fc784a6..fd4df1cca096be04eb75a38969ca95ba2bf39e3e 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
 @@ -12,7 +12,6 @@ import com.google.gson.JsonSyntaxException;
@@ -827,7 +753,7 @@ index e6392454c10a08c8cf5590e17a8d8d320f0a6d5e..ab075ce78520725902bcd04778e3ab25
  import java.util.Iterator;
  import java.util.List;
 diff --git a/src/main/java/net/minecraft/world/item/crafting/ShapelessRecipe.java b/src/main/java/net/minecraft/world/item/crafting/ShapelessRecipe.java
-index ffe5476d8ed15ee4384b679c341688787205ce59..7e6e26079c57707d062c1b7e457ad262db7e3ae8 100644
+index e7c06d98532160499f2610f69de27e30a326b16f..31613f5f2d62c6978730d19e3f743e11a8b3b386 100644
 --- a/src/main/java/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/src/main/java/net/minecraft/world/item/crafting/ShapelessRecipe.java
 @@ -3,7 +3,7 @@ package net.minecraft.world.item.crafting;
@@ -840,7 +766,7 @@ index ffe5476d8ed15ee4384b679c341688787205ce59..7e6e26079c57707d062c1b7e457ad262
  import net.minecraft.core.NonNullList;
  import net.minecraft.network.FriendlyByteBuf;
 diff --git a/src/main/java/net/minecraft/world/level/EntityGetter.java b/src/main/java/net/minecraft/world/level/EntityGetter.java
-index f50010f0945204560ebdfc255c5daa23adbde51f..70e3dd6402b62fb3019d9100baa584f1df5fa2df 100644
+index 75224df98bbc25c497cb3faf4ce409b51a79dddc..dd13bace9e185a46b96134fcfd03083a11187104 100644
 --- a/src/main/java/net/minecraft/world/level/EntityGetter.java
 +++ b/src/main/java/net/minecraft/world/level/EntityGetter.java
 @@ -13,7 +13,6 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -852,7 +778,7 @@ index f50010f0945204560ebdfc255c5daa23adbde51f..70e3dd6402b62fb3019d9100baa584f1
  import net.minecraft.world.phys.shapes.VoxelShape;
  
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index 468c635d31cfa8051666bbefce8df4b448e9ed93..0fde830031d9c431f0aab4114cbc7f82ef5ed276 100644
+index 663c1d8c1611af915a1bae733920dd75ad73feb1..d95712045741e870985f3d6202247f7f8edfffe9 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
 @@ -24,7 +24,6 @@ import net.minecraft.commands.Commands;
@@ -864,19 +790,19 @@ index 468c635d31cfa8051666bbefce8df4b448e9ed93..0fde830031d9c431f0aab4114cbc7f82
  import org.slf4j.Logger;
  
 diff --git a/src/main/java/net/minecraft/world/level/PathNavigationRegion.java b/src/main/java/net/minecraft/world/level/PathNavigationRegion.java
-index 138f5576a1df6714e754d9829f209f1a1678413f..f3b376a54ae2947d0587098cadb3ae91c153fa99 100644
+index 0f1025495237aebe30132ace0832aa5718d6f9bb..ee85e3f898c1505dd0af2ad577b936b1f58bbc93 100644
 --- a/src/main/java/net/minecraft/world/level/PathNavigationRegion.java
 +++ b/src/main/java/net/minecraft/world/level/PathNavigationRegion.java
 @@ -9,7 +9,6 @@ import net.minecraft.core.Holder;
- import net.minecraft.core.Registry;
  import net.minecraft.core.SectionPos;
+ import net.minecraft.core.registries.Registries;
  import net.minecraft.util.profiling.ProfilerFiller;
 -import net.minecraft.server.level.ServerLevel;
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.level.biome.Biome;
  import net.minecraft.world.level.biome.Biomes;
 diff --git a/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java b/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
-index 4925ed056f876363855061790066cd1d0bf3d406..a2fbd57caa8961a565778157770bd4dae7c844f3 100644
+index 9b58f147dc446f68d6136b1741f12f9014dcee57..7d47cd0f210021404f1c9cc204d26434dbb3c07d 100644
 --- a/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
 @@ -1,7 +1,6 @@
@@ -924,7 +850,7 @@ index c157be4c92343ef14b6496ae5f532d8ace9470aa..fb6fa3b6e09679dc2407173171c083b9
  import org.bukkit.block.Lectern;
  import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
-index 7908360dd47937b2cb702e381802b7b278a5198e..c3717d033a6110a55ed345fe2e83ce5ad17ae2e3 100644
+index 3c7ef1e8e338a84eee34f39ce73e64876632ea87..de21a690012c3f3044e23eb564fba7230677339b 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/PalettedContainer.java
 @@ -20,7 +20,6 @@ import net.minecraft.util.BitStorage;
@@ -936,7 +862,7 @@ index 7908360dd47937b2cb702e381802b7b278a5198e..c3717d033a6110a55ed345fe2e83ce5a
  
  public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainerRO<T> {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java b/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
-index 486a4fe66dc8711deefa3a64dcd5551252071b4a..dff0c79d156052c1ef902080b0feee0b2f59e03f 100644
+index 7c6ce6d2e8a45d40e6a4c47fd61d3bb5b8881e33..cf8e0b230529480e04d90011f5f37e4c80a46f35 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/ProtoChunk.java
 @@ -1,7 +1,6 @@
@@ -948,18 +874,10 @@ index 486a4fe66dc8711deefa3a64dcd5551252071b4a..dff0c79d156052c1ef902080b0feee0b
  
  import java.util.*;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
-index bdb7967e8af5b83ccffad4618d56f332d06a70a4..840940469f968849ada464b960319ce2bd40349a 100644
+index de1cd6a2197e6cb8bffa9d7b441e6a854642e365..363a09a5fda7d984c503f679aa5ff4fb7ff5e430 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
-@@ -22,7 +22,6 @@ import net.minecraft.core.BlockPos;
- import net.minecraft.core.Holder;
- import net.minecraft.core.Registry;
- import net.minecraft.core.RegistryAccess;
--import net.minecraft.core.SectionPos;
- import net.minecraft.nbt.CompoundTag;
- import net.minecraft.nbt.ListTag;
- import net.minecraft.nbt.LongArrayTag;
-@@ -36,7 +35,6 @@ import net.minecraft.server.level.ThreadedLevelLightEngine;
+@@ -38,7 +38,6 @@ import net.minecraft.server.level.ThreadedLevelLightEngine;
  import net.minecraft.world.entity.EntityType;
  import net.minecraft.world.entity.ai.village.poi.PoiManager;
  import net.minecraft.world.level.ChunkPos;
@@ -967,7 +885,7 @@ index bdb7967e8af5b83ccffad4618d56f332d06a70a4..840940469f968849ada464b960319ce2
  import net.minecraft.world.level.biome.Biome;
  import net.minecraft.world.level.biome.Biomes;
  import net.minecraft.world.level.block.Block;
-@@ -46,7 +44,6 @@ import net.minecraft.world.level.block.state.BlockState;
+@@ -48,7 +47,6 @@ import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.chunk.CarvingMask;
  import net.minecraft.world.level.chunk.ChunkAccess;
  import net.minecraft.world.level.chunk.ChunkStatus;
@@ -998,7 +916,7 @@ index b5f5d45e0762f9e01ae2867f3449060771d849f6..66d7cebe5f66900d4cb87b80174b0b41
  import net.minecraft.world.entity.EntityType;
  import net.minecraft.world.level.ChunkPos;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
-index 9091fdb66de28ff3dd4759ea0bcfe2e1be86ace5..7359e65fb5c628e322863bd9fb44f74505804968 100644
+index c89353b5e6eb0d4292c6afaebaf60492cf3c6e4c..f015d4164a7b137686658ae0ad7174857a4bcb94 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
 @@ -17,7 +17,6 @@ import java.nio.file.Path;
@@ -1026,7 +944,7 @@ index 4cdfc433df67afcd455422e9baf56f167dd712ae..e351d52fc659700c7959a59d85576826
  
  public class EntityTickList {
 diff --git a/src/main/java/net/minecraft/world/level/gameevent/DynamicGameEventListener.java b/src/main/java/net/minecraft/world/level/gameevent/DynamicGameEventListener.java
-index 610bfcceec51fcd1d82040f0dbfc03be20b8dce7..9ec3036a4cc7087e785b6f2798fdbd525759e0cc 100644
+index 7ee6e2dfb3441c992f4206f5bb8389733cea9dfc..255171f01ac93c884e55769df32d1814a5d0835a 100644
 --- a/src/main/java/net/minecraft/world/level/gameevent/DynamicGameEventListener.java
 +++ b/src/main/java/net/minecraft/world/level/gameevent/DynamicGameEventListener.java
 @@ -7,7 +7,7 @@ import net.minecraft.server.level.ServerLevel;
@@ -1038,19 +956,6 @@ index 610bfcceec51fcd1d82040f0dbfc03be20b8dce7..9ec3036a4cc7087e785b6f2798fdbd52
  
  public class DynamicGameEventListener<T extends GameEventListener> {
      private T listener;
-diff --git a/src/main/java/net/minecraft/world/level/levelgen/FlatLevelSource.java b/src/main/java/net/minecraft/world/level/levelgen/FlatLevelSource.java
-index 054a882cba03387e0818fc7d281cb063bcab3475..853e7bf7b27746a53e82181bfe6358d897abf736 100644
---- a/src/main/java/net/minecraft/world/level/levelgen/FlatLevelSource.java
-+++ b/src/main/java/net/minecraft/world/level/levelgen/FlatLevelSource.java
-@@ -3,8 +3,6 @@ package net.minecraft.world.level.levelgen;
- import com.mojang.serialization.Codec;
- import com.mojang.serialization.codecs.RecordCodecBuilder;
- import java.util.List;
--import java.util.Objects;
--import java.util.Optional;
- import java.util.concurrent.CompletableFuture;
- import java.util.concurrent.Executor;
- import net.minecraft.Util;
 diff --git a/src/main/java/net/minecraft/world/level/lighting/BlockLightSectionStorage.java b/src/main/java/net/minecraft/world/level/lighting/BlockLightSectionStorage.java
 index 314b46f0becd088d26956b45981217b128d539cb..4c8f1c651d7356be00cbcd3b12787701e91b2150 100644
 --- a/src/main/java/net/minecraft/world/level/lighting/BlockLightSectionStorage.java
@@ -1074,7 +979,7 @@ index 78a51ab6da5ba4eecb1ba21c30ed7332f612a591..bd0cfb138fe5cde22eafcd5481393949
  import net.minecraft.world.level.chunk.DataLayer;
  
 diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 13fdfb152a5d49e70b38983a135e062d436babaf..96587775587752ac840b0ecf602f80d0d4773105 100644
+index 0958173390836c4172772dfc017430f1498e8653..a18958844dc7ecf2f953baa12436e5b5bb9e739a 100644
 --- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 @@ -41,7 +41,6 @@ import org.bukkit.Bukkit;
@@ -1112,21 +1017,27 @@ index a698afefcf1565bb4a505ae079d6735e379f908f..0357a5c32f2b3ac9b3e46a7e3934c5bf
  import net.minecraft.world.level.storage.loot.LootContext;
  import net.minecraft.world.level.storage.loot.ValidationContext;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index 699da7f6559bd7416c35c3e46af2902ac72bdd2e..e0075d8f1d12ed404143495436a454bac2f33c08 100644
+index 154ff2633af5424a5fd40c5a11f239fb8c43a9d7..b7e4b8aa44f460e3dea16b18bf8c3da9c972bd41 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-@@ -8,19 +8,13 @@ import java.util.ArrayList;
- import java.util.Arrays;
- import java.util.Collection;
- import java.util.List;
+@@ -3,38 +3,17 @@ package org.bukkit.craftbukkit;
+ import com.google.common.base.Preconditions;
+ import com.google.common.base.Predicates;
+ import com.mojang.serialization.Codec;
+-import java.lang.ref.WeakReference;
+-import java.util.ArrayList;
+-import java.util.Arrays;
+-import java.util.Collection;
+-import java.util.List;
 -import java.util.Objects;
 -import java.util.concurrent.locks.LockSupport;
 -import java.util.function.BooleanSupplier;
- import java.util.function.Predicate;
+-import java.util.function.Predicate;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Holder;
  import net.minecraft.core.Registry;
  import net.minecraft.core.SectionPos;
+-import net.minecraft.core.registries.Registries;
 -import net.minecraft.nbt.CompoundTag;
  import net.minecraft.nbt.NbtOps;
  import net.minecraft.server.level.ServerLevel;
@@ -1135,30 +1046,38 @@ index 699da7f6559bd7416c35c3e46af2902ac72bdd2e..e0075d8f1d12ed404143495436a454ba
  import net.minecraft.world.level.LightLayer;
  import net.minecraft.world.level.biome.Biome;
  import net.minecraft.world.level.biome.Biomes;
-@@ -31,9 +25,6 @@ import net.minecraft.world.level.chunk.DataLayer;
- import net.minecraft.world.level.chunk.LevelChunkSection;
- import net.minecraft.world.level.chunk.PalettedContainer;
- import net.minecraft.world.level.chunk.PalettedContainerRO;
+ import net.minecraft.world.level.block.Blocks;
+-import net.minecraft.world.level.chunk.ChunkAccess;
+-import net.minecraft.world.level.chunk.ChunkStatus;
+-import net.minecraft.world.level.chunk.DataLayer;
+-import net.minecraft.world.level.chunk.LevelChunkSection;
+-import net.minecraft.world.level.chunk.PalettedContainer;
+-import net.minecraft.world.level.chunk.PalettedContainerRO;
 -import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 -import net.minecraft.world.level.chunk.storage.EntityStorage;
 -import net.minecraft.world.level.entity.PersistentEntitySectionManager;
++import net.minecraft.world.level.chunk.*;
  import net.minecraft.world.level.levelgen.Heightmap;
  import net.minecraft.world.level.levelgen.WorldgenRandom;
  import net.minecraft.world.level.lighting.LevelLightEngine;
-diff --git a/src/main/java/org/bukkit/craftbukkit/CraftParticle.java b/src/main/java/org/bukkit/craftbukkit/CraftParticle.java
-index d0ace0ecf6977e1d970045cf5d2d4f1104b9f39b..550234b82d2b29acab77f0ff453a512412270910 100644
---- a/src/main/java/org/bukkit/craftbukkit/CraftParticle.java
-+++ b/src/main/java/org/bukkit/craftbukkit/CraftParticle.java
-@@ -6,7 +6,6 @@ import com.google.common.collect.HashBiMap;
- import com.mojang.math.Vector3f;
+@@ -52,6 +31,15 @@ import org.bukkit.plugin.Plugin;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
  
- import java.util.EnumMap;
--import java.util.HashMap;
- import java.util.Map;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Registry;
++import java.lang.ref.WeakReference;
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.List;
++import java.util.function.Predicate;
++import net.minecraft.core.registries.Registries;
++import net.minecraft.nbt.CompoundTag;
++
+ 
+ public class CraftChunk implements Chunk {
+     private WeakReference<net.minecraft.world.level.chunk.LevelChunk> weakChunk;
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index b3eb384c843a86d449bcf5bcb667727600a5608f..e5d5742e1cae41c95d31ad2dee584e31b7b035eb 100644
+index 4854d7ba473af2d2fa017bf4282c6753b38647e8..0f43dc57efe03572ff4670d4c23758e38747ea09 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -7,7 +7,6 @@ import java.util.Arrays;
@@ -1170,7 +1089,7 @@ index b3eb384c843a86d449bcf5bcb667727600a5608f..e5d5742e1cae41c95d31ad2dee584e31
  import java.util.logging.Logger;
  import joptsimple.OptionParser;
 diff --git a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
-index 870c71deb23129c3585249cf301e003b9dc77be6..fcc1cb281ab55d37bf0f452e5b7d87ca5e7110cc 100644
+index 71e3aa8edb7b26ac9ea848676e6cbd3f468348a0..4ead8cff9d39ce10cf38d63de4336bb9131b4c2f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
 +++ b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
 @@ -4,7 +4,6 @@ import java.util.Collection;
@@ -1193,10 +1112,10 @@ index 61aab6c5cacb6766f72cf9f6c991740aca355795..9380e5afd71417acfe777af316e80cff
  import java.util.Collection;
  import net.minecraft.world.LockCode;
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-index 329697b7a68af30fb0bf21dd7e7963407a30e9dd..9cdebe2d5f1a2b2f5c1f08899a8191923b7ce935 100644
+index e412287cf0fe181819c4fcecea19ad7d6de3ad02..bda74fc4bc5eda0678f2df4ee1e01c66a1a383c3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-@@ -8,44 +8,8 @@ import javax.annotation.Nullable;
+@@ -8,13 +8,6 @@ import javax.annotation.Nullable;
  import net.minecraft.core.BlockPos;
  import net.minecraft.nbt.CompoundTag;
  import net.minecraft.world.level.LevelAccessor;
@@ -1209,38 +1128,7 @@ index 329697b7a68af30fb0bf21dd7e7963407a30e9dd..9cdebe2d5f1a2b2f5c1f08899a819192
 -import net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity;
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.BlockEntityType; // Paper
--import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
--import net.minecraft.world.level.block.entity.CampfireBlockEntity;
--import net.minecraft.world.level.block.entity.ChestBlockEntity;
--import net.minecraft.world.level.block.entity.CommandBlockEntity;
--import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
--import net.minecraft.world.level.block.entity.ConduitBlockEntity;
--import net.minecraft.world.level.block.entity.DaylightDetectorBlockEntity;
--import net.minecraft.world.level.block.entity.DispenserBlockEntity;
--import net.minecraft.world.level.block.entity.DropperBlockEntity;
--import net.minecraft.world.level.block.entity.EnchantmentTableBlockEntity;
--import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
--import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
--import net.minecraft.world.level.block.entity.HopperBlockEntity;
--import net.minecraft.world.level.block.entity.JigsawBlockEntity;
--import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
--import net.minecraft.world.level.block.entity.LecternBlockEntity;
--import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
--import net.minecraft.world.level.block.entity.SculkSensorBlockEntity;
--import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
--import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
--import net.minecraft.world.level.block.entity.SignBlockEntity;
--import net.minecraft.world.level.block.entity.SkullBlockEntity;
--import net.minecraft.world.level.block.entity.SmokerBlockEntity;
--import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
--import net.minecraft.world.level.block.entity.StructureBlockEntity;
--import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
--import net.minecraft.world.level.block.entity.TheEndPortalBlockEntity;
--import net.minecraft.world.level.block.entity.TrappedChestBlockEntity;
--import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
- import org.bukkit.Material;
- import org.bukkit.World;
- import org.bukkit.block.Block;
+ import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftDispenser.java b/src/main/java/org/bukkit/craftbukkit/block/CraftDispenser.java
 index 0cacb74c671a6ec93582025a5a3cd6306fea94b4..4e21bc7a57dea4ab28d3f8b5c70ca8a41b47687d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftDispenser.java
@@ -1263,20 +1151,6 @@ index 954351705e6fbe5746bd51ac2565065861103c51..b364436b649bc5b67eb5ee74689d1f8b
  import net.minecraft.world.level.block.Blocks;
  import net.minecraft.world.level.block.DropperBlock;
  import net.minecraft.world.level.block.entity.DropperBlockEntity;
-diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java b/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
-index fcd65caedc847165797e98f1cd84463873bf6f3e..c0730f14b4ed5ea4c7dbbc763b569a819cfc24ff 100644
---- a/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
-+++ b/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
-@@ -6,9 +6,7 @@ import net.minecraft.world.level.block.entity.SignBlockEntity;
- import org.bukkit.DyeColor;
- import org.bukkit.World;
- import org.bukkit.block.Sign;
--import org.bukkit.craftbukkit.entity.CraftPlayer;
- import org.bukkit.craftbukkit.util.CraftChatMessage;
--import org.bukkit.entity.Player;
- import org.jetbrains.annotations.NotNull;
- import org.jetbrains.annotations.Nullable;
- 
 diff --git a/src/main/java/org/bukkit/craftbukkit/command/ColouredConsoleSender.java b/src/main/java/org/bukkit/craftbukkit/command/ColouredConsoleSender.java
 index 21f889ddec72b40f5954eec07417e08d192b4661..fb5294939d2979adc5cb47f10deed1712187904a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/command/ColouredConsoleSender.java
@@ -1299,13 +1173,13 @@ index 21f889ddec72b40f5954eec07417e08d192b4661..fb5294939d2979adc5cb47f10deed171
  public class ColouredConsoleSender /*extends CraftConsoleCommandSender */{/* // Paper - disable
      private final Terminal terminal;
 diff --git a/src/main/java/org/bukkit/craftbukkit/enchantments/CraftEnchantment.java b/src/main/java/org/bukkit/craftbukkit/enchantments/CraftEnchantment.java
-index 14d821517d0c3d08671040b64126904422b32415..ab74a54042424f323c60fbbf0130375b804cf450 100644
+index 701da6276daee88283cdcc0ca92c5aa1a767f47d..d9b98d5bf4e5374cc77611160f5e301eb5bc8f0a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/enchantments/CraftEnchantment.java
 +++ b/src/main/java/org/bukkit/craftbukkit/enchantments/CraftEnchantment.java
 @@ -1,8 +1,6 @@
  package org.bukkit.craftbukkit.enchantments;
  
- import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
 -import net.minecraft.world.item.enchantment.BindingCurseEnchantment;
 -import net.minecraft.world.item.enchantment.VanishingCurseEnchantment;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -1324,17 +1198,17 @@ index c491d7bce691f81e685f05bb9712ba48440df3fd..aede93f300d4e5caf326b86f4ccf5530
  import org.bukkit.entity.AbstractHorse;
  import org.bukkit.entity.AnimalTamer;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftCat.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftCat.java
-index 24d3c8ae87560ef35c5ecc348cba2db427ed7859..59b9a9709f971f4a035e7368219e16d3d3edb3ca 100644
+index e60433cd6f9d7d4441e0d925fe974d538ef9f378..ba52653ab9c90195227562d4dd065ac3c3f8f306 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftCat.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftCat.java
-@@ -2,7 +2,6 @@ package org.bukkit.craftbukkit.entity;
- 
- import com.google.common.base.Preconditions;
- import net.minecraft.core.Registry;
--import net.minecraft.world.entity.animal.CatVariant;
+@@ -5,7 +5,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
  import org.bukkit.DyeColor;
  import org.bukkit.craftbukkit.CraftServer;
  import org.bukkit.entity.Cat;
+-import org.bukkit.entity.Cat.Type;
+ import org.bukkit.entity.EntityType;
+ import org.jetbrains.annotations.NotNull;
+ 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java
 index 1f90291c806d2a1c6afc03d7df4d98b6b8b35e76..1b7f64c6a24693e3cae1ba3e87b630b76332c565 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java
@@ -1372,7 +1246,7 @@ index dafea8efc1eae796b1d51ae0b393af143984a303..61d95f76dcbec63aea5ea7f73ae089ff
  import org.bukkit.Material;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 318fdb32897292102631ca1b2db48732566799bb..53e835b5fe098ff6a24388058be2f228ea28e299 100644
+index 0e3cfd7cbac1cf6aacb4dc5af309e215e22528e8..8ff38c923ace32821f57d53a1608fec4118ede4f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -8,7 +8,6 @@ import net.minecraft.nbt.ListTag;
@@ -1496,18 +1370,10 @@ index ca236485bec91fd25e390d99cdeddb9afa51ecfa..557d60cee54d1a189facc7737e2cc342
  import java.util.stream.Collectors;
  import net.minecraft.core.Registry;
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/DummyGeneratorAccess.java b/src/main/java/org/bukkit/craftbukkit/util/DummyGeneratorAccess.java
-index 3a3480c5e1140ea60dfa9388f1dcbca38d16d62f..ae654e000ccd60bc51bf3d0ee02a1e69a288b772 100644
+index c20a83e6b8634d9873a2df7e2d2e5ed2a4b613cf..3539350dc2ad9d47a352bd0d784fbbe4ce595f74 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/DummyGeneratorAccess.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/DummyGeneratorAccess.java
-@@ -1,7 +1,6 @@
- package org.bukkit.craftbukkit.util;
- 
- import java.util.List;
--import java.util.Random;
- import java.util.function.Predicate;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
-@@ -38,7 +37,6 @@ import net.minecraft.world.level.material.Fluids;
+@@ -38,7 +38,6 @@ import net.minecraft.world.level.material.Fluids;
  import net.minecraft.world.level.storage.LevelData;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;

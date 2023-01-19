@@ -172,7 +172,7 @@ index c8b9348499d712c0415a7d5cc58ca0e0b7691ac7..7553dcf655ccab55563847e2ef6cee79
  
              // Don't allow value to cross zero, assume zero values should be negative
 diff --git a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
-index c19fb029246bcbd9ceec9510b4e526b9cad6404c..1ecc405539556156d366a09942ba4eaad8f35157 100644
+index b74507154a908d28a89d636135c74475d8e465c5..130777a53f6834b0ac1e0f835536094983423282 100644
 --- a/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/PotionSplashEvent.java
 @@ -60,7 +60,7 @@ public class PotionSplashEvent extends ProjectileHitEvent implements Cancellable
@@ -185,7 +185,7 @@ index c19fb029246bcbd9ceec9510b4e526b9cad6404c..1ecc405539556156d366a09942ba4eaa
  
      /**
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index 2dd0e244c11a094e1befe4c02b0164f71d94abcd..6709fb1561cf9fa7e30c3698d97d6e6cf8aa213b 100644
+index 556722989c797c7ccf5aee304a69f6201debf4b0..6c8904e5c77cca6d52d077d6e823e56cd70fb764 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
 @@ -89,7 +89,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
@@ -264,10 +264,10 @@ index 68ae337a841263a38ad97ff00c21e4036db539e7..4b37788e744ff361681e54eca2497077
  
              permissions.put(lname, new PermissionAttachmentInfo(parent, lname, attachment, value));
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 40b2a4692779fae04de7f2b7e735cdef34f880a9..360dc42337f03918ae2b6f0e7b6409ac3f1cc9c7 100644
+index 8d64d4e31d6fef6248114933a482585ecea7c388..33963d895aa1f17c5cb90653f158c41c7a09e82d 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -240,7 +240,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -241,7 +241,7 @@ public final class JavaPluginLoader implements PluginLoader {
          } finally {
              synchronized (classLoadLock) {
                  lock.writeLock().unlock();

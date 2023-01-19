@@ -5,10 +5,10 @@ Subject: [PATCH] Use isEmpty rather than equal check
 
 
 diff --git a/src/main/java/net/minecraft/commands/arguments/selector/options/EntitySelectorOptions.java b/src/main/java/net/minecraft/commands/arguments/selector/options/EntitySelectorOptions.java
-index 1deae10d44474007df65268601e9dbe49997b7cc..75f2590b7ff2dae853a062060b7c9153b9f9efb5 100644
+index 50b28fbc8afe86d1940ee9b635297188b620730e..ef72346e4967abec5c83c3b4736d0c41411d47f5 100644
 --- a/src/main/java/net/minecraft/commands/arguments/selector/options/EntitySelectorOptions.java
 +++ b/src/main/java/net/minecraft/commands/arguments/selector/options/EntitySelectorOptions.java
-@@ -362,7 +362,7 @@ public class EntitySelectorOptions {
+@@ -361,7 +361,7 @@ public class EntitySelectorOptions {
                  boolean bl = reader.shouldInvertValue();
                  String string = reader.getReader().readUnquotedString();
                  reader.addPredicate((entity) -> {
@@ -18,10 +18,10 @@ index 1deae10d44474007df65268601e9dbe49997b7cc..75f2590b7ff2dae853a062060b7c9153
                      } else {
                          return entity.getTags().contains(string) != bl;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a03ceeb3dbd5ff25909275022163cc6e6a35ccd9..09d0c69101234e381af5382561e4d668dd5002a9 100644
+index 4fa7d8bde3c091404373441bd4df84f529e7d207..63fdb79ff680a70b0188d03c9978397c3849b649 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1636,7 +1636,7 @@ public final class CraftServer implements Server {
+@@ -1663,7 +1663,7 @@ public final class CraftServer implements Server {
              if (section != null) {
                  String name = section.getString("generator");
  
@@ -30,7 +30,7 @@ index a03ceeb3dbd5ff25909275022163cc6e6a35ccd9..09d0c69101234e381af5382561e4d668
                      String[] split = name.split(":", 2);
                      String id = (split.length > 1) ? split[1] : null;
                      Plugin plugin = this.pluginManager.getPlugin(split[0]);
-@@ -1672,7 +1672,7 @@ public final class CraftServer implements Server {
+@@ -1699,7 +1699,7 @@ public final class CraftServer implements Server {
              if (section != null) {
                  String name = section.getString("biome-provider");
  

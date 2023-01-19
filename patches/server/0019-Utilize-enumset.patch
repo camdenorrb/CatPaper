@@ -5,7 +5,7 @@ Subject: [PATCH] Utilize enumset
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 70864f0155e2e7650b6fd8245f0372ac34b25541..23a3075678d53fe6a08ec1756a80bfb1966981ac 100644
+index fa96d19398742dab332174ae2e84b9b8ec6e76be..e7059bed91f57aa4976ef7b23c5150b91333cc3c 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -10,13 +10,8 @@ import com.mojang.datafixers.util.Pair;
@@ -24,7 +24,7 @@ index 70864f0155e2e7650b6fd8245f0372ac34b25541..23a3075678d53fe6a08ec1756a80bfb1
  import java.util.function.Predicate;
  import javax.annotation.Nullable;
  import net.minecraft.BlockUtil;
-@@ -124,9 +119,6 @@ import org.jetbrains.annotations.NotNull;
+@@ -125,9 +120,6 @@ import org.jetbrains.annotations.NotNull;
  import org.slf4j.Logger;
  
  // CraftBukkit start
@@ -34,7 +34,7 @@ index 70864f0155e2e7650b6fd8245f0372ac34b25541..23a3075678d53fe6a08ec1756a80bfb1
  import com.google.common.base.Function;
  import org.bukkit.Location;
  import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
-@@ -1723,7 +1715,7 @@ public abstract class LivingEntity extends Entity {
+@@ -1739,7 +1731,7 @@ public abstract class LivingEntity extends Entity {
  
      // Paper start
      protected boolean clearEquipmentSlots = true;
@@ -44,7 +44,7 @@ index 70864f0155e2e7650b6fd8245f0372ac34b25541..23a3075678d53fe6a08ec1756a80bfb1
      // Paper end
          Entity entity = source.getEntity();
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftArmorStand.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftArmorStand.java
-index ffb767eb6f3fec91349b7019a5ddd2b54f082be0..4dd0515a380e946dfba45079df17116d86cbcb1e 100644
+index 29245d8537e588db3474bacfa52fdb4fcb55d297..9bc4ff774220ec7649dc91375152e2448a697196 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftArmorStand.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftArmorStand.java
 @@ -11,6 +11,8 @@ import org.bukkit.inventory.ItemStack;

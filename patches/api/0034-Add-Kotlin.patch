@@ -5,7 +5,7 @@ Subject: [PATCH] Add Kotlin
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 8b45627c95b0acd96016b480ba4c13340f1cfeb6..9e2038a064b170c2846228c6b6503a8adb8d5624 100644
+index ae869fec8c08233ab4c9fcc1ff24e7729e02d7fb..040ab5f0ed235f6d5fe5d369a598a7b49e114e58 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -1,6 +1,7 @@
@@ -17,7 +17,7 @@ index 8b45627c95b0acd96016b480ba4c13340f1cfeb6..9e2038a064b170c2846228c6b6503a8a
  
  java {
 @@ -27,6 +28,8 @@ dependencies {
-     api("com.google.code.gson:gson:2.9.0")
+     api("com.google.code.gson:gson:2.10")
      api("net.md-5:bungeecord-chat:1.16-R0.4-deprecated+build.6") // Paper
      api("org.yaml:snakeyaml:1.33")
 +    api(kotlin("bom"))

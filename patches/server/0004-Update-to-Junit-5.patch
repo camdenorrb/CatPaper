@@ -5,7 +5,7 @@ Subject: [PATCH] Update to Junit 5
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index cdfbff66fd92c04448e99298414be28a926ad722..360e6f89dd2ab81dae41bf33efd8e9681a50f4c1 100644
+index e25b23a7174cc7a3cfbbb59353292bfb97206529..2862cc4d3a6efdee6bd98be0b8984f2471c66d87 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -53,7 +53,9 @@ dependencies {
@@ -18,7 +18,7 @@ index cdfbff66fd92c04448e99298414be28a926ad722..360e6f89dd2ab81dae41bf33efd8e968
 +    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
      testImplementation("org.hamcrest:hamcrest-library:2.2")
  
-     implementation("io.netty:netty-all:4.1.84.Final"); // Paper - Bump netty
+     implementation("io.netty:netty-all:4.1.87.Final"); // Paper - Bump netty
 @@ -137,6 +139,7 @@ tasks.reobfJar {
  // Paper end - include reobf mappings in jar for stacktrace deobfuscation
  
@@ -363,7 +363,7 @@ index 38e6d42098f216b1d24f50386e7be98181122d8d..fc1a0703caf1204439bf9a90afe92189
      }
  }
 diff --git a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
-index da2eb57ea64403657744ea00eff40243ef51df58..2ec6bed46d7d65ee49a35db38f645c06e1d78b24 100644
+index 8665e2740aedcc2895b0e2c44ebaba53d2a40568..707592749e17077e7197acf1a8d69d735ce4f735 100644
 --- a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
 +++ b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
 @@ -12,9 +12,9 @@ import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
@@ -503,20 +503,21 @@ index 8d9c9b3bd53d407391d4fcb7fc773153d1a7b402..1441eea91ae7a6136521a3c649aaba04
      }
  }
 diff --git a/src/test/java/io/papermc/paper/world/TranslationKeyTest.java b/src/test/java/io/papermc/paper/world/TranslationKeyTest.java
-index 9292a0119499d14c9ed170999ac3b8dfdd1f839a..eb0f648d90c7f16d4bd00d02c5c4c224ddc84356 100644
+index 4cc8ca5dd95e9cccd08ada057a9592a1421f434a..364b7b1cc6f72560bcf6dac9cfecc9011213e226 100644
 --- a/src/test/java/io/papermc/paper/world/TranslationKeyTest.java
 +++ b/src/test/java/io/papermc/paper/world/TranslationKeyTest.java
-@@ -17,47 +17,50 @@ import org.bukkit.attribute.Attribute;
- import org.bukkit.craftbukkit.inventory.CraftCreativeCategory;
- import org.bukkit.inventory.CreativeCategory;
+@@ -13,45 +13,53 @@ import org.bukkit.GameMode;
+ import org.bukkit.GameRule;
+ import org.bukkit.attribute.Attribute;
  import org.bukkit.support.AbstractTestingBase;
--import org.junit.Assert;
--import org.junit.Test;
 +import org.junit.jupiter.api.Test;
+ import org.junit.Assert;
+ import org.junit.Ignore;
+ import org.junit.Test;
  
- import java.util.Map;
- import java.util.Objects;
- 
++import java.util.Map;
++import java.util.Objects;
++
 +import static org.junit.jupiter.api.Assertions.assertEquals;
 +import static org.junit.jupiter.api.Assertions.assertNotNull;
 +
@@ -566,16 +567,7 @@ index 9292a0119499d14c9ed170999ac3b8dfdd1f839a..eb0f648d90c7f16d4bd00d02c5c4c224
          }
      }
  
-@@ -68,7 +71,7 @@ public class TranslationKeyTest extends AbstractTestingBase {
-                 continue;
-             }
-             CreativeCategory category = Objects.requireNonNull(CraftCreativeCategory.fromNMS(tab));
--            Assert.assertEquals("translation key mismatch for " + category, ((TranslatableContents) tab.getDisplayName().getContents()).getKey(), category.translationKey());
-+            assertEquals(((TranslatableContents) tab.getDisplayName().getContents()).getKey(), category.translationKey(), "translation key mismatch for " + category);
-         }
-     }
- 
-@@ -76,8 +79,8 @@ public class TranslationKeyTest extends AbstractTestingBase {
+@@ -68,8 +76,8 @@ public class TranslationKeyTest extends AbstractTestingBase {
      public void testGameMode() {
          for (GameType nms : GameType.values()) {
              GameMode bukkit = GameMode.getByValue(nms.getId());
@@ -586,9 +578,9 @@ index 9292a0119499d14c9ed170999ac3b8dfdd1f839a..eb0f648d90c7f16d4bd00d02c5c4c224
          }
      }
  
-@@ -85,7 +88,7 @@ public class TranslationKeyTest extends AbstractTestingBase {
+@@ -77,7 +85,7 @@ public class TranslationKeyTest extends AbstractTestingBase {
      public void testBiome() {
-         for (Map.Entry<ResourceKey<Biome>, Biome> nms : RegistryAccess.builtinCopy().registry(Registry.BIOME_REGISTRY).get().entrySet()) {
+         for (Map.Entry<ResourceKey<Biome>, Biome> nms : AbstractTestingBase.BIOMES.entrySet()) {
              org.bukkit.block.Biome bukkit = org.bukkit.block.Biome.valueOf(nms.getKey().location().getPath().toUpperCase());
 -            Assert.assertEquals("translation key mismatch for " + bukkit, nms.getKey().location().toLanguageKey("biome"), bukkit.translationKey());
 +            assertEquals(nms.getKey().location().toLanguageKey("biome"), bukkit.translationKey(), "translation key mismatch for " + bukkit);
@@ -596,10 +588,10 @@ index 9292a0119499d14c9ed170999ac3b8dfdd1f839a..eb0f648d90c7f16d4bd00d02c5c4c224
      }
  }
 diff --git a/src/test/java/io/papermc/paper/world/structure/ConfiguredStructureTest.java b/src/test/java/io/papermc/paper/world/structure/ConfiguredStructureTest.java
-index 61efebe1d363b34e2043ccc4c6e28bb714c2fa31..d99a8ad2d997d031ef50d4035b38f5089c6a1e28 100644
+index cb077ac5e24d6632c46927fef8ecd20f150d3596..21f2a33b0ce40e0afc4c47fab5d26a708166260f 100644
 --- a/src/test/java/io/papermc/paper/world/structure/ConfiguredStructureTest.java
 +++ b/src/test/java/io/papermc/paper/world/structure/ConfiguredStructureTest.java
-@@ -5,14 +5,14 @@ import net.minecraft.data.BuiltinRegistries;
+@@ -6,14 +6,14 @@ import net.minecraft.core.registries.Registries;
  import net.minecraft.resources.ResourceKey;
  import net.minecraft.resources.ResourceLocation;
  import net.minecraft.server.Bootstrap;
@@ -618,7 +610,7 @@ index 61efebe1d363b34e2043ccc4c6e28bb714c2fa31..d99a8ad2d997d031ef50d4035b38f508
  
  import java.io.PrintStream;
  import java.lang.reflect.Field;
-@@ -21,9 +21,8 @@ import java.util.LinkedHashMap;
+@@ -22,9 +22,8 @@ import java.util.LinkedHashMap;
  import java.util.Map;
  import java.util.StringJoiner;
  
@@ -630,7 +622,7 @@ index 61efebe1d363b34e2043ccc4c6e28bb714c2fa31..d99a8ad2d997d031ef50d4035b38f508
  
  public class ConfiguredStructureTest extends AbstractTestingBase {
  
-@@ -32,7 +31,7 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
+@@ -33,7 +32,7 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
  
      private static PrintStream out;
  
@@ -639,22 +631,16 @@ index 61efebe1d363b34e2043ccc4c6e28bb714c2fa31..d99a8ad2d997d031ef50d4035b38f508
      public static void collectStructures() throws ReflectiveOperationException {
          out = System.out;
          System.setOut(Bootstrap.STDOUT);
-@@ -51,12 +50,12 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
- 
-     @Test
-     public void testMinecraftToApi() {
--        assertEquals("configured structure maps should be the same size", BUILT_IN_STRUCTURES.size(), BuiltinRegistries.STRUCTURES.size());
-+        assertEquals(BUILT_IN_STRUCTURES.size(), BuiltinRegistries.STRUCTURES.size(), "configured structure maps should be the same size");
- 
+@@ -58,7 +57,7 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
          Map<ResourceLocation, Structure> missing = new LinkedHashMap<>();
-         for (Structure feature : BuiltinRegistries.STRUCTURES) {
-             final ResourceLocation key = BuiltinRegistries.STRUCTURES.getKey(feature);
+         for (Structure feature : structureRegistry) {
+             final ResourceLocation key = structureRegistry.getKey(feature);
 -            assertNotNull("Missing built-in registry key", key);
 +            assertNotNull(key, "Missing built-in registry key");
              if (key.equals(BuiltinStructures.ANCIENT_CITY.location())) {
                  continue; // TODO remove when upstream adds "jigsaw" StructureType
              }
-@@ -65,13 +64,13 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
+@@ -67,7 +66,7 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
              }
          }
  
@@ -663,14 +649,7 @@ index 61efebe1d363b34e2043ccc4c6e28bb714c2fa31..d99a8ad2d997d031ef50d4035b38f508
      }
  
      @Test
-     public void testApiToMinecraft() {
-         for (NamespacedKey apiKey : DEFAULT_CONFIGURED_STRUCTURES.keySet()) {
--            assertTrue(apiKey + " does not have a minecraft counterpart", BuiltinRegistries.STRUCTURES.containsKey(CraftNamespacedKey.toMinecraft(apiKey)));
-+            assertTrue(BuiltinRegistries.STRUCTURES.containsKey(CraftNamespacedKey.toMinecraft(apiKey)), apiKey + " does not have a minecraft counterpart");
-         }
-     }
- 
-@@ -85,7 +84,7 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
+@@ -88,7 +87,7 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
          return joiner.toString();
      }
  
@@ -680,7 +659,7 @@ index 61efebe1d363b34e2043ccc4c6e28bb714c2fa31..d99a8ad2d997d031ef50d4035b38f508
          System.setOut(out);
      }
 diff --git a/src/test/java/org/bukkit/ArtTest.java b/src/test/java/org/bukkit/ArtTest.java
-index 23f436f634b19c0e53bcafcd74037eb6be2403bc..e38b4bcdfcfaef623862197461e153890cef19e1 100644
+index d73df478f3e736cf6555b6cdfd42228cca2eb5c5..a2a1b8403e34f04a010e77db75c4e516682dae5f 100644
 --- a/src/test/java/org/bukkit/ArtTest.java
 +++ b/src/test/java/org/bukkit/ArtTest.java
 @@ -1,7 +1,8 @@
@@ -728,7 +707,7 @@ index 23f436f634b19c0e53bcafcd74037eb6be2403bc..e38b4bcdfcfaef623862197461e15389
      }
 @@ -59,7 +60,7 @@ public class ArtTest extends AbstractTestingBase {
          Map<Art, Holder<PaintingVariant>> cache = new EnumMap(Art.class);
-         for (Holder<PaintingVariant> enumArt : Registry.PAINTING_VARIANT.asHolderIdMap()) {
+         for (Holder<PaintingVariant> enumArt : BuiltInRegistries.PAINTING_VARIANT.asHolderIdMap()) {
              Art art = CraftArt.NotchToBukkit(enumArt);
 -            assertNotNull("Could not CraftArt.NotchToBukkit " + enumArt, art);
 +            assertNotNull(art, "Could not CraftArt.NotchToBukkit " + enumArt);
@@ -736,10 +715,10 @@ index 23f436f634b19c0e53bcafcd74037eb6be2403bc..e38b4bcdfcfaef623862197461e15389
          }
      }
 diff --git a/src/test/java/org/bukkit/BiomeTest.java b/src/test/java/org/bukkit/BiomeTest.java
-index 2ccc1ac837f1537f2f201f81aca24f744695a777..a96b66581355aeee3bfd01cd1570cafd4f1d19f7 100644
+index 4392dc2d855c1b2ec2f40720929c8a84160d02e0..5ae3d64d3fa7b566fd459d855bcb1b50fb00de2e 100644
 --- a/src/test/java/org/bukkit/BiomeTest.java
 +++ b/src/test/java/org/bukkit/BiomeTest.java
-@@ -4,19 +4,22 @@ import net.minecraft.data.BuiltinRegistries;
+@@ -3,19 +3,22 @@ package org.bukkit;
  import org.bukkit.block.Biome;
  import org.bukkit.craftbukkit.block.CraftBlock;
  import org.bukkit.support.AbstractTestingBase;
@@ -761,22 +740,22 @@ index 2ccc1ac837f1537f2f201f81aca24f744695a777..a96b66581355aeee3bfd01cd1570cafd
                  continue;
              }
  
--            Assert.assertNotNull("No NMS mapping for " + biome, CraftBlock.biomeToBiomeBase(BuiltinRegistries.BIOME, biome));
-+            assertNotNull(CraftBlock.biomeToBiomeBase(BuiltinRegistries.BIOME, biome), "No NMS mapping for " + biome);
+-            Assert.assertNotNull("No NMS mapping for " + biome, CraftBlock.biomeToBiomeBase(BIOMES, biome));
++            assertNotNull(CraftBlock.biomeToBiomeBase(BIOMES, biome), "No NMS mapping for " + biome);
          }
      }
  
-@@ -24,7 +27,7 @@ public class BiomeTest extends AbstractTestingBase {
+@@ -23,7 +26,7 @@ public class BiomeTest extends AbstractTestingBase {
      public void testMinecraftToBukkit() {
-         for (net.minecraft.world.level.biome.Biome biomeBase : BuiltinRegistries.BIOME) {
-             Biome biome = CraftBlock.biomeBaseToBiome(BuiltinRegistries.BIOME, biomeBase);
+         for (net.minecraft.world.level.biome.Biome biomeBase : BIOMES) {
+             Biome biome = CraftBlock.biomeBaseToBiome(BIOMES, biomeBase);
 -            Assert.assertTrue("No Bukkit mapping for " + biomeBase, biome != null && biome != Biome.CUSTOM);
 +            assertTrue(biome != null && biome != Biome.CUSTOM, "No Bukkit mapping for " + biomeBase);
          }
      }
  }
 diff --git a/src/test/java/org/bukkit/BlockDataConversionTest.java b/src/test/java/org/bukkit/BlockDataConversionTest.java
-index a2ca2857b1ca8d3fc5797037b84624ad03a8e36f..f91bebe68101201b91db9e9d0df6bd1cef0f9495 100644
+index 4055eec441aa38da3f802900d05c387f5a4409e2..9627446536b00b50010c82967af1ab489c9c8178 100644
 --- a/src/test/java/org/bukkit/BlockDataConversionTest.java
 +++ b/src/test/java/org/bukkit/BlockDataConversionTest.java
 @@ -1,38 +1,32 @@
@@ -784,7 +763,7 @@ index a2ca2857b1ca8d3fc5797037b84624ad03a8e36f..f91bebe68101201b91db9e9d0df6bd1c
  
 -import java.util.ArrayList;
 -import java.util.List;
- import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
 -import net.minecraft.world.level.block.Block;
  import net.minecraft.world.level.block.state.BlockState;
  import org.bukkit.craftbukkit.block.data.CraftBlockData;
@@ -802,7 +781,7 @@ index a2ca2857b1ca8d3fc5797037b84624ad03a8e36f..f91bebe68101201b91db9e9d0df6bd1c
 +
  
  /**
-  * This test class ensures that all Blocks (as registered in IRegistry.BLOCK)
+  * This test class ensures that all Blocks (as registered in BuiltInRegistries.BLOCK)
   * can be converted into their CraftBlockData equivalent.
   */
 -@RunWith(Parameterized.class)
@@ -811,13 +790,13 @@ index a2ca2857b1ca8d3fc5797037b84624ad03a8e36f..f91bebe68101201b91db9e9d0df6bd1c
 -    @Parameterized.Parameters(name = "{index}: {0}")
 -    public static List<Object[]> args() {
 -        List<Object[]> list = new ArrayList<>();
--        for (Block block : (Iterable<Block>) Registry.BLOCK) {
+-        for (Block block : (Iterable<Block>) BuiltInRegistries.BLOCK) {
 -            list.add(new Object[]{block.defaultBlockState()});
 -        }
 -        return list;
 +    @ParameterizedTest(name = "{index}: {0}")
 +    public static Stream<Object[]> data() {
-+        return Registry.BLOCK.stream().map(block -> new Object[]{block.defaultBlockState()});
++        return BuiltInRegistries.BLOCK.stream().map(block -> new Object[]{block.defaultBlockState()});
      }
  
 -    @Parameterized.Parameter(0) public BlockState data;
@@ -1161,7 +1140,7 @@ index 6b7dd01778f0a5d3a96d2d04af4b525d17efbfba..92520a21f4f9e7bc51750f695d986dcb
      }
  }
 diff --git a/src/test/java/org/bukkit/EnchantmentTest.java b/src/test/java/org/bukkit/EnchantmentTest.java
-index 7b703fdb10175d6b649354b736f007c74ad23c70..6601ca59a10bab6e62f81ca2f254f5b00389b05f 100644
+index 579c05750f1461bfd14bf383559e22fd1eb1074e..91caf915db46d490cbb3575d220bceeed2549860 100644
 --- a/src/test/java/org/bukkit/EnchantmentTest.java
 +++ b/src/test/java/org/bukkit/EnchantmentTest.java
 @@ -5,8 +5,11 @@ import net.minecraft.resources.ResourceLocation;
@@ -1191,11 +1170,11 @@ index 7b703fdb10175d6b649354b736f007c74ad23c70..6601ca59a10bab6e62f81ca2f254f5b0
      }
  }
 diff --git a/src/test/java/org/bukkit/GameEventTest.java b/src/test/java/org/bukkit/GameEventTest.java
-index ce5130a286224a071fc3ae5625eb463507e2b962..14729c980ad1ce97d16f76a30ce6348c6776ba20 100644
+index bb25e9e0ecf25c31c57f8af5ed8cccc24e72c025..293b468b5636b709b036e54639f6fecf8579087b 100644
 --- a/src/test/java/org/bukkit/GameEventTest.java
 +++ b/src/test/java/org/bukkit/GameEventTest.java
 @@ -3,8 +3,10 @@ package org.bukkit;
- import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
  import org.bukkit.craftbukkit.util.CraftNamespacedKey;
  import org.bukkit.support.AbstractTestingBase;
 -import org.junit.Assert;
@@ -1208,8 +1187,8 @@ index ce5130a286224a071fc3ae5625eb463507e2b962..14729c980ad1ce97d16f76a30ce6348c
  public class GameEventTest extends AbstractTestingBase {
  
 @@ -13,7 +15,7 @@ public class GameEventTest extends AbstractTestingBase {
-         for (net.minecraft.world.level.gameevent.GameEvent nms : Registry.GAME_EVENT) {
-             GameEvent bukkit = GameEvent.getByKey(CraftNamespacedKey.fromMinecraft(Registry.GAME_EVENT.getKey(nms)));
+         for (net.minecraft.world.level.gameevent.GameEvent nms : BuiltInRegistries.GAME_EVENT) {
+             GameEvent bukkit = GameEvent.getByKey(CraftNamespacedKey.fromMinecraft(BuiltInRegistries.GAME_EVENT.getKey(nms)));
  
 -            Assert.assertNotNull("Bukkit should not be null " + nms, bukkit);
 +            assertNotNull(bukkit, "Bukkit should not be null " + nms);
@@ -1336,7 +1315,7 @@ index 86861da255279076f0b53da31f6caa5c70515669..337ffefed37765862db5dbc97602a4d3
      }
  }
 diff --git a/src/test/java/org/bukkit/MaterialTest.java b/src/test/java/org/bukkit/MaterialTest.java
-index 4683931920a6f6d8e7cb5799d272555792ccb019..13db3f919346838fc136cdb55e7b884210c2b112 100644
+index 55e80159d81046ab800057af271b1dfbfa0e2ccf..9399e08df16a150ae31d7ce10dbb2ccb6e58a481 100644
 --- a/src/test/java/org/bukkit/MaterialTest.java
 +++ b/src/test/java/org/bukkit/MaterialTest.java
 @@ -1,7 +1,8 @@
@@ -1374,7 +1353,7 @@ index 4683931920a6f6d8e7cb5799d272555792ccb019..13db3f919346838fc136cdb55e7b8842
  
          assertThat(materials, is(Collections.EMPTY_MAP));
 diff --git a/src/test/java/org/bukkit/ParticleTest.java b/src/test/java/org/bukkit/ParticleTest.java
-index 5e45387d0e88b6988b48f03db2633243740e3335..aff365fe822c4b428bdf0eef918e02ce2a564c71 100644
+index 33806139c7f0cc4710b88dfb9b71fea95779d37c..cc767d53201bc34653f088e639ef4de9a3dba51c 100644
 --- a/src/test/java/org/bukkit/ParticleTest.java
 +++ b/src/test/java/org/bukkit/ParticleTest.java
 @@ -7,8 +7,10 @@ import org.bukkit.craftbukkit.block.data.CraftBlockData;
@@ -1405,9 +1384,9 @@ index 5e45387d0e88b6988b48f03db2633243740e3335..aff365fe822c4b428bdf0eef918e02ce
 -            Assert.assertNotNull("Missing Bukkit->NMS particle mapping for " + bukkit, CraftParticle.toNMS(bukkit, data));
 +            assertNotNull(CraftParticle.toNMS(bukkit, data), "Missing Bukkit->NMS particle mapping for " + bukkit);
          }
-         for (net.minecraft.core.particles.ParticleType nms : Registry.PARTICLE_TYPE) {
--            Assert.assertNotNull("Missing NMS->Bukkit particle mapping for " + Registry.PARTICLE_TYPE.getKey(nms), CraftParticle.toBukkit(nms));
-+            assertNotNull(CraftParticle.toBukkit(nms), "Missing NMS->Bukkit particle mapping for " + Registry.PARTICLE_TYPE.getKey(nms));
+         for (net.minecraft.core.particles.ParticleType nms : BuiltInRegistries.PARTICLE_TYPE) {
+-            Assert.assertNotNull("Missing NMS->Bukkit particle mapping for " + BuiltInRegistries.PARTICLE_TYPE.getKey(nms), CraftParticle.toBukkit(nms));
++            assertNotNull(CraftParticle.toBukkit(nms), "Missing NMS->Bukkit particle mapping for " + BuiltInRegistries.PARTICLE_TYPE.getKey(nms));
          }
      }
  }
@@ -1861,7 +1840,7 @@ index e63a221d81ca7285a0d66b1015d0a61c54a0615b..1b436cd85f4a9124431285d9c7e501bc
      }
  }
 diff --git a/src/test/java/org/bukkit/PotionEffectTypeTest.java b/src/test/java/org/bukkit/PotionEffectTypeTest.java
-index 89f6961d857c4498de07f4ffb138e6eeeb42b3c2..b93daff2d3b6a375ce6af57e51be9f71496feffa 100644
+index 005ece87fc1dc22f3cdbbe46e7a4f09323fc0a5e..0132ab9377599ba9f3f904547f7a0b5280999ad1 100644
 --- a/src/test/java/org/bukkit/PotionEffectTypeTest.java
 +++ b/src/test/java/org/bukkit/PotionEffectTypeTest.java
 @@ -1,7 +1,8 @@
@@ -1893,18 +1872,17 @@ index 89f6961d857c4498de07f4ffb138e6eeeb42b3c2..b93daff2d3b6a375ce6af57e51be9f71
              effects.remove(effect);
          }
 diff --git a/src/test/java/org/bukkit/SoundTest.java b/src/test/java/org/bukkit/SoundTest.java
-index 8e81f4f4e789fa15f4a1bb044f29cbf79f23ed3b..6d356a74e2a005f682322b2cb8e17fdb5d7fbcd1 100644
+index 8b0d195373d4b7899b39ec98792d83a5b6508997..895037be56d8a13a3a499d9f06a255229ebb1d1d 100644
 --- a/src/test/java/org/bukkit/SoundTest.java
 +++ b/src/test/java/org/bukkit/SoundTest.java
-@@ -1,13 +1,14 @@
+@@ -1,12 +1,13 @@
  package org.bukkit;
  
 +import static org.hamcrest.MatcherAssert.assertThat;
  import static org.hamcrest.Matchers.*;
 -import static org.junit.Assert.*;
 +import static org.junit.jupiter.api.Assertions.*;
- 
- import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
  import net.minecraft.resources.ResourceLocation;
  import org.bukkit.craftbukkit.CraftSound;
  import org.bukkit.support.AbstractTestingBase;
@@ -1913,10 +1891,10 @@ index 8e81f4f4e789fa15f4a1bb044f29cbf79f23ed3b..6d356a74e2a005f682322b2cb8e17fdb
  
  public class SoundTest extends AbstractTestingBase {
  
-@@ -21,21 +22,21 @@ public class SoundTest extends AbstractTestingBase {
+@@ -20,21 +21,21 @@ public class SoundTest extends AbstractTestingBase {
      @Test
      public void testReverse() {
-         for (ResourceLocation effect : Registry.SOUND_EVENT.keySet()) {
+         for (ResourceLocation effect : BuiltInRegistries.SOUND_EVENT.keySet()) {
 -            assertNotNull(effect + "", Sound.valueOf(effect.getPath().replace('.', '_').toUpperCase(java.util.Locale.ENGLISH)));
 +            assertNotNull(Sound.valueOf(effect.getPath().replace('.', '_').toUpperCase(java.util.Locale.ENGLISH)), effect + "");
          }
@@ -1940,7 +1918,7 @@ index 8e81f4f4e789fa15f4a1bb044f29cbf79f23ed3b..6d356a74e2a005f682322b2cb8e17fdb
      }
  }
 diff --git a/src/test/java/org/bukkit/StatisticsAndAchievementsTest.java b/src/test/java/org/bukkit/StatisticsAndAchievementsTest.java
-index d4680053ad4e5a9dbf586c82c64c356b879fc369..e4e70484e5b042aaf93e75825f58b2332db4abf1 100644
+index c00bceb80232686169fcd15dd004ed41124bd78a..8c1be4be3810ad8f7536c034191e901b09520335 100644
 --- a/src/test/java/org/bukkit/StatisticsAndAchievementsTest.java
 +++ b/src/test/java/org/bukkit/StatisticsAndAchievementsTest.java
 @@ -1,14 +1,16 @@
@@ -1951,7 +1929,7 @@ index d4680053ad4e5a9dbf586c82c64c356b879fc369..e4e70484e5b042aaf93e75825f58b233
 -import static org.junit.Assert.*;
 +import static org.junit.jupiter.api.Assertions.*;
  import com.google.common.collect.HashMultiset;
- import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
 +import net.minecraft.stats.Stat;
  import net.minecraft.stats.StatType;
  import org.bukkit.craftbukkit.CraftStatistic;
@@ -1973,7 +1951,7 @@ index d4680053ad4e5a9dbf586c82c64c356b879fc369..e4e70484e5b042aaf93e75825f58b233
              }
 @@ -32,16 +34,16 @@ public class StatisticsAndAchievementsTest extends AbstractTestingBase {
          HashMultiset<Statistic> statistics = HashMultiset.create();
-         for (StatType wrapper : Registry.STAT_TYPE) {
+         for (StatType wrapper : BuiltInRegistries.STAT_TYPE) {
              for (Object child : wrapper.getRegistry()) {
 -                net.minecraft.stats.Stat<?> statistic = wrapper.get(child);
 +                Stat<net.minecraft.world.entity.EntityType<?>> statistic = wrapper.get(child);
@@ -1982,24 +1960,24 @@ index d4680053ad4e5a9dbf586c82c64c356b879fc369..e4e70484e5b042aaf93e75825f58b233
                  Statistic subject = CraftStatistic.getBukkitStatistic(statistic);
                  assertThat(message, subject, is(not(nullValue())));
  
-                 if (wrapper.getRegistry() == Registry.BLOCK || wrapper.getRegistry() == Registry.ITEM) {
+                 if (wrapper.getRegistry() == BuiltInRegistries.BLOCK || wrapper.getRegistry() == BuiltInRegistries.ITEM) {
 -                    assertNotNull("Material type map missing for " + wrapper.getRegistry().getKey(child), CraftStatistic.getMaterialFromStatistic(statistic));
 +                    assertNotNull(CraftStatistic.getMaterialFromStatistic(statistic), "Material type map missing for " + wrapper.getRegistry().getKey(child));
-                 } else if (wrapper.getRegistry() == Registry.ENTITY_TYPE) {
+                 } else if (wrapper.getRegistry() == BuiltInRegistries.ENTITY_TYPE) {
 -                    assertNotNull("Entity type map missing for " + net.minecraft.world.entity.EntityType.getKey((net.minecraft.world.entity.EntityType<?>) child), CraftStatistic.getEntityTypeFromStatistic((net.minecraft.stats.Stat<net.minecraft.world.entity.EntityType<?>>) statistic));
 +                    assertNotNull(CraftStatistic.getEntityTypeFromStatistic(statistic), "Entity type map missing for " + net.minecraft.world.entity.EntityType.getKey((net.minecraft.world.entity.EntityType<?>) child));
                  }
  
                  statistics.add(subject);
 diff --git a/src/test/java/org/bukkit/block/banner/PatternTypeTest.java b/src/test/java/org/bukkit/block/banner/PatternTypeTest.java
-index b325e66bab75edef79b662b2fb5bcd99efea9533..928492d674260d2037cabc628a8b7b780e51ec0d 100644
+index 2a63bff7244a383b762a174093989252112a4998..114dcdfbcc4a490625345a2006bab9877695df7d 100644
 --- a/src/test/java/org/bukkit/block/banner/PatternTypeTest.java
 +++ b/src/test/java/org/bukkit/block/banner/PatternTypeTest.java
 @@ -1,10 +1,12 @@
  package org.bukkit.block.banner;
  
 -import junit.framework.Assert;
- import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
  import net.minecraft.world.level.block.entity.BannerPattern;
  import org.bukkit.support.AbstractTestingBase;
 -import org.junit.Test;
@@ -2011,7 +1989,7 @@ index b325e66bab75edef79b662b2fb5bcd99efea9533..928492d674260d2037cabc628a8b7b78
  public class PatternTypeTest extends AbstractTestingBase {
  
 @@ -13,7 +15,7 @@ public class PatternTypeTest extends AbstractTestingBase {
-         for (BannerPattern nms : Registry.BANNER_PATTERN) {
+         for (BannerPattern nms : BuiltInRegistries.BANNER_PATTERN) {
              PatternType bukkit = PatternType.getByIdentifier(nms.getHashname());
  
 -            Assert.assertNotNull("No Bukkit banner for " + nms + " " + nms.getHashname(), bukkit);
@@ -2063,10 +2041,10 @@ index e9d7d83cf13781a442bae5b7f306275dd114faaf..e490df6c2f8a1c971152ad83afa239db
      }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/attribute/AttributeTest.java b/src/test/java/org/bukkit/craftbukkit/attribute/AttributeTest.java
-index 21aa20d75171ba8723fafb61ff1aeba90f10e284..8d4ee86f17544239d90f7775fd937d3aac4c5ea4 100644
+index 34ad98bc61ad051b05b44d7f4540281576573ba6..ab003f186dacbfd125d9d2b9e2affc23d4621226 100644
 --- a/src/test/java/org/bukkit/craftbukkit/attribute/AttributeTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/attribute/AttributeTest.java
-@@ -4,8 +4,10 @@ import net.minecraft.core.Registry;
+@@ -4,8 +4,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
  import net.minecraft.resources.ResourceLocation;
  import org.bukkit.attribute.Attribute;
  import org.bukkit.support.AbstractTestingBase;
@@ -2080,7 +2058,7 @@ index 21aa20d75171ba8723fafb61ff1aeba90f10e284..8d4ee86f17544239d90f7775fd937d3a
  public class AttributeTest extends AbstractTestingBase {
  
 @@ -14,7 +16,7 @@ public class AttributeTest extends AbstractTestingBase {
-         for (ResourceLocation nms : Registry.ATTRIBUTE.keySet()) {
+         for (ResourceLocation nms : BuiltInRegistries.ATTRIBUTE.keySet()) {
              Attribute bukkit = CraftAttributeMap.fromMinecraft(nms.toString());
  
 -            Assert.assertNotNull(nms.toString(), bukkit);
@@ -2098,7 +2076,7 @@ index 21aa20d75171ba8723fafb61ff1aeba90f10e284..8d4ee86f17544239d90f7775fd937d3a
      }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/block/BlockStateTest.java b/src/test/java/org/bukkit/craftbukkit/block/BlockStateTest.java
-index 95e4a4080a4a168b53f69d9cd7d67c27263c1b7f..f6cf0e5f3decf8480a25b7e39addaa78923065c8 100644
+index 04710abbfb50eaa6e3e4d96fca5f0355f940a452..12964fb9929546c8b5cfc29101ed51ea16183e50 100644
 --- a/src/test/java/org/bukkit/craftbukkit/block/BlockStateTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/block/BlockStateTest.java
 @@ -1,10 +1,5 @@
@@ -2110,7 +2088,7 @@ index 95e4a4080a4a168b53f69d9cd7d67c27263c1b7f..f6cf0e5f3decf8480a25b7e39addaa78
 -import static org.junit.Assert.fail;
 -
  import net.minecraft.core.BlockPos;
- import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
  import net.minecraft.world.level.block.Block;
 @@ -13,7 +8,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  import org.bukkit.Material;
@@ -2151,25 +2129,21 @@ index 95e4a4080a4a168b53f69d9cd7d67c27263c1b7f..f6cf0e5f3decf8480a25b7e39addaa78
 -    @Test
 +    @org.junit.jupiter.api.Test
      public void testBlockEntityTypes() {
-         for (var blockEntityType : Registry.BLOCK_ENTITY_TYPE) {
+         for (var blockEntityType : BuiltInRegistries.BLOCK_ENTITY_TYPE) {
 -            org.junit.Assert.assertNotNull(CraftBlockStates.getBlockStateType(blockEntityType));
 +            assertNotNull(CraftBlockStates.getBlockStateType(blockEntityType));
          }
      }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/generator/ChunkDataTest.java b/src/test/java/org/bukkit/craftbukkit/generator/ChunkDataTest.java
-index 690e2db9f75964b40ff20596d6b16b68d85884dc..0da4b2b1583fb8105c13b5916cc1c74a2abeb28a 100644
+index 872ebc6b049a39e5e89e6580366b424228865682..c9c16f51324bdaef9fea37b303738fba823a9e67 100644
 --- a/src/test/java/org/bukkit/craftbukkit/generator/ChunkDataTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/generator/ChunkDataTest.java
-@@ -1,6 +1,6 @@
+@@ -1,10 +1,10 @@
  package org.bukkit.craftbukkit.generator;
  
 -import static org.junit.Assert.*;
 +import static org.junit.jupiter.api.Assertions.*;
- 
- import net.minecraft.core.Registry;
- import net.minecraft.data.BuiltinRegistries;
-@@ -8,7 +8,7 @@ import net.minecraft.world.level.biome.Biome;
  import org.bukkit.Material;
  import org.bukkit.block.data.BlockData;
  import org.bukkit.support.AbstractTestingBase;
@@ -2178,14 +2152,14 @@ index 690e2db9f75964b40ff20596d6b16b68d85884dc..0da4b2b1583fb8105c13b5916cc1c74a
  
  public class ChunkDataTest extends AbstractTestingBase {
  
-@@ -37,34 +37,34 @@ public class ChunkDataTest extends AbstractTestingBase {
+@@ -32,34 +32,34 @@ public class ChunkDataTest extends AbstractTestingBase {
          }
      }
  
 -    @Test
 +    @org.junit.jupiter.api.Test
      public void testMinHeight() {
-         OldCraftChunkData data = new OldCraftChunkData(-128, 128, ChunkDataTest.BIOMES);
+         OldCraftChunkData data = new OldCraftChunkData(-128, 128, BIOMES);
 -        assertTrue("Could not set block below min height", this.testSetBlock(data, 0, -256, 0, ChunkDataTest.RED_WOOL, ChunkDataTest.AIR));
 -        assertTrue("Could set block above min height", this.testSetBlock(data, 0, -64, 0, ChunkDataTest.RED_WOOL, ChunkDataTest.RED_WOOL));
 +        assertTrue(this.testSetBlock(data, 0, -256, 0, ChunkDataTest.RED_WOOL, ChunkDataTest.AIR), "Could not set block below min height");
@@ -2194,7 +2168,7 @@ index 690e2db9f75964b40ff20596d6b16b68d85884dc..0da4b2b1583fb8105c13b5916cc1c74a
  
      @Test
      public void testMaxHeight() {
-         OldCraftChunkData data = new OldCraftChunkData(0, 128, ChunkDataTest.BIOMES);
+         OldCraftChunkData data = new OldCraftChunkData(0, 128, BIOMES);
 -        assertTrue("Could not set block above max height", this.testSetBlock(data, 0, 128, 0, ChunkDataTest.RED_WOOL, ChunkDataTest.AIR));
 -        assertTrue("Could set block below max height", this.testSetBlock(data, 0, 127, 0, ChunkDataTest.RED_WOOL, ChunkDataTest.RED_WOOL));
 +        assertTrue(this.testSetBlock(data, 0, 128, 0, ChunkDataTest.RED_WOOL, ChunkDataTest.AIR), "Could not set block above max height");
@@ -2204,7 +2178,7 @@ index 690e2db9f75964b40ff20596d6b16b68d85884dc..0da4b2b1583fb8105c13b5916cc1c74a
 -    @Test
 +    @org.junit.jupiter.api.Test
      public void testBoundsCheckingSingle() {
-         OldCraftChunkData data = new OldCraftChunkData(0, 256, ChunkDataTest.BIOMES);
+         OldCraftChunkData data = new OldCraftChunkData(0, 256, BIOMES);
 -        assertTrue("Can set block inside chunk bounds", this.testSetBlock(data, 0, 0, 0, ChunkDataTest.RED_WOOL, ChunkDataTest.RED_WOOL));
 -        assertTrue("Can set block inside chunk bounds", this.testSetBlock(data, 15, 255, 15, ChunkDataTest.RED_WOOL, ChunkDataTest.RED_WOOL));
 -        assertTrue("Can no set block outside chunk bounds", this.testSetBlock(data, -1, 0, 0, ChunkDataTest.RED_WOOL, ChunkDataTest.AIR));
@@ -2226,7 +2200,7 @@ index 690e2db9f75964b40ff20596d6b16b68d85884dc..0da4b2b1583fb8105c13b5916cc1c74a
 -    @Test
 +    @org.junit.jupiter.api.Test
      public void testSetRegion() {
-         OldCraftChunkData data = new OldCraftChunkData(0, 256, ChunkDataTest.BIOMES);
+         OldCraftChunkData data = new OldCraftChunkData(0, 256, BIOMES);
          this.testSetRegion(data, -100, 0, -100, 0, 256, 0, ChunkDataTest.RED_WOOL); // exclusively outside
 diff --git a/src/test/java/org/bukkit/craftbukkit/inventory/CompositeSerialization.java b/src/test/java/org/bukkit/craftbukkit/inventory/CompositeSerialization.java
 index a5d188acc000d4a2d10b4af995730a8698e22f04..70d307e51889715707e9a04dac500d720a94038d 100644
@@ -2609,7 +2583,7 @@ index 2cab00db9881b69714f1c250348b622c8092ab8f..fb8f9c0eb3b6cce6d1a58063756180f0
      }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java b/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
-index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1fc0ead34b 100644
+index bc5427e6e7221245330723c290dd15abf45ffdda..14720dab2b304723da8650e08b17f6d4810f252a 100644
 --- a/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
 @@ -1,7 +1,10 @@
@@ -2624,7 +2598,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
  import java.util.ArrayList;
  import java.util.Arrays;
  import java.util.List;
-@@ -53,30 +56,30 @@ import org.bukkit.potion.PotionData;
+@@ -56,30 +59,30 @@ import org.bukkit.potion.PotionData;
  import org.bukkit.potion.PotionEffectType;
  import org.bukkit.potion.PotionType;
  import org.bukkit.support.AbstractTestingBase;
@@ -2664,7 +2638,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      }
  
      @Test
-@@ -88,7 +91,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -91,7 +94,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          }
      }
  
@@ -2673,7 +2647,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      public void testConflictingEnchantment() {
          ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
          assertThat(itemMeta.hasConflictingEnchant(Enchantment.DURABILITY), is(false));
-@@ -118,7 +121,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -121,7 +124,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          stack.setLore(null);
      }
  
@@ -2682,7 +2656,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      public void testHasItemMeta() {
          ItemStack itemStack = new ItemStack(Material.SHEARS);
  
-@@ -127,7 +130,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -130,7 +133,7 @@ public class ItemMetaTest extends AbstractTestingBase {
      }
      // Paper end
  
@@ -2691,7 +2665,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      public void testConflictingStoredEnchantment() {
          EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta) Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
          assertThat(itemMeta.hasConflictingStoredEnchant(Enchantment.DURABILITY), is(false));
-@@ -138,7 +141,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -141,7 +144,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          assertThat(itemMeta.hasConflictingStoredEnchant(null), is(false));
      }
  
@@ -2700,7 +2674,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      public void testConflictingEnchantments() {
          ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
          itemMeta.addEnchant(Enchantment.DURABILITY, 6, true);
-@@ -150,7 +153,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -153,7 +156,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          assertThat(itemMeta.hasConflictingEnchant(null), is(false));
      }
  
@@ -2709,7 +2683,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      public void testConflictingStoredEnchantments() {
          EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta) Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
          itemMeta.addStoredEnchant(Enchantment.DURABILITY, 6, true);
-@@ -166,7 +169,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -169,7 +172,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          return ((FireworkMeta) Bukkit.getItemFactory().getItemMeta(Material.FIREWORK_ROCKET));
      }
  
@@ -2718,7 +2692,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      public void testCrazyEquality() {
          CraftItemStack craft = CraftItemStack.asCraftCopy(new ItemStack(Material.STONE));
          craft.setItemMeta(craft.getItemMeta());
-@@ -175,7 +178,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -178,7 +181,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          assertThat(bukkit, is((ItemStack) craft));
      }
  
@@ -2727,7 +2701,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      public void testBlockStateMeta() {
          List<Block> queue = new ArrayList<>();
  
-@@ -199,20 +202,20 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -202,20 +205,20 @@ public class ItemMetaTest extends AbstractTestingBase {
  
                  ItemMeta meta = stack.getItemMeta();
                  if (block instanceof EntityBlock) {
@@ -2749,10 +2723,10 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
  
 -    @Test
 +    @org.junit.jupiter.api.Test
-     public void testEachExtraData() {
-         final List<StackProvider> providers = Arrays.asList(
-             new StackProvider(Material.WRITABLE_BOOK) {
-@@ -400,7 +403,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+     public void testSpawnEggsHasMeta() {
+         for (Item item : BuiltInRegistries.ITEM) {
+             if (item instanceof net.minecraft.world.item.SpawnEggItem) {
+@@ -426,7 +429,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          }
      }
  
@@ -2761,7 +2735,7 @@ index 44bc92bea0fa0742ef861e16eba3e57d9c6e49ce..d44bec658d69ecb9bfa0a1eefb12ff1f
      public void testAttributeModifiers() {
          UUID sameUUID = UUID.randomUUID();
          ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
-@@ -420,7 +423,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -446,7 +449,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          assertThat(itemMeta2.equals(notEqualMeta2), is(false));
      }
  
@@ -3456,7 +3430,7 @@ index 23e5d98cf72d8bccd56087d71507036046cd1104..265b66d8901ef9e44635b5fb0ed97aff
      }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/legacy/LegacyTest.java b/src/test/java/org/bukkit/craftbukkit/legacy/LegacyTest.java
-index 0f79523a374ccc8878ed51e24e1ddd08c2c753e7..3dd348828dff273aa826c0833c8258841a7f4f31 100644
+index 5db56256e862ec58c9aebd4e647927c7679d1ef5..083d097d7ed124bffa3619fec825f86806888376 100644
 --- a/src/test/java/org/bukkit/craftbukkit/legacy/LegacyTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/legacy/LegacyTest.java
 @@ -7,8 +7,10 @@ import org.bukkit.Material;
@@ -3472,7 +3446,7 @@ index 0f79523a374ccc8878ed51e24e1ddd08c2c753e7..3dd348828dff273aa826c0833c825884
  
  public class LegacyTest extends AbstractTestingBase {
  
-@@ -100,57 +102,57 @@ public class LegacyTest extends AbstractTestingBase {
+@@ -107,57 +109,57 @@ public class LegacyTest extends AbstractTestingBase {
              Material.LEGACY_CAKE, Material.LEGACY_BED, Material.LEGACY_DIODE, Material.LEGACY_NETHER_STALK, Material.LEGACY_BREWING_STAND_ITEM, Material.LEGACY_CAULDRON_ITEM, Material.LEGACY_REDSTONE_COMPARATOR, Material.LEGACY_SPRUCE_DOOR_ITEM,
              Material.LEGACY_BIRCH_DOOR_ITEM, Material.LEGACY_JUNGLE_DOOR_ITEM, Material.LEGACY_ACACIA_DOOR_ITEM, Material.LEGACY_DARK_OAK_DOOR_ITEM, Material.LEGACY_STATIONARY_LAVA, Material.LEGACY_STATIONARY_WATER));
  
@@ -3877,7 +3851,7 @@ index 7dc4c42252179b75e6b57dc762ffaca6b9ed93dd..8121d464844782f8c3f9b7cb65a69b4a
      }
  }
 diff --git a/src/test/java/org/bukkit/enchantments/EnchantmentTargetTest.java b/src/test/java/org/bukkit/enchantments/EnchantmentTargetTest.java
-index 9873addca9e7a2a7eaa30a1c1cd332260ca07b35..fa41785db44c280a7a498e525fab456e14d851dc 100644
+index 5d3b8ba99d0fe966b7329540d61825aa266c7e64..a9f883a5cdec7109d29355d7b9900b5b523c443c 100644
 --- a/src/test/java/org/bukkit/enchantments/EnchantmentTargetTest.java
 +++ b/src/test/java/org/bukkit/enchantments/EnchantmentTargetTest.java
 @@ -6,8 +6,11 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
@@ -3901,7 +3875,7 @@ index 9873addca9e7a2a7eaa30a1c1cd332260ca07b35..fa41785db44c280a7a498e525fab456e
 -            Assert.assertNotNull("No bukkit target for slot " + nmsSlot, bukkitTarget);
 +            assertNotNull(bukkitTarget, "No bukkit target for slot " + nmsSlot);
  
-             for (Item item : Registry.ITEM) {
+             for (Item item : BuiltInRegistries.ITEM) {
                  Material material = CraftMagicNumbers.getMaterial(item);
 @@ -35,7 +38,7 @@ public class EnchantmentTargetTest extends AbstractTestingBase { // Paper
                  boolean nms = nmsSlot.canEnchant(item);
@@ -4013,11 +3987,11 @@ index 36134e133923c480a1d1a4567d6c140af95cb28e..5ffd6443eaea5f33bf98d4ef97487689
      }
  }
 diff --git a/src/test/java/org/bukkit/entity/EntityTypesTest.java b/src/test/java/org/bukkit/entity/EntityTypesTest.java
-index 1e84f541683ddb619c2a8dfcd2a141fba2bd851d..9fa2b158c0a7944803d2024719108173d4b8d6f8 100644
+index b2efb294822c53768bde38e7a78c7b8f093481e9..2d77f71ef9b0aa0a5cacf96072cb0f5ffc842243 100644
 --- a/src/test/java/org/bukkit/entity/EntityTypesTest.java
 +++ b/src/test/java/org/bukkit/entity/EntityTypesTest.java
 @@ -6,8 +6,11 @@ import java.util.stream.Collectors;
- import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
  import net.minecraft.resources.ResourceLocation;
  import org.bukkit.support.AbstractTestingBase;
 -import org.junit.Assert;
@@ -4123,7 +4097,7 @@ index 79c298345833538c778087f293e39bd5fe973f9e..78c2e1a28aa20751a7e772af25f55cb4
  public class TropicalFishTest {
  
 diff --git a/src/test/java/org/bukkit/entity/memory/CraftMemoryKeyTest.java b/src/test/java/org/bukkit/entity/memory/CraftMemoryKeyTest.java
-index 86e45ab38f4c6eace757ef945c07db3ee2da81f2..acf354bff38ac27007a41790addd23918d414129 100644
+index 4131128e6c5e1c2e96548b61e638b1faa07dd537..c7893522e43808b6264b56665435055dc5a34818 100644
 --- a/src/test/java/org/bukkit/entity/memory/CraftMemoryKeyTest.java
 +++ b/src/test/java/org/bukkit/entity/memory/CraftMemoryKeyTest.java
 @@ -6,71 +6,73 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -4199,7 +4173,7 @@ index 86e45ab38f4c6eace757ef945c07db3ee2da81f2..acf354bff38ac27007a41790addd2391
 -    @Test
 +    @org.junit.jupiter.api.Test
      public void shouldReturnNullWhenBukkitRepresentationOfKeyisNotAvailableAndSerializerIsNotPresent() {
-         for (MemoryModuleType<?> memoryModuleType : Registry.MEMORY_MODULE_TYPE) {
+         for (MemoryModuleType<?> memoryModuleType : BuiltInRegistries.MEMORY_MODULE_TYPE) {
              if (!memoryModuleType.getCodec().isPresent()) {
                  MemoryKey bukkitNoKey = CraftMemoryKey.toMemoryKey(memoryModuleType);
 -                Assert.assertNull("MemoryModuleType should be null", bukkitNoKey);
@@ -4213,22 +4187,22 @@ index 86e45ab38f4c6eace757ef945c07db3ee2da81f2..acf354bff38ac27007a41790addd2391
 +    @org.junit.jupiter.api.Test
 +    @Disabled("Unit type not yet implemented")
      public void shouldReturnAnInstanceOfMemoryKeyWhenBukkitRepresentationOfKeyisAvailableAndSerializerIsPresent() {
-         for (MemoryModuleType<?> memoryModuleType : Registry.MEMORY_MODULE_TYPE) {
+         for (MemoryModuleType<?> memoryModuleType : BuiltInRegistries.MEMORY_MODULE_TYPE) {
              if (memoryModuleType.getCodec().isPresent()) {
                  MemoryKey bukkitNoKey = CraftMemoryKey.toMemoryKey(memoryModuleType);
--                Assert.assertNotNull("MemoryModuleType should not be null " + Registry.MEMORY_MODULE_TYPE.getKey(memoryModuleType), bukkitNoKey);
-+                assertNotNull(bukkitNoKey, "MemoryModuleType should not be null " + Registry.MEMORY_MODULE_TYPE.getKey(memoryModuleType));
+-                Assert.assertNotNull("MemoryModuleType should not be null " + BuiltInRegistries.MEMORY_MODULE_TYPE.getKey(memoryModuleType), bukkitNoKey);
++                assertNotNull(bukkitNoKey, "MemoryModuleType should not be null " + BuiltInRegistries.MEMORY_MODULE_TYPE.getKey(memoryModuleType));
              }
          }
      }
 diff --git a/src/test/java/org/bukkit/generator/structure/StructureTest.java b/src/test/java/org/bukkit/generator/structure/StructureTest.java
-index f3601f03a10eeda382f3c759034e52e202530555..43a3ec9f6a6f65314d8b321728cc19cf6d197d09 100644
+index fedee1c9025129862fa00e84c2f4d1a2feb561f4..b3a9a1898c04e55289ee10a9e74e197d7be8db1f 100644
 --- a/src/test/java/org/bukkit/generator/structure/StructureTest.java
 +++ b/src/test/java/org/bukkit/generator/structure/StructureTest.java
-@@ -2,13 +2,17 @@ package org.bukkit.generator.structure;
- 
+@@ -3,13 +3,17 @@ package org.bukkit.generator.structure;
  import java.lang.reflect.Field;
  import java.lang.reflect.Modifier;
+ import net.minecraft.core.registries.Registries;
 +import java.util.Objects;
 +
  import net.minecraft.resources.ResourceLocation;
@@ -4245,7 +4219,7 @@ index f3601f03a10eeda382f3c759034e52e202530555..43a3ec9f6a6f65314d8b321728cc19cf
  
  public class StructureTest extends AbstractTestingBase {
  
-@@ -23,11 +27,12 @@ public class StructureTest extends AbstractTestingBase {
+@@ -24,11 +28,12 @@ public class StructureTest extends AbstractTestingBase {
              }
  
              String name = field.getName();
@@ -4258,9 +4232,9 @@ index f3601f03a10eeda382f3c759034e52e202530555..43a3ec9f6a6f65314d8b321728cc19cf
 -    @Test
 +    @org.junit.jupiter.api.Test
      public void testMinecraftToBukkitFieldName() {
-         net.minecraft.core.Registry<net.minecraft.world.level.levelgen.structure.Structure> structureIRegistry = AbstractTestingBase.REGISTRY_CUSTOM.registryOrThrow(net.minecraft.core.Registry.STRUCTURE_REGISTRY);
-         for (net.minecraft.world.level.levelgen.structure.Structure structure : structureIRegistry) {
-@@ -36,13 +41,13 @@ public class StructureTest extends AbstractTestingBase {
+         net.minecraft.core.Registry<net.minecraft.world.level.levelgen.structure.Structure> structureBuiltInRegistries = AbstractTestingBase.REGISTRY_CUSTOM.registryOrThrow(Registries.STRUCTURE);
+         for (net.minecraft.world.level.levelgen.structure.Structure structure : structureBuiltInRegistries) {
+@@ -37,13 +42,13 @@ public class StructureTest extends AbstractTestingBase {
              try {
                  Structure bukkit = (Structure) Structure.class.getField(minecraftKey.getPath().toUpperCase()).get(null);
  
@@ -4279,15 +4253,16 @@ index f3601f03a10eeda382f3c759034e52e202530555..43a3ec9f6a6f65314d8b321728cc19cf
          }
      }
 diff --git a/src/test/java/org/bukkit/generator/structure/StructureTypeTest.java b/src/test/java/org/bukkit/generator/structure/StructureTypeTest.java
-index 125367411d3c2338ce537619596ed41825728f4a..32d75bfde08dc5e5047dd2eb2ecae5c69aa31acb 100644
+index b5b7e598d7a36e0fa884e0b66bc194859de5caad..ae56dd4a8d85acc52e00e8f9efc6ba79e3e2c6ce 100644
 --- a/src/test/java/org/bukkit/generator/structure/StructureTypeTest.java
 +++ b/src/test/java/org/bukkit/generator/structure/StructureTypeTest.java
-@@ -2,13 +2,17 @@ package org.bukkit.generator.structure;
+@@ -2,14 +2,18 @@ package org.bukkit.generator.structure;
  
  import java.lang.reflect.Field;
  import java.lang.reflect.Modifier;
 +import java.util.Objects;
 +
+ import net.minecraft.core.registries.BuiltInRegistries;
  import net.minecraft.resources.ResourceLocation;
  import org.bukkit.NamespacedKey;
  import org.bukkit.Registry;
@@ -4302,7 +4277,7 @@ index 125367411d3c2338ce537619596ed41825728f4a..32d75bfde08dc5e5047dd2eb2ecae5c6
  
  public class StructureTypeTest extends AbstractTestingBase {
  
-@@ -23,7 +27,8 @@ public class StructureTypeTest extends AbstractTestingBase {
+@@ -24,7 +28,8 @@ public class StructureTypeTest extends AbstractTestingBase {
              }
  
              String name = field.getName();
@@ -4312,8 +4287,8 @@ index 125367411d3c2338ce537619596ed41825728f4a..32d75bfde08dc5e5047dd2eb2ecae5c6
          }
      }
  
-@@ -33,15 +38,16 @@ public class StructureTypeTest extends AbstractTestingBase {
-             ResourceLocation minecraftKey = net.minecraft.core.Registry.STRUCTURE_TYPES.getKey(structureType);
+@@ -34,15 +39,16 @@ public class StructureTypeTest extends AbstractTestingBase {
+             ResourceLocation minecraftKey = BuiltInRegistries.STRUCTURE_TYPE.getKey(structureType);
  
              try {
 +                assert minecraftKey != null;
@@ -4376,7 +4351,7 @@ index 32133dc1065772c5160678b04159e94ec3c374d7..4b8904b00eeaa8b6948849e0e28ff4e9
              }
          }
 diff --git a/src/test/java/org/bukkit/potion/PotionTest.java b/src/test/java/org/bukkit/potion/PotionTest.java
-index 7ea3cc4f8e35b61b3eba717ed58ee98cf835168c..6d82f0b82612a8a0e9c67d50f854fe2c5e05b2fd 100644
+index 83226ec2fa977819e12a499eb3765232543c17b3..b75af7d08c1aac850193e675a24a2f2d40a7c1a9 100644
 --- a/src/test/java/org/bukkit/potion/PotionTest.java
 +++ b/src/test/java/org/bukkit/potion/PotionTest.java
 @@ -1,6 +1,6 @@
@@ -4417,8 +4392,8 @@ index 7ea3cc4f8e35b61b3eba717ed58ee98cf835168c..6d82f0b82612a8a0e9c67d50f854fe2c
 -    @Test
 +    @org.junit.jupiter.api.Test
      public void testEffectType() {
-         for (MobEffect nms : Registry.MOB_EFFECT) {
-             ResourceLocation key = Registry.MOB_EFFECT.getKey(nms);
+         for (MobEffect nms : BuiltInRegistries.MOB_EFFECT) {
+             ResourceLocation key = BuiltInRegistries.MOB_EFFECT.getKey(nms);
 @@ -40,11 +41,11 @@ public class PotionTest extends AbstractTestingBase {
              int id = MobEffect.getId(nms);
              PotionEffectType bukkit = PotionEffectType.getById(id);
@@ -4435,11 +4410,11 @@ index 7ea3cc4f8e35b61b3eba717ed58ee98cf835168c..6d82f0b82612a8a0e9c67d50f854fe2c
      }
  }
 diff --git a/src/test/java/org/bukkit/support/AbstractTestingBase.java b/src/test/java/org/bukkit/support/AbstractTestingBase.java
-index 23435a5914a29ac4f87ad0f34ce83842422df49f..98a1dd4e27f2113a2dd9e3e135599f770a4c518b 100644
+index 084c48ffabac2cd753609add745203e8a55bc09e..91b0507cb8a59c3c81a7e74ab16dfc3169236cb6 100644
 --- a/src/test/java/org/bukkit/support/AbstractTestingBase.java
 +++ b/src/test/java/org/bukkit/support/AbstractTestingBase.java
-@@ -15,7 +15,9 @@ import net.minecraft.server.packs.repository.ServerPacksSource;
- import net.minecraft.server.packs.resources.MultiPackResourceManager;
+@@ -22,7 +22,9 @@ import net.minecraft.world.flag.FeatureFlags;
+ import net.minecraft.world.level.biome.Biome;
  import org.bukkit.Material;
  import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 -import org.junit.Assert;
@@ -4449,11 +4424,11 @@ index 23435a5914a29ac4f87ad0f34ce83842422df49f..98a1dd4e27f2113a2dd9e3e135599f77
  
  /**
   *  If you are getting: java.lang.ExceptionInInitializerError
-@@ -64,6 +66,6 @@ public abstract class AbstractTestingBase {
+@@ -76,6 +78,6 @@ public abstract class AbstractTestingBase {
              }
          }
          INVALIDATED_MATERIALS = builder.build();
--        Assert.assertEquals("Expected 592 invalidated materials (got " + INVALIDATED_MATERIALS.size() + ")", 592, INVALIDATED_MATERIALS.size());
-+        assertEquals(592, INVALIDATED_MATERIALS.size(), "Expected 592 invalidated materials (got " + INVALIDATED_MATERIALS.size() + ")");
+-        Assert.assertEquals("Expected 604 invalidated materials (got " + INVALIDATED_MATERIALS.size() + ")", 604, INVALIDATED_MATERIALS.size());
++        assertEquals(604, INVALIDATED_MATERIALS.size(), "Expected 592 invalidated materials (got " + INVALIDATED_MATERIALS.size() + ")");
      }
  }

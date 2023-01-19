@@ -44,10 +44,10 @@ index 7edd4b88eb0476f0630630bc4681e859bd145b2b..1cc4a8f90eaec869f926b364ff457a45
                      public void onProfileLookupSucceeded(GameProfile gameprofile) {
                          minecraftServer.getProfileCache().add(gameprofile);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f72f61b70c7426d6d8ab05c423cd8c38aa9d59be..a03ceeb3dbd5ff25909275022163cc6e6a35ccd9 100644
+index 33553984e747256c1ae2b532e173ffed77c09462..4fa7d8bde3c091404373441bd4df84f529e7d207 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1556,7 +1556,7 @@ public final class CraftServer implements Server {
+@@ -1583,7 +1583,7 @@ public final class CraftServer implements Server {
                      commands = ImmutableList.of(section.getString(key));
                  }
  
@@ -56,7 +56,7 @@ index f72f61b70c7426d6d8ab05c423cd8c38aa9d59be..a03ceeb3dbd5ff25909275022163cc6e
              }
          }
  
-@@ -2041,7 +2041,7 @@ public final class CraftServer implements Server {
+@@ -2068,7 +2068,7 @@ public final class CraftServer implements Server {
  
          players.addAll(this.getOnlinePlayers());
  
@@ -66,10 +66,10 @@ index f72f61b70c7426d6d8ab05c423cd8c38aa9d59be..a03ceeb3dbd5ff25909275022163cc6e
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 79d957925da90ee459427d4281de85ed7bcd2739..7fe2dd117145340d0e6f11a6374d80500747822b 100644
+index 2a9366dd090a181fb8e254c05723a4c760c64d80..7dc9ecafc3b0ef8248f3b49dc95a7abead568bd3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -1928,7 +1928,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -1927,7 +1927,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
  
      @Override
      public String @NotNull [] getGameRules() {

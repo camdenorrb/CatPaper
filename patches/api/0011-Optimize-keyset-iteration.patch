@@ -5,10 +5,10 @@ Subject: [PATCH] Optimize keyset iteration
 
 
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index 5ab93237a4dab733fb28df95d018158b69719e6c..d6b45f96841ce956fb8092228ddc14147c88fc17 100644
+index 9ef0ae3dfab896a7062191a940214c7d161dff90..42b0e4310f30ac57a7fb7aa2677ecede7da39b7a 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -121,7 +121,6 @@ public final class SimplePluginManager implements PluginManager {
+@@ -123,7 +123,6 @@ public final class SimplePluginManager implements PluginManager {
          Preconditions.checkArgument(directory.isDirectory(), "Directory must be a directory");
  
          List<Plugin> result = new ArrayList<Plugin>();
@@ -16,7 +16,7 @@ index 5ab93237a4dab733fb28df95d018158b69719e6c..d6b45f96841ce956fb8092228ddc1414
  
          if (!(server.getUpdateFolder().equals(""))) {
              updateDirectory = new File(directory, server.getUpdateFolder());
-@@ -141,10 +140,10 @@ public final class SimplePluginManager implements PluginManager {
+@@ -143,10 +142,10 @@ public final class SimplePluginManager implements PluginManager {
              if (file.getName().startsWith(".") && !extraPluginJars.contains(file)) continue; // Don't load plugin if the file name starts with a dot, except if it's a extra plugin jar.
              // Paper end
              PluginLoader loader = null;
@@ -30,7 +30,7 @@ index 5ab93237a4dab733fb28df95d018158b69719e6c..d6b45f96841ce956fb8092228ddc1414
                  }
              }
  
-@@ -398,15 +397,14 @@ public final class SimplePluginManager implements PluginManager {
+@@ -400,15 +399,14 @@ public final class SimplePluginManager implements PluginManager {
  
          file = checkUpdate(file); // Paper - update the reference in case checkUpdate renamed it
  
@@ -49,7 +49,7 @@ index 5ab93237a4dab733fb28df95d018158b69719e6c..d6b45f96841ce956fb8092228ddc1414
  
                  result = loader.loadPlugin(file);
              }
-@@ -468,11 +466,10 @@ public final class SimplePluginManager implements PluginManager {
+@@ -470,11 +468,10 @@ public final class SimplePluginManager implements PluginManager {
  
      @Nullable
      private PluginLoader getPluginLoader(@NotNull File file) {

@@ -18,10 +18,10 @@ index 1d5bc86516df3781aea894c3afd340421ba51a17..b7e67dc7c1e12eecfca00a7b17c89523
                  net.minecraft.resources.ResourceLocation.CODEC.fieldOf("random_name").forGetter(PaperBedrockConditionSource::randomName),
                  VerticalAnchor.CODEC.fieldOf("true_at_and_below").forGetter(PaperBedrockConditionSource::trueAtAndBelow),
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 3832f00c73f86bccad2726e68d22a48e72ad2259..c8459167f4556b54cbb1b289228b96697c1a1c9c 100644
+index 7dea90d9f60712b45da0cf5104aa0c689409b551..423a65e63aff5c407f314a1b76f223299dff2c0c 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -2028,7 +2028,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2015,7 +2015,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              PackRepository resourcepackrepository = this.packRepository;
  
              Objects.requireNonNull(this.packRepository);
@@ -31,10 +31,10 @@ index 3832f00c73f86bccad2726e68d22a48e72ad2259..c8459167f4556b54cbb1b289228b9669
              MultiPackResourceManager resourcemanager = new MultiPackResourceManager(PackType.SERVER_DATA, immutablelist);
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 86d88bc50913dfa9bc3aed2bd2ce6ef25fc5c72f..b2eb0ec73e4cfbb579c0f4761cd4cc0cbd6eb9ee 100644
+index 567fc3f069c640ea889cda9d985e8fe16ce606a5..122fdf77e49e008f2e7c0aa3f570f710211a142d 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1754,7 +1754,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -1742,7 +1742,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
      }
  
      public void teleport(Location dest) {
@@ -43,21 +43,8 @@ index 86d88bc50913dfa9bc3aed2bd2ce6ef25fc5c72f..b2eb0ec73e4cfbb579c0f4761cd4cc0c
      }
  
      public void internalTeleport(double d0, double d1, double d2, float f, float f1, Set<ClientboundPlayerPositionPacket.RelativeArgument> set, boolean flag) {
-diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java b/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
-index ca771d60283d94c00aa65d06ef93071e412357e8..521da0aadc8f2ea3a9cb344f6ec7bc07c7127c43 100644
---- a/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
-+++ b/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
-@@ -37,7 +37,7 @@ public class ShufflingList<U> {
-     }
- 
-     public static <U> Codec<ShufflingList<U>> codec(Codec<U> codec) {
--        return ShufflingList.WeightedEntry.<U>codec(codec).listOf().xmap(ShufflingList::new, (weightedList) -> {
-+        return ShufflingList.WeightedEntry.codec(codec).listOf().xmap(ShufflingList::new, (weightedList) -> {
-             return weightedList.entries;
-         });
-     }
 diff --git a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-index f5652bc8a7a8ac52cc4ede0dec07f20bb48cae54..d9216c57e2e59681954b05f147e0090115745fbc 100644
+index a6ca59ae7fbaf228f9648d9dc1cf7deded75b3ad..d44afbe297769109b5ef3a483eb892240609f39d 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 @@ -188,7 +188,7 @@ public class PoiManager extends SectionStorage<PoiSection> {
@@ -70,10 +57,10 @@ index f5652bc8a7a8ac52cc4ede0dec07f20bb48cae54..d9216c57e2e59681954b05f147e00901
          }).booleanValue();
      }
 diff --git a/src/main/java/net/minecraft/world/entity/monster/warden/AngerManagement.java b/src/main/java/net/minecraft/world/entity/monster/warden/AngerManagement.java
-index 1b8880db4c3fb33fc7b23a08c2407de99ae7a51c..66e22fac8382774c8e25a81a7fe801264b78b5f6 100644
+index b84b780d4de63e01d6d95ff22358dc71d74eefb3..24d2cb0371f1cf175e87a1ec1bd44ffb26922707 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/warden/AngerManagement.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/warden/AngerManagement.java
-@@ -65,7 +65,7 @@ public class AngerManagement {
+@@ -66,7 +66,7 @@ public class AngerManagement {
      }
  
      private List<Pair<UUID, Integer>> createUuidAngerPairs() {
@@ -96,10 +83,10 @@ index 087f2d32b680992ff2ea7901e34bc7cc416d08e8..4910354f780be26c39feb159dbf2c0fb
  
      public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String name, Class<T> type, T... values) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 939226a32fbab022c0b2a45184249177b54dcf63..09b2651fcf2394b8784c8f5ae69578cf76264848 100644
+index 48e334b7d1e3fc713a3a552931a50268daf2c09f..1c254519e27a0977ee857c046276e13a9888d923 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -2248,7 +2248,7 @@ public final class CraftServer implements Server {
+@@ -2275,7 +2275,7 @@ public final class CraftServer implements Server {
              this.getLogger().log(Level.SEVERE, "Exception when " + player.getName() + " attempted to tab complete " + message, ex);
          }
  
@@ -109,7 +96,7 @@ index 939226a32fbab022c0b2a45184249177b54dcf63..09b2651fcf2394b8784c8f5ae69578cf
  
      public @NotNull List<String> tabCompleteChat(@NotNull Player player, @NotNull String message) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 53e835b5fe098ff6a24388058be2f228ea28e299..9eb11b2550e7767bcbdb48986bac7c2e5da9255f 100644
+index 79f2941a781e368fdc1188d9b963768789dec51f..f2e347b82a09d79655cd68ed033b76af7100e9d7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -238,7 +238,7 @@ public final class CraftItemStack extends ItemStack {
@@ -135,7 +122,7 @@ index 2a614fb24d48157fa6ec980b12eac82506b47be7..7d8f1646937d16bb3588648078dcbfd3
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
-index a0e35ce3d4ad178d4ed50ce872a6bb16d5059760..a66acf86d1fa3738cd79525b241833e9b2c52204 100644
+index fdfaa39724daf9a227f8b97a3efd63492cd9f428..62b7a63bb2fe479b338ea7e380bb3d68e423f6c8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 @@ -368,7 +368,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
@@ -148,10 +135,10 @@ index a0e35ce3d4ad178d4ed50ce872a6bb16d5059760..a66acf86d1fa3738cd79525b241833e9
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index e5717c9384aa14e169b7db848af4fa876853d29b..99dfca7716cf327b4298ebde15d7b961dbe216af 100644
+index 9b561f8f94b26ee0eb99d375557e8f22cfd811c6..ab4f6c8d35ddff6a721cf10ed23077a7bd522a9b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -953,7 +953,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -954,7 +954,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
      @Override
      public @NotNull Map<Enchantment, Integer> getEnchants() {

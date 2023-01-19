@@ -1,0 +1,180 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Sat, 17 Dec 2022 01:25:24 -0600
+Subject: [PATCH] Fixes
+
+
+diff --git a/src/main/java/net/minecraft/world/effect/MobEffects.java b/src/main/java/net/minecraft/world/effect/MobEffects.java
+index 5b721ca25739e666ea337df2f21daa1597c0584c..76cc8e86e3a1f53b2ba194b696444517bc0672b7 100644
+--- a/src/main/java/net/minecraft/world/effect/MobEffects.java
++++ b/src/main/java/net/minecraft/world/effect/MobEffects.java
+@@ -72,7 +72,7 @@ public class MobEffects {
+ 
+     public MobEffects() {}
+ 
+-    private static MobEffect register(final int rawId, final String id, final MobEffect entry) {
++    private static MobEffect register(final int rawId, final String id, MobEffect entry) {
+         // CraftBukkit start
+         entry = (MobEffect) Registry.registerMapping(BuiltInRegistries.MOB_EFFECT, rawId, id, entry);
+         org.bukkit.potion.PotionEffectType.registerPotionEffectType(new org.bukkit.craftbukkit.potion.CraftPotionEffectType(entry));
+diff --git a/src/main/java/net/minecraft/world/item/enchantment/Enchantments.java b/src/main/java/net/minecraft/world/item/enchantment/Enchantments.java
+index 9e71a4a2ee629667059ed362c7b5d3637f6c61c0..bbc58b770aef96b4de435c5a14a3453681547fc8 100644
+--- a/src/main/java/net/minecraft/world/item/enchantment/Enchantments.java
++++ b/src/main/java/net/minecraft/world/item/enchantment/Enchantments.java
+@@ -49,9 +49,9 @@ public class Enchantments {
+ 
+     public Enchantments() {}
+ 
+-    private static Enchantment register(final String name, final Enchantment enchantment) {
++    private static Enchantment register(final String name, Enchantment enchantment) {
+         // CraftBukkit start
+-        enchantment = (Enchantment) Registry.register(BuiltInRegistries.ENCHANTMENT, name, enchantment);
++        enchantment = Registry.register(BuiltInRegistries.ENCHANTMENT, name, enchantment);
+         org.bukkit.enchantments.Enchantment.registerEnchantment(new org.bukkit.craftbukkit.enchantments.CraftEnchantment(enchantment));
+         return enchantment;
+         // CraftBukkit end
+diff --git a/src/test/java/io/papermc/paper/world/TranslationKeyTest.java b/src/test/java/io/papermc/paper/world/TranslationKeyTest.java
+index 364b7b1cc6f72560bcf6dac9cfecc9011213e226..cdc36781d03d83c13e3b41bf3ef3772f62fd827c 100644
+--- a/src/test/java/io/papermc/paper/world/TranslationKeyTest.java
++++ b/src/test/java/io/papermc/paper/world/TranslationKeyTest.java
+@@ -1,7 +1,6 @@
+ package io.papermc.paper.world;
+ 
+ import com.destroystokyo.paper.ClientOption;
+-import java.util.Map;
+ import net.minecraft.network.chat.contents.TranslatableContents;
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.world.entity.player.ChatVisiblity;
+@@ -14,12 +13,8 @@ import org.bukkit.GameRule;
+ import org.bukkit.attribute.Attribute;
+ import org.bukkit.support.AbstractTestingBase;
+ import org.junit.jupiter.api.Test;
+-import org.junit.Assert;
+-import org.junit.Ignore;
+-import org.junit.Test;
+ 
+ import java.util.Map;
+-import java.util.Objects;
+ 
+ import static org.junit.jupiter.api.Assertions.assertEquals;
+ import static org.junit.jupiter.api.Assertions.assertNotNull;
+@@ -64,7 +59,7 @@ public class TranslationKeyTest extends AbstractTestingBase {
+     }
+ 
+     @Test
+-    @Ignore // TODO fix
++    // TODO fix
+     public void testCreativeCategory() {
+         // for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
+         //     CreativeCategory category = Objects.requireNonNull(CraftCreativeCategory.fromNMS(tab));
+diff --git a/src/test/java/io/papermc/paper/world/structure/ConfiguredStructureTest.java b/src/test/java/io/papermc/paper/world/structure/ConfiguredStructureTest.java
+index ad359750d7384a2ca5af445140a40b9106bddbbd..24e108b52a4c305340b129622883ef153bd3dafe 100644
+--- a/src/test/java/io/papermc/paper/world/structure/ConfiguredStructureTest.java
++++ b/src/test/java/io/papermc/paper/world/structure/ConfiguredStructureTest.java
+@@ -53,7 +53,7 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
+     @Test
+     public void testMinecraftToApi() {
+         Registry<Structure> structureRegistry = AbstractTestingBase.REGISTRY_CUSTOM.registryOrThrow(Registries.STRUCTURE);
+-        assertEquals("configured structure maps should be the same size", BUILT_IN_STRUCTURES.size(), structureRegistry.size());
++        assertEquals(BUILT_IN_STRUCTURES.size(), structureRegistry.size(), "configured structure maps should be the same size");
+ 
+         Map<ResourceLocation, Structure> missing = new LinkedHashMap<>();
+         for (Structure feature : structureRegistry) {
+@@ -74,7 +74,7 @@ public class ConfiguredStructureTest extends AbstractTestingBase {
+     public void testApiToMinecraft() {
+         Registry<Structure> structureRegistry = AbstractTestingBase.REGISTRY_CUSTOM.registryOrThrow(Registries.STRUCTURE);
+         for (NamespacedKey apiKey : DEFAULT_CONFIGURED_STRUCTURES.keySet()) {
+-            assertTrue(apiKey + " does not have a minecraft counterpart", structureRegistry.containsKey(CraftNamespacedKey.toMinecraft(apiKey)));
++            assertTrue(structureRegistry.containsKey(CraftNamespacedKey.toMinecraft(apiKey)), apiKey + " does not have a minecraft counterpart");
+         }
+     }
+ 
+diff --git a/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java b/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
+index 032a4084be0a6f600d5048110b1b07fea10f03ef..87552213491d18b71fa832032622790df58f37d8 100644
+--- a/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
++++ b/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
+@@ -1,14 +1,5 @@
+ package org.bukkit.craftbukkit.inventory;
+ 
+-import static org.hamcrest.MatcherAssert.assertThat;
+-import static org.hamcrest.Matchers.*;
+-import static org.junit.jupiter.api.Assertions.*;
+-import static org.junit.jupiter.api.Assertions.assertThrows;
+-
+-import java.util.ArrayList;
+-import java.util.Arrays;
+-import java.util.List;
+-import java.util.UUID;
+ import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.world.item.BlockItem;
+@@ -16,14 +7,8 @@ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.StandingAndWallBlockItem;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.EntityBlock;
+-import org.bukkit.Bukkit;
+-import org.bukkit.Color;
+-import org.bukkit.DyeColor;
+-import org.bukkit.FireworkEffect;
++import org.bukkit.*;
+ import org.bukkit.FireworkEffect.Type;
+-import org.bukkit.Material;
+-import org.bukkit.MusicInstrument;
+-import org.bukkit.NamespacedKey;
+ import org.bukkit.attribute.Attribute;
+ import org.bukkit.attribute.AttributeModifier;
+ import org.bukkit.block.banner.Pattern;
+@@ -38,23 +23,7 @@ import org.bukkit.enchantments.Enchantment;
+ import org.bukkit.entity.Axolotl;
+ import org.bukkit.entity.TropicalFish;
+ import org.bukkit.inventory.ItemStack;
+-import org.bukkit.inventory.meta.AxolotlBucketMeta;
+-import org.bukkit.inventory.meta.BannerMeta;
+-import org.bukkit.inventory.meta.BlockDataMeta;
+-import org.bukkit.inventory.meta.BlockStateMeta;
+-import org.bukkit.inventory.meta.BookMeta;
+-import org.bukkit.inventory.meta.BundleMeta;
+-import org.bukkit.inventory.meta.CrossbowMeta;
+-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+-import org.bukkit.inventory.meta.FireworkEffectMeta;
+-import org.bukkit.inventory.meta.FireworkMeta;
+-import org.bukkit.inventory.meta.ItemMeta;
+-import org.bukkit.inventory.meta.KnowledgeBookMeta;
+-import org.bukkit.inventory.meta.LeatherArmorMeta;
+-import org.bukkit.inventory.meta.MapMeta;
+-import org.bukkit.inventory.meta.PotionMeta;
+-import org.bukkit.inventory.meta.SpawnEggMeta;
+-import org.bukkit.inventory.meta.TropicalFishBucketMeta;
++import org.bukkit.inventory.meta.*;
+ import org.bukkit.potion.PotionData;
+ import org.bukkit.potion.PotionEffectType;
+ import org.bukkit.potion.PotionType;
+@@ -62,6 +31,15 @@ import org.bukkit.support.AbstractTestingBase;
+ import org.jetbrains.annotations.NotNull;
+ import org.junit.jupiter.api.Test;
+ 
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.List;
++import java.util.UUID;
++
++import static org.hamcrest.MatcherAssert.assertThat;
++import static org.hamcrest.Matchers.*;
++import static org.junit.jupiter.api.Assertions.*;
++
+ public class ItemMetaTest extends AbstractTestingBase {
+ 
+     static final int MAX_FIREWORK_POWER = 127; // Please update ItemStackFireworkTest if/when this gets changed.
+@@ -227,9 +205,9 @@ public class ItemMetaTest extends AbstractTestingBase {
+                 CraftMetaItem baseMeta = (CraftMetaItem) Bukkit.getItemFactory().getItemMeta(material);
+                 ItemMeta baseMetaItem = CraftItemStack.getItemMeta(item.getDefaultInstance());
+ 
+-                assertTrue(material + " is not handled in CraftItemFactory", baseMeta instanceof CraftMetaSpawnEgg);
+-                assertTrue(material + " is not applicable to CraftMetaSpawnEgg", baseMeta.applicableTo(material));
+-                assertTrue(material + " is not handled in CraftItemStack", baseMetaItem instanceof SpawnEggMeta);
++                assertTrue(baseMeta instanceof CraftMetaSpawnEgg, material + " is not handled in CraftItemFactory");
++                assertTrue(baseMeta.applicableTo(material), material + " is not applicable to CraftMetaSpawnEgg");
++                assertTrue(baseMetaItem instanceof SpawnEggMeta, material + " is not handled in CraftItemStack");
+             }
+         }
+     }

@@ -8,11 +8,13 @@ Goals:
 - [x] Update junit to Jupiter
 - [x] Use nullable/notnull annotations
 - [x] Intellij performance inspections
+- [x] Remove Timings, instead use [Spark](https://spark.lucko.me/)
+- [x] Entity tracking performance improvements
+- [ ] Virtual threads
 - [ ] Add linters
 - [ ] Compiling plugins into jar on boot
 - [ ] Proguard optimizations
 - [ ] Graal AOT
-- [ ] Entity tracking performance improvements
 
 
 To fix merge conflicts, use `git am --continue` after a 3 way merge in intellij, make sure to rebuild patches after done

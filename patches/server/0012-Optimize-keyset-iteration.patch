@@ -36,7 +36,7 @@ index dbf51c3180c926561265afc89ce03f5f75d6c348..73f532540189c1a05b3ad99d5de8d6fe
              final int id = lookup_vindex(property, this.index_table);
              final StateHolder<?, ?>[] states = this.value_table[id] = new StateHolder[property.getPossibleValues().size()];
 diff --git a/src/main/java/net/minecraft/nbt/CompoundTag.java b/src/main/java/net/minecraft/nbt/CompoundTag.java
-index 912fd5135e89348bdd3c0a8b6c07860ebc106df3..ceb3d4eddfcd6a0aac3a6e155d7aa95f1b529d8a 100644
+index 42ea3573c0e8559a264fd24fc09c3a5cd7628d9b..e483f089c2b1870e640d40c81e2e79043abb79d8 100644
 --- a/src/main/java/net/minecraft/nbt/CompoundTag.java
 +++ b/src/main/java/net/minecraft/nbt/CompoundTag.java
 @@ -133,9 +133,9 @@ public class CompoundTag implements Tag {
@@ -52,7 +52,7 @@ index 912fd5135e89348bdd3c0a8b6c07860ebc106df3..ceb3d4eddfcd6a0aac3a6e155d7aa95f
          }
  
          output.writeByte(0);
-@@ -505,8 +505,9 @@ public class CompoundTag implements Tag {
+@@ -518,8 +518,9 @@ public class CompoundTag implements Tag {
      }
  
      public CompoundTag merge(CompoundTag source) {
@@ -65,10 +65,10 @@ index 912fd5135e89348bdd3c0a8b6c07860ebc106df3..ceb3d4eddfcd6a0aac3a6e155d7aa95f
                  if (this.contains(string, 10)) {
                      CompoundTag compoundTag = this.getCompound(string);
 diff --git a/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java b/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
-index aa277479f5552503a202a057b1a3ede379f2bbbf..719f5679a73a3e12f1d04aebb6d73383ba1b615c 100644
+index 097007c1c25ba55d9916fc820dd1d1149d81f6f4..171d1e9d71117519c2ff0a017d68ce578bc72cc2 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/gossip/GossipContainer.java
-@@ -32,9 +32,8 @@ public class GossipContainer {
+@@ -35,9 +35,8 @@ public class GossipContainer {
      @VisibleForDebug
      public Map<UUID, Object2IntMap<GossipType>> getGossipEntries() {
          Map<UUID, Object2IntMap<GossipType>> map = Maps.newHashMap();
@@ -105,10 +105,10 @@ index 36e51384a62e45e073582d057506048073f89543..8b27744d27054044c10acf07501ef4f3
                      continue outer;
                  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java
-index 34b744540a6e6e706a52b9ac36c26a4561c7610b..94b8d4474c72921c5b7f68e18e6cfbf085474a4c 100644
+index 53af0f9d01db690c652099f730a5bf4f341ec41d..5457b9ecb1e03568d7c58b47b93422ef10339226 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java
-@@ -34,8 +34,9 @@ public class CraftShapedRecipe extends ShapedRecipe implements CraftRecipe {
+@@ -36,8 +36,9 @@ public class CraftShapedRecipe extends ShapedRecipe implements CraftRecipe {
          String[] shape = recipe.getShape();
          ret.shape(shape);
          Map<Character, RecipeChoice> ingredientMap = recipe.getChoiceMap();

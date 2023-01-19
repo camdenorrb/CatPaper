@@ -112,7 +112,7 @@ index 112a0dbf522b8e74ce882678434923814e6b187f..1a89870e118aae3fd7c0b7f218c14f51
  import org.bukkit.event.player.PlayerEvent;
  import org.jetbrains.annotations.NotNull;
 diff --git a/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java b/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
-index c37584940ce45d7420f5b44102c851922caef3db..d69ef3dda605ad6d90384616e7252ca8f279c078 100644
+index 4773f8e19924a624f050a02e7a575b3b66f09a1e..e316fb60f1fef29a9a6427b789d18d8a1d104d9a 100644
 --- a/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
 +++ b/src/main/java/com/destroystokyo/paper/event/executor/StaticMethodHandleEventExecutor.java
 @@ -8,7 +8,6 @@ import java.lang.reflect.Modifier;
@@ -142,30 +142,6 @@ index 9fe51164022d058d04958d6619654d40f544a487..1c1554f89739ce37ac4ef28558fee6ee
  
  public class SafeClassDefiner implements ClassDefiner {
      /* default */ static final SafeClassDefiner INSTANCE = new SafeClassDefiner();
-diff --git a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
-index 449e8c06f8434b59d49a76481fa60c5c49e80579..7a144854ec8998e758bf2327d30d8165fbf39e0f 100644
---- a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
-+++ b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareGrindstoneEvent.java
-@@ -1,7 +1,5 @@
- package com.destroystokyo.paper.event.inventory;
- 
--import org.bukkit.event.HandlerList;
--import org.bukkit.event.inventory.InventoryEvent;
- import org.bukkit.inventory.GrindstoneInventory;
- import org.bukkit.inventory.InventoryView;
- import org.bukkit.inventory.ItemStack;
-diff --git a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
-index b5b0f5f097fc57b6d8caf89a7d5347259340e185..476f36ae16115d34cab9748c8d7d0947d0a24b96 100644
---- a/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
-+++ b/src/main/java/com/destroystokyo/paper/event/inventory/PrepareResultEvent.java
-@@ -2,7 +2,6 @@ package com.destroystokyo.paper.event.inventory;
- 
- import org.bukkit.event.HandlerList;
- import org.bukkit.event.inventory.InventoryEvent;
--import org.bukkit.event.inventory.InventoryType;
- import org.bukkit.inventory.InventoryView;
- import org.bukkit.inventory.ItemStack;
- import org.jetbrains.annotations.NotNull;
 diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerPickupExperienceEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerPickupExperienceEvent.java
 index f7beb22d5105157940b39efe594ace9d4cb153f5..d117956ca6026ad676e1aa551b4f10ca83be0b7e 100644
 --- a/src/main/java/com/destroystokyo/paper/event/player/PlayerPickupExperienceEvent.java
@@ -302,7 +278,7 @@ index c0703f96933877d9b26ec359ee0c873a0abaa89f..30db0192a907995702695940e9ee083a
  import org.jetbrains.annotations.NotNull;
  
 diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
-index 220336daf1c277611d9fab47fc93056867de3b8a..93cf2be32c24fb966aee2bbcd05a73f1c51cdd26 100644
+index 9bf2737454ef96afaa4988c09bc8d4edaa4574a7..736836c2c0cb83a76659a4a99c59416d801a4ae3 100644
 --- a/src/main/java/org/bukkit/Location.java
 +++ b/src/main/java/org/bukkit/Location.java
 @@ -1,6 +1,5 @@
@@ -333,7 +309,7 @@ index b9f9ef01af46cdcb4fbc55039a1f1a956e72644e..fb8a9fb965386b610d5c70742b17e777
  import java.util.ArrayList;
  import java.util.Collection;
 diff --git a/src/main/java/org/bukkit/advancement/Advancement.java b/src/main/java/org/bukkit/advancement/Advancement.java
-index 792d5ab90e9252b4f660434f72f004fade14a84c..12beeb80a0e83970be29a14ff8b011181079f150 100644
+index 3f6b9e59c2ea38031ca74962e02d710fde61fb1f..556779011c3b09e6dae8754422d9074df8191617 100644
 --- a/src/main/java/org/bukkit/advancement/Advancement.java
 +++ b/src/main/java/org/bukkit/advancement/Advancement.java
 @@ -3,7 +3,7 @@ package org.bukkit.advancement;
@@ -501,7 +477,7 @@ index 2bb0c265253a8d1c234e7650ab79c6a538f43609..84ea9e297a54e352ecdbd3993aa3a11c
  
  /**
 diff --git a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
-index 84d5f2253921a6206af78e8a0336b2be9b17e975..7b4e0997c18eb147973d347493b287b7b99da266 100644
+index 9328fd8f080d9927be3a83c893d826f2e3165e8e..a7f3c4f820b4ba619269ccb358506eb2b12707f7 100644
 --- a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 @@ -2,7 +2,6 @@ package org.bukkit.event.entity;
@@ -525,29 +501,16 @@ index ddf4aec01e4873aa799721ce615f5d7c929dc915..156580d66e3f5a6b281b4763492be15d
  import org.jetbrains.annotations.Nullable;
  
 diff --git a/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java b/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
-index f1f6f4ab4f81a3f21e757fef4a30b00e94371f8d..04e9626ef920f90a8e287a36e003bc4c4a6c5ede 100644
+index 8695715c10d81b06c088ff0c8d401875d26879b5..d2f7d0631d8001d4a7783946497e8c5b598bb408 100644
 --- a/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
 +++ b/src/main/java/org/bukkit/event/inventory/PrepareAnvilEvent.java
-@@ -1,7 +1,6 @@
+@@ -1,6 +1,5 @@
  package org.bukkit.event.inventory;
  
- import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
 -import org.bukkit.event.HandlerList;
  import org.bukkit.inventory.AnvilInventory;
  import org.bukkit.inventory.InventoryView;
  import org.bukkit.inventory.ItemStack;
-diff --git a/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java b/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
-index 0bc0ca4f96c800e9c46c61710f44446691d8b93f..4c8659b479842853739b43d685f5bc82820639c7 100644
---- a/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
-+++ b/src/main/java/org/bukkit/event/inventory/PrepareSmithingEvent.java
-@@ -1,7 +1,6 @@
- package org.bukkit.event.inventory;
- 
- import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
--import org.bukkit.event.HandlerList;
- import org.bukkit.inventory.InventoryView;
- import org.bukkit.inventory.ItemStack;
- import org.bukkit.inventory.SmithingInventory;
 diff --git a/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java b/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java
 index 3372683366f258ed18549184f20bd5a61cdab0be..5972c97e944462d1fb124e8d2a1a4b33905a0fb9 100644
 --- a/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java
@@ -561,7 +524,7 @@ index 3372683366f258ed18549184f20bd5a61cdab0be..5972c97e944462d1fb124e8d2a1a4b33
  
  /**
 diff --git a/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java b/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
-index ce01c577dc81ba2024f217dc4ccacb8fe31357ed..218e3cb7a34f5c5d76e4d95807391f4075bf3e04 100644
+index d6c63f2226b514f7e00b4e2c981db73f0b574307..838d5b7474d98af8a5408ceb9c89df547a5de742 100644
 --- a/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
 +++ b/src/main/java/org/bukkit/event/vehicle/VehicleEntityCollisionEvent.java
 @@ -3,7 +3,6 @@ package org.bukkit.event.vehicle;

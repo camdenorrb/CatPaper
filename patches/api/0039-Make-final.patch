@@ -2473,7 +2473,7 @@ index 1a89870e118aae3fd7c0b7f218c14f51083d1946..bc6b009d062401b46113d7ec4dbcc178
      }
  }
 diff --git a/src/main/java/com/destroystokyo/paper/event/entity/PreCreatureSpawnEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/PreCreatureSpawnEvent.java
-index 3ad231aa3206c8cfd5ec995249584cebab5d11f3..42cfc9f268ab19fa0cc922d9804c761a0e53471c 100644
+index 02e421b0bb4ce3529ef1c4d34ec8a0c0345cce57..911d303c163d503455824bf141f56954b4197109 100644
 --- a/src/main/java/com/destroystokyo/paper/event/entity/PreCreatureSpawnEvent.java
 +++ b/src/main/java/com/destroystokyo/paper/event/entity/PreCreatureSpawnEvent.java
 @@ -25,7 +25,7 @@ public class PreCreatureSpawnEvent extends Event implements Cancellable {
@@ -2482,7 +2482,7 @@ index 3ad231aa3206c8cfd5ec995249584cebab5d11f3..42cfc9f268ab19fa0cc922d9804c761a
  
 -    public PreCreatureSpawnEvent(@NotNull Location location, @NotNull EntityType type, @NotNull CreatureSpawnEvent.SpawnReason reason) {
 +    public PreCreatureSpawnEvent(@NotNull final Location location, @NotNull final EntityType type, @NotNull final CreatureSpawnEvent.SpawnReason reason) {
-         this.location = Preconditions.checkNotNull(location, "Location may not be null").clone();
+         this.location = Preconditions.checkNotNull(location, "Location may not be null");
          this.type = Preconditions.checkNotNull(type, "Type may not be null");
          this.reason = Preconditions.checkNotNull(reason, "Reason may not be null");
 @@ -68,7 +68,7 @@ public class PreCreatureSpawnEvent extends Event implements Cancellable {
@@ -14420,7 +14420,7 @@ index 57cf24cfd15a541f60aafc8507c189344aead0f7..69fca1772a19f31c05c3907a13050b30
          }
  
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928fb982d0a 100644
+index 2c9feecc77c92762b822453617f37eb6a739220a..4e22f761ed4e02c805422d172aaf2073cddf6903 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -643,7 +643,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
@@ -14605,7 +14605,7 @@ index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928
          giveExp(amount, false);
      }
      /**
-@@ -1718,7 +1718,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1735,7 +1735,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @throws IllegalArgumentException Thrown if the hash is not 20 bytes
       *     long.
       */
@@ -14614,7 +14614,7 @@ index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928
          this.setResourcePack(url, hash, prompt, false);
      }
      // Paper end
-@@ -2660,7 +2660,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2677,7 +2677,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           * @deprecated {@link LivingEntity#setCollidable(boolean)}
           */
          @Deprecated
@@ -14623,7 +14623,7 @@ index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928
              throw new UnsupportedOperationException("Not supported yet.");
          }
  
-@@ -2683,13 +2683,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2700,13 +2700,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
  
          @Deprecated // Paper
          @Override
@@ -14639,7 +14639,7 @@ index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928
              throw new UnsupportedOperationException("Not supported yet.");
          }
  
-@@ -2702,7 +2702,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2719,7 +2719,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
           */
          @Deprecated // Paper
@@ -14648,7 +14648,7 @@ index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928
              throw new UnsupportedOperationException("Not supported yet.");
          }
  
-@@ -2715,7 +2715,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2732,7 +2732,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
           */
          @Deprecated // Paper
@@ -14657,7 +14657,7 @@ index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928
              throw new UnsupportedOperationException("Not supported yet.");
          }
  
-@@ -2728,7 +2728,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2745,7 +2745,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
           */
          @Deprecated // Paper
@@ -14666,7 +14666,7 @@ index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928
              throw new UnsupportedOperationException("Not supported yet.");
          }
  
-@@ -2741,7 +2741,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2758,7 +2758,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
           */
          @Deprecated // Paper
@@ -14675,7 +14675,7 @@ index 9977fe211eafb3193033256fa290a23cbb53e88f..973f8adba36f3f5b3826339e29c83928
              throw new UnsupportedOperationException("Not supported yet.");
  
          }
-@@ -2813,7 +2813,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2830,7 +2830,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @param playerAnchor What part of player should face the location
       */
      @org.jetbrains.annotations.ApiStatus.Experimental

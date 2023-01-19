@@ -520,10 +520,10 @@ index b02f00eee359fbd14b4694f5088d3e23a9db57e2..c1431a6fc52c0659519fb2010e98034c
  
          mcMerchant.setTradingPlayer(this.getHandle());
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index da2926e5fa0f286b9e07e67e543f87b75af4d407..72bf428f09a8bf743ca4f2d98a7e39d5f84447e6 100644
+index 9ce46b36369a00dc2ee23873686881993502964c..9b561f8f94b26ee0eb99d375557e8f22cfd811c6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -1794,7 +1794,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1796,7 +1796,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
                  resource = CraftNamespacedKey.fromMinecraft(key);
              }
          } catch (IllegalArgumentException ex) {

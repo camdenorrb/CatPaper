@@ -172,7 +172,7 @@ index 5d3074b80f3a0e13dc324cb94b54c2797931cb8e..49408a32bf2f256f30e0eaf7ef8e7d85
                      this.sendFlushAndClose(channelhandlercontext, this.createReply(s));
                      break;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 2a7553ec4da6954dfa77ec6f5cb51a81060091b0..8ec4851e8e64fdd90f4cf2bc6550bde57009a7d5 100644
+index 12c92925dbb6385b638728c77f2ac092465bf387..567fc3f069c640ea889cda9d985e8fe16ce606a5 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -644,7 +644,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -221,7 +221,7 @@ index 2a7553ec4da6954dfa77ec6f5cb51a81060091b0..8ec4851e8e64fdd90f4cf2bc6550bde5
                      boolean flag = packet.getStateId() != this.player.containerMenu.getStateId();
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 3f7fab2f80ded9a7a720bd623f1ef028a4d0dca6..07970f597488b00ad76a2bfc58183f8eabdc75b1 100644
+index a25306fe8a35bb70a490e6a0c01d0340bbc0d781..be1d2d0cea628480399d506e0dd6e65c52f5208e 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -236,8 +236,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -659,10 +659,10 @@ index af4bf0851bee4ca42eb1db26060bf666770da725..ac222a650d66e3cfdc6b26dfd586da51
      private static final int GOSSIP_COOLDOWN = 1200;
      private static final int GOSSIP_DECAY_INTERVAL = 24000;
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 23e72965752dd66fe907f209684938d1f73732aa..2185061840bdf9d02e72ae2ad38d2e6fafb87f26 100644
+index 7b6a123f8e84d13a339aa2843b709c1404a14e9f..28077f6c3fbf248296041fe6b281a640b142cf57 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -2018,7 +2018,7 @@ public abstract class Player extends LivingEntity {
+@@ -2019,7 +2019,7 @@ public abstract class Player extends LivingEntity {
  
      @Override
      public Iterable<ItemStack> getHandSlots() {

@@ -48,10 +48,10 @@ index fff74ea2cb90451cadc96af04ace3b22863378fb..eb0b18b525ee560422d461809b529c2a
          if (k > this.getMaxStackSize() - itemstack1.getCount()) {
              k = this.getMaxStackSize() - itemstack1.getCount();
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index b5bb135967d7071443722f4ba295544cb8e450ff..b5b7c048d71bb66b9cad39827b4a51e0d9c19321 100644
+index a81850f620d8b03425182816351c77fd2a725eb1..7b6a123f8e84d13a339aa2843b709c1404a14e9f 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -1950,7 +1950,7 @@ public abstract class Player extends LivingEntity {
+@@ -1951,7 +1951,7 @@ public abstract class Player extends LivingEntity {
          if (!this.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && !this.isSpectator()) {
              int i = this.experienceLevel * 7;
  

@@ -31,7 +31,7 @@ index 7dea90d9f60712b45da0cf5104aa0c689409b551..423a65e63aff5c407f314a1b76f22329
              MultiPackResourceManager resourcemanager = new MultiPackResourceManager(PackType.SERVER_DATA, immutablelist);
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 8ec4851e8e64fdd90f4cf2bc6550bde57009a7d5..0e87c68545b50cfcf53586655bb2ff9395e62ff6 100644
+index 567fc3f069c640ea889cda9d985e8fe16ce606a5..122fdf77e49e008f2e7c0aa3f570f710211a142d 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1742,7 +1742,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -96,7 +96,7 @@ index 48e334b7d1e3fc713a3a552931a50268daf2c09f..1c254519e27a0977ee857c046276e13a
  
      public @NotNull List<String> tabCompleteChat(@NotNull Player player, @NotNull String message) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 8ff38c923ace32821f57d53a1608fec4118ede4f..7ec31452dca7bdf7a8e7a3e41a22d71093206555 100644
+index 79f2941a781e368fdc1188d9b963768789dec51f..f2e347b82a09d79655cd68ed033b76af7100e9d7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -238,7 +238,7 @@ public final class CraftItemStack extends ItemStack {
@@ -122,7 +122,7 @@ index 2a614fb24d48157fa6ec980b12eac82506b47be7..7d8f1646937d16bb3588648078dcbfd3
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
-index cb2f289ef733e362c155a5d7c1d7de8a76694262..f0c741b9e58337111edee343eda70546f1a35a6c 100644
+index fdfaa39724daf9a227f8b97a3efd63492cd9f428..62b7a63bb2fe479b338ea7e380bb3d68e423f6c8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 @@ -368,7 +368,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
@@ -135,10 +135,10 @@ index cb2f289ef733e362c155a5d7c1d7de8a76694262..f0c741b9e58337111edee343eda70546
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index 72bf428f09a8bf743ca4f2d98a7e39d5f84447e6..f2a3cdba54ce027db7e7e27d0e2ed23d8e4e63e8 100644
+index 9b561f8f94b26ee0eb99d375557e8f22cfd811c6..ab4f6c8d35ddff6a721cf10ed23077a7bd522a9b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -953,7 +953,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -954,7 +954,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
      @Override
      public @NotNull Map<Enchantment, Integer> getEnchants() {

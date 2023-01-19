@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: camdenorrb <me@12oclock.dev>
+Date: Thu, 19 Jan 2023 05:38:44 -0600
+Subject: [PATCH] Fun stuff
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
+index 63a9ea4d92e7919e0ae3f23841378b449c889a0d..616efbc60efaa181bb8d098b18c5d3c069ba78d5 100644
+--- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
++++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
+@@ -215,7 +215,7 @@ public final class PlayerChunkLoader {
+     }
+ 
+     public int getLoadDistance() {
+-        final int tickDistance = this.getTickDistance();
++        final int tickDistance = this.rawTickDistance;
+         return this.rawLoadDistance == -1 ? tickDistance + 1 : Math.max(tickDistance + 1, this.rawLoadDistance);
+     }
+ 
+@@ -1129,9 +1129,7 @@ public final class PlayerChunkLoader {
+                 }
+             }
+ 
+-            loadQueue.sort((final @NotNull ChunkPriorityHolder p1, final @NotNull ChunkPriorityHolder p2) -> {
+-                return Double.compare(p1.priority, p2.priority);
+-            });
++            loadQueue.sort((final @NotNull ChunkPriorityHolder p1, final @NotNull ChunkPriorityHolder p2) -> Double.compare(p1.priority, p2.priority));
+ 
+             // we're modifying loadQueue, must remove
+             this.loader.chunkLoadQueue.remove(this);
+diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
+index d89cff73940a9340d2526f2a3d4ab59dd7348530..efa753e618b0cd8a9f70647a3bc8f9f3dfb94561 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
++++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
+@@ -1,11 +1,11 @@
+ package io.papermc.paper.chunk.system.scheduling;
+ 
+ import ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor;
+-import ca.spottedleaf.concurrentutil.map.SWMRLong2ObjectHashTable;
+ import com.google.common.collect.ImmutableList;
+ import com.google.gson.JsonArray;
+ import com.google.gson.JsonObject;
+ import com.mojang.logging.LogUtils;
++import dev.twelveoclock.fastutil.map.impl.ConcurrentLong2ObjectOpenHashMap;
+ import io.papermc.paper.chunk.system.ChunkSystem;
+ import io.papermc.paper.chunk.system.io.RegionFileIOThread;
+ import io.papermc.paper.chunk.system.poi.PoiChunk;
+@@ -50,7 +50,8 @@ public final class ChunkHolderManager {
+ 
+     final ReentrantLock ticketLock = new ReentrantLock();
+ 
+-    private final SWMRLong2ObjectHashTable<NewChunkHolder> chunkHolders = new SWMRLong2ObjectHashTable<>(16384, 0.25f);
++    private final ConcurrentLong2ObjectOpenHashMap<NewChunkHolder> chunkHolders = new ConcurrentLong2ObjectOpenHashMap<>(Runtime.getRuntime().availableProcessors() - 1, null, 16384, 0.25f);
++
+     private final Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> tickets = new Long2ObjectOpenHashMap<>(8192, 0.25f);
+     // what a disaster of a name
+     // this is a map of removal tick to a map of chunks and the number of tickets a chunk has that are to expire that tick
+@@ -102,9 +103,7 @@ public final class ChunkHolderManager {
+     }
+ 
+     public @NotNull List<NewChunkHolder> getChunkHolders() {
+-        final List<NewChunkHolder> ret = new ArrayList<>(this.chunkHolders.size());
+-        this.chunkHolders.forEachValue(ret::add);
+-        return ret;
++        return ImmutableList.copyOf(this.chunkHolders.values());
+     }
+ 
+     public int size() {
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 3e0ce2e1f7e515e34d8bedf9dbbf2411b0d57d74..249acccaefcdac3b29d809ce641dd383b9c341a3 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -2235,9 +2235,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+     @VisibleForTesting
+     public void clearBlockEvents(final BoundingBox box) {
+-        this.blockEvents.removeIf((blockactiondata) -> {
+-            return box.isInside(blockactiondata.pos());
+-        });
++        this.blockEvents.removeIf((blockactiondata) -> box.isInside(blockactiondata.pos()));
+     }
+ 
+     @Override

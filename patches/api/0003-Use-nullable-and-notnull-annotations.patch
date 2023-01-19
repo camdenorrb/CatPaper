@@ -4324,7 +4324,7 @@ index d53de07b40d9cd63a9553d4b0ad442d526530b92..4c0924f41162da81c550554c95e0328a
      /**
       * Enables access to control the pathing of an Entity
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 9f762cf670bf5db9138e468e72e57781d8d22f54..9977fe211eafb3193033256fa290a23cbb53e88f 100644
+index de960716478477ce199526b8f860cfafa1541ee9..2c9feecc77c92762b822453617f37eb6a739220a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1044,7 +1044,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
@@ -6780,7 +6780,7 @@ index 4a3451af454295ac3e1b688e6665cad9fc594c82..99ec0ae158224f0b17e887cd5d68e71c
       * @return True if it is a command being tab completed, false if it is a chat message.
       */
 diff --git a/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java b/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java
-index 7ff9aec7ed341c01feddb8d71170b177e1fde47b..3372683366f258ed18549184f20bd5a61cdab0be 100644
+index d2b33f4105ae32a884e714a8936e3d91e23a00a0..9b6a89946077b312491ba9a61f42b6806f5bf7ca 100644
 --- a/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java
 +++ b/src/main/java/org/bukkit/event/vehicle/VehicleBlockCollisionEvent.java
 @@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
@@ -6789,9 +6789,9 @@ index 7ff9aec7ed341c01feddb8d71170b177e1fde47b..3372683366f258ed18549184f20bd5a6
      // private static final HandlerList handlers = new HandlerList(); // Paper - move HandlerList to VehicleCollisionEvent
 -    private final Block block;
 +    private final @NotNull Block block;
+     private final org.bukkit.util.Vector velocity; // Paper
  
-     public VehicleBlockCollisionEvent(@NotNull final Vehicle vehicle, @NotNull final Block block) {
-         super(vehicle);
+     // Paper start - Add pre-collision velocity
 diff --git a/src/main/java/org/bukkit/event/vehicle/VehicleDamageEvent.java b/src/main/java/org/bukkit/event/vehicle/VehicleDamageEvent.java
 index 45da51d5946781169f0c1a4d2493040faa2bc22e..5a06af005427fb29c3f333cc000343806b86fb29 100644
 --- a/src/main/java/org/bukkit/event/vehicle/VehicleDamageEvent.java

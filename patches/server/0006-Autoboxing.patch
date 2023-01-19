@@ -945,10 +945,10 @@ index 1e5c36cc2aea4acf7edccb6935754ab8ac5ced21..d98b6e213365a585ef3d47b1ba858bce
          this.applyWorldConfigTransformations(contextMap, worldNode);
          this.applyDefaultsAwareWorldConfigTransformations(contextMap, worldNode, defaultsNode);
 diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-index 0b6d68350f608bb64a701d0e390283d50f12094e..9ad3c2d8903a7147a9ba632339c8025995a79d23 100644
+index 9fde9ccb5d069ddce8dd837ef1bc68b93ce66434..1574490afe5506502de25c27b9f69c191056bf2e 100644
 --- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
 +++ b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-@@ -225,7 +225,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+@@ -228,7 +228,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
          final String world = contextMap.require(WORLD_NAME);
          if (version.virtual()) {
              LOGGER.warn("The world config file for " + world + " didn't have a version set, assuming latest");
@@ -957,7 +957,7 @@ index 0b6d68350f608bb64a701d0e390283d50f12094e..9ad3c2d8903a7147a9ba632339c80259
          }
          ConfigurationTransformation.Builder builder = ConfigurationTransformation.builder();
          for (NodePath path : RemovedConfigurations.REMOVED_WORLD_PATHS) {
-@@ -372,7 +372,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+@@ -376,7 +376,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
  
          final ConfigurationNode worldDefaults = legacyWorldSettings.node("default").copy();
          checkState(!worldDefaults.virtual());
@@ -966,7 +966,7 @@ index 0b6d68350f608bb64a701d0e390283d50f12094e..9ad3c2d8903a7147a9ba632339c80259
          legacyWorldSettings.removeChild("default");
          LegacyPaperWorldConfig.transformation().apply(worldDefaults);
          LegacyPaperWorldConfig.toNewFormat().apply(worldDefaults);
-@@ -380,7 +380,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+@@ -384,7 +384,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
  
          legacyWorldSettings.childrenMap().forEach((world, legacyWorldNode) -> {
              try {
@@ -976,10 +976,10 @@ index 0b6d68350f608bb64a701d0e390283d50f12094e..9ad3c2d8903a7147a9ba632339c80259
                  LegacyPaperWorldConfig.toNewFormat().apply(legacyWorldNode);
                  ConfigurationLoaders.naturallySortedWithoutHeader(worldFolder.resolve(world.toString()).resolve(WORLD_CONFIG_FILE_NAME)).save(legacyWorldNode); // save converted node to new location
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index 2e9590c73d867c3ebb42f695df4c796a0f477452..8a010e052f1bc86e633206ea0abb44d3819bd696 100644
+index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..4cfd5a72b7e69409eeb0ed0fb5fe151dc0c193c0 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-@@ -191,7 +191,7 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -194,7 +194,7 @@ public class WorldConfiguration extends ConfigurationPart {
  
              public class AltItemDespawnRate extends ConfigurationPart {
                  public boolean enabled = false;
@@ -988,7 +988,7 @@ index 2e9590c73d867c3ebb42f695df4c796a0f477452..8a010e052f1bc86e633206ea0abb44d3
              }
          }
  
-@@ -432,8 +432,8 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -435,8 +435,8 @@ public class WorldConfiguration extends ConfigurationPart {
          public int grassSpread = 1;
          public int containerUpdate = 1;
          public int mobSpawner = 1;
@@ -2559,7 +2559,7 @@ index abcc3266d18f34d160eac87fdea153dce24c60b8..4cbbafaf1bf17eaf7498a7c0d703451c
      }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 50d8d16b1856c0c875ccabbcfc240379a7669559..417821f9944f40f17d0a64a0360c4a6a711caa2d 100644
+index 3472f7f9b98d6d9c9f6465872803ef17fa67486d..b230b4c201968feddd81ea94ab4bcb9202b07fd0 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -644,7 +644,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -2665,10 +2665,10 @@ index e7ff7ad3bf4dd17fdd34202ec3aef8e9512bc36d..d6c2aeafd5f15d6b57ab4a8e82c97f01
                          if (ServerHandshakePacketListenerImpl.throttleCounter > 200) {
                              ServerHandshakePacketListenerImpl.throttleCounter = 0;
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index f381bf9064be548a4a603e0042886d8a5e70ba5b..80c4a62498e83f0dbb6b8888682c10dbf1a76835 100644
+index 4b754f6eae683248d7fe11d6d6cb168d5dd696a2..da726e7d6643bca940c97b0921bd0413414be9c5 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -450,7 +450,7 @@ public abstract class PlayerList {
+@@ -456,7 +456,7 @@ public abstract class PlayerList {
          }
          // Paper end
          // CraftBukkit - Moved from above, added world
@@ -2677,7 +2677,7 @@ index f381bf9064be548a4a603e0042886d8a5e70ba5b..80c4a62498e83f0dbb6b8888682c10db
      }
  
      public void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {
-@@ -883,7 +883,7 @@ public abstract class PlayerList {
+@@ -889,7 +889,7 @@ public abstract class PlayerList {
          entityplayer1.forceSetPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
          // CraftBukkit end
  
@@ -2686,7 +2686,7 @@ index f381bf9064be548a4a603e0042886d8a5e70ba5b..80c4a62498e83f0dbb6b8888682c10db
          while (avoidSuffocation && !worldserver1.noCollision(entityplayer1, entityplayer1.getBoundingBox(), true) && entityplayer1.getY() < (double) worldserver1.getMaxBuildHeight()) { // Paper - make sure this loads chunks, we default to NOT loading now
              entityplayer1.setPos(entityplayer1.getX(), entityplayer1.getY() + 1.0D, entityplayer1.getZ());
          }
-@@ -916,7 +916,7 @@ public abstract class PlayerList {
+@@ -922,7 +922,7 @@ public abstract class PlayerList {
          // Paper start - Fix SPIGOT-5989
          if (flag2 && !isLocAltered) {
              BlockState data = worldserver1.getBlockState(blockposition);
@@ -2958,7 +2958,7 @@ index 11a6f5b9e726453979d4c718c32a44024e1b8a08..bc75111a93b0e8aefdd1ce912f3be13d
  
                                      while (iterator2.hasNext()) {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index e4c97c9aaf6655e403ee669c8dca10034038a475..bb360b9a4144b4833e74d23f4d98590459894d28 100644
+index 7d7b9f759e61952444a33dbaf61ec98bec74c440..7f20bda1256eb84956a1fb7a12fff52d75851129 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -575,14 +575,14 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -3077,10 +3077,10 @@ index e4c97c9aaf6655e403ee669c8dca10034038a475..bb360b9a4144b4833e74d23f4d985904
              this.teleportTo(destX, destY, destZ);
          }
 diff --git a/src/main/java/net/minecraft/world/entity/EntityType.java b/src/main/java/net/minecraft/world/entity/EntityType.java
-index e5cd4b7609243669c9d84ff8a4988c209e6101aa..17d7898bed8e74d9e2cac61937072f198d2ac9a0 100644
+index 41ff954010c11d524ffb90abd22c29a1d8d8f5a0..954aa5f4d2aa192ed0f6a24e02eb17b2d0b2b2ab 100644
 --- a/src/main/java/net/minecraft/world/entity/EntityType.java
 +++ b/src/main/java/net/minecraft/world/entity/EntityType.java
-@@ -626,10 +626,10 @@ public class EntityType<T extends Entity> implements FeatureElement, EntityTypeT
+@@ -633,10 +633,10 @@ public class EntityType<T extends Entity> implements FeatureElement, EntityTypeT
                          final EntityType<?> entityType = entity.getType();
                          final int saveLimit = world.paperConfig().chunks.entityPerChunkSaveLimit.getOrDefault(entityType, -1);
                          if (saveLimit > -1) {
@@ -4632,7 +4632,7 @@ index 428523feaa4f30260e32ba03937e88200246c693..9732c68043b94a14918dda05843d2ec5
              this.level.updateNeighbourForOutputSignal(this.pos, Blocks.AIR);
          }
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 72f1866226269396ba0f0c1be269e237925d9322..c4e7c60b46c6bc31405527ea9ea09a2fa3359d55 100644
+index eacb8a407fe99af2c13f23c12b5544696bda8890..36b2687a25f69ed7789f54328158ca19fb54d73f 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -91,7 +91,7 @@ public class FallingBlockEntity extends Entity {
@@ -5481,10 +5481,10 @@ index 5bc033bf59d49eda1f8f2574165bbcbeab7faa0f..fff74ea2cb90451cadc96af04ace3b22
                      return stack.getHoverName().getString();
                  });
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 8f573d603eb8c2b4d73d0800584c661b76c8e2de..cea85533199f0164ef90f6d7e0e3232e6f53a5c1 100644
+index d6aed65ed8f5e7cefb9d2efe3a6909dc1c6c9e7c..72dd1d172762c66c183ffa824401e0f1a6e744a9 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -227,10 +227,10 @@ public abstract class Player extends LivingEntity {
+@@ -228,10 +228,10 @@ public abstract class Player extends LivingEntity {
      @Override
      protected void defineSynchedData() {
          super.defineSynchedData();
@@ -5499,7 +5499,7 @@ index 8f573d603eb8c2b4d73d0800584c661b76c8e2de..cea85533199f0164ef90f6d7e0e3232e
          this.entityData.define(Player.DATA_SHOULDER_LEFT, new CompoundTag());
          this.entityData.define(Player.DATA_SHOULDER_RIGHT, new CompoundTag());
      }
-@@ -630,13 +630,13 @@ public abstract class Player extends LivingEntity {
+@@ -631,13 +631,13 @@ public abstract class Player extends LivingEntity {
      }
  
      public void setScore(int score) {
@@ -5515,7 +5515,7 @@ index 8f573d603eb8c2b4d73d0800584c661b76c8e2de..cea85533199f0164ef90f6d7e0e3232e
      }
  
      public void startAutoSpinAttack(int riptideTicks) {
-@@ -1551,7 +1551,7 @@ public abstract class Player extends LivingEntity {
+@@ -1552,7 +1552,7 @@ public abstract class Player extends LivingEntity {
              Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, world, pos);
  
              if (!forced && !alive && optional.isPresent()) {
@@ -5524,7 +5524,7 @@ index 8f573d603eb8c2b4d73d0800584c661b76c8e2de..cea85533199f0164ef90f6d7e0e3232e
              }
  
              return optional;
-@@ -2156,7 +2156,7 @@ public abstract class Player extends LivingEntity {
+@@ -2157,7 +2157,7 @@ public abstract class Player extends LivingEntity {
              amount = 0.0F;
          }
  
@@ -5533,7 +5533,7 @@ index 8f573d603eb8c2b4d73d0800584c661b76c8e2de..cea85533199f0164ef90f6d7e0e3232e
      }
  
      @Override
-@@ -2198,7 +2198,7 @@ public abstract class Player extends LivingEntity {
+@@ -2199,7 +2199,7 @@ public abstract class Player extends LivingEntity {
      }
  
      public void setMainArm(HumanoidArm arm) {
@@ -6347,10 +6347,10 @@ index af799b61cec48ca290ed66cb47cfc0b244ac41a7..4e56e5d368953e8270eeb28d28aa958a
                              }
                          } else if (!SpawnPlacements.checkSpawnRules((EntityType) optional.get(), world, MobSpawnType.SPAWNER, blockposition1, world.getRandom())) {
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index d4cbd3acbcad8408048717d44887a2e5796d6971..3195a3b44d1b28e307ed2ffc23a0ff0c21554125 100644
+index 92186b4340eb763bc3f8f3fbcfe0317941577184..590be5233f0046d065d7ed48d52192e1e0f50311 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -372,7 +372,7 @@ public class Explosion {
+@@ -370,7 +370,7 @@ public class Explosion {
                              LootContext.Builder loottableinfo_builder = (new LootContext.Builder(worldserver)).withRandom(this.level.random).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockposition)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, tileentity).withOptionalParameter(LootContextParams.THIS_ENTITY, this.source);
  
                              if (this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY || yield < 1.0F) { // CraftBukkit - add yield
@@ -6359,7 +6359,7 @@ index d4cbd3acbcad8408048717d44887a2e5796d6971..3195a3b44d1b28e307ed2ffc23a0ff0c
                              }
  
                              iblockdata.spawnAfterBreak(worldserver, blockposition, ItemStack.EMPTY, flag2);
-@@ -511,7 +511,7 @@ public class Explosion {
+@@ -509,7 +509,7 @@ public class Explosion {
          CacheKey key = new CacheKey(this, entity.getBoundingBox());
          Float blockDensity = this.level.explosionDensityCache.get(key);
          if (blockDensity == null) {
@@ -9224,7 +9224,7 @@ index d125b5a470be0f4c56c2c1f229fc5c83fc4d2f3b..93e287433ab6d1ad7b4fddf340568dc7
  
              if (!ArrayUtils.isEmpty((Object[])entry.functions)) {
 diff --git a/src/main/java/net/minecraft/world/level/storage/loot/functions/ExplorationMapFunction.java b/src/main/java/net/minecraft/world/level/storage/loot/functions/ExplorationMapFunction.java
-index a4806eb60d5dde1f1bd11d9501f3cc4f1805311d..111498081fc36f887e7dc4844a56d1b2f65f4e3f 100644
+index 9d40469f92db025e760ed1603018fcb1f43dace5..95527177279791372171dcc487018d39f6320340 100644
 --- a/src/main/java/net/minecraft/world/level/storage/loot/functions/ExplorationMapFunction.java
 +++ b/src/main/java/net/minecraft/world/level/storage/loot/functions/ExplorationMapFunction.java
 @@ -150,15 +150,15 @@ public class ExplorationMapFunction extends LootItemConditionalFunction {
@@ -12150,7 +12150,7 @@ index 0680fff789a3cba9932131f6fb80692b0019a1db..6b6c1ea8842160843a2c4b28b01c447b
      // Paper Start - Bee Stinger API
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 42b2d495dd340a6eb6b6c063675ee1ff93a11be5..600f6b8ba496bd93baf0a415cdf02fcd8d4bdfa5 100644
+index d24041447fd67e94c9a969f126c17b075ded9a95..bc2f1138dd3136533ff93b17073c0c5e4ada06c6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -628,7 +628,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -12195,7 +12195,7 @@ index 42b2d495dd340a6eb6b6c063675ee1ff93a11be5..600f6b8ba496bd93baf0a415cdf02fcd
          Preconditions.checkArgument(level >= 0, "Experience level must not be negative (%s)", level);
  
          if (this.getHandle().connection == null) {
-@@ -2310,7 +2310,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2323,7 +2323,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                  this.sendHealthUpdate();
              }
          }
@@ -12205,10 +12205,10 @@ index 42b2d495dd340a6eb6b6c063675ee1ff93a11be5..600f6b8ba496bd93baf0a415cdf02fcd
          this.getHandle().maxHealthCache = getMaxHealth();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftShulker.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftShulker.java
-index 7ad8dbf1def31c8ed52139515992df1433e29c7d..c0fa50bbad700de6a3e8237bc775137091a81c2e 100644
+index 0c0af96e27dfc93dfd61d8d1b76ec1ceff93deb8..c7eed58700ec73fa6dd5e9ae28dc00631e3847e4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftShulker.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftShulker.java
-@@ -39,7 +39,7 @@ public class CraftShulker extends CraftGolem implements Shulker {
+@@ -39,7 +39,7 @@ public class CraftShulker extends CraftGolem implements Shulker, CraftEnemy {
  
      @Override
      public void setColor(@Nullable DyeColor color) {
@@ -12447,7 +12447,7 @@ index 9420f535ce701b4098b4c250c443f7ab64f40c95..57366a0673a5f250286e2f8688fb29f4
                  } else {
                      ItemStack itemStack = this.getItem(first);
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index f0ae5eef24b0b575706d5705623bb31c2a4f4eb0..0e3cfd7cbac1cf6aacb4dc5af309e215e22528e8 100644
+index 1ef2d723ca9d28587328d5c43fbb5f6196822b3f..b1f8c717a9313688c193f2c6accbe3cbe619eb94 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -257,7 +257,7 @@ public final class CraftItemStack extends ItemStack {
@@ -12621,7 +12621,7 @@ index 2511bf1171832130393f37b4e27d585db8f36937..5b95a301bace0a82affea3ead76c8b1e
          }
          return false;
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
-index f7d171c0cf7e48ddb64e9fbc01beec779ad54dc3..cb2f289ef733e362c155a5d7c1d7de8a76694262 100644
+index 7bd1edc0c2682b6d9657ad0894ba84282bf7d045..fdfaa39724daf9a227f8b97a3efd63492cd9f428 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaFirework.java
 @@ -316,7 +316,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
@@ -12634,10 +12634,10 @@ index f7d171c0cf7e48ddb64e9fbc01beec779ad54dc3..cb2f289ef733e362c155a5d7c1d7de8a
  
          return builder;
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index 8fd040caea9c007afc26961dd814a74fb20b7f95..0597e4e28a0286060134dd5cc9ecba2967b37cc5 100644
+index c1ff7557ff2e8789c489c28f5340eda2069c1c0f..74b57c17efafd5b48301e85840f46a8d4a7d749c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -377,7 +377,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -378,7 +378,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
          }
  
          if (tag.contains(CUSTOM_MODEL_DATA.NBT, CraftMagicNumbers.NBT.TAG_INT)) {
@@ -12646,7 +12646,7 @@ index 8fd040caea9c007afc26961dd814a74fb20b7f95..0597e4e28a0286060134dd5cc9ecba29
          }
          if (tag.contains(BLOCK_DATA.NBT, CraftMagicNumbers.NBT.TAG_COMPOUND)) {
              this.blockData = tag.getCompound(BLOCK_DATA.NBT).copy();
-@@ -454,7 +454,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -455,7 +455,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
              Enchantment enchant = Enchantment.getByKey(CraftNamespacedKey.fromStringOrNull(id));
              if (enchant != null) {
@@ -12655,7 +12655,7 @@ index 8fd040caea9c007afc26961dd814a74fb20b7f95..0597e4e28a0286060134dd5cc9ecba29
              }
          }
  
-@@ -964,7 +964,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -965,7 +965,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
          }
  
          if (ignoreRestrictions || level >= ench.getStartLevel() && level <= ench.getMaxLevel()) {
@@ -12664,7 +12664,7 @@ index 8fd040caea9c007afc26961dd814a74fb20b7f95..0597e4e28a0286060134dd5cc9ecba29
              return old == null || old != level;
          }
          return false;
-@@ -1438,7 +1438,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1439,7 +1439,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
          CraftMetaItem.serializeModifiers(this.attributeModifiers, builder, CraftMetaItem.ATTRIBUTES);
  
          if (this.hasRepairCost()) {
@@ -12673,7 +12673,7 @@ index 8fd040caea9c007afc26961dd814a74fb20b7f95..0597e4e28a0286060134dd5cc9ecba29
          }
  
          List<String> hideFlags = new ArrayList<String>();
-@@ -1450,11 +1450,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1451,11 +1451,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
          }
  
          if (this.isUnbreakable()) {

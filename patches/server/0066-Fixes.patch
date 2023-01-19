@@ -1,50 +1,64 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: camdenorrb <me@12oclock.dev>
-Date: Tue, 20 Dec 2022 01:30:10 -0600
+Date: Mon, 26 Dec 2022 18:02:05 -0600
 Subject: [PATCH] Fixes
 
 
-diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 68e3e5bd70d83e5e36879088b30733cea5968d5a..305e5510582f52b3ce83677ca0e725c63cbaf18a 100644
---- a/src/main/java/net/minecraft/world/entity/Entity.java
-+++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -18,12 +18,7 @@ import net.minecraft.core.PositionImpl;
- import net.minecraft.core.SectionPos;
- import net.minecraft.core.particles.BlockParticleOption;
- import net.minecraft.core.particles.ParticleTypes;
--import net.minecraft.nbt.CompoundTag;
--import net.minecraft.nbt.DoubleTag;
--import net.minecraft.nbt.FloatTag;
--import net.minecraft.nbt.ListTag;
--import net.minecraft.nbt.StringTag;
--import net.minecraft.network.chat.ClickEvent;
-+import net.minecraft.nbt.*;
- import net.minecraft.network.chat.Component;
- import net.minecraft.network.chat.HoverEvent;
- import net.minecraft.network.chat.MutableComponent;
-@@ -4290,7 +4285,8 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
-         // Paper end
-         // Paper start - rewrite chunk system
-         if (this.updatingSectionStatus) {
--            LOGGER.error("Refusing to update position for entity " + this + " to position " + new Vec3(x, y, z) + " since it is processing a section status update", new Throwable());
-+            //LOGGER.warn("Entity.setPosRaw called while updating section status");
-+            LOGGER.warn("Refusing to update position for entity " + this + " to position " + new Vec3(x, y, z) + " since it is processing a section status update", new Throwable());
-             return;
-         }
-         // Paper end - rewrite chunk system
-diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
-index bde516cdf764e5fc1c8064bd99b753abc0c17a39..236834cdd433ef648856e99894c52a2053125b16 100644
---- a/src/main/java/net/minecraft/world/item/ItemStack.java
-+++ b/src/main/java/net/minecraft/world/item/ItemStack.java
-@@ -225,7 +225,10 @@ public final class ItemStack {
+diff --git a/build.gradle.kts b/build.gradle.kts
+index e72ee437b2959e09d837b61d42ae97d1aa7a7b60..4da8e35e17321771d510d6600e6cff067aebaeb0 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -194,7 +194,9 @@ fun TaskContainer.registerRunTask(
      }
  
-     private void updateEmptyCacheFlag() {
--        if (this.emptyCacheFlag && this == ItemStack.EMPTY) throw new AssertionError("TRAP"); // CraftBukkit
-+        if (this.emptyCacheFlag && this == ItemStack.EMPTY) {
-+            //throw new AssertionError("TRAP"); // CraftBukkit
-+            return;
-+        }
-         this.emptyCacheFlag = false;
-         this.emptyCacheFlag = this.isEmpty();
-     }
+     val memoryGb = providers.gradleProperty("paper.runMemoryGb").getOrElse("2")
+-    val modifiedJvmArgs = jvmArgs ?: arrayListOf()
++
++    @Suppress("USELESS_ELVIS", "UNNECESSARY_SAFE_CALL")
++    val modifiedJvmArgs = jvmArgs?.toMutableList() ?: mutableListOf()
+     modifiedJvmArgs.addAll(listOf("-Xms${memoryGb}G", "-Xmx${memoryGb}G"))
+     jvmArgs = modifiedJvmArgs
+ 
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 9201a0e1406ba96891a5e196046863a3000a8627..3e0ce2e1f7e515e34d8bedf9dbbf2411b0d57d74 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -13,7 +13,10 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
+ import it.unimi.dsi.fastutil.longs.LongSet;
+ import it.unimi.dsi.fastutil.longs.LongSets;
+ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+-import it.unimi.dsi.fastutil.objects.*;
++import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
++import it.unimi.dsi.fastutil.objects.ObjectArrayList;
++import it.unimi.dsi.fastutil.objects.ObjectIterator;
++import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+ import net.minecraft.CrashReport;
+ import net.minecraft.core.*;
+ import net.minecraft.core.particles.ParticleOptions;
+@@ -104,6 +107,26 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
+ import org.bukkit.event.server.MapInitializeEvent;
+ import org.bukkit.event.weather.LightningStrikeEvent;
+ import org.bukkit.event.world.TimeSkipEvent;
++import org.jetbrains.annotations.Nullable;
++import org.slf4j.Logger;
++import org.spigotmc.ActivationRange;
++
++import javax.annotation.Nonnull;
++import java.io.BufferedWriter;
++import java.io.IOException;
++import java.io.Writer;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.util.*;
++import java.util.concurrent.Executor;
++import java.util.concurrent.ForkJoinPool;
++import java.util.concurrent.ForkJoinTask;
++import java.util.concurrent.ForkJoinWorkerThread;
++import java.util.function.BooleanSupplier;
++import java.util.function.Function;
++import java.util.function.Predicate;
++import java.util.stream.Collectors;
++import java.util.stream.Stream;
+ // CraftBukkit end
+ 
+ public class ServerLevel extends Level implements WorldGenLevel {

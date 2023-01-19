@@ -5,7 +5,7 @@ Subject: [PATCH] Update to Junit 5
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 9c4af4e5d859ceee2012fbfee51ea4ea85706cbc..87ce62c2544112bbb970cbfd8213674bd3b900f3 100644
+index e25b23a7174cc7a3cfbbb59353292bfb97206529..2862cc4d3a6efdee6bd98be0b8984f2471c66d87 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -53,7 +53,9 @@ dependencies {
@@ -18,7 +18,7 @@ index 9c4af4e5d859ceee2012fbfee51ea4ea85706cbc..87ce62c2544112bbb970cbfd8213674b
 +    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
      testImplementation("org.hamcrest:hamcrest-library:2.2")
  
-     implementation("io.netty:netty-all:4.1.84.Final"); // Paper - Bump netty
+     implementation("io.netty:netty-all:4.1.87.Final"); // Paper - Bump netty
 @@ -137,6 +139,7 @@ tasks.reobfJar {
  // Paper end - include reobf mappings in jar for stacktrace deobfuscation
  
@@ -2583,7 +2583,7 @@ index 2cab00db9881b69714f1c250348b622c8092ab8f..fb8f9c0eb3b6cce6d1a58063756180f0
      }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java b/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
-index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261e3137d4b 100644
+index bc5427e6e7221245330723c290dd15abf45ffdda..14720dab2b304723da8650e08b17f6d4810f252a 100644
 --- a/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/inventory/ItemMetaTest.java
 @@ -1,7 +1,10 @@
@@ -2598,7 +2598,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
  import java.util.ArrayList;
  import java.util.Arrays;
  import java.util.List;
-@@ -55,30 +58,30 @@ import org.bukkit.potion.PotionData;
+@@ -56,30 +59,30 @@ import org.bukkit.potion.PotionData;
  import org.bukkit.potion.PotionEffectType;
  import org.bukkit.potion.PotionType;
  import org.bukkit.support.AbstractTestingBase;
@@ -2638,7 +2638,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      }
  
      @Test
-@@ -90,7 +93,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -91,7 +94,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          }
      }
  
@@ -2647,7 +2647,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testConflictingEnchantment() {
          ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
          assertThat(itemMeta.hasConflictingEnchant(Enchantment.DURABILITY), is(false));
-@@ -120,7 +123,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -121,7 +124,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          stack.setLore(null);
      }
  
@@ -2656,7 +2656,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testHasItemMeta() {
          ItemStack itemStack = new ItemStack(Material.SHEARS);
  
-@@ -129,7 +132,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -130,7 +133,7 @@ public class ItemMetaTest extends AbstractTestingBase {
      }
      // Paper end
  
@@ -2665,7 +2665,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testConflictingStoredEnchantment() {
          EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta) Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
          assertThat(itemMeta.hasConflictingStoredEnchant(Enchantment.DURABILITY), is(false));
-@@ -140,7 +143,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -141,7 +144,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          assertThat(itemMeta.hasConflictingStoredEnchant(null), is(false));
      }
  
@@ -2674,7 +2674,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testConflictingEnchantments() {
          ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
          itemMeta.addEnchant(Enchantment.DURABILITY, 6, true);
-@@ -152,7 +155,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -153,7 +156,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          assertThat(itemMeta.hasConflictingEnchant(null), is(false));
      }
  
@@ -2683,7 +2683,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testConflictingStoredEnchantments() {
          EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta) Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
          itemMeta.addStoredEnchant(Enchantment.DURABILITY, 6, true);
-@@ -168,7 +171,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -169,7 +172,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          return ((FireworkMeta) Bukkit.getItemFactory().getItemMeta(Material.FIREWORK_ROCKET));
      }
  
@@ -2692,7 +2692,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testCrazyEquality() {
          CraftItemStack craft = CraftItemStack.asCraftCopy(new ItemStack(Material.STONE));
          craft.setItemMeta(craft.getItemMeta());
-@@ -177,7 +180,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -178,7 +181,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          assertThat(bukkit, is((ItemStack) craft));
      }
  
@@ -2701,7 +2701,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testBlockStateMeta() {
          List<Block> queue = new ArrayList<>();
  
-@@ -201,20 +204,20 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -202,20 +205,20 @@ public class ItemMetaTest extends AbstractTestingBase {
  
                  ItemMeta meta = stack.getItemMeta();
                  if (block instanceof EntityBlock) {
@@ -2726,7 +2726,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testSpawnEggsHasMeta() {
          for (Item item : BuiltInRegistries.ITEM) {
              if (item instanceof net.minecraft.world.item.SpawnEggItem) {
-@@ -417,7 +420,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -426,7 +429,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          }
      }
  
@@ -2735,7 +2735,7 @@ index 7ce2782359be9aea3f2209138c3f82725b27515e..e79aec217840ddc917ada21a6d900261
      public void testAttributeModifiers() {
          UUID sameUUID = UUID.randomUUID();
          ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
-@@ -437,7 +440,7 @@ public class ItemMetaTest extends AbstractTestingBase {
+@@ -446,7 +449,7 @@ public class ItemMetaTest extends AbstractTestingBase {
          assertThat(itemMeta2.equals(notEqualMeta2), is(false));
      }
  

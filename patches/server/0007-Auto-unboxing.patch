@@ -700,7 +700,7 @@ index 190e9761087baec5827d722a8281f0ffb6798341..aeeac5ea0de2204e11a01d115e5a50e0
                              if (packet != null) {
                                  entityplayer.connection.send(packet);
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 417821f9944f40f17d0a64a0360c4a6a711caa2d..2a7553ec4da6954dfa77ec6f5cb51a81060091b0 100644
+index b230b4c201968feddd81ea94ab4bcb9202b07fd0..12c92925dbb6385b638728c77f2ac092465bf387 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -296,8 +296,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -821,7 +821,7 @@ index bc75111a93b0e8aefdd1ce912f3be13d193f7596..7f38d919fa11e60341125c5f251d1764
                  List<MobEffectInstance> list = Lists.newArrayList();
                  Iterator iterator = this.potion.getEffects().iterator();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index bb360b9a4144b4833e74d23f4d98590459894d28..a5191f7d58f79648851a9725c2f9623a9ed00dc0 100644
+index 7f20bda1256eb84956a1fb7a12fff52d75851129..bde24be9bace4929ff65b6672141726444fbc9dd 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -599,7 +599,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -893,10 +893,10 @@ index bb360b9a4144b4833e74d23f4d98590459894d28..a5191f7d58f79648851a9725c2f9623a
  
      public final void teleportToWithTicket(double destX, double destY, double destZ) {
 diff --git a/src/main/java/net/minecraft/world/entity/EntityType.java b/src/main/java/net/minecraft/world/entity/EntityType.java
-index 17d7898bed8e74d9e2cac61937072f198d2ac9a0..8ba6ed9de1b7685f42b67d32300d8a9c5c7157c3 100644
+index 954aa5f4d2aa192ed0f6a24e02eb17b2d0b2b2ab..511ab0e4f7d2ab5b10e8d62f98128eb29bc09f9f 100644
 --- a/src/main/java/net/minecraft/world/entity/EntityType.java
 +++ b/src/main/java/net/minecraft/world/entity/EntityType.java
-@@ -626,7 +626,7 @@ public class EntityType<T extends Entity> implements FeatureElement, EntityTypeT
+@@ -633,7 +633,7 @@ public class EntityType<T extends Entity> implements FeatureElement, EntityTypeT
                          final EntityType<?> entityType = entity.getType();
                          final int saveLimit = world.paperConfig().chunks.entityPerChunkSaveLimit.getOrDefault(entityType, -1);
                          if (saveLimit > -1) {
@@ -2378,10 +2378,10 @@ index f66e0c3b38707a24f7cc70325d0611959d956de5..75432631aad099dd569a5cbb4c538724
      }
  }
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index cea85533199f0164ef90f6d7e0e3232e6f53a5c1..afaa295c9b2e5a59c08eb74f2393a74681420fc7 100644
+index 72dd1d172762c66c183ffa824401e0f1a6e744a9..a81850f620d8b03425182816351c77fd2a725eb1 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -626,7 +626,7 @@ public abstract class Player extends LivingEntity {
+@@ -627,7 +627,7 @@ public abstract class Player extends LivingEntity {
      }
  
      public int getScore() {
@@ -2390,7 +2390,7 @@ index cea85533199f0164ef90f6d7e0e3232e6f53a5c1..afaa295c9b2e5a59c08eb74f2393a746
      }
  
      public void setScore(int score) {
-@@ -2161,11 +2161,11 @@ public abstract class Player extends LivingEntity {
+@@ -2162,11 +2162,11 @@ public abstract class Player extends LivingEntity {
  
      @Override
      public float getAbsorptionAmount() {
@@ -2404,7 +2404,7 @@ index cea85533199f0164ef90f6d7e0e3232e6f53a5c1..afaa295c9b2e5a59c08eb74f2393a746
      }
  
      @Override
-@@ -2194,7 +2194,7 @@ public abstract class Player extends LivingEntity {
+@@ -2195,7 +2195,7 @@ public abstract class Player extends LivingEntity {
  
      @Override
      public HumanoidArm getMainArm() {
@@ -2914,7 +2914,7 @@ index e29365470fed710345763d3f98a2feeac78f5f47..4e19570cb829f36d39c3eb11c03711e8
                              if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(world, blockposition1, iblockdata, entity)) {
                                  world.scheduleTick(blockposition1, Blocks.FROSTED_ICE, Mth.nextInt(entity.getRandom(), 60, 120));
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 3195a3b44d1b28e307ed2ffc23a0ff0c21554125..213ec2fdd706b444bf9b4552957b7e1b8573833c 100644
+index 590be5233f0046d065d7ed48d52192e1e0f50311..ab12b20be2c79b6696a9f7962fd3567c2bbdc047 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -178,7 +178,7 @@ public class Explosion {
@@ -2926,7 +2926,7 @@ index 3195a3b44d1b28e307ed2ffc23a0ff0c21554125..213ec2fdd706b444bf9b4552957b7e1b
                              }
  
                              if (f > 0.0F && this.damageCalculator.shouldBlockExplode(this, this.level, blockposition, iblockdata, f)) {
-@@ -515,7 +515,7 @@ public class Explosion {
+@@ -513,7 +513,7 @@ public class Explosion {
              this.level.explosionDensityCache.put(key, blockDensity);
          }
  
@@ -9292,10 +9292,10 @@ index d92d86dbb4e20d344902b2fc8f64ee0455da8a0e..cabbcdfda7ba3374c7525d956d4d2007
          return false;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEnderDragon.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEnderDragon.java
-index c46466931ef425644bff9d63e726f4a65525d868..5723942e9611932bb4ae587202f5f9f783b21a1e 100644
+index 336baa48c1e0c138dad994e86f893d44c93a2450..87a5828c0e5e08ea9233fe18f58c804052a387f8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEnderDragon.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEnderDragon.java
-@@ -51,7 +51,7 @@ public class CraftEnderDragon extends CraftMob implements EnderDragon {
+@@ -51,7 +51,7 @@ public class CraftEnderDragon extends CraftMob implements EnderDragon, CraftEnem
  
      @Override
      public @NotNull Phase getPhase() {
@@ -9305,7 +9305,7 @@ index c46466931ef425644bff9d63e726f4a65525d868..5723942e9611932bb4ae587202f5f9f7
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 600f6b8ba496bd93baf0a415cdf02fcd8d4bdfa5..1b45c3b60c699f1e40536285e90262ab480dad3a 100644
+index bc2f1138dd3136533ff93b17073c0c5e4ada06c6..95aa6b385acb3a92ee56981717949041ab638293 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -626,7 +626,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -9317,7 +9317,7 @@ index 600f6b8ba496bd93baf0a415cdf02fcd8d4bdfa5..1b45c3b60c699f1e40536285e90262ab
          } else if (com.destroystokyo.paper.ClientOption.CHAT_COLORS_ENABLED == type) {
              return type.getType().cast(Boolean.valueOf(getHandle().canChatInColor()));
          } else if (com.destroystokyo.paper.ClientOption.CHAT_VISIBILITY == type) {
-@@ -2474,7 +2474,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2487,7 +2487,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public int getClientViewDistance() {
@@ -9327,10 +9327,10 @@ index 600f6b8ba496bd93baf0a415cdf02fcd8d4bdfa5..1b45c3b60c699f1e40536285e90262ab
  
      // Paper start
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftShulker.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftShulker.java
-index c0fa50bbad700de6a3e8237bc775137091a81c2e..4ec633f27ee64d90a845285af0c75b30a4406e42 100644
+index c7eed58700ec73fa6dd5e9ae28dc00631e3847e4..ea81b84e688c839292fbeed3aca526e2a1555b14 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftShulker.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftShulker.java
-@@ -34,7 +34,7 @@ public class CraftShulker extends CraftGolem implements Shulker {
+@@ -34,7 +34,7 @@ public class CraftShulker extends CraftGolem implements Shulker, CraftEnemy {
  
      @Override
      public DyeColor getColor() {
@@ -9477,10 +9477,10 @@ index 5b95a301bace0a82affea3ead76c8b1e55a1602f..2a614fb24d48157fa6ec980b12eac825
          return false;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index 0597e4e28a0286060134dd5cc9ecba2967b37cc5..da2926e5fa0f286b9e07e67e543f87b75af4d407 100644
+index 74b57c17efafd5b48301e85840f46a8d4a7d749c..9ce46b36369a00dc2ee23873686881993502964c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -221,7 +221,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -222,7 +222,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
          static boolean getBoolean(@NotNull Map<?, ?> map, Object field) {
              Boolean value = SerializableMeta.getObject(Boolean.class, map, field, true);
@@ -9489,7 +9489,7 @@ index 0597e4e28a0286060134dd5cc9ecba2967b37cc5..da2926e5fa0f286b9e07e67e543f87b7
          }
  
          static <T> @org.jetbrains.annotations.Nullable T getObject(@NotNull Class<T> clazz, @NotNull Map<?, ?> map, Object field, boolean nullable) {
-@@ -543,7 +543,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -544,7 +544,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
          Integer repairCost = SerializableMeta.getObject(Integer.class, map, REPAIR.BUKKIT, true);
          if (repairCost != null) {
@@ -9498,7 +9498,7 @@ index 0597e4e28a0286060134dd5cc9ecba2967b37cc5..da2926e5fa0f286b9e07e67e543f87b7
          }
  
          Iterable<?> hideFlags = SerializableMeta.getObject(Iterable.class, map, HIDEFLAGS.BUKKIT, true);
-@@ -561,12 +561,12 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -562,12 +562,12 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
          Boolean unbreakable = SerializableMeta.getObject(Boolean.class, map, UNBREAKABLE.BUKKIT, true);
          if (unbreakable != null) {
@@ -9513,7 +9513,7 @@ index 0597e4e28a0286060134dd5cc9ecba2967b37cc5..da2926e5fa0f286b9e07e67e543f87b7
          }
  
          // Paper start - Implement an API for CanPlaceOn and CanDestroy NBT values
-@@ -700,7 +700,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -701,7 +701,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
          }
  
          if (this.hasCustomModelData()) {
@@ -9522,7 +9522,7 @@ index 0597e4e28a0286060134dd5cc9ecba2967b37cc5..da2926e5fa0f286b9e07e67e543f87b7
          }
  
          if (this.hasBlockData()) {
-@@ -948,7 +948,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -949,7 +949,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
          if (level == null) {
              return 0;
          }
@@ -9531,7 +9531,7 @@ index 0597e4e28a0286060134dd5cc9ecba2967b37cc5..da2926e5fa0f286b9e07e67e543f87b7
      }
  
      @Override
-@@ -965,7 +965,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -966,7 +966,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
          if (ignoreRestrictions || level >= ench.getStartLevel() && level <= ench.getMaxLevel()) {
              Integer old = this.enchantments.put(ench, Integer.valueOf(level));
@@ -9540,7 +9540,7 @@ index 0597e4e28a0286060134dd5cc9ecba2967b37cc5..da2926e5fa0f286b9e07e67e543f87b7
          }
          return false;
      }
-@@ -1080,7 +1080,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1081,7 +1081,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
      @Override
      public int getCustomModelData() {
          Preconditions.checkState(this.hasCustomModelData(), "We don't have CustomModelData! Check hasCustomModelData first!");

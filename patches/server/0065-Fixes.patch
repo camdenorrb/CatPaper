@@ -1,60 +1,50 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: camdenorrb <me@12oclock.dev>
-Date: Sat, 17 Dec 2022 12:16:19 -0600
+Date: Tue, 20 Dec 2022 01:30:10 -0600
 Subject: [PATCH] Fixes
 
 
-diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 3ccd6ceacf7b239281a8eff65b749fc455862e6f..27d187b5878be48c64be3a49d24a156d080b4b6e 100644
---- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -139,14 +139,14 @@ public class LevelChunk extends ChunkAccess {
-         return NEIGHBOUR_CACHE_RADIUS;
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 0494dc8b80dff2855765fab4dd54fe96227df740..107fb80ba034d56cda48326a362a6306b1016a83 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -18,12 +18,7 @@ import net.minecraft.core.PositionImpl;
+ import net.minecraft.core.SectionPos;
+ import net.minecraft.core.particles.BlockParticleOption;
+ import net.minecraft.core.particles.ParticleTypes;
+-import net.minecraft.nbt.CompoundTag;
+-import net.minecraft.nbt.DoubleTag;
+-import net.minecraft.nbt.FloatTag;
+-import net.minecraft.nbt.ListTag;
+-import net.minecraft.nbt.StringTag;
+-import net.minecraft.network.chat.ClickEvent;
++import net.minecraft.nbt.*;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.HoverEvent;
+ import net.minecraft.network.chat.MutableComponent;
+@@ -4290,7 +4285,8 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         // Paper end
+         // Paper start - rewrite chunk system
+         if (this.updatingSectionStatus) {
+-            LOGGER.error("Refusing to update position for entity " + this + " to position " + new Vec3(x, y, z) + " since it is processing a section status update", new Throwable());
++            //LOGGER.warn("Entity.setPosRaw called while updating section status");
++            LOGGER.warn("Refusing to update position for entity " + this + " to position " + new Vec3(x, y, z) + " since it is processing a section status update", new Throwable());
+             return;
+         }
+         // Paper end - rewrite chunk system
+diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
+index bde516cdf764e5fc1c8064bd99b753abc0c17a39..236834cdd433ef648856e99894c52a2053125b16 100644
+--- a/src/main/java/net/minecraft/world/item/ItemStack.java
++++ b/src/main/java/net/minecraft/world/item/ItemStack.java
+@@ -225,7 +225,10 @@ public final class ItemStack {
      }
  
--    boolean loadedTicketLevel;
-+    volatile boolean loadedTicketLevel;
-     private long neighbourChunksLoadedBitset;
--    private final LevelChunk[] loadedNeighbourChunks = new LevelChunk[(NEIGHBOUR_CACHE_RADIUS * 2 + 1) * (NEIGHBOUR_CACHE_RADIUS * 2 + 1)];
-+    private final LevelChunk[] loadedNeighbourChunks = new LevelChunk[((NEIGHBOUR_CACHE_RADIUS << 1) + 1) * ((NEIGHBOUR_CACHE_RADIUS << 1) + 1)];
- 
-     private static int getNeighbourIndex(final int relativeX, final int relativeZ) {
-         // index = (relativeX + NEIGHBOUR_CACHE_RADIUS) + (relativeZ + NEIGHBOUR_CACHE_RADIUS) * (NEIGHBOUR_CACHE_RADIUS * 2 + 1)
-         // optimised variant of the above by moving some of the ops to compile time
--        return relativeX + (relativeZ * (NEIGHBOUR_CACHE_RADIUS * 2 + 1)) + (NEIGHBOUR_CACHE_RADIUS + NEIGHBOUR_CACHE_RADIUS * ((NEIGHBOUR_CACHE_RADIUS * 2 + 1)));
-+        return relativeX + (relativeZ * ((NEIGHBOUR_CACHE_RADIUS << 1) + 1)) + (NEIGHBOUR_CACHE_RADIUS + NEIGHBOUR_CACHE_RADIUS * (((NEIGHBOUR_CACHE_RADIUS << 1) + 1)));
-     }
- 
-     public final LevelChunk getRelativeNeighbourIfLoaded(final int relativeX, final int relativeZ) {
-@@ -731,7 +731,7 @@ public class LevelChunk extends ChunkAccess {
-                 "Attempted to place a tile entity (" + blockEntity + ") at " + blockEntity.getBlockPos().getX() + ","
-                     + blockEntity.getBlockPos().getY() + "," + blockEntity.getBlockPos().getZ()
-                     + " (" + getBlockState(blockposition) + ") where there was no entity tile!\n" +
--                    "Chunk coordinates: " + (this.chunkPos.x * 16) + "," + (this.chunkPos.z * 16) +
-+                    "Chunk coordinates: " + (this.chunkPos.x << 4) + "," + (this.chunkPos.z << 4) +
-                     "\nWorld: " + level.getLevel().dimension().location());
-             io.papermc.paper.util.TraceUtil.printStackTrace(e);
-             ServerInternalException.reportInternalException(e);
-@@ -901,7 +901,10 @@ public class LevelChunk extends ChunkAccess {
- 
-     // CraftBukkit start
-     public void loadCallback() {
--        if (this.loadedTicketLevel) { LOGGER.error("Double calling chunk load!", new Throwable()); } // Paper
-+        if (this.loadedTicketLevel) {
-+            //LOGGER.error("Double calling chunk load!", new Throwable());
+     private void updateEmptyCacheFlag() {
+-        if (this.emptyCacheFlag && this == ItemStack.EMPTY) throw new AssertionError("TRAP"); // CraftBukkit
++        if (this.emptyCacheFlag && this == ItemStack.EMPTY) {
++            //throw new AssertionError("TRAP"); // CraftBukkit
 +            return;
-+        } // Paper
-         // Paper - rewrite chunk system - move into separate callback
-         this.loadedTicketLevel = true;
-         // Paper - rewrite chunk system - move into separate callback
-@@ -921,8 +924,8 @@ public class LevelChunk extends ChunkAccess {
-                 this.needsDecoration = false;
-                 final java.util.Random random = new java.util.Random();
-                 random.setSeed(this.level.getSeed());
--                final long xRand = random.nextLong() / 2L * 2L + 1L;
--                final long zRand = random.nextLong() / 2L * 2L + 1L;
-+                final long xRand = (random.nextLong() / 2L << 1) + 1L;
-+                final long zRand = (random.nextLong() / 2L << 1) + 1L;
-                 random.setSeed((long) this.chunkPos.x * xRand + (long) this.chunkPos.z * zRand ^ this.level.getSeed());
- 
-                 final org.bukkit.World world = this.level.getWorld();
++        }
+         this.emptyCacheFlag = false;
+         this.emptyCacheFlag = this.isEmpty();
+     }
